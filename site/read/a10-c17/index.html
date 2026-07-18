@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据｜我与一座城：具身智能系统教程</title><meta name="description" content="泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据"><meta name="referrer" content="strict-origin-when-cross-origin"><meta property="og:title" content="泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据｜我与一座城：具身智能系统教程"><meta property="og:description" content="泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据"><meta property="og:type" content="article"><meta property="og:url" content="https://gao377.github.io/read/a10-c17/"><link rel="canonical" href="https://gao377.github.io/read/a10-c17/"><meta data-pagefind-filter="page_kind:lesson"><link rel="stylesheet" href="/_astro/BaseLayout.BQlYGpZK.css"></head><body data-page-id="a10-c17" data-page-kind="lesson"><a class="skip-link" href="#main-content">跳到正文</a><header class="site-header" data-site-header><div class="reading-progress" aria-hidden="true"><span style="width: 74%"></span></div><div class="site-header__desktop"><a class="site-title" href="/">《我与一座城：具身智能系统教程》</a><p class="site-current" title="泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据">泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据</p><div class="site-header__actions"><button class="site-header__action" type="button" aria-controls="site-search" data-open-site-search><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:magnifying-glass"><symbol id="ai:ph:magnifying-glass" viewBox="0 0 256 256"><path fill="currentColor" d="m229.66 218.34l-50.07-50.06a88.11 88.11 0 1 0-11.31 11.31l50.06 50.07a8 8 0 0 0 11.32-11.32M40 112a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72"/></symbol><use href="#ai:ph:magnifying-glass"></use></svg><span>搜索全书</span></button><button class="site-header__action" type="button" aria-controls="reading-settings" data-open-reading-settings><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:nut"><symbol id="ai:ph:nut" viewBox="0 0 256 256"><path fill="currentColor" d="M128 80a48 48 0 1 0 48 48a48.06 48.06 0 0 0-48-48m0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32m95.68-93.85l-88-48.15a15.88 15.88 0 0 0-15.36 0l-88 48.17a16 16 0 0 0-8.32 14v95.64a16 16 0 0 0 8.32 14l88 48.17a15.88 15.88 0 0 0 15.36 0l88-48.17a16 16 0 0 0 8.32-14V80.18a16 16 0 0 0-8.32-14.03M128 224l-88-48.18V80.18L128 32l88 48.17v95.64Z"/></symbol><use href="#ai:ph:nut"></use></svg><span>阅读设置</span></button></div></div><div class="mobile-header"><a class="mobile-header__control mobile-header__menu" href="/book/" aria-controls="mobile-book-menu-a10-c17" data-open-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:list"><symbol id="ai:ph:list" viewBox="0 0 256 256"><path fill="currentColor" d="M224 128a8 8 0 0 1-8 8H40a8 8 0 0 1 0-16h176a8 8 0 0 1 8 8M40 72h176a8 8 0 0 0 0-16H40a8 8 0 0 0 0 16m176 112H40a8 8 0 0 0 0 16h176a8 8 0 0 0 0-16"/></symbol><use href="#ai:ph:list"></use></svg><span>目录</span></a><p class="mobile-header__title" title="第十幕：每个模块都正确">第十幕：每个模块都正确</p><button class="mobile-header__control mobile-header__search" type="button" aria-label="搜索全书" aria-controls="site-search" data-open-site-search><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:magnifying-glass"><use href="#ai:ph:magnifying-glass"></use></svg><span>搜索</span></button><button class="mobile-header__control mobile-header__settings" type="button" aria-label="阅读设置" aria-controls="reading-settings" data-open-reading-settings><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:nut"><use href="#ai:ph:nut"></use></svg><span>设置</span></button></div></header><main id="main-content" tabindex="-1" data-pagefind-body="true"><div class="reader-shell"><nav class="book-rail book-rail--context" aria-label="全书章节"><ol><li class="book-rail__act"><a href="/book/act-09/"><span class="book-rail__act-number">第九幕 /</span><span class="book-rail__act-title">我让双脚、双手和身体共同完成安装</span></a></li><li class="book-rail__act"><a href="/book/act-10/" aria-current="location"><span class="book-rail__act-number">第十幕 /</span><span class="book-rail__act-title">每个模块都正确，泵站为什么仍然不工作</span></a></li><li class="book-rail__act"><a href="/book/act-11/"><span class="book-rail__act-number">第十一幕 /</span><span class="book-rail__act-title">过去不是一堆文件</span></a></li></ol></nav><article class="reader-page" data-reader-page aria-labelledby="h-泵终于转了这一次成功能说明到哪里端到端运行包降级分支与集成证据"><nav class="story-kicker" aria-label="当前位置"><a href="/book/act-10/">第十幕</a></nav><div class="reader-content"><h1 id="h-泵终于转了这一次成功能说明到哪里端到端运行包降级分支与集成证据" data-block-id="a10-c17-h-001">泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据</h1>
+<p data-block-id="a10-c17-p-002">所有前置终于聚到同一次受控试转：我的身体保持在安全位置，维护人员许可仍有效，排水渠巡检设备已经用原 action ID 完成 reconciliation，阀门资源与泵站 revision 一致。监督者接纳低能量试转，执行端回报 applied，泵状态随后进入这次试转允许的有限范围，并按计划结束。</p>
+<p data-block-id="a10-c17-p-003">我看见“泵转了”，最容易说出的是“系统成功了”。可博士没有立刻给这句话加上句号。他把本次输入、模块状态、动作、设备结果、降级分支与证据边界收进同一个 <strong>run bundle</strong>，再问我：是哪一个系统、在哪个世界、对哪一个任务、凭什么说成功？</p>
+<h2 id="h-一次运行先冻结一个不能偷换的世界" data-block-id="a10-c17-h-004">一次运行先冻结一个不能偷换的世界</h2>
+<p data-block-id="a10-c17-p-005">这次试转的固定身份为 <code>pump-restart-trial-042</code>。运行开始前，snapshot 至少冻结：</p>
+<ul data-block-id="a10-c17-list-006">
+<li>task、body、map、frame、interface 与配置 revision；</li>
+<li>source/build、模型、策略和求解器配置；</li>
+<li>泵站 asset、标定与当前状态 revision；</li>
+<li>参与者、topology、QoS、authority epoch、lease 与安全配置；</li>
+<li>人员许可、能量边界、停止 owner 与现场前置；</li>
+<li>时钟映射、数据年龄规则和证据记录配置。</li>
+</ul>
+<p data-block-id="a10-c17-p-007">任何一项在运行中变化，都要产生新事件并使依赖候选重新核对。不能让正常分支用新地图、失败分支用旧地图，再把结果归因给遥测延迟。</p>
+<h2 id="h-成功是多层谓词同时成立" data-block-id="a10-c17-h-008">“成功”是多层谓词同时成立</h2>
+<p data-block-id="a10-c17-p-009">本章把一次受控试转的结论拆成六层：</p>
+<div class="content-overflow content-overflow--math" data-block-id="a10-c17-math-010" tabindex="0" role="region" aria-label="可横向滚动的公式"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mi>S</mi><mrow><mi>t</mi><mi>r</mi><mi>i</mi><mi>a</mi><mi>l</mi></mrow></msub><mo>=</mo><msub><mi>S</mi><mrow><mi>i</mi><mi>d</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>i</mi><mi>t</mi><mi>y</mi></mrow></msub><mo>∧</mo><msub><mi>S</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi><mi>c</mi><mi>o</mi><mi>n</mi><mi>d</mi><mi>i</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow></msub><mo>∧</mo><msub><mi>S</mi><mrow><mi>t</mi><mi>i</mi><mi>m</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></msub><mo>∧</mo><msub><mi>S</mi><mrow><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow></msub><mo>∧</mo><msub><mi>S</mi><mrow><mi>d</mi><mi>e</mi><mi>v</mi><mi>i</mi><mi>c</mi><mi>e</mi></mrow></msub><mo>∧</mo><msub><mi>S</mi><mrow><mi>e</mi><mi>v</mi><mi>i</mi><mi>d</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>e</mi></mrow></msub><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(1)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">S_{trial}=
+S_{identity}\land
+S_{precondition}\land
+S_{timing}\land
+S_{action}\land
+S_{device}\land
+S_{evidence}.
+\tag{1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.0278em;">r</span><span class="mord mathnormal mtight">ia</span><span class="mord mathnormal mtight" style="margin-right:0.0197em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.0359em;">y</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight" style="margin-right:0.0278em;">r</span><span class="mord mathnormal mtight">eco</span><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">imin</span><span class="mord mathnormal mtight" style="margin-right:0.0359em;">g</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight">c</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight" style="margin-right:0.0359em;">v</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">ce</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0576em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0576em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight" style="margin-right:0.0359em;">v</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight">ce</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">.</span></span><span class="tag"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">1</span></span><span class="mord">)</span></span></span></span></span></span></div>
+<p data-block-id="a10-c17-p-011">它们分别要求：</p>
+<ol data-block-id="a10-c17-list-012">
+<li>身体、任务、资产、远端参与者和所有 revision 身份闭合；</li>
+<li>人员许可、本地/远端保护、健康与能力前置成立；</li>
+<li>sample、receive、compute、accept、apply 的年龄和期限在各自合同内；</li>
+<li>commanded、accepted、applied、outcome 属于同一 action，owner 唯一；</li>
+<li>泵与阀门达到本次有限试转的目标状态，并完成声明的停止；</li>
+<li>trace、hash、缺失/覆盖 marker 与证据等级足以复核以上判断。</li>
+</ol>
+<p data-block-id="a10-c17-p-013">这是逻辑合取，不是评分表。某层 unknown 就不能用其他五层“平均”成成功。设备结果符合预期但 action identity 缺失，依然不能知道是谁做了什么；日志完整但泵未达到目标，也不能称任务完成。</p>
+<h2 id="h-正常分支要从世界一路追到物理结果" data-block-id="a10-c17-h-014">正常分支要从世界一路追到物理结果</h2>
+<p data-block-id="a10-c17-p-015">正常设计演算的主链是：</p>
+<div class="content-overflow content-overflow--code" data-block-id="a10-c17-code-016" tabindex="0" role="region" aria-label="可横向滚动的代码"><pre><code class="language-text">固定 snapshot 与人员许可
+确认我的身体保持在安全位置，停止通道可用
+确认远端 participant、阀门 action 和 resource revision 已 reconciliation
+采用当前泵遥测，核对 sample time、age、health 与 supervisor 前置
+任务监督者生成候选，动作仲裁记录 accepted
+执行端记录 applied，设备状态记录 outcome
+监督者确认有限试转目标，不扩展任务范围
+按计划停止并核对最终状态
+冻结 pre/post-trigger trace、运行哈希、unknown 与 not-run
+</code></pre></div>
+<p data-block-id="a10-c17-p-017">这条链中的每一步都保存输入身份、输出身份、时间和 reason code。最终报告不能只截一张泵在转的画面，也不能只保留“trial complete”而删去中途的状态转换。</p>
+<h2 id="h-同一快照只改变延迟失败分支才有解释力" data-block-id="a10-c17-h-018">同一快照只改变延迟，失败分支才有解释力</h2>
+<p data-block-id="a10-c17-p-019">失败分支复制完全相同的 snapshot、任务和判据，只把泵遥测延迟改为 320 ms。泵遥测名义为 20 Hz，监督者名义为 10 Hz，但真正裁决仍是消费者处的年龄：</p>
+<div class="content-overflow content-overflow--math" data-block-id="a10-c17-math-020" tabindex="0" role="region" aria-label="可横向滚动的公式"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><msub><mi>A</mi><mrow><mi>t</mi><mi>e</mi><mi>l</mi><mi>e</mi><mi>m</mi><mi>e</mi><mi>t</mi><mi>r</mi><mi>y</mi></mrow></msub><mo>=</mo><mn>320</mn><mtext> </mtext><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">s</mi></mrow><mo>></mo><msub><mi>A</mi><mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub><mo>=</mo><mn>250</mn><mtext> </mtext><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">s</mi></mrow><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(2)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">A_{telemetry}=320\ \mathrm{ms}
+>
+A_{max}=250\ \mathrm{ms}.
+\tag{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight" style="margin-right:0.0197em;">l</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight" style="margin-right:0.0278em;">r</span><span class="mord mathnormal mtight" style="margin-right:0.0359em;">y</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6835em;vertical-align:-0.0391em;"></span><span class="mord">320</span><span class="mspace"> </span><span class="mord"><span class="mord mathrm">ms</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">ma</span><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">250</span><span class="mspace"> </span><span class="mord"><span class="mord mathrm">ms</span></span><span class="mord">.</span></span><span class="tag"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">2</span></span><span class="mord">)</span></span></span></span></span></span></div>
+<p data-block-id="a10-c17-p-021">监督者拒绝把过龄遥测当作当前泵状态，不再推进或重复启动，系统转入 <code>HOLD</code>，查询设备终态并等待恢复前置。这个分支不是要证明 250 ms 是普遍安全阈值，而是检查在这次快照冻结的时效规则下，过龄事实是否确实沿同一链路触发声明的处置。</p>
+<p data-block-id="a10-c17-p-022">正常与失败分支必须一起保存。删除失败记录会使成功失去边界，也无法证明系统不是碰巧越过一次异常。</p>
+<h2 id="h-远端未知是第三种结果不是失败的同义词" data-block-id="a10-c17-h-023">远端未知是第三种结果，不是失败的同义词</h2>
+<p data-block-id="a10-c17-p-024">另一个运行包保持本地系统正常，却让排水渠设备 health 过龄、outcome 仍为 <code>UNKNOWN</code>。由于试运转依赖它对渠内与阀门的本地职责，我不能开始泵任务；系统应等待或 <code>HOLD</code>，而不是把 unknown 补成“远端失败”，也不是用我自己的传感替它签署本地保护。</p>
+<p data-block-id="a10-c17-p-025">这体现了协作的深层关系：我并未因为拥有更多计算就吞并另一个身体的责任。彼此能共同完成任务，恰恰来自各自有限、可确认、在失联时仍被尊重的边界。</p>
+<h2 id="h-证据闭包只在声明范围内闭合" data-block-id="a10-c17-h-026">证据闭包只在声明范围内闭合</h2>
+<p data-block-id="a10-c17-p-027">run bundle 应把需求、snapshot、模块/动作时间线、状态机、远端 reconciliation、ring trace、构建与模型哈希、缺失 marker、oracle 和结果连在一起。集成证据包再逐项标为 <code>pass/fail/unknown/not-run</code>，不压成一个总成功率。</p>
+<p data-block-id="a10-c17-p-028">我面前这份试转快照只保存了固定条件下的设计演算和三条结果分支。SIL、仿真运行、HIL、受控真实硬件、真实网络与泵站任务仍是 <code>not-run</code>。因此，即使记录里出现“泵开始转动”，我也只能把它当作受控条件下的一个分支，不能向值班员宣称现实泵站已经通过验证。</p>
+<p data-block-id="a10-c17-p-029">即使未来真实受控试转成功，也只能支持当时版本、许可、能量、环境和工况；不能推出暴雨、长时运行、不同安装或人员密集条件可靠。进入这些任务前仍需相应的故障注入、HIL、受控硬件、现场程序与长期证据。</p>
+<h2 id="h-练习" data-block-id="a10-c17-h-030">练习</h2>
+<h3 id="h-练习-1正常运行包闭合了全部六层" data-block-id="a10-c17-h-031">练习 1：正常运行包闭合了全部六层</h3>
+<p data-block-id="a10-c17-p-032">同一 snapshot 下，身份、前置、时间、action、设备结果与 trace 均满足本次有限试转判据。说明可以写出的最强结论，以及不能外推到暴雨和长期运行的内容。</p>
+<h3 id="h-练习-2同源遥测变成-320-ms" data-block-id="a10-c17-h-033">练习 2：同源遥测变成 320 ms</h3>
+<p data-block-id="a10-c17-p-034">除遥测延迟外全部不变，监督者采用当前的 250 ms 上限并转入 <code>HOLD</code>。判断该分支通过了什么、失败了什么，能否从最终报告中删除。</p>
+<h3 id="h-练习-3本地正常远端-health-与-outcome-未知" data-block-id="a10-c17-h-035">练习 3：本地正常，远端 health 与 outcome 未知</h3>
+<p data-block-id="a10-c17-p-036">我的身体、泵站与本地控制全部健康，但排水渠设备的保护确认无法刷新。判断本次能否开始、系统结果应记作 failure 还是 unknown，以及进入暴雨任务前仍需补哪些协作证据。</p>
+<p data-block-id="a10-c17-p-037"><a href="/answer/a10-c17/">参考答案</a></p>
+<p data-block-id="a10-c17-p-038">整理运行包时，我找到两份都声称来自同一次旧故障的档案：一份说 action 已经 applied，设备却没有变化；另一份说设备恢复了，却找不到任何 applied action。它们都像过去留下的记忆，也都缺了一块。我先问：哪一份才算真正发生过的过去？带着跨设备身份、健康、权限、<code>UNKNOWN</code> 与失败证据，我走进第十一幕。</p>
+<p data-block-id="a10-c17-p-039"><a href="/book/act-11/">进入第十一幕：档案说，“我”来过这里</a></p></div><nav class="chapter-navigation" aria-label="阅读顺序"><a data-nav-role="previous" href="/read/a10-c16/">上一篇：排水渠巡检设备断线了，我还知道任务做到哪里吗——任务身份、限时授权与间歇通信</a><a data-nav-role="answer" href="/answer/a10-c17/">查看本章参考答案</a><a data-nav-role="next" href="/read/a11-c01/">下一篇：两份记录都说是同一次故障，为什么结果相反——原始档案、来源与冲突</a></nav></article></div><div class="mobile-reading" data-mobile-reading><nav class="mobile-reading__bar" aria-label="手机阅读导航"><a href="/read/a10-c16/" data-mobile-role="previous"><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:caret-left"><symbol id="ai:ph:caret-left" viewBox="0 0 256 256"><path fill="currentColor" d="M165.66 202.34a8 8 0 0 1-11.32 11.32l-80-80a8 8 0 0 1 0-11.32l80-80a8 8 0 0 1 11.32 11.32L91.31 128Z"/></symbol><use href="#ai:ph:caret-left"></use></svg><span>上一章</span></a><a href="/book/" aria-controls="mobile-book-menu-a10-c17" data-open-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:list-bullets"><symbol id="ai:ph:list-bullets" viewBox="0 0 256 256"><path fill="currentColor" d="M80 64a8 8 0 0 1 8-8h128a8 8 0 0 1 0 16H88a8 8 0 0 1-8-8m136 56H88a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16m0 64H88a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16M44 52a12 12 0 1 0 12 12a12 12 0 0 0-12-12m0 64a12 12 0 1 0 12 12a12 12 0 0 0-12-12m0 64a12 12 0 1 0 12 12a12 12 0 0 0-12-12"/></symbol><use href="#ai:ph:list-bullets"></use></svg><span>目录</span></a><a href="/read/a11-c01/" data-mobile-role="next"><span>下一章</span><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:caret-right"><symbol id="ai:ph:caret-right" viewBox="0 0 256 256"><path fill="currentColor" d="m181.66 133.66l-80 80a8 8 0 0 1-11.32-11.32L164.69 128L90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32"/></symbol><use href="#ai:ph:caret-right"></use></svg></a></nav><dialog id="mobile-book-menu-a10-c17" class="book-drawer" data-book-dialog><div class="book-drawer__header"><p>全书目录</p><button type="button" data-close-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:x"><symbol id="ai:ph:x" viewBox="0 0 256 256"><path fill="currentColor" d="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128L50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"/></symbol><use href="#ai:ph:x"></use></svg><span>关闭</span></button></div><div class="book-drawer__body"><nav class="book-rail book-rail--full" aria-label="全书章节"><p class="book-rail__title">全书目录</p><ol><li class="book-rail__prologue"><a href="/read/prologue/">序幕</a></li><li class="book-rail__act"><a href="/book/act-01/"><span class="book-rail__act-number">第一幕 /</span><span class="book-rail__act-title">我能动，却还站不起来</span></a></li><li class="book-rail__act"><a href="/book/act-02/"><span class="book-rail__act-number">第二幕 /</span><span class="book-rail__act-title">四条腿都听话，为什么我仍然会倒下</span></a></li><li class="book-rail__act"><a href="/book/act-03/"><span class="book-rail__act-number">第三幕 /</span><span class="book-rail__act-title">碎石路不会等我学会</span></a></li><li class="book-rail__act"><a href="/book/act-04/"><span class="book-rail__act-number">第四幕 /</span><span class="book-rail__act-title">我学会滚动，也知道何时迈步</span></a></li><li class="book-rail__act"><a href="/book/act-05/"><span class="book-rail__act-number">第五幕 /</span><span class="book-rail__act-title">我学会把手伸到正确的位置</span></a></li><li class="book-rail__act"><a href="/book/act-06/"><span class="book-rail__act-number">第六幕 /</span><span class="book-rail__act-title">我学会在接触中完成一件事</span></a></li><li class="book-rail__act"><a href="/book/act-07/"><span class="book-rail__act-number">第七幕 /</span><span class="book-rail__act-title">城市不会停下来等我</span></a></li><li class="book-rail__act"><a href="/book/act-08/"><span class="book-rail__act-number">第八幕 /</span><span class="book-rail__act-title">我重新组织身体，走过台阶和窄门</span></a></li><li class="book-rail__act"><a href="/book/act-09/"><span class="book-rail__act-number">第九幕 /</span><span class="book-rail__act-title">我让双脚、双手和身体共同完成安装</span></a></li><li class="book-rail__act"><a href="/book/act-10/" aria-current="location"><span class="book-rail__act-number">第十幕 /</span><span class="book-rail__act-title">每个模块都正确，泵站为什么仍然不工作</span></a><ol class="book-rail__chapters"><li><a href="/read/a10-c01/">每个模块都说完成，泵为什么没有转——系统架构、所有权与端到端结果</a></li><li><a href="/read/a10-c02/">名字相同，为什么不是同一份数据——数据合同与版本身份</a></li><li><a href="/read/a10-c03/">消息已经送达，为什么事情仍没有发生——消息模式与动作生命周期</a></li><li><a href="/read/a10-c04/">地图已经更新，旧计划为什么还在向前走——版本传播、生命周期与抢占</a></li><li><a href="/read/a10-c05/">四个时间，哪一个才是这条数据的现在——数据从采样到施加的时间身份</a></li><li><a href="/read/a10-c06/">后到的数据，一定比先到的更新吗——数据年龄、队列与传输承诺</a></li><li><a href="/read/a10-c07/">快慢不同的模块，怎样共同控制同一具身体——采样、保持、插值与混叠</a></li><li><a href="/read/a10-c08/">同一个公式换一种实现，还是同一个结果吗——数值等价、内存与执行所有权</a></li><li><a href="/read/a10-c09/">最快的一次运行，能说明最慢的一次吗——最坏执行时间与响应时间</a></li><li><a href="/read/a10-c10/">计算来不及完成时，系统应该留下什么动作——旧候选、后备动作与降级状态机</a></li><li><a href="/read/a10-c11/">一个模块沉默了，谁会先发现——心跳、看门狗与独立监督</a></li><li><a href="/read/a10-c12/">故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放</a></li><li><a href="/read/a10-c13/">软件已经通过了，为什么还不能碰真实设备——回放、软件在环与硬件在环的证据边界</a></li><li><a href="/read/a10-c14/">会变化的数字泵站，和普通仿真有什么不同——数字孪生、资产版本与受控退化</a></li><li><a href="/read/a10-c15/">仿真里成功，哪些东西能跟着来到现实——数据谱系与仿真到现实的差异档案</a></li><li><a href="/read/a10-c16/">排水渠巡检设备断线了，我还知道任务做到哪里吗——任务身份、限时授权与间歇通信</a></li><li><a href="/read/a10-c17/" aria-current="page">泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据</a></li></ol></li><li class="book-rail__act"><a href="/book/act-11/"><span class="book-rail__act-number">第十一幕 /</span><span class="book-rail__act-title">过去不是一堆文件</span></a></li><li class="book-rail__act"><a href="/book/act-12/"><span class="book-rail__act-number">第十二幕 /</span><span class="book-rail__act-title">我们怎样成为“我们”</span></a></li><li class="book-rail__act"><a href="/book/act-13/"><span class="book-rail__act-number">第13幕 /</span><span class="book-rail__act-title">终幕：雨停以前，城市已经变了</span></a></li></ol></nav></div></dialog></div><script type="module">document.querySelectorAll(`[data-mobile-reading]`).forEach(e=>{let t=e.querySelector(`[data-book-dialog]`);if(!t)return;let n=document.querySelectorAll(`[data-open-book-menu][aria-controls="${CSS.escape(t.id)}"]`),r=t.querySelector(`[data-close-book-menu]`),i=null;r&&(n.forEach(e=>{e.addEventListener(`click`,n=>{n.preventDefault(),typeof t.showModal==`function`&&(i=e,t.showModal(),r.focus())})}),r.addEventListener(`click`,()=>t.close()),t.addEventListener(`click`,e=>{e.target===t&&t.close()}),t.addEventListener(`keydown`,e=>{e.key===`Escape`&&(e.preventDefault(),t.close())}),t.addEventListener(`close`,()=>{i?.focus()}))});</script></main><dialog id="reading-settings" class="reading-settings" aria-labelledby="reading-settings-title" data-reading-settings><div class="reading-settings__panel"><header class="reading-settings__header"><h2 id="reading-settings-title">阅读设置</h2><button type="button" aria-label="关闭阅读设置" data-close-reading-settings><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:x"><use href="#ai:ph:x"></use></svg></button></header><fieldset><legend>正文字号</legend><div class="reading-settings__choices"><button type="button" data-reader-font="small">小</button><button type="button" data-reader-font="standard">标准</button><button type="button" data-reader-font="large">大</button></div></fieldset><fieldset><legend>段落行距</legend><div class="reading-settings__choices"><button type="button" data-reader-spacing="compact">紧凑</button><button type="button" data-reader-spacing="comfortable">舒展</button></div></fieldset></div></dialog><script type="module" src="/_astro/ReadingSettings.astro_astro_type_script_index_0_lang.BCj4F0Nl.js"></script><dialog id="site-search" class="search-dialog" aria-labelledby="site-search-title" data-search-dialog><div class="search-dialog__panel"><header class="search-dialog__header"><div><p class="search-dialog__eyebrow">在故事与算法之间寻找线索</p><h2 id="site-search-title">搜索全书</h2></div><button type="button" aria-label="关闭搜索" data-close-site-search><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:x"><use href="#ai:ph:x"></use></svg></button></header><form class="search-dialog__form" role="search" data-search-form><label for="site-search-input">输入问题、算法或身体部件</label><div class="search-dialog__input-row"><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:magnifying-glass"><use href="#ai:ph:magnifying-glass"></use></svg><input id="site-search-input" type="search" autocomplete="off" spellcheck="false" placeholder="例如：雅可比、双足、世界模型" data-search-input></div><label class="search-dialog__answers"><input type="checkbox" data-search-answers><span>同时搜索参考答案</span></label></form><p class="search-dialog__status" aria-live="polite" data-search-status>输入关键词后，结果会从本地静态索引中出现。</p><ol class="search-dialog__results" data-search-results></ol><p class="search-dialog__fallback">也可以从<a href="/book/">全书目录</a>沿故事顺序继续阅读。</p></div></dialog><script>
+  const dialog = document.querySelector("[data-search-dialog]");
+  const openers = document.querySelectorAll(
+    '[data-open-site-search][aria-controls="site-search"]',
+  );
+  const closer = dialog?.querySelector("[data-close-site-search]");
+  const form = dialog?.querySelector("[data-search-form]");
+  const input = dialog?.querySelector("[data-search-input]");
+  const includeAnswers = dialog?.querySelector("[data-search-answers]");
+  const status = dialog?.querySelector("[data-search-status]");
+  const results = dialog?.querySelector("[data-search-results]");
+  let returnTarget = null;
+  let pagefindPromise = null;
+  let activeSearch = 0;
+
+  function loadPagefind() {
+    if (!pagefindPromise) {
+      const modulePath = "/pagefind/pagefind.js";
+      pagefindPromise = import(modulePath).then(
+        async (module) => {
+          await module.init();
+          return module;
+        },
+      );
+    }
+    return pagefindPromise;
+  }
+
+  function setStatus(message) {
+    if (status) status.textContent = message;
+  }
+
+  function clearResults() {
+    results?.replaceChildren();
+  }
+
+  function resultItem(data) {
+    const item = document.createElement("li");
+    item.dataset.searchResult = "";
+    const link = document.createElement("a");
+    link.href = data.url;
+    link.textContent = data.meta?.title?.trim() || "未命名章节";
+    const excerpt = document.createElement("p");
+    excerpt.textContent = data.plain_excerpt?.trim() || "打开章节查看相关内容。";
+    item.append(link, excerpt);
+    return item;
+  }
+
+  function filters() {
+    return {
+      page_kind: {
+        any: includeAnswers?.checked
+          ? ["unit", "lesson", "answer"]
+          : ["unit", "lesson"],
+      },
+    };
+  }
+
+  async function runSearch() {
+    const term = input?.value.trim() ?? "";
+    const searchId = ++activeSearch;
+    if (!term) {
+      clearResults();
+      setStatus("输入关键词后，结果会从本地静态索引中出现。");
+      return;
+    }
+
+    setStatus("正在查找……");
+    try {
+      const pagefind = await loadPagefind();
+      const response = await pagefind.debouncedSearch(
+        term,
+        { filters: filters() },
+        180,
+      );
+      if (!response || searchId !== activeSearch) return;
+      const loaded = await Promise.all(
+        response.results.slice(0, 12).map((result) => result.data()),
+      );
+      if (searchId !== activeSearch) return;
+      clearResults();
+      results?.append(...loaded.map(resultItem));
+      setStatus(
+        loaded.length > 0
+          ? `找到 ${response.results.length} 个相关页面，先显示前 ${loaded.length} 个。`
+          : "没有找到相关页面，可以换一个更短的关键词。",
+      );
+    } catch {
+      clearResults();
+      setStatus("搜索暂时不可用，请从全书目录继续阅读。");
+    }
+  }
+
+  form?.addEventListener("submit", (event) => event.preventDefault());
+  input?.addEventListener("input", () => void runSearch());
+  includeAnswers?.addEventListener("change", () => void runSearch());
+  openers.forEach((opener) => {
+    opener.addEventListener("click", () => {
+      if (!dialog || typeof dialog.showModal !== "function") return;
+      returnTarget = opener;
+      dialog.showModal();
+      input?.focus();
+      void loadPagefind().catch(() => {
+        setStatus("搜索暂时不可用，请从全书目录继续阅读。");
+      });
+    });
+  });
+  closer?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    dialog.close();
+  });
+  dialog?.addEventListener("close", () => returnTarget?.focus());
+</script><span hidden data-reading-progress-page data-page-id="a10-c17" data-page-kind="lesson" data-page-title="泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据" data-page-url="/read/a10-c17/"></span><script type="module" src="/_astro/ReadingProgress.astro_astro_type_script_index_0_lang.Dc61J4ED.js"></script></body></html>

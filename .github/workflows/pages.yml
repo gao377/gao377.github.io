@@ -2,7 +2,7 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [pages-smoke, main]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -23,24 +23,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - name: Verify source artifact
+      - name: Verify formal tutorial artifact
         shell: pwsh
-        run: ./tests/verify-smoke.ps1
+        run: ./tests/verify-release.ps1
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-      - name: Prepare immutable artifact
-        shell: bash
-        run: |
-          mkdir .pages-artifact
-          cp -a site/. .pages-artifact/
-          sed -i "s/BUILD_COMMIT/${GITHUB_SHA}/g" .pages-artifact/release.json
-      - name: Verify immutable artifact
-        shell: pwsh
-        run: ./tests/verify-smoke.ps1 -SitePath .pages-artifact -ExpectedCommit $env:GITHUB_SHA
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: .pages-artifact
+          path: site
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

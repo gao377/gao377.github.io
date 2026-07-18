@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归｜我与一座城：具身智能系统教程</title><meta name="description" content="测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归"><meta name="referrer" content="strict-origin-when-cross-origin"><meta property="og:title" content="测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归｜我与一座城：具身智能系统教程"><meta property="og:description" content="测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归"><meta property="og:type" content="article"><meta property="og:url" content="https://gao377.github.io/read/a11-c11/"><link rel="canonical" href="https://gao377.github.io/read/a11-c11/"><meta data-pagefind-filter="page_kind:lesson"><link rel="stylesheet" href="/_astro/BaseLayout.BQlYGpZK.css"></head><body data-page-id="a11-c11" data-page-kind="lesson"><a class="skip-link" href="#main-content">跳到正文</a><header class="site-header" data-site-header><div class="reading-progress" aria-hidden="true"><span style="width: 80%"></span></div><div class="site-header__desktop"><a class="site-title" href="/">《我与一座城：具身智能系统教程》</a><p class="site-current" title="测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归">测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归</p><div class="site-header__actions"><button class="site-header__action" type="button" aria-controls="site-search" data-open-site-search><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:magnifying-glass"><symbol id="ai:ph:magnifying-glass" viewBox="0 0 256 256"><path fill="currentColor" d="m229.66 218.34l-50.07-50.06a88.11 88.11 0 1 0-11.31 11.31l50.06 50.07a8 8 0 0 0 11.32-11.32M40 112a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72"/></symbol><use href="#ai:ph:magnifying-glass"></use></svg><span>搜索全书</span></button><button class="site-header__action" type="button" aria-controls="reading-settings" data-open-reading-settings><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:nut"><symbol id="ai:ph:nut" viewBox="0 0 256 256"><path fill="currentColor" d="M128 80a48 48 0 1 0 48 48a48.06 48.06 0 0 0-48-48m0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32m95.68-93.85l-88-48.15a15.88 15.88 0 0 0-15.36 0l-88 48.17a16 16 0 0 0-8.32 14v95.64a16 16 0 0 0 8.32 14l88 48.17a15.88 15.88 0 0 0 15.36 0l88-48.17a16 16 0 0 0 8.32-14V80.18a16 16 0 0 0-8.32-14.03M128 224l-88-48.18V80.18L128 32l88 48.17v95.64Z"/></symbol><use href="#ai:ph:nut"></use></svg><span>阅读设置</span></button></div></div><div class="mobile-header"><a class="mobile-header__control mobile-header__menu" href="/book/" aria-controls="mobile-book-menu-a11-c11" data-open-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:list"><symbol id="ai:ph:list" viewBox="0 0 256 256"><path fill="currentColor" d="M224 128a8 8 0 0 1-8 8H40a8 8 0 0 1 0-16h176a8 8 0 0 1 8 8M40 72h176a8 8 0 0 0 0-16H40a8 8 0 0 0 0 16m176 112H40a8 8 0 0 0 0 16h176a8 8 0 0 0 0-16"/></symbol><use href="#ai:ph:list"></use></svg><span>目录</span></a><p class="mobile-header__title" title="第十一幕：过去不是一堆文件">第十一幕：过去不是一堆文件</p><button class="mobile-header__control mobile-header__search" type="button" aria-label="搜索全书" aria-controls="site-search" data-open-site-search><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:magnifying-glass"><use href="#ai:ph:magnifying-glass"></use></svg><span>搜索</span></button><button class="mobile-header__control mobile-header__settings" type="button" aria-label="阅读设置" aria-controls="reading-settings" data-open-reading-settings><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:nut"><use href="#ai:ph:nut"></use></svg><span>设置</span></button></div></header><main id="main-content" tabindex="-1" data-pagefind-body="true"><div class="reader-shell"><nav class="book-rail book-rail--context" aria-label="全书章节"><ol><li class="book-rail__act"><a href="/book/act-10/"><span class="book-rail__act-number">第十幕 /</span><span class="book-rail__act-title">每个模块都正确，泵站为什么仍然不工作</span></a></li><li class="book-rail__act"><a href="/book/act-11/" aria-current="location"><span class="book-rail__act-number">第十一幕 /</span><span class="book-rail__act-title">过去不是一堆文件</span></a></li><li class="book-rail__act"><a href="/book/act-12/"><span class="book-rail__act-number">第十二幕 /</span><span class="book-rail__act-title">我们怎样成为“我们”</span></a></li></ol></nav><article class="reader-page" data-reader-page aria-labelledby="h-测试分数变好是不是因为我提前看过答案独立拆分数据泄漏与固定回归"><nav class="story-kicker" aria-label="当前位置"><a href="/book/act-11/">第十一幕</a></nav><div class="reader-content"><h1 id="h-测试分数变好是不是因为我提前看过答案独立拆分数据泄漏与固定回归" data-block-id="a11-c11-h-001">测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归</h1>
+<p data-block-id="a11-c11-p-002">一次随机拆分后，测试分数突然变好。检查文件名时，每个文件确实只出现一次；可我沿着来源链往回走，训练集和测试集里竟同时出现了同一段经历的相邻画面、同一份原始记录的两种清洗结果，以及同一场雨里裁出来的近似样本。</p>
+<p data-block-id="a11-c11-p-003">我问：“文件不重复，为什么还是提前看过答案？”</p>
+<p data-block-id="a11-c11-p-004">博士把这种跨集合共享答案线索的现象称为 <strong>数据泄漏</strong>。要隔离的不是文件名，而是产生它们的共同原因：若两张图都来自我在同一次打滑中留下的连续录像，它们换了名字，也仍然共同记得那次打滑。</p>
+<h2 id="h-先找出彼此牵连的记录再分配样本" data-block-id="a11-c11-h-005">先找出彼此牵连的记录，再分配样本</h2>
+<p data-block-id="a11-c11-p-006">对机器人记录，分组键可能包括：</p>
+<div class="content-overflow content-overflow--code" data-block-id="a11-c11-code-007" tabindex="0" role="region" aria-label="可横向滚动的代码"><pre><code class="language-text">经历、来源运行与原始谱系
+任务、资产与动作链
+地点、地图版本、采集时期与天气事件
+身体、配置、标定与策略
+成功谓词与标签批次
+数据增强和近重复记录族
+</code></pre></div>
+<p data-block-id="a11-c11-p-008">如果两个样本在某个待评测问题上共享会泄露答案的因素，就在<strong>分组关系图</strong>里连一条边；彼此连通的一整组只能进入同一个数据集合。于是，相邻画面、同一份原始记录的两种派生、同一次故障的多模态切片和它们的增强样本都不能被拆散。</p>
+<p data-block-id="a11-c11-p-009">我把泵站那次打滑的记录摊开：前一秒的画面、后一秒的力传感器曲线、清洗前后的日志，看上去是四个样本，其实都知道“最后发生了打滑”。若让其中三个教我、另一个考我，考试分数测到的只是我认出了旧事故的指纹。</p>
+<p data-block-id="a11-c11-p-010">分组也不是永远越大越好。若问题是“同一站点换一场天气，我还能不能应对”，站点可以在训练材料里出现，但整场天气与采集时期要留出来；若问题是“到了从未见过的站点还能不能应对”，同一地点的全部记录就必须一起留出。怎样拆，取决于究竟想考什么，而且要在看到分数前写定。</p>
+<h2 id="h-四只篮子不能在考试后互相倒来倒去" data-block-id="a11-c11-h-011">四只篮子，不能在考试后互相倒来倒去</h2>
+<ul data-block-id="a11-c11-list-012">
+<li>训练集（train）：让我从记录中调整参数；</li>
+<li>验证集（validation）：选择超参数、阈值、提示词、模型检查点或设计；</li>
+<li>最终留出集（holdout）：设计冻结后，检查我面对真正未见记录组时的表现；</li>
+<li>回归集（regression）：保存已知失败、接口边界和历史缺陷，防止它们在后续版本里复发。</li>
+</ul>
+<p data-block-id="a11-c11-p-013">本幕把当前 40 组彼此独立的经历分成：</p>
+<div class="content-overflow content-overflow--math" data-block-id="a11-c11-math-014" tabindex="0" role="region" aria-label="可横向滚动的公式"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><mn>24</mn><mtext> train</mtext><mo>+</mo><mn>8</mn><mtext> validation</mtext><mo>+</mo><mn>8</mn><mtext> holdout</mtext><mo>=</mo><mn>40.</mn></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(1)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">24\ \text{train}+8\ \text{validation}+8\ \text{holdout}=40.
+\tag{1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7512em;vertical-align:-0.0833em;"></span><span class="mord">24</span><span class="mspace"> </span><span class="mord text"><span class="mord">train</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord">8</span><span class="mspace"> </span><span class="mord text"><span class="mord">validation</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord">8</span><span class="mspace"> </span><span class="mord text"><span class="mord">holdout</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">40.</span></span><span class="tag"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">1</span></span><span class="mord">)</span></span></span></span></span></span></div>
+<p data-block-id="a11-c11-p-015">另有 12 组独立的回归记录；它们不从这 40 组复制或派生。回归记录会被反复查看，因此也不能冒充从未见过的最终留出集。</p>
+<p data-block-id="a11-c11-p-016">博士在桌上放了四只纸盒。我每看一次最终留出集、再据此改一次阈值，就等于把考题从第四只盒子拿回了练习册。文件仍在原目录，证据的身份却已经变了。</p>
+<h2 id="h-泄漏不只发生在最后一列" data-block-id="a11-c11-h-017">泄漏不只发生在最后一列</h2>
+<p data-block-id="a11-c11-p-018">答案线索还会从许多不起眼的缝隙漏过去：</p>
+<ul data-block-id="a11-c11-list-019">
+<li>用全部数据计算归一化、词表、特征选择或缺失填充值；</li>
+<li>看过最终留出集后修改成功判据、阈值或提示词；</li>
+<li>同一地图/站点的派生标签跨集合，模型记住背景；</li>
+<li>不同身体版本的数据其实只是同一份原始记录的重新编码；</li>
+<li>删除“不好看的测试样本”后继续沿用原来的集合名称；</li>
+<li>把最终留出集中的失败加入训练，却仍声称下一次结果能与旧成绩直接比较。</li>
+</ul>
+<p data-block-id="a11-c11-p-020">任何一种污染都会使相关结果失去原来的证明力。修复不是删掉一两个明显文件，而是重建分组关系图、生成新的数据划分版本与内容指纹，并把旧结果明确标成 <code>CONTAMINATED</code>。</p>
+<p data-block-id="a11-c11-p-021">这时我才明白，数据泄漏不是一种“作弊意图”，而是一种因果关系没有被看见：我以为自己面对新经历，其实只是从另一个窗口看见同一段过去。</p>
+<div class="content-overflow content-overflow--code" data-block-id="a11-c11-code-022" tabindex="0" role="region" aria-label="可横向滚动的代码"><pre><code class="language-text">冻结这次要回答的泛化问题和分组规则
+建立谱系关系与实际运行关系组成的分组图
+把完整的连通分量分配给训练、验证或最终留出集
+将独立回归组单独登记，不混入模型选择
+只在训练集拟合预处理，再把冻结转换用于其他集合
+跨集合检查原始/派生、地点、时期、身体和谓词指纹
+
+如果发现污染：
+    判受影响结果无效
+    以新版本重建完整数据划分
+</code></pre></div>
+<p data-block-id="a11-c11-p-023">测试材料、最终留出集和回归集都不能悄悄回流到本轮训练、阈值或提示词调整。若确实要用，它们可以在下一轮改作训练集或验证集的一部分，但那一轮必须另找真正未见的评测证据。</p>
+<h2 id="h-练习" data-block-id="a11-c11-h-024">练习</h2>
+<h3 id="h-练习-1相邻帧与两种清洗" data-block-id="a11-c11-h-025">练习 1：相邻帧与两种清洗</h3>
+<p data-block-id="a11-c11-p-026">同一段经历的相邻画面被随机分开；同一份原始记录经规则 A/B 清洗后又分别进入训练集与最终留出集。说明哪些必须同组，以及为何固定随机种子没有解决问题。</p>
+<h3 id="h-练习-2同一地点不同雨天" data-block-id="a11-c11-h-027">练习 2：同一地点，不同雨天</h3>
+<p data-block-id="a11-c11-p-028">团队要回答“同站点新天气”和“新站点”两个问题。说明同一地点不同雨天在两种评测中应怎样分组。</p>
+<h3 id="h-练习-3holdout-失败被加入训练" data-block-id="a11-c11-h-029">练习 3：holdout 失败被加入训练</h3>
+<p data-block-id="a11-c11-p-030">看过 8 组最终留出记录后，团队修复两个失败并重新训练。判断原来的最终留出集是否仍然独立，接下来怎样记录结果。</p>
+<p data-block-id="a11-c11-p-031"><a href="/answer/a11-c11/">参考答案</a></p>
+<p data-block-id="a11-c11-p-032">拆分终于独立以后，一个新问题出现了：8 组最终留出记录给出的平均分看起来更高，可区间很宽，其中还有一次人员边界事件。一个数字怎么可能同时容纳这些差异？</p></div><nav class="chapter-navigation" aria-label="阅读顺序"><a data-nav-role="previous" href="/read/a11-c10/">上一篇：如果当时停下来，结果真的会不同吗——反事实、结构因果与失败归因</a><a data-nav-role="answer" href="/answer/a11-c11/">查看本章参考答案</a><a data-nav-role="next" href="/read/a11-c12/">下一篇：一个分数，怎样容得下不确定和最坏情况——评测基准、置信区间与尾部事件</a></nav></article></div><div class="mobile-reading" data-mobile-reading><nav class="mobile-reading__bar" aria-label="手机阅读导航"><a href="/read/a11-c10/" data-mobile-role="previous"><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:caret-left"><symbol id="ai:ph:caret-left" viewBox="0 0 256 256"><path fill="currentColor" d="M165.66 202.34a8 8 0 0 1-11.32 11.32l-80-80a8 8 0 0 1 0-11.32l80-80a8 8 0 0 1 11.32 11.32L91.31 128Z"/></symbol><use href="#ai:ph:caret-left"></use></svg><span>上一章</span></a><a href="/book/" aria-controls="mobile-book-menu-a11-c11" data-open-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:list-bullets"><symbol id="ai:ph:list-bullets" viewBox="0 0 256 256"><path fill="currentColor" d="M80 64a8 8 0 0 1 8-8h128a8 8 0 0 1 0 16H88a8 8 0 0 1-8-8m136 56H88a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16m0 64H88a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16M44 52a12 12 0 1 0 12 12a12 12 0 0 0-12-12m0 64a12 12 0 1 0 12 12a12 12 0 0 0-12-12m0 64a12 12 0 1 0 12 12a12 12 0 0 0-12-12"/></symbol><use href="#ai:ph:list-bullets"></use></svg><span>目录</span></a><a href="/read/a11-c12/" data-mobile-role="next"><span>下一章</span><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:caret-right"><symbol id="ai:ph:caret-right" viewBox="0 0 256 256"><path fill="currentColor" d="m181.66 133.66l-80 80a8 8 0 0 1-11.32-11.32L164.69 128L90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32"/></symbol><use href="#ai:ph:caret-right"></use></svg></a></nav><dialog id="mobile-book-menu-a11-c11" class="book-drawer" data-book-dialog><div class="book-drawer__header"><p>全书目录</p><button type="button" data-close-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:x"><symbol id="ai:ph:x" viewBox="0 0 256 256"><path fill="currentColor" d="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128L50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"/></symbol><use href="#ai:ph:x"></use></svg><span>关闭</span></button></div><div class="book-drawer__body"><nav class="book-rail book-rail--full" aria-label="全书章节"><p class="book-rail__title">全书目录</p><ol><li class="book-rail__prologue"><a href="/read/prologue/">序幕</a></li><li class="book-rail__act"><a href="/book/act-01/"><span class="book-rail__act-number">第一幕 /</span><span class="book-rail__act-title">我能动，却还站不起来</span></a></li><li class="book-rail__act"><a href="/book/act-02/"><span class="book-rail__act-number">第二幕 /</span><span class="book-rail__act-title">四条腿都听话，为什么我仍然会倒下</span></a></li><li class="book-rail__act"><a href="/book/act-03/"><span class="book-rail__act-number">第三幕 /</span><span class="book-rail__act-title">碎石路不会等我学会</span></a></li><li class="book-rail__act"><a href="/book/act-04/"><span class="book-rail__act-number">第四幕 /</span><span class="book-rail__act-title">我学会滚动，也知道何时迈步</span></a></li><li class="book-rail__act"><a href="/book/act-05/"><span class="book-rail__act-number">第五幕 /</span><span class="book-rail__act-title">我学会把手伸到正确的位置</span></a></li><li class="book-rail__act"><a href="/book/act-06/"><span class="book-rail__act-number">第六幕 /</span><span class="book-rail__act-title">我学会在接触中完成一件事</span></a></li><li class="book-rail__act"><a href="/book/act-07/"><span class="book-rail__act-number">第七幕 /</span><span class="book-rail__act-title">城市不会停下来等我</span></a></li><li class="book-rail__act"><a href="/book/act-08/"><span class="book-rail__act-number">第八幕 /</span><span class="book-rail__act-title">我重新组织身体，走过台阶和窄门</span></a></li><li class="book-rail__act"><a href="/book/act-09/"><span class="book-rail__act-number">第九幕 /</span><span class="book-rail__act-title">我让双脚、双手和身体共同完成安装</span></a></li><li class="book-rail__act"><a href="/book/act-10/"><span class="book-rail__act-number">第十幕 /</span><span class="book-rail__act-title">每个模块都正确，泵站为什么仍然不工作</span></a></li><li class="book-rail__act"><a href="/book/act-11/" aria-current="location"><span class="book-rail__act-number">第十一幕 /</span><span class="book-rail__act-title">过去不是一堆文件</span></a><ol class="book-rail__chapters"><li><a href="/read/a11-c01/">两份记录都说是同一次故障，为什么结果相反——原始档案、来源与冲突</a></li><li><a href="/read/a11-c02/">一段经历从哪里开始，哪些边界只是后来猜的——经历边界与版本化片段</a></li><li><a href="/read/a11-c03/">记录里的“动作”，为什么不一定真的发生——动作事实、失败与标定合同</a></li><li><a href="/read/a11-c04/">图像、作用和接管，怎样属于同一件事——多模态对齐、接触事件与成功谓词</a></li><li><a href="/read/a11-c05/">字段都齐全了，为什么这段数据仍不能用——质量维度、用途与可用性</a></li><li><a href="/read/a11-c06/">数据已经很多，为什么关键失败还没有出现——任务域、覆盖与尾部空洞</a></li><li><a href="/read/a11-c07/">清洗后的数据，怎样找到它原来的样子——数据登记、版本与谱系</a></li><li><a href="/read/a11-c08/">最相似的记录，为什么未必是同一段过去——记忆索引、检索与矛盾保留</a></li><li><a href="/read/a11-c09/">每次潮湿都失败，潮湿就是原因吗——因果图、混杂与事件切片</a></li><li><a href="/read/a11-c10/">如果当时停下来，结果真的会不同吗——反事实、结构因果与失败归因</a></li><li><a href="/read/a11-c11/" aria-current="page">测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归</a></li><li><a href="/read/a11-c12/">一个分数，怎样容得下不确定和最坏情况——评测基准、置信区间与尾部事件</a></li><li><a href="/read/a11-c13/">拿掉一个模块后变差，究竟能说明什么——消融、配置身份与可复现性</a></li><li><a href="/read/a11-c14/">记录已经很多，为什么有些参数仍然学不出来——可辨识性、持续激励与贝叶斯系统辨识</a></li><li><a href="/read/a11-c15/">失败太多，下一次先看哪一个——失败挖掘、失败图谱与发布证据</a></li><li><a href="/read/a11-c16/">传统定位看不清时，学习表示能补什么——学习状态估计、SLAM 与神经表示</a></li><li><a href="/read/a11-c17/">学习地图说能走，传统地图说不能，听谁的——学习可通行性、可供性与规划</a></li><li><a href="/read/a11-c18/">“去旧泵房旁边”究竟指哪里——开放词汇导航、具身记忆与社会约束</a></li><li><a href="/read/a11-c19/">视觉和语言，能不能直接决定下一段动作——学习规划、动作策略与 VLA 的责任边界</a></li><li><a href="/read/a11-c20/">同一个动作，为什么几种模型看见了不同的未来——世界模型的预测对象与使用方式</a></li><li><a href="/read/a11-c21/">能预测许多未来，就算理解世界了吗——滚动推演、现实核对与误差边界</a></li><li><a href="/read/a11-c22/">大家记得的世界不一样，还能一起行动吗——共享世界、候选发布与身份线索</a></li><li><a href="/read/a11-c23/">每个人都在本地学习，怎样形成一个共同候选——联邦平均、本地更新与数据差异</a></li><li><a href="/read/a11-c24/">不交出原始记录，就一定保护了隐私吗——安全聚合、差分隐私与可见信息</a></li><li><a href="/read/a11-c25/">同一个策略换到不同身体，什么时候必须回滚——策略合并、身体兼容与车队候选发布</a></li></ol></li><li class="book-rail__act"><a href="/book/act-12/"><span class="book-rail__act-number">第十二幕 /</span><span class="book-rail__act-title">我们怎样成为“我们”</span></a></li><li class="book-rail__act"><a href="/book/act-13/"><span class="book-rail__act-number">第13幕 /</span><span class="book-rail__act-title">终幕：雨停以前，城市已经变了</span></a></li></ol></nav></div></dialog></div><script type="module">document.querySelectorAll(`[data-mobile-reading]`).forEach(e=>{let t=e.querySelector(`[data-book-dialog]`);if(!t)return;let n=document.querySelectorAll(`[data-open-book-menu][aria-controls="${CSS.escape(t.id)}"]`),r=t.querySelector(`[data-close-book-menu]`),i=null;r&&(n.forEach(e=>{e.addEventListener(`click`,n=>{n.preventDefault(),typeof t.showModal==`function`&&(i=e,t.showModal(),r.focus())})}),r.addEventListener(`click`,()=>t.close()),t.addEventListener(`click`,e=>{e.target===t&&t.close()}),t.addEventListener(`keydown`,e=>{e.key===`Escape`&&(e.preventDefault(),t.close())}),t.addEventListener(`close`,()=>{i?.focus()}))});</script></main><dialog id="reading-settings" class="reading-settings" aria-labelledby="reading-settings-title" data-reading-settings><div class="reading-settings__panel"><header class="reading-settings__header"><h2 id="reading-settings-title">阅读设置</h2><button type="button" aria-label="关闭阅读设置" data-close-reading-settings><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:x"><use href="#ai:ph:x"></use></svg></button></header><fieldset><legend>正文字号</legend><div class="reading-settings__choices"><button type="button" data-reader-font="small">小</button><button type="button" data-reader-font="standard">标准</button><button type="button" data-reader-font="large">大</button></div></fieldset><fieldset><legend>段落行距</legend><div class="reading-settings__choices"><button type="button" data-reader-spacing="compact">紧凑</button><button type="button" data-reader-spacing="comfortable">舒展</button></div></fieldset></div></dialog><script type="module" src="/_astro/ReadingSettings.astro_astro_type_script_index_0_lang.BCj4F0Nl.js"></script><dialog id="site-search" class="search-dialog" aria-labelledby="site-search-title" data-search-dialog><div class="search-dialog__panel"><header class="search-dialog__header"><div><p class="search-dialog__eyebrow">在故事与算法之间寻找线索</p><h2 id="site-search-title">搜索全书</h2></div><button type="button" aria-label="关闭搜索" data-close-site-search><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:x"><use href="#ai:ph:x"></use></svg></button></header><form class="search-dialog__form" role="search" data-search-form><label for="site-search-input">输入问题、算法或身体部件</label><div class="search-dialog__input-row"><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:magnifying-glass"><use href="#ai:ph:magnifying-glass"></use></svg><input id="site-search-input" type="search" autocomplete="off" spellcheck="false" placeholder="例如：雅可比、双足、世界模型" data-search-input></div><label class="search-dialog__answers"><input type="checkbox" data-search-answers><span>同时搜索参考答案</span></label></form><p class="search-dialog__status" aria-live="polite" data-search-status>输入关键词后，结果会从本地静态索引中出现。</p><ol class="search-dialog__results" data-search-results></ol><p class="search-dialog__fallback">也可以从<a href="/book/">全书目录</a>沿故事顺序继续阅读。</p></div></dialog><script>
+  const dialog = document.querySelector("[data-search-dialog]");
+  const openers = document.querySelectorAll(
+    '[data-open-site-search][aria-controls="site-search"]',
+  );
+  const closer = dialog?.querySelector("[data-close-site-search]");
+  const form = dialog?.querySelector("[data-search-form]");
+  const input = dialog?.querySelector("[data-search-input]");
+  const includeAnswers = dialog?.querySelector("[data-search-answers]");
+  const status = dialog?.querySelector("[data-search-status]");
+  const results = dialog?.querySelector("[data-search-results]");
+  let returnTarget = null;
+  let pagefindPromise = null;
+  let activeSearch = 0;
+
+  function loadPagefind() {
+    if (!pagefindPromise) {
+      const modulePath = "/pagefind/pagefind.js";
+      pagefindPromise = import(modulePath).then(
+        async (module) => {
+          await module.init();
+          return module;
+        },
+      );
+    }
+    return pagefindPromise;
+  }
+
+  function setStatus(message) {
+    if (status) status.textContent = message;
+  }
+
+  function clearResults() {
+    results?.replaceChildren();
+  }
+
+  function resultItem(data) {
+    const item = document.createElement("li");
+    item.dataset.searchResult = "";
+    const link = document.createElement("a");
+    link.href = data.url;
+    link.textContent = data.meta?.title?.trim() || "未命名章节";
+    const excerpt = document.createElement("p");
+    excerpt.textContent = data.plain_excerpt?.trim() || "打开章节查看相关内容。";
+    item.append(link, excerpt);
+    return item;
+  }
+
+  function filters() {
+    return {
+      page_kind: {
+        any: includeAnswers?.checked
+          ? ["unit", "lesson", "answer"]
+          : ["unit", "lesson"],
+      },
+    };
+  }
+
+  async function runSearch() {
+    const term = input?.value.trim() ?? "";
+    const searchId = ++activeSearch;
+    if (!term) {
+      clearResults();
+      setStatus("输入关键词后，结果会从本地静态索引中出现。");
+      return;
+    }
+
+    setStatus("正在查找……");
+    try {
+      const pagefind = await loadPagefind();
+      const response = await pagefind.debouncedSearch(
+        term,
+        { filters: filters() },
+        180,
+      );
+      if (!response || searchId !== activeSearch) return;
+      const loaded = await Promise.all(
+        response.results.slice(0, 12).map((result) => result.data()),
+      );
+      if (searchId !== activeSearch) return;
+      clearResults();
+      results?.append(...loaded.map(resultItem));
+      setStatus(
+        loaded.length > 0
+          ? `找到 ${response.results.length} 个相关页面，先显示前 ${loaded.length} 个。`
+          : "没有找到相关页面，可以换一个更短的关键词。",
+      );
+    } catch {
+      clearResults();
+      setStatus("搜索暂时不可用，请从全书目录继续阅读。");
+    }
+  }
+
+  form?.addEventListener("submit", (event) => event.preventDefault());
+  input?.addEventListener("input", () => void runSearch());
+  includeAnswers?.addEventListener("change", () => void runSearch());
+  openers.forEach((opener) => {
+    opener.addEventListener("click", () => {
+      if (!dialog || typeof dialog.showModal !== "function") return;
+      returnTarget = opener;
+      dialog.showModal();
+      input?.focus();
+      void loadPagefind().catch(() => {
+        setStatus("搜索暂时不可用，请从全书目录继续阅读。");
+      });
+    });
+  });
+  closer?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    dialog.close();
+  });
+  dialog?.addEventListener("close", () => returnTarget?.focus());
+</script><span hidden data-reading-progress-page data-page-id="a11-c11" data-page-kind="lesson" data-page-title="测试分数变好，是不是因为我提前看过答案——独立拆分、数据泄漏与固定回归" data-page-url="/read/a11-c11/"></span><script type="module" src="/_astro/ReadingProgress.astro_astro_type_script_index_0_lang.Dc61J4ED.js"></script></body></html>

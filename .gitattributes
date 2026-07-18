@@ -1,0 +1,2 @@
+# Pagefind bundles contain whitespace inside generated template literals.
+site/pagefind/** whitespace=-trailing-space,-space-before-tab

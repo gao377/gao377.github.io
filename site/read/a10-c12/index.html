@@ -1,0 +1,180 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放｜我与一座城：具身智能系统教程</title><meta name="description" content="故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放"><meta name="referrer" content="strict-origin-when-cross-origin"><meta property="og:title" content="故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放｜我与一座城：具身智能系统教程"><meta property="og:description" content="故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放"><meta property="og:type" content="article"><meta property="og:url" content="https://gao377.github.io/read/a10-c12/"><link rel="canonical" href="https://gao377.github.io/read/a10-c12/"><meta data-pagefind-filter="page_kind:lesson"><link rel="stylesheet" href="/_astro/BaseLayout.BQlYGpZK.css"></head><body data-page-id="a10-c12" data-page-kind="lesson"><a class="skip-link" href="#main-content">跳到正文</a><header class="site-header" data-site-header><div class="reading-progress" aria-hidden="true"><span style="width: 72%"></span></div><div class="site-header__desktop"><a class="site-title" href="/">《我与一座城：具身智能系统教程》</a><p class="site-current" title="故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放">故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放</p><div class="site-header__actions"><button class="site-header__action" type="button" aria-controls="site-search" data-open-site-search><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:magnifying-glass"><symbol id="ai:ph:magnifying-glass" viewBox="0 0 256 256"><path fill="currentColor" d="m229.66 218.34l-50.07-50.06a88.11 88.11 0 1 0-11.31 11.31l50.06 50.07a8 8 0 0 0 11.32-11.32M40 112a72 72 0 1 1 72 72a72.08 72.08 0 0 1-72-72"/></symbol><use href="#ai:ph:magnifying-glass"></use></svg><span>搜索全书</span></button><button class="site-header__action" type="button" aria-controls="reading-settings" data-open-reading-settings><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:nut"><symbol id="ai:ph:nut" viewBox="0 0 256 256"><path fill="currentColor" d="M128 80a48 48 0 1 0 48 48a48.06 48.06 0 0 0-48-48m0 80a32 32 0 1 1 32-32a32 32 0 0 1-32 32m95.68-93.85l-88-48.15a15.88 15.88 0 0 0-15.36 0l-88 48.17a16 16 0 0 0-8.32 14v95.64a16 16 0 0 0 8.32 14l88 48.17a15.88 15.88 0 0 0 15.36 0l88-48.17a16 16 0 0 0 8.32-14V80.18a16 16 0 0 0-8.32-14.03M128 224l-88-48.18V80.18L128 32l88 48.17v95.64Z"/></symbol><use href="#ai:ph:nut"></use></svg><span>阅读设置</span></button></div></div><div class="mobile-header"><a class="mobile-header__control mobile-header__menu" href="/book/" aria-controls="mobile-book-menu-a10-c12" data-open-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:list"><symbol id="ai:ph:list" viewBox="0 0 256 256"><path fill="currentColor" d="M224 128a8 8 0 0 1-8 8H40a8 8 0 0 1 0-16h176a8 8 0 0 1 8 8M40 72h176a8 8 0 0 0 0-16H40a8 8 0 0 0 0 16m176 112H40a8 8 0 0 0 0 16h176a8 8 0 0 0 0-16"/></symbol><use href="#ai:ph:list"></use></svg><span>目录</span></a><p class="mobile-header__title" title="第十幕：每个模块都正确">第十幕：每个模块都正确</p><button class="mobile-header__control mobile-header__search" type="button" aria-label="搜索全书" aria-controls="site-search" data-open-site-search><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:magnifying-glass"><use href="#ai:ph:magnifying-glass"></use></svg><span>搜索</span></button><button class="mobile-header__control mobile-header__settings" type="button" aria-label="阅读设置" aria-controls="reading-settings" data-open-reading-settings><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:nut"><use href="#ai:ph:nut"></use></svg><span>设置</span></button></div></header><main id="main-content" tabindex="-1" data-pagefind-body="true"><div class="reader-shell"><nav class="book-rail book-rail--context" aria-label="全书章节"><ol><li class="book-rail__act"><a href="/book/act-09/"><span class="book-rail__act-number">第九幕 /</span><span class="book-rail__act-title">我让双脚、双手和身体共同完成安装</span></a></li><li class="book-rail__act"><a href="/book/act-10/" aria-current="location"><span class="book-rail__act-number">第十幕 /</span><span class="book-rail__act-title">每个模块都正确，泵站为什么仍然不工作</span></a></li><li class="book-rail__act"><a href="/book/act-11/"><span class="book-rail__act-number">第十一幕 /</span><span class="book-rail__act-title">过去不是一堆文件</span></a></li></ol></nav><article class="reader-page" data-reader-page aria-labelledby="h-故障只出现一瞬间怎样让它留下证据环形缓冲事件轨迹与可复现回放"><nav class="story-kicker" aria-label="当前位置"><a href="/book/act-10/">第十幕</a></nav><div class="reader-content"><h1 id="h-故障只出现一瞬间怎样让它留下证据环形缓冲事件轨迹与可复现回放" data-block-id="a10-c12-h-001">故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放</h1>
+<p data-block-id="a10-c12-p-002">一次短暂的队列拥堵只持续了几个周期：状态变旧，监督者进入 <code>HOLD</code>，随后数据又恢复。等我停稳后打开普通日志，文件里只有“进入保持”和一串恢复后的正常消息。拥堵前队列怎样增长、哪条样本被采用、谁先触发状态转移，都已经被新记录覆盖。</p>
+<p data-block-id="a10-c12-p-003">我需要的不是更多文字，而是故障前后仍能保持因果关系的证据。博士这才引入<strong>环形缓冲（ring buffer）</strong>、<strong>结构化 trace</strong> 与<strong>可复现回放</strong>：快路径只把有界记录写入预分配内存，触发后冻结故障前窗口并继续收集有限的故障后窗口，再由非关键路径异步保存。</p>
+<h2 id="h-环形缓冲先保住发生前" data-block-id="a10-c12-h-004">环形缓冲先保住“发生前”</h2>
+<p data-block-id="a10-c12-p-005">普通文件从故障发生后才开始写，往往来不及保存前因。容量为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.109em;">N</span></span></span></span> 的环形缓冲持续覆盖最旧记录，因此始终保留最近一段历史。若事件率上界为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span></span></span></span>，希望保存触发前 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi></mrow></msub></mrow><annotation encoding="application/x-tex">T_{pre}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight" style="margin-right:0.0278em;">r</span><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span> 与触发后 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi>p</mi><mi>o</mi><mi>s</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">T_{post}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight">os</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>，理想的最低记录槽数量满足</p>
+<div class="content-overflow content-overflow--math" data-block-id="a10-c12-math-006" tabindex="0" role="region" aria-label="可横向滚动的公式"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable width="100%"><mtr><mtd width="50%"></mtd><mtd><mrow><mi>N</mi><mo>≥</mo><mi>r</mi><mtext> </mtext><mo stretchy="false">(</mo><msub><mi>T</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi></mrow></msub><mo>+</mo><msub><mi>T</mi><mrow><mi>p</mi><mi>o</mi><mi>s</mi><mi>t</mi></mrow></msub><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow></mtd><mtd width="50%"></mtd><mtd><mtext>(1)</mtext></mtd></mtr></mtable><annotation encoding="application/x-tex">N\ge r\,(T_{pre}+T_{post}).
+\tag{1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8193em;vertical-align:-0.136em;"></span><span class="mord mathnormal" style="margin-right:0.109em;">N</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight" style="margin-right:0.0278em;">r</span><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight">os</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord">.</span></span><span class="tag"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mord text"><span class="mord">(</span><span class="mord"><span class="mord">1</span></span><span class="mord">)</span></span></span></span></span></span></div>
+<p data-block-id="a10-c12-p-007">这个不等式先回答一个很朴素的问题：如果每秒最多会留下 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span></span></span></span> 条记录，而我想保住故障前后总共 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi>p</mi><mi>r</mi><mi>e</mi></mrow></msub><mo>+</mo><msub><mi>T</mi><mrow><mi>p</mi><mi>o</mi><mi>s</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">T_{pre}+T_{post}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight" style="margin-right:0.0278em;">r</span><span class="mord mathnormal mtight">e</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.9694em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="mord mathnormal mtight">os</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span> 秒，就至少要为这段时间里可能出现的记录留出位置。它没有替我算出真实容量，因为泵站的突发事件率、单条记录大小和写出延迟还没有测得；它只是阻止我凭感觉说“缓冲区应该够大”。</p>
+<p data-block-id="a10-c12-p-008">真实设计还要加入突发率、多个事件类型、写出等待和安全余量；若 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">r</span></span></span></span> 本身没有上界，式（1）也无法给出可信容量。记录大小可变时，还要按字节预算和最坏单条大小分析，不能只数消息条数。</p>
+<p data-block-id="a10-c12-p-009">触发流程可以是：</p>
+<div class="content-overflow content-overflow--code" data-block-id="a10-c12-code-010" tabindex="0" role="region" aria-label="可横向滚动的代码"><pre><code class="language-text">平时覆盖最旧记录，并维护 write sequence 与 high-water mark
+触发发生时保存 trigger identity、触发者、原因与当前 write position
+锁住触发前窗口的逻辑边界，继续收集有界 post-trigger 窗口
+控制线程只提交已预分配记录，不等待文件、压缩或网络
+低优先级 writer 异步复制并持久化证据包
+写出失败、覆盖、丢项和截断必须显式留下 marker
+</code></pre></div>
+<p data-block-id="a10-c12-p-011">“无日志”不能解释为“无故障”。若缓冲溢出、writer 失败或触发太晚，证据结论应标成 partial/unknown，并说明缺失范围。</p>
+<h2 id="h-事件轨迹记录身份不只记录一句话" data-block-id="a10-c12-h-012">事件轨迹记录身份，不只记录一句话</h2>
+<p data-block-id="a10-c12-p-013">跨模块重建至少需要这些共同字段：</p>
+<ul data-block-id="a10-c12-list-014">
+<li>trace/run identity 与 trial identity；</li>
+<li>participant、process、thread/executor、boot/epoch；</li>
+<li>event identity、sequence、sample/receive/start/finish/apply time 与 clock domain；</li>
+<li>body/map/task/config/model/policy revision；</li>
+<li>topic/action/service、topology snapshot 与 QoS；</li>
+<li>health、liveliness、progress、queue depth/high-water；</li>
+<li>fault injection、状态机转移、reason code 与动作终态；</li>
+<li>causal parent 或触发事件身份。</li>
+</ul>
+<p data-block-id="a10-c12-p-015">因果 parent 不是声称哲学上的唯一原因，而是记录“这个决定使用了哪些事件”。例如 <code>HOLD</code> 转移应关联过龄遥测判定，判定再关联其 sample time、消费者阈值和时钟健康。只有相同毫秒内的两行日志，不能证明谁导致了谁。</p>
+<p data-block-id="a10-c12-p-016">跨设备 trace 还要保留同步不确定度。若无法建立可靠的全局顺序，可以保留每个参与者的局部顺序和消息关联，明确哪些事件只能判“可能先后”，不能为了画出整齐时间线而伪造精确排序。</p>
+<h2 id="h-回放需要冻结产生结果的世界" data-block-id="a10-c12-h-017">回放需要冻结产生结果的世界</h2>
+<p data-block-id="a10-c12-p-018">一份可复现证据包不仅含输入流，还应保存：</p>
+<ul data-block-id="a10-c12-list-019">
+<li>源代码或构建身份、依赖与编译配置；</li>
+<li>参数、环境、接口 schema 与 topology 快照；</li>
+<li>身体配置、地图、任务、模型与策略哈希；</li>
+<li>随机种子及随机数生成规则；</li>
+<li>初始状态、调度/网络故障注入与时钟映射；</li>
+<li>期望的关键事件、动作、reason code 和允许差异。</li>
+</ul>
+<p data-block-id="a10-c12-p-020"><strong>golden trace</strong> 不是一段永远正确的录像，而是一份经过审查、带来源和适用 revision 的比较基线。系统改变后，应判断旧基线仍适用、需要迁移还是必须退休，不能只更新期望输出让测试重新变绿。</p>
+<p data-block-id="a10-c12-p-021">回放也分层：消息按原顺序重新喂入，不能自动重现线程抢占；固定随机种子，不能自动重现 GPU 归约；仿真里重现状态机，不能自动证明真实泵或身体会有同样反应。因此每次回放必须写清重建了哪些因素、哪些时间关系只是近似。</p>
+<h2 id="h-一次只改变一个故障因素" data-block-id="a10-c12-h-022">一次只改变一个故障因素</h2>
+<p data-block-id="a10-c12-p-023">若同时注入延迟、丢包、时钟漂移和模块重启，看到 <code>HOLD</code> 后很难知道哪项前置真正触发。诊断阶段应从同一基线复制运行，一次只改变一个变量，再逐步组合：</p>
+<ol data-block-id="a10-c12-list-024">
+<li>固定输入与构建，确认无故障基线可重复；</li>
+<li>只注入一种延迟或序号重排；</li>
+<li>比较首次分歧事件，而不只比较最终状态；</li>
+<li>保存触发前后 trace 与运行身份；</li>
+<li>单因素解释成立后，再测试组合故障与共同原因。</li>
+</ol>
+<p data-block-id="a10-c12-p-025">如果同一回放有时进入 <code>HOLD</code>、有时不进入，这本身就是结果：调度、未冻结随机性或数据竞争仍在证据模型之外，不能挑一次符合预期的运行作为结论。</p>
+<h2 id="h-练习" data-block-id="a10-c12-h-026">练习</h2>
+<h3 id="h-练习-1故障发生前的记录总被覆盖" data-block-id="a10-c12-h-027">练习 1：故障发生前的记录总被覆盖</h3>
+<p data-block-id="a10-c12-p-028">系统只在进入 <code>HOLD</code> 后开始写文件，因而没有队列增长过程。设计 ring buffer 的触发前/后窗口、快慢路径和溢出语义，不需要给出虚构的容量数字。</p>
+<h3 id="h-练习-2两台设备的日志时间互相矛盾" data-block-id="a10-c12-h-029">练习 2：两台设备的日志时间互相矛盾</h3>
+<p data-block-id="a10-c12-p-030">我的日志写着先收到远端健康，排水渠设备日志却像是先断连；时钟同步当时不健康。说明仍可重建哪些顺序、哪些必须保持未知，以及 trace 应补哪些关联字段。</p>
+<h3 id="h-练习-3一次注入四种故障后得到预期停止" data-block-id="a10-c12-h-031">练习 3：一次注入四种故障后得到预期停止</h3>
+<p data-block-id="a10-c12-p-032">测试同时加入网络延迟、丢包、时钟漂移和远端重启，系统最终停止。判断这能证明什么，如何重排实验以定位首次分歧并形成可复现基线。</p>
+<p data-block-id="a10-c12-p-033"><a href="/answer/a10-c12/">参考答案</a></p>
+<p data-block-id="a10-c12-p-034">故障现在能够留下可追查的痕迹。但“留下一份日志”离“证明系统可以走向现实”仍隔着很多层。我需要一把尺子，分清纸面推演、回放、仿真、半实物与真实任务各自能够说明什么。</p></div><nav class="chapter-navigation" aria-label="阅读顺序"><a data-nav-role="previous" href="/read/a10-c11/">上一篇：一个模块沉默了，谁会先发现——心跳、看门狗与独立监督</a><a data-nav-role="answer" href="/answer/a10-c12/">查看本章参考答案</a><a data-nav-role="next" href="/read/a10-c13/">下一篇：软件已经通过了，为什么还不能碰真实设备——回放、软件在环与硬件在环的证据边界</a></nav></article></div><div class="mobile-reading" data-mobile-reading><nav class="mobile-reading__bar" aria-label="手机阅读导航"><a href="/read/a10-c11/" data-mobile-role="previous"><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:caret-left"><symbol id="ai:ph:caret-left" viewBox="0 0 256 256"><path fill="currentColor" d="M165.66 202.34a8 8 0 0 1-11.32 11.32l-80-80a8 8 0 0 1 0-11.32l80-80a8 8 0 0 1 11.32 11.32L91.31 128Z"/></symbol><use href="#ai:ph:caret-left"></use></svg><span>上一章</span></a><a href="/book/" aria-controls="mobile-book-menu-a10-c12" data-open-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:list-bullets"><symbol id="ai:ph:list-bullets" viewBox="0 0 256 256"><path fill="currentColor" d="M80 64a8 8 0 0 1 8-8h128a8 8 0 0 1 0 16H88a8 8 0 0 1-8-8m136 56H88a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16m0 64H88a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16M44 52a12 12 0 1 0 12 12a12 12 0 0 0-12-12m0 64a12 12 0 1 0 12 12a12 12 0 0 0-12-12m0 64a12 12 0 1 0 12 12a12 12 0 0 0-12-12"/></symbol><use href="#ai:ph:list-bullets"></use></svg><span>目录</span></a><a href="/read/a10-c13/" data-mobile-role="next"><span>下一章</span><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:caret-right"><symbol id="ai:ph:caret-right" viewBox="0 0 256 256"><path fill="currentColor" d="m181.66 133.66l-80 80a8 8 0 0 1-11.32-11.32L164.69 128L90.34 53.66a8 8 0 0 1 11.32-11.32l80 80a8 8 0 0 1 0 11.32"/></symbol><use href="#ai:ph:caret-right"></use></svg></a></nav><dialog id="mobile-book-menu-a10-c12" class="book-drawer" data-book-dialog><div class="book-drawer__header"><p>全书目录</p><button type="button" data-close-book-menu><svg width="1em" height="1em" aria-hidden="true" data-icon="ph:x"><symbol id="ai:ph:x" viewBox="0 0 256 256"><path fill="currentColor" d="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128L50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z"/></symbol><use href="#ai:ph:x"></use></svg><span>关闭</span></button></div><div class="book-drawer__body"><nav class="book-rail book-rail--full" aria-label="全书章节"><p class="book-rail__title">全书目录</p><ol><li class="book-rail__prologue"><a href="/read/prologue/">序幕</a></li><li class="book-rail__act"><a href="/book/act-01/"><span class="book-rail__act-number">第一幕 /</span><span class="book-rail__act-title">我能动，却还站不起来</span></a></li><li class="book-rail__act"><a href="/book/act-02/"><span class="book-rail__act-number">第二幕 /</span><span class="book-rail__act-title">四条腿都听话，为什么我仍然会倒下</span></a></li><li class="book-rail__act"><a href="/book/act-03/"><span class="book-rail__act-number">第三幕 /</span><span class="book-rail__act-title">碎石路不会等我学会</span></a></li><li class="book-rail__act"><a href="/book/act-04/"><span class="book-rail__act-number">第四幕 /</span><span class="book-rail__act-title">我学会滚动，也知道何时迈步</span></a></li><li class="book-rail__act"><a href="/book/act-05/"><span class="book-rail__act-number">第五幕 /</span><span class="book-rail__act-title">我学会把手伸到正确的位置</span></a></li><li class="book-rail__act"><a href="/book/act-06/"><span class="book-rail__act-number">第六幕 /</span><span class="book-rail__act-title">我学会在接触中完成一件事</span></a></li><li class="book-rail__act"><a href="/book/act-07/"><span class="book-rail__act-number">第七幕 /</span><span class="book-rail__act-title">城市不会停下来等我</span></a></li><li class="book-rail__act"><a href="/book/act-08/"><span class="book-rail__act-number">第八幕 /</span><span class="book-rail__act-title">我重新组织身体，走过台阶和窄门</span></a></li><li class="book-rail__act"><a href="/book/act-09/"><span class="book-rail__act-number">第九幕 /</span><span class="book-rail__act-title">我让双脚、双手和身体共同完成安装</span></a></li><li class="book-rail__act"><a href="/book/act-10/" aria-current="location"><span class="book-rail__act-number">第十幕 /</span><span class="book-rail__act-title">每个模块都正确，泵站为什么仍然不工作</span></a><ol class="book-rail__chapters"><li><a href="/read/a10-c01/">每个模块都说完成，泵为什么没有转——系统架构、所有权与端到端结果</a></li><li><a href="/read/a10-c02/">名字相同，为什么不是同一份数据——数据合同与版本身份</a></li><li><a href="/read/a10-c03/">消息已经送达，为什么事情仍没有发生——消息模式与动作生命周期</a></li><li><a href="/read/a10-c04/">地图已经更新，旧计划为什么还在向前走——版本传播、生命周期与抢占</a></li><li><a href="/read/a10-c05/">四个时间，哪一个才是这条数据的现在——数据从采样到施加的时间身份</a></li><li><a href="/read/a10-c06/">后到的数据，一定比先到的更新吗——数据年龄、队列与传输承诺</a></li><li><a href="/read/a10-c07/">快慢不同的模块，怎样共同控制同一具身体——采样、保持、插值与混叠</a></li><li><a href="/read/a10-c08/">同一个公式换一种实现，还是同一个结果吗——数值等价、内存与执行所有权</a></li><li><a href="/read/a10-c09/">最快的一次运行，能说明最慢的一次吗——最坏执行时间与响应时间</a></li><li><a href="/read/a10-c10/">计算来不及完成时，系统应该留下什么动作——旧候选、后备动作与降级状态机</a></li><li><a href="/read/a10-c11/">一个模块沉默了，谁会先发现——心跳、看门狗与独立监督</a></li><li><a href="/read/a10-c12/" aria-current="page">故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放</a></li><li><a href="/read/a10-c13/">软件已经通过了，为什么还不能碰真实设备——回放、软件在环与硬件在环的证据边界</a></li><li><a href="/read/a10-c14/">会变化的数字泵站，和普通仿真有什么不同——数字孪生、资产版本与受控退化</a></li><li><a href="/read/a10-c15/">仿真里成功，哪些东西能跟着来到现实——数据谱系与仿真到现实的差异档案</a></li><li><a href="/read/a10-c16/">排水渠巡检设备断线了，我还知道任务做到哪里吗——任务身份、限时授权与间歇通信</a></li><li><a href="/read/a10-c17/">泵终于转了，这一次成功能说明到哪里——端到端运行包、降级分支与集成证据</a></li></ol></li><li class="book-rail__act"><a href="/book/act-11/"><span class="book-rail__act-number">第十一幕 /</span><span class="book-rail__act-title">过去不是一堆文件</span></a></li><li class="book-rail__act"><a href="/book/act-12/"><span class="book-rail__act-number">第十二幕 /</span><span class="book-rail__act-title">我们怎样成为“我们”</span></a></li><li class="book-rail__act"><a href="/book/act-13/"><span class="book-rail__act-number">第13幕 /</span><span class="book-rail__act-title">终幕：雨停以前，城市已经变了</span></a></li></ol></nav></div></dialog></div><script type="module">document.querySelectorAll(`[data-mobile-reading]`).forEach(e=>{let t=e.querySelector(`[data-book-dialog]`);if(!t)return;let n=document.querySelectorAll(`[data-open-book-menu][aria-controls="${CSS.escape(t.id)}"]`),r=t.querySelector(`[data-close-book-menu]`),i=null;r&&(n.forEach(e=>{e.addEventListener(`click`,n=>{n.preventDefault(),typeof t.showModal==`function`&&(i=e,t.showModal(),r.focus())})}),r.addEventListener(`click`,()=>t.close()),t.addEventListener(`click`,e=>{e.target===t&&t.close()}),t.addEventListener(`keydown`,e=>{e.key===`Escape`&&(e.preventDefault(),t.close())}),t.addEventListener(`close`,()=>{i?.focus()}))});</script></main><dialog id="reading-settings" class="reading-settings" aria-labelledby="reading-settings-title" data-reading-settings><div class="reading-settings__panel"><header class="reading-settings__header"><h2 id="reading-settings-title">阅读设置</h2><button type="button" aria-label="关闭阅读设置" data-close-reading-settings><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:x"><use href="#ai:ph:x"></use></svg></button></header><fieldset><legend>正文字号</legend><div class="reading-settings__choices"><button type="button" data-reader-font="small">小</button><button type="button" data-reader-font="standard">标准</button><button type="button" data-reader-font="large">大</button></div></fieldset><fieldset><legend>段落行距</legend><div class="reading-settings__choices"><button type="button" data-reader-spacing="compact">紧凑</button><button type="button" data-reader-spacing="comfortable">舒展</button></div></fieldset></div></dialog><script type="module" src="/_astro/ReadingSettings.astro_astro_type_script_index_0_lang.BCj4F0Nl.js"></script><dialog id="site-search" class="search-dialog" aria-labelledby="site-search-title" data-search-dialog><div class="search-dialog__panel"><header class="search-dialog__header"><div><p class="search-dialog__eyebrow">在故事与算法之间寻找线索</p><h2 id="site-search-title">搜索全书</h2></div><button type="button" aria-label="关闭搜索" data-close-site-search><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:x"><use href="#ai:ph:x"></use></svg></button></header><form class="search-dialog__form" role="search" data-search-form><label for="site-search-input">输入问题、算法或身体部件</label><div class="search-dialog__input-row"><svg width="1em" height="1em" viewBox="0 0 256 256" aria-hidden="true" data-icon="ph:magnifying-glass"><use href="#ai:ph:magnifying-glass"></use></svg><input id="site-search-input" type="search" autocomplete="off" spellcheck="false" placeholder="例如：雅可比、双足、世界模型" data-search-input></div><label class="search-dialog__answers"><input type="checkbox" data-search-answers><span>同时搜索参考答案</span></label></form><p class="search-dialog__status" aria-live="polite" data-search-status>输入关键词后，结果会从本地静态索引中出现。</p><ol class="search-dialog__results" data-search-results></ol><p class="search-dialog__fallback">也可以从<a href="/book/">全书目录</a>沿故事顺序继续阅读。</p></div></dialog><script>
+  const dialog = document.querySelector("[data-search-dialog]");
+  const openers = document.querySelectorAll(
+    '[data-open-site-search][aria-controls="site-search"]',
+  );
+  const closer = dialog?.querySelector("[data-close-site-search]");
+  const form = dialog?.querySelector("[data-search-form]");
+  const input = dialog?.querySelector("[data-search-input]");
+  const includeAnswers = dialog?.querySelector("[data-search-answers]");
+  const status = dialog?.querySelector("[data-search-status]");
+  const results = dialog?.querySelector("[data-search-results]");
+  let returnTarget = null;
+  let pagefindPromise = null;
+  let activeSearch = 0;
+
+  function loadPagefind() {
+    if (!pagefindPromise) {
+      const modulePath = "/pagefind/pagefind.js";
+      pagefindPromise = import(modulePath).then(
+        async (module) => {
+          await module.init();
+          return module;
+        },
+      );
+    }
+    return pagefindPromise;
+  }
+
+  function setStatus(message) {
+    if (status) status.textContent = message;
+  }
+
+  function clearResults() {
+    results?.replaceChildren();
+  }
+
+  function resultItem(data) {
+    const item = document.createElement("li");
+    item.dataset.searchResult = "";
+    const link = document.createElement("a");
+    link.href = data.url;
+    link.textContent = data.meta?.title?.trim() || "未命名章节";
+    const excerpt = document.createElement("p");
+    excerpt.textContent = data.plain_excerpt?.trim() || "打开章节查看相关内容。";
+    item.append(link, excerpt);
+    return item;
+  }
+
+  function filters() {
+    return {
+      page_kind: {
+        any: includeAnswers?.checked
+          ? ["unit", "lesson", "answer"]
+          : ["unit", "lesson"],
+      },
+    };
+  }
+
+  async function runSearch() {
+    const term = input?.value.trim() ?? "";
+    const searchId = ++activeSearch;
+    if (!term) {
+      clearResults();
+      setStatus("输入关键词后，结果会从本地静态索引中出现。");
+      return;
+    }
+
+    setStatus("正在查找……");
+    try {
+      const pagefind = await loadPagefind();
+      const response = await pagefind.debouncedSearch(
+        term,
+        { filters: filters() },
+        180,
+      );
+      if (!response || searchId !== activeSearch) return;
+      const loaded = await Promise.all(
+        response.results.slice(0, 12).map((result) => result.data()),
+      );
+      if (searchId !== activeSearch) return;
+      clearResults();
+      results?.append(...loaded.map(resultItem));
+      setStatus(
+        loaded.length > 0
+          ? `找到 ${response.results.length} 个相关页面，先显示前 ${loaded.length} 个。`
+          : "没有找到相关页面，可以换一个更短的关键词。",
+      );
+    } catch {
+      clearResults();
+      setStatus("搜索暂时不可用，请从全书目录继续阅读。");
+    }
+  }
+
+  form?.addEventListener("submit", (event) => event.preventDefault());
+  input?.addEventListener("input", () => void runSearch());
+  includeAnswers?.addEventListener("change", () => void runSearch());
+  openers.forEach((opener) => {
+    opener.addEventListener("click", () => {
+      if (!dialog || typeof dialog.showModal !== "function") return;
+      returnTarget = opener;
+      dialog.showModal();
+      input?.focus();
+      void loadPagefind().catch(() => {
+        setStatus("搜索暂时不可用，请从全书目录继续阅读。");
+      });
+    });
+  });
+  closer?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  });
+  dialog?.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    dialog.close();
+  });
+  dialog?.addEventListener("close", () => returnTarget?.focus());
+</script><span hidden data-reading-progress-page data-page-id="a10-c12" data-page-kind="lesson" data-page-title="故障只出现一瞬间，怎样让它留下证据——环形缓冲、事件轨迹与可复现回放" data-page-url="/read/a10-c12/"></span><script type="module" src="/_astro/ReadingProgress.astro_astro_type_script_index_0_lang.Dc61J4ED.js"></script></body></html>

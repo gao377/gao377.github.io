@@ -1,5 +1,9 @@
 {
-  "releaseId": "smoke-20260718-01",
-  "type": "deployment-smoke-test",
-  "buildCommit": "BUILD_COMMIT"
+  "releaseId": "7075fc2a0214a85a752cb26241b915e1501a3392",
+  "contentRevision": "7075fc2a0214a85a752cb26241b915e1501a3392",
+  "builtAt": "2026-07-18T10:34:18.0553909Z",
+  "routeCount": 406,
+  "indexableRouteCount": 211,
+  "storyPageCount": 196,
+  "answerPageCount": 195
 }
