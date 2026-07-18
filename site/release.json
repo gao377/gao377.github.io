@@ -1,0 +1,5 @@
+{
+  "releaseId": "smoke-20260718-01",
+  "type": "deployment-smoke-test",
+  "buildCommit": "BUILD_COMMIT"
+}
