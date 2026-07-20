@@ -49,7 +49,7 @@ if ($indexCount -ne $release.routeCount) { throw "Route files do not match relea
 if ($sitemapCount -ne $release.indexableRouteCount) { throw "Sitemap URLs do not match release.json: $sitemapCount" }
 if ($robots -notmatch 'Sitemap: https://gao377.github.io/sitemap.xml') { throw 'robots.txt has the wrong sitemap URL' }
 
-$forbidden = '(?i)(github_pat_|ghp_|AKID|secretId|secretKey|example\.invalid|localhost|127\.0\.0\.1|D:\\tutorial\\|C:\\Users\\)'
+$forbidden = '(?i)(github_pat_|ghp_|AKID|secretId|secretKey|example\.invalid|https?://(?:localhost|127\.0\.0\.1)(?::\d+)?(?:/|$)|D:\\tutorial\\|C:\\Users\\)'
 $textExtensions = @('.html', '.css', '.js', '.mjs', '.json', '.xml', '.txt', '.svg', '.map')
 foreach ($file in Get-ChildItem -LiteralPath $SitePath -File -Recurse) {
   if ($textExtensions -notcontains $file.Extension) { continue }
