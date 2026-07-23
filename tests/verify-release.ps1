@@ -36,15 +36,15 @@ if ($notFound -notmatch 'href="/"') { throw '404.html does not return to the sit
 
 if ($release.releaseId -notmatch '^[0-9a-f]{40}$') { throw 'release.json has no immutable source revision' }
 if ($release.releaseId -ne $release.contentRevision) { throw 'release and content revisions disagree' }
-if ($release.routeCount -ne 406) { throw 'release.json has the wrong route count' }
-if ($release.indexableRouteCount -ne 211) { throw 'release.json has the wrong indexable route count' }
-if ($release.storyPageCount -ne 196) { throw 'release.json has the wrong story page count' }
-if ($release.answerPageCount -ne 195) { throw 'release.json has the wrong answer page count' }
+if ($release.routeCount -ne 435) { throw 'release.json has the wrong route count' }
+if ($release.indexableRouteCount -ne 226) { throw 'release.json has the wrong indexable route count' }
+if ($release.storyPageCount -ne 210) { throw 'release.json has the wrong story page count' }
+if ($release.answerPageCount -ne 209) { throw 'release.json has the wrong answer page count' }
 
 $htmlCount = (Get-ChildItem -LiteralPath $SitePath -File -Recurse -Filter '*.html').Count
 $indexCount = (Get-ChildItem -LiteralPath $SitePath -File -Recurse -Filter 'index.html').Count
 $sitemapCount = ([regex]::Matches($sitemap, '<loc>')).Count
-if ($htmlCount -ne 407) { throw "Expected 407 HTML files, found $htmlCount" }
+if ($htmlCount -ne 436) { throw "Expected 436 HTML files, found $htmlCount" }
 if ($indexCount -ne $release.routeCount) { throw "Route files do not match release.json: $indexCount" }
 if ($sitemapCount -ne $release.indexableRouteCount) { throw "Sitemap URLs do not match release.json: $sitemapCount" }
 if ($robots -notmatch 'Sitemap: https://gao377.github.io/sitemap.xml') { throw 'robots.txt has the wrong sitemap URL' }
