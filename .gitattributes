@@ -1,2 +1,4 @@
 # Pagefind bundles contain whitespace inside generated template literals.
 site/pagefind/** whitespace=-trailing-space,-space-before-tab
+# Astro client bundles can contain the same whitespace inside dependency template literals.
+site/_astro/*.js whitespace=-trailing-space,-space-before-tab
