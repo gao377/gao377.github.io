@@ -1,0 +1,529 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="32.3.0" type="device">
+  <diagram name="W1-A 任务与身体执行" id="W1-A">
+    <mxGraphModel dx="1840" dy="1590" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1590" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="text1" value="W1-A 任务与身体执行" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=32;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="45" y="25" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="text3" value="软件依赖：调用方 → 接口提供方。返回与持续反馈由同一契约承载；节点可点击查看模块文档。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
+          <mxGeometry x="45" y="85" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="tasks" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="145" width="1750" height="455" as="geometry" />
+        </mxCell>
+        <mxCell id="text6" value="任务责任：系统协调与机器人本机执行" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="153" width="1714" height="40" as="geometry" />
+        </mxCell>
+        <object id="SW-03" label="&lt;b&gt;SW-03 · team_planner&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;TC-02&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-system-team_planner.html" software_ref="SW-03" system_ref="TC-02" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="220" width="400" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-02" label="&lt;b&gt;SW-02 · team_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;TC-03&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-system-team_runtime.html" software_ref="SW-02" system_ref="TC-03" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="220" width="400" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-04" label="&lt;b&gt;SW-04 · team_verifier&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;TC-04&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-system-team_verifier.html" software_ref="SW-04" system_ref="TC-04" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1270" y="220" width="400" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-01" label="&lt;b&gt;SW-01 · interaction_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;TC-01&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;M · MOCK / 样例&lt;/font&gt;" link="https://gao377.github.io/module-robot-interaction_runtime.html" software_ref="SW-01" system_ref="TC-01" implementation_status="M">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="430" width="400" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-05" label="&lt;b&gt;SW-05 · local_task_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-02&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-robot-local_task_runtime.html" software_ref="SW-05" system_ref="RB-02" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="430" width="400" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-24" label="&lt;b&gt;SW-24 · model_gateway&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;TC-01／TC-02／EV-02&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;D · 设计未接入&lt;/font&gt;" link="https://gao377.github.io/architecture-map.html" software_ref="SW-24" system_ref="TC-01／TC-02／EV-02 的可复用实现部分" implementation_status="D">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F5F7;strokeColor=#8992A3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1270" y="430" width="400" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell value="请求计划 / 修订" edge="1" parent="1" source="SW-02" target="SW-03" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.4;entryX=1;entryY=0.4;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="总体核验" edge="1" parent="1" source="SW-02" target="SW-04" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="目标 / 交互事件" edge="1" parent="1" source="SW-01" target="SW-02" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.65;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="525" y="485" />
+              <mxPoint x="525" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="分配 / 取消 / 结果" edge="1" parent="1" source="SW-02" target="SW-05" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="text18" value="SW-24是可复用模型调用位置；未接入。&lt;br&gt;模型不持有身体控制权。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;fontStyle=0;">
+          <mxGeometry x="1270" y="555" width="440" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="runtime" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="625" width="1750" height="665" as="geometry" />
+        </mxCell>
+        <mxCell id="text21" value="专业能力与本机控制适配器" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="633" width="1714" height="40" as="geometry" />
+        </mxCell>
+        <object id="SW-06" label="&lt;b&gt;SW-06 · navigation_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-03&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-navigation_runtime.html" software_ref="SW-06" system_ref="RB-03" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="705" width="400" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-07" label="&lt;b&gt;SW-07 · manipulation_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-03&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-manipulation_runtime.html" software_ref="SW-07" system_ref="RB-03" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="940" width="400" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-09" label="&lt;b&gt;SW-09 · action_executor&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-04&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-action_executor.html" software_ref="SW-09" system_ref="RB-04" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="825" width="400" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-11" label="&lt;b&gt;SW-11 · body_gateway&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-05&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-body_gateway.html" software_ref="SW-11" system_ref="RB-05" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1270" y="825" width="400" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-08" label="&lt;b&gt;SW-08 · motion_coordinator&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-04&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-motion_coordinator.html" software_ref="SW-08" system_ref="RB-04" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="1080" width="400" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-10" label="&lt;b&gt;SW-10 · protection_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-06&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-robot-protection_runtime.html" software_ref="SW-10" system_ref="RB-06" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1270" y="1080" width="400" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell value="导航目标" edge="1" parent="1" source="SW-05" target="SW-06" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.15;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v29">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="685" />
+              <mxPoint x="280" y="685" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="操作目标" edge="1" parent="1" source="SW-05" target="SW-07" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.75;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v30">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="530" y="512" />
+              <mxPoint x="530" y="890" />
+              <mxPoint x="280" y="890" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="速度 / 调整参考" edge="1" parent="1" source="SW-06" target="SW-09" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.3;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v31">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="565" y="765" />
+              <mxPoint x="565" y="865" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="末端 / 双臂 / 手部参考" edge="1" parent="1" source="SW-07" target="SW-09" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.7;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v32">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="590" y="1000" />
+              <mxPoint x="590" y="910" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="BodyCommand&lt;br&gt;受许可约束" edge="1" parent="1" source="SW-09" target="SW-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="许可验证 / 执行资源" edge="1" parent="1" source="SW-09" target="SW-08" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="发送端许可复核" edge="1" parent="1" source="SW-11" target="SW-08" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.6;entryX=1;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v35">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1215" y="890" />
+              <mxPoint x="1215" y="1140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="保护与停止约束" edge="1" parent="1" source="SW-10" target="SW-09" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#B47C28;strokeWidth=2;fontSize=16;fontColor=#B47C28;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v36">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1740" y="1140" />
+              <mxPoint x="1740" y="770" />
+              <mxPoint x="850" y="770" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="observations" value="&lt;b&gt;直接观测依赖&lt;/b&gt;　SW-12 空间 → 导航　｜　SW-13 对象 → 操作　｜　SW-14 本体状态 → 能力 / 控制 / 保护&lt;br&gt;这些数据由各模块直接读取；下一页展开传感器与状态来源。" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF5F3;strokeColor=#66AFA2;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="1320" width="1740" height="88" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-I" value="I · 功能实现" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="1435" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-P" value="P · 部分 / 固定策略" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="400" y="1435" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-M" value="M · MOCK / 样例" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="750" y="1435" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-D" value="D · 设计未接入" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F5F7;strokeColor=#8992A3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1100" y="1435" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="text42" value="状态表示代码边界；不代表所有能力均通过物理仿真或实机验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344C;fontStyle=0;">
+          <mxGeometry x="50" y="1483" width="1700" height="36" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="W1-B 观测与状态直接供给" id="W1-B">
+    <mxGraphModel dx="1840" dy="1380" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1380" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="text1" value="W1-B 观测与状态直接供给" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=32;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="45" y="25" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="text3" value="本页箭头表示数据供给：观测提供方 → 消费者。地图坐标与本体局部坐标分别维护。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
+          <mxGeometry x="45" y="85" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="source" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="160" width="1740" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="text6" value="设备与观测入口" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="168" width="1704" height="40" as="geometry" />
+        </mxCell>
+        <object id="SW-15" label="&lt;b&gt;SW-15 · sensor_adapters&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-05&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-sensor_adapters.html" software_ref="SW-15" system_ref="RB-05" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="90" y="230" width="620" height="100" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-11" label="&lt;b&gt;SW-11 · body_gateway&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-05&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-body_gateway.html" software_ref="SW-11" system_ref="RB-05" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1090" y="230" width="620" height="100" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="providers" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="430" width="1740" height="265" as="geometry" />
+        </mxCell>
+        <mxCell id="text11" value="观测责任单元" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="438" width="1704" height="40" as="geometry" />
+        </mxCell>
+        <object id="SW-12" label="&lt;b&gt;SW-12 · spatial_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-01&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-spatial_runtime.html" software_ref="SW-12" system_ref="RB-01" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="510" width="475" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-13" label="&lt;b&gt;SW-13 · perception_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-01&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-perception_runtime.html" software_ref="SW-13" system_ref="RB-01" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="680" y="510" width="475" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-14" label="&lt;b&gt;SW-14 · state_estimation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-01&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-state_estimation.html" software_ref="SW-14" system_ref="RB-01" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1280" y="510" width="450" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell value="点云 / IMU" edge="1" parent="1" source="SW-15" target="SW-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.2;exitY=1;entryX=0.45;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="400" />
+              <mxPoint x="300" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="RGB-D / 标定 / 时间" edge="1" parent="1" source="SW-15" target="SW-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.6;exitY=1;entryX=0.46;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="450" y="385" />
+              <mxPoint x="900" y="385" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="关节 / IMU / 触觉反馈" edge="1" parent="1" source="SW-11" target="SW-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.65;exitY=1;entryX=0.6;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="consumers" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="810" width="1740" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="text20" value="各消费者按契约直接读取" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="818" width="1704" height="40" as="geometry" />
+        </mxCell>
+        <object id="SW-06" label="&lt;b&gt;SW-06 · navigation_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-03&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-navigation_runtime.html" software_ref="SW-06" system_ref="RB-03" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="900" width="470" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-07" label="&lt;b&gt;SW-07 · manipulation_runtime&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-03&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-manipulation_runtime.html" software_ref="SW-07" system_ref="RB-03" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="900" width="470" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-09" label="&lt;b&gt;SW-09 · action_executor&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RB-04&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;I · 功能实现&lt;/font&gt;" link="https://gao377.github.io/module-robot-action_executor.html" software_ref="SW-09" system_ref="RB-04" implementation_status="I">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1220" y="900" width="470" height="110" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell value="map / odom / 障碍" edge="1" parent="1" source="SW-12" target="SW-06" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.7;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="本体局部物体 / 支撑面" edge="1" parent="1" source="SW-13" target="SW-07" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="关节 / TCP / 质心参考" edge="1" parent="1" source="SW-14" target="SW-09" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v27">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="本体局部变换 / FK" edge="1" parent="1" source="SW-14" target="SW-07" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.7;exitY=1;entryX=0.85;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v28">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1600" y="745" />
+              <mxPoint x="1050" y="745" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="本体反馈 / 判稳" edge="1" parent="1" source="SW-14" target="SW-06" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#238875;strokeWidth=2;fontSize=16;fontColor=#238875;labelBackgroundColor=#FFFFFF;exitX=0.9;exitY=1;entryX=0.88;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v29">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1690" y="790" />
+              <mxPoint x="493" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="others" value="&lt;b&gt;同一数据源的其他消费者&lt;/b&gt;　SW-05本机任务、SW-08协调器、SW-10保护按需直接订阅或查询。&lt;br&gt;&lt;b&gt;边界&lt;/b&gt;　RGB-D推理属于SW-13；manipulation读取结构化结果。AMO直接使用本体反馈，不等待SLAM。" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF7F6;strokeColor=#66AFA2;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="1100" width="1730" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-I" value="I · 功能实现" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="1240" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-P" value="P · 部分 / 固定策略" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="400" y="1240" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-M" value="M · MOCK / 样例" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="750" y="1240" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-D" value="D · 设计未接入" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F5F7;strokeColor=#8992A3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1100" y="1240" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="text35" value="状态表示代码边界；不代表所有能力均通过物理仿真或实机验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344C;fontStyle=0;">
+          <mxGeometry x="50" y="1288" width="1700" height="36" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="W1-C 支撑、记忆与RSI" id="W1-C">
+    <mxGraphModel dx="1840" dy="1520" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1520" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="text1" value="W1-C 支撑、记忆与RSI" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=32;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="45" y="25" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="text3" value="稳定职责 + 当前实现叠加。紫色节点为MOCK，RSI关系表达设计；不是已经运行的自动改进链。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
+          <mxGeometry x="45" y="85" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="support" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF8F5;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="155" width="1750" height="460" as="geometry" />
+        </mxCell>
+        <mxCell id="text6" value="SP运行支撑" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="163" width="1714" height="40" as="geometry" />
+        </mxCell>
+        <object id="SW-16" label="&lt;b&gt;SW-16 · capability_registry&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;SP-01&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-system-capability_registry.html" software_ref="SW-16" system_ref="SP-01" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="230" width="450" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-17" label="&lt;b&gt;SW-17 · context_store&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;SP-02&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-system-context_store.html" software_ref="SW-17" system_ref="SP-02" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="230" width="450" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-18" label="&lt;b&gt;SW-18 · knowledge_memory&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;SP-03&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;M · MOCK / 样例&lt;/font&gt;" link="https://gao377.github.io/module-system-knowledge_memory.html" software_ref="SW-18" system_ref="SP-03" implementation_status="M">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1250" y="230" width="450" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-19" label="&lt;b&gt;SW-19 · evidence_store&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;SP-04&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;P · 部分 / 固定策略&lt;/font&gt;" link="https://gao377.github.io/module-system-evidence_store.html" software_ref="SW-19" system_ref="SP-04" implementation_status="P">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="440" width="450" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-20" label="&lt;b&gt;SW-20 · config_manager&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;SP-05&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;M · MOCK / 样例&lt;/font&gt;" link="https://gao377.github.io/module-system-config_manager.html" software_ref="SW-20" system_ref="SP-05" implementation_status="M">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="440" width="450" height="115" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="users" value="&lt;b&gt;按需使用方&lt;/b&gt;&lt;br&gt;SW-01交互 / SW-02任务 / SW-03规划&lt;br&gt;SW-05本机任务与各能力提供者" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9DB3C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1250" y="440" width="450" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="rsi" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F1FA;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="680" width="1750" height="530" as="geometry" />
+        </mxCell>
+        <mxCell id="text15" value="EV系统自身经验与进化" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="688" width="1714" height="40" as="geometry" />
+        </mxCell>
+        <object id="SW-21" label="&lt;b&gt;SW-21 · reflection_engine&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;EV-01&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;M · MOCK / 样例&lt;/font&gt;" link="https://gao377.github.io/module-system-reflection_engine.html" software_ref="SW-21" system_ref="EV-01" implementation_status="M">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="80" y="795" width="450" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-22" label="&lt;b&gt;SW-22 · candidate_builder&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;EV-02&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;M · MOCK / 样例&lt;/font&gt;" link="https://gao377.github.io/module-system-candidate_builder.html" software_ref="SW-22" system_ref="EV-02" implementation_status="M">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="650" y="795" width="450" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object id="SW-23" label="&lt;b&gt;SW-23 · evolution_manager&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;EV-03&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;M · MOCK / 样例&lt;/font&gt;" link="https://gao377.github.io/module-system-evolution_manager.html" software_ref="SW-23" system_ref="EV-03" implementation_status="M">
+          <mxCell vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+            <mxGeometry x="1250" y="795" width="450" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell value="任务证据" edge="1" parent="1" source="SW-19" target="SW-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8664A8;strokeWidth=2;fontSize=16;fontColor=#8664A8;labelBackgroundColor=#FFFFFF;exitX=0.8;exitY=1;entryX=0.8;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=1;" id="v20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="改进问题" edge="1" parent="1" source="SW-21" target="SW-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8664A8;strokeWidth=2;fontSize=16;fontColor=#8664A8;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=1;" id="v21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="固定候选&lt;br&gt;评估目标" edge="1" parent="1" source="SW-22" target="SW-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8664A8;strokeWidth=2;fontSize=16;fontColor=#8664A8;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=1;" id="v22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="经验写入" edge="1" parent="1" source="SW-21" target="SW-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8664A8;strokeWidth=2;fontSize=16;fontColor=#8664A8;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=1;exitPerimeter=1;entryPerimeter=1;dashed=1;" id="v23">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="855" />
+              <mxPoint x="570" y="375" />
+              <mxPoint x="1465" y="375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="评估后生效 / 回退请求" edge="1" parent="1" source="SW-23" target="SW-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8664A8;strokeWidth=2;fontSize=16;fontColor=#8664A8;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0.5;entryY=1;exitPerimeter=1;entryPerimeter=1;dashed=1;" id="v24">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1730" y="855" />
+              <mxPoint x="1730" y="650" />
+              <mxPoint x="870" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="eval" value="&lt;b&gt;隔离评估域 · 设计&lt;/b&gt;&lt;br&gt;SW-23复用SW-02任务执行、SW-04核验与SW-19证据；SW-20组织目标装配并等待实际版本确认。&lt;br&gt;当前SW-21 / 22 / 23均返回占位结果，publish_allowed=false。" vertex="1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A98CBF;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;dashed=1;">
+          <mxGeometry x="80" y="995" width="1620" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="helpers" value="&lt;b&gt;两个辅助目录不增加系统组件&lt;/b&gt;&lt;br&gt;robot_app/config_client → SW-20的本机配置端；robot_app/evidence_buffer → SW-19的本机证据端。&lt;br&gt;研发平台是外部工具链，EV责任继续属于目标系统。" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F7F8FA;strokeColor=#ABB9C7;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="1245" width="1740" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-I" value="I · 功能实现" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="1375" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-P" value="P · 部分 / 固定策略" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="400" y="1375" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-M" value="M · MOCK / 样例" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="750" y="1375" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-D" value="D · 设计未接入" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F5F7;strokeColor=#8992A3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1100" y="1375" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="text31" value="状态表示代码边界；不代表所有能力均通过物理仿真或实机验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344C;fontStyle=0;">
+          <mxGeometry x="50" y="1423" width="1700" height="36" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="W4 软件部署与G1控制绑定" id="W4">
+    <mxGraphModel dx="1840" dy="1390" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1390" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="text1" value="W4 软件部署与G1控制绑定" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=32;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="45" y="25" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="text3" value="部署实例与逻辑责任分开。SIM / REAL共享能力与设备契约；观测来源、时钟、模型及标定分别配置。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
+          <mxGeometry x="45" y="85" width="1750" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="host" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="160" width="1750" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="text6" value="联网工控机 / 系统端容器" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="168" width="1714" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="system" value="&lt;b&gt;system_app&lt;/b&gt;&lt;br&gt;SW-02 / 03 / 04、SW-16—23&lt;br&gt;任务、能力、上下文、记忆、证据、配置及RSI接口" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="90" y="230" width="790" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="shared" value="&lt;b&gt;共用契约&lt;/b&gt;&lt;br&gt;embodied_core · 领域类型 / 验证&lt;br&gt;embodied_interfaces · ROS2 action / service / topic" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF3FA;strokeColor=#85A6C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1030" y="230" width="700" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="robot" value="" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F8FC;strokeColor=#D3DEE8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="40" y="470" width="1750" height="640" as="geometry" />
+        </mxCell>
+        <mxCell id="text11" value="每台机器人 / 机器人侧计算资源" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="58" y="478" width="1714" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="robot-app" value="&lt;b&gt;robot_app&lt;/b&gt;&lt;br&gt;SW-01、SW-05—15 + config_client / evidence_buffer&lt;br&gt;本机编排、感知、状态、导航、操作、许可与执行" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="90" y="550" width="700" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="native" value="&lt;b&gt;配套原生进程 / 算法库&lt;/b&gt;&lt;br&gt;SLAM · PCT / NeuPAN / TARE · MoveIt / ViSP&lt;br&gt;Pink / Pinocchio / CasADi · RGB-D跟踪" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1030" y="550" width="700" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="backend" value="&lt;b&gt;backends/unitree_g1&lt;/b&gt;　G1 / REVO2设备绑定&lt;br&gt;共享BodyBackend / SensorBackend契约；AMO和上肢参考在后端汇合。" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF3FA;strokeColor=#85A6C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="90" y="780" width="1640" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="amo" value="&lt;b&gt;AMO locomotion&lt;/b&gt;&lt;br&gt;速度 / 模式 / 本体反馈 → 下肢与腰参考" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9DB3C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="90" y="920" width="465" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="arm" value="&lt;b&gt;双臂运动执行&lt;/b&gt;&lt;br&gt;关节 / 末端轨迹 → 上肢关节参考" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9DB3C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="680" y="920" width="465" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="hand" value="&lt;b&gt;REVO2适配&lt;/b&gt;&lt;br&gt;预成形 / 闭合 / 触觉 / 释放" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9DB3C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1265" y="920" width="465" height="100" as="geometry" />
+        </mxCell>
+        <mxCell value="ROS2任务 / 结果 / 能力" edge="1" parent="1" source="system" target="robot-app" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.4;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="服务 / 库调用" edge="1" parent="1" source="robot-app" target="native" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="统一命令与状态端口" edge="1" parent="1" source="robot-app" target="backend" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.2;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="" edge="1" parent="1" source="backend" target="amo" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.14;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="" edge="1" parent="1" source="backend" target="arm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="" edge="1" parent="1" source="backend" target="hand" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.86;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sim" value="&lt;b&gt;SIM · Isaac Sim / Isaac Lab&lt;/b&gt;&lt;br&gt;Unitree DDS臂身控制 + REVO2桥&lt;br&gt;ROS2相机 / 雷达 / 时钟 / 评价" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF7FA;strokeColor=#6E9CAF;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="80" y="1190" width="790" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="real" value="&lt;b&gt;REAL · G1 + REVO2硬件&lt;/b&gt;&lt;br&gt;Unitree SDK / DDS + REVO2设备接口&lt;br&gt;实际RGB-D / 雷达 / IMU / 关节 / 触觉" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF7FA;strokeColor=#6E9CAF;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1020" y="1190" width="710" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="io" value="&lt;b&gt;按配置绑定相同设备契约&lt;/b&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF3FA;strokeColor=#85A6C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="650" y="1080" width="540" height="55" as="geometry" />
+        </mxCell>
+        <mxCell value="" edge="1" parent="1" source="amo" target="io" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="" edge="1" parent="1" source="arm" target="io" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v29">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="" edge="1" parent="1" source="hand" target="io" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="SIM" edge="1" parent="1" source="io" target="sim" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.25;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="REAL" edge="1" parent="1" source="io" target="real" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.75;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v32">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="text33" value="同一业务软件选择后端与配置；SIM测量不直接作为实机标定或实机验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344C;fontStyle=0;">
+          <mxGeometry x="70" y="1335" width="1700" height="35" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
