@@ -1,9 +1,334 @@
 {
-  "releaseId": "636338a3db05e49cca17e9eaa635cc4aac6c4e31",
-  "contentRevision": "636338a3db05e49cca17e9eaa635cc4aac6c4e31",
-  "builtAt": "2026-08-18T07:37:49Z",
-  "routeCount": 435,
-  "indexableRouteCount": 226,
-  "storyPageCount": 210,
-  "answerPageCount": 209
+  "implementation_sha256": "634b9fd8729617440b49f63471725b8759220f03f6af1a0c0307e20f04412ede",
+  "renderer": "answer-me-with-html@0.4.14",
+  "pages": [
+    {
+      "file": "algo-amo.html",
+      "source_sha256": "bf585e07a88bb03ac100a069889dac314f9b0b6b8630072f858542211f8759ff"
+    },
+    {
+      "file": "algo-approach.html",
+      "source_sha256": "86ac1a3a908880426580710429e6707e119512ddf7a9ddee8a24e6e8f5ac1e5d"
+    },
+    {
+      "file": "algo-body-state.html",
+      "source_sha256": "c1bcb9ded6747d73b873c5313a73f7cda7eb5eacfc3eca7c287832c33bbb8ef9"
+    },
+    {
+      "file": "algo-cartesian.html",
+      "source_sha256": "5bc7cd3ee7382315b03efa4536826e77c8c8cee17ef6537a4b8724575283cc44"
+    },
+    {
+      "file": "algo-collision.html",
+      "source_sha256": "9c09d6793564eb5900f058a2531099080ec06820b6d45dd83afaffa42ca6ed0a"
+    },
+    {
+      "file": "algo-execution.html",
+      "source_sha256": "a79858db45354d55781aa275615d2bf2591f9c7294daa1a34634723ac0acdbe8"
+    },
+    {
+      "file": "algo-exploration.html",
+      "source_sha256": "9553081e61d4adb65de84d09c4e42f112cdd3152e9f42e751816235953ea158f"
+    },
+    {
+      "file": "algo-fdm.html",
+      "source_sha256": "e6004ae380d9fe7e86a7cd7eead84265dceec4b65648d5c858a7a7a7f6027284"
+    },
+    {
+      "file": "algo-grasp.html",
+      "source_sha256": "586dd9b8a384ed06d7560989d0edd6834635159f56e59c63411bf0683ef9f775"
+    },
+    {
+      "file": "algo-maps.html",
+      "source_sha256": "d2f76ec22811ed9f5542c170af363c132f82d8476a8f74d8e0d8af051b37dc8f"
+    },
+    {
+      "file": "algo-neupan.html",
+      "source_sha256": "c1faee8c939eab0a37838bce17510d19286e0300a1c779149ed686e0e14d9c39"
+    },
+    {
+      "file": "algo-pbvs.html",
+      "source_sha256": "a4c9640697ec4651d189825561920c818fb1e1655f81443198a2c7eb1d59142f"
+    },
+    {
+      "file": "algo-pct.html",
+      "source_sha256": "19f4a3a673b757a94d299ac580ca904772995050f9077a1d993772b3635c489d"
+    },
+    {
+      "file": "algo-perception.html",
+      "source_sha256": "dc6cd60ad3c10b664d6934f6f94e364e3197eaac6f5d2674c38163156f62171b"
+    },
+    {
+      "file": "algo-sensing.html",
+      "source_sha256": "ca16425b2c3846e5e7eceb7a05757ef39dc50ed08d38432f5bec1e30930e765f"
+    },
+    {
+      "file": "algo-slam.html",
+      "source_sha256": "cb5fbb3216c33c27229331e63fc23d9738e864d5fc454d06f05771cb5351b71f"
+    },
+    {
+      "file": "algo-support.html",
+      "source_sha256": "d4293db7dcdf550eefa0894a42ffc02dd7e8383961b84b489861e56fd1c24574"
+    },
+    {
+      "file": "algo-tactile.html",
+      "source_sha256": "d942e33e6fc745d23f53ef9880be463936e43eb1168aec2abfcbc94dd179548a"
+    },
+    {
+      "file": "algo-task.html",
+      "source_sha256": "001559f8bf401059517266ead9d1ab8b19a3b4e05755afc99831dd52db3c4de9"
+    },
+    {
+      "file": "algo-trajectory.html",
+      "source_sha256": "f25489e84199bc7e89560c1594b44ecb47b3ebecdfc1f4315bfeea9a3e15a7ed"
+    },
+    {
+      "file": "algorithms.html",
+      "source_sha256": "5cd9f4a48ac25ea0d81ca08b9f6f80b368ecddead99d9fbdeaf9d9847d1b0729"
+    },
+    {
+      "file": "architecture.html",
+      "source_sha256": "118c04adae997d7881051e69874963df7d3b0481962d5261a8b503d7f2292489"
+    },
+    {
+      "file": "authoring.html",
+      "source_sha256": "ad4662c6b698ae2b1ba21cc4456ce42e0498beb8f9992d5a7f39eeee30f9fdb6"
+    },
+    {
+      "file": "dependencies.html",
+      "source_sha256": "ca53cd296b3f877aceb272b6c336508f734334d8e75575279ef64c80962357b9"
+    },
+    {
+      "file": "development.html",
+      "source_sha256": "0870e702731e1fa8b264f433804a024c00869b5270cbef4413bd6a7ec5929ddf"
+    },
+    {
+      "file": "experiments.html",
+      "source_sha256": "ffff2b05ea69bfda2b78998651582a8475e9bb99a1a5d56b54ede7474afffb10"
+    },
+    {
+      "file": "files-robot-action_executor.html",
+      "source_sha256": "ed9fe1fd918328df3575dd2ad6950421083ff575aec7813a6da2774e0444c7bf"
+    },
+    {
+      "file": "files-robot-body_gateway.html",
+      "source_sha256": "8961b894e95ab3b4da56f275418753479faae07de204847519967999ab7a7468"
+    },
+    {
+      "file": "files-robot-config_client.html",
+      "source_sha256": "ab369c3b49e30a63ec7362820120a45752a91ba13c604adc903c63db021b3d0e"
+    },
+    {
+      "file": "files-robot-evidence_buffer.html",
+      "source_sha256": "4715bbfb0cbd50ac8a28e7de7180dcbfb0ba4ea93eb40b5265787ac06459761a"
+    },
+    {
+      "file": "files-robot-interaction_runtime.html",
+      "source_sha256": "44cac82da0b75b78e210fedca13f793b18d51e062953412a9e2233d5cfe32363"
+    },
+    {
+      "file": "files-robot-local_task_runtime.html",
+      "source_sha256": "f6a4d186a4f21b7bc07411cf55118f76a6b3b4a88de9901c5316e8fb8304b667"
+    },
+    {
+      "file": "files-robot-manipulation_runtime.html",
+      "source_sha256": "d70a3c0eaf56f8a0e026e2a33b5a809218d7c297b9b074f28bed351fac78f597"
+    },
+    {
+      "file": "files-robot-motion_coordinator.html",
+      "source_sha256": "5929a479c5affdb0f1b954fb9ea694177a1f61c064e5a4caa2bf30e7f8db10e7"
+    },
+    {
+      "file": "files-robot-navigation_runtime.html",
+      "source_sha256": "637bebb3c8ccb36c918b4248bd2db7d40318420cd3b52a1717da63b01799daef"
+    },
+    {
+      "file": "files-robot-perception_runtime.html",
+      "source_sha256": "1ceb2b95b513cbacfb683b440d8cebc2d999ffe52e325a253480b5dcafd95497"
+    },
+    {
+      "file": "files-robot-protection_runtime.html",
+      "source_sha256": "a4fb27b177310f196d52e04661bc4f07f96a4dfa0ce3ef9b6a9045d684347dd4"
+    },
+    {
+      "file": "files-robot-sensor_adapters.html",
+      "source_sha256": "9675306646a4a53f2728685dd9a7ae35d06b4653880dced90099c3f513c3f9cd"
+    },
+    {
+      "file": "files-robot-spatial_runtime.html",
+      "source_sha256": "c67b20a212a7ed3d549a631fda994d757b59c486e4772ac2bb466e3b344e9945"
+    },
+    {
+      "file": "files-robot-state_estimation.html",
+      "source_sha256": "8a2ee0f0c602b6bbd4cf084835c9d3c38033ce4fba13a170ebad1ecbf55c26fe"
+    },
+    {
+      "file": "files-system-candidate_builder.html",
+      "source_sha256": "aee36c8a6f4fa62620b41510525c71e9801655568839fbc874e7cb9a0df626fa"
+    },
+    {
+      "file": "files-system-capability_registry.html",
+      "source_sha256": "b5530bbc4cf0ba34954840212ec7f46b4037f6619e8ca33b1a11419e51f42eda"
+    },
+    {
+      "file": "files-system-config_manager.html",
+      "source_sha256": "1689fcddcbfee150eab3a73727f00f5acbb2ac27028a0c004d9c84a7c4f6a113"
+    },
+    {
+      "file": "files-system-context_store.html",
+      "source_sha256": "2ae71259d265d927d74b955c159bc732674c07128980424ae4f4dcb9b82d5d87"
+    },
+    {
+      "file": "files-system-evidence_store.html",
+      "source_sha256": "e3d850af56eb4b6fe2ce7856d4025033fb7069fc886ca8364eb904ca387834d7"
+    },
+    {
+      "file": "files-system-evolution_manager.html",
+      "source_sha256": "30716bcdd48f001fd5f68a5a12e2109fefd1c42e140d8914141eae978bc25d01"
+    },
+    {
+      "file": "files-system-knowledge_memory.html",
+      "source_sha256": "d884e454f671ec68b44bbb69b6655267340c8f9367c99a06cf12c70b8b6f6987"
+    },
+    {
+      "file": "files-system-reflection_engine.html",
+      "source_sha256": "cfea2084d5aa954ab53d184eb092caead8dad11f30c49d20a66bb812f28ad2a2"
+    },
+    {
+      "file": "files-system-team_planner.html",
+      "source_sha256": "16dbc897e46ab96d19b504e54d8df04f6a7eee168ba4f064e9c70dffad81ea0f"
+    },
+    {
+      "file": "files-system-team_runtime.html",
+      "source_sha256": "4116ce6d6a67311d137905e3b55f71c1e243d8be4644d27bb62dc10533ad6bd9"
+    },
+    {
+      "file": "files-system-team_verifier.html",
+      "source_sha256": "aa2378174f40b594c6e3f82015ebedea5cf14deb58aa33bdb3757dd306e4203a"
+    },
+    {
+      "file": "getting-started.html",
+      "source_sha256": "59058dedd24f6e47f7a39bd64fe1b32b26fa0b665ee33638eddcd44b5624ad59"
+    },
+    {
+      "file": "index.html",
+      "source_sha256": "ad8785d4eaff6b59594ea8c1706c1d0377a54d94224611f74625ca53246aad62"
+    },
+    {
+      "file": "interface-catalog.html",
+      "source_sha256": "f2d4da316263b057d1f84238e420ed97fb9d2cbf996869ce66df65d5eeb4553f"
+    },
+    {
+      "file": "interfaces.html",
+      "source_sha256": "1ba27fd768ac227a5ee314e5b12789d02d6c57affec69c19b05f6f1f2b087170"
+    },
+    {
+      "file": "licenses.html",
+      "source_sha256": "8fe2b83ca8c1c72a3017a78bf2e357bf783bc76eba5d980f97262c6431922254"
+    },
+    {
+      "file": "module-robot-action_executor.html",
+      "source_sha256": "0d6ad234c0d1a0d185ec56b4b0087b53fd6f8fc432e127853d72cd46ad00265d"
+    },
+    {
+      "file": "module-robot-body_gateway.html",
+      "source_sha256": "3b4bdad0e83d83ebaf96c53a2a6908645ab00e0681b5dfbdc2944a805952de30"
+    },
+    {
+      "file": "module-robot-config_client.html",
+      "source_sha256": "3379f7368f1e8b5f75c054ae60bc1aa7b9cd33bccf4c29db3f2bf3978284cc87"
+    },
+    {
+      "file": "module-robot-evidence_buffer.html",
+      "source_sha256": "e544b24577f8c9278fa5d0bcddb8ae8e7056fefdef9261d680610fc3fef591f3"
+    },
+    {
+      "file": "module-robot-interaction_runtime.html",
+      "source_sha256": "a22d7ba3d5464469dfaa1c30622ade1fdd8af5d68fcc1ff90b9cadcf8e41f311"
+    },
+    {
+      "file": "module-robot-local_task_runtime.html",
+      "source_sha256": "608415c4b616d0610d595499e752c9cf2d0282c5068e81f0d23bffabe0d6d077"
+    },
+    {
+      "file": "module-robot-manipulation_runtime.html",
+      "source_sha256": "9a62059694c7a162c0bc58adbe2ae7e241571bd300f8fcd8a72e1754d621b938"
+    },
+    {
+      "file": "module-robot-motion_coordinator.html",
+      "source_sha256": "2f296cc61788086d00e458923332dfaa59ed3c26ca21a899c0161f21e9351d60"
+    },
+    {
+      "file": "module-robot-navigation_runtime.html",
+      "source_sha256": "ab4a25a128f75fa952d9057bbbc12dab04225ef6854fe397f7e782ad861cf40e"
+    },
+    {
+      "file": "module-robot-perception_runtime.html",
+      "source_sha256": "2fb6f2cdc6583a110b02f2cda4e30a9a5b737ef3d6deb9c891bbf455ec891036"
+    },
+    {
+      "file": "module-robot-protection_runtime.html",
+      "source_sha256": "4d3607569d01c4fa968664374a0dbcc926debe1504660623320990b53b75e0fd"
+    },
+    {
+      "file": "module-robot-sensor_adapters.html",
+      "source_sha256": "69170e5fa50147191c6795b1175b9580422b981a145259c9aa91bce8944c4319"
+    },
+    {
+      "file": "module-robot-spatial_runtime.html",
+      "source_sha256": "dd799c7107c344f2ca018f53529ffb13e05633d1c3a8ea22c53c462123035469"
+    },
+    {
+      "file": "module-robot-state_estimation.html",
+      "source_sha256": "da6ffb62a6b757e19484f1079d673784e1ba4c7ea9b356e0a5ca125ba47b7705"
+    },
+    {
+      "file": "module-system-candidate_builder.html",
+      "source_sha256": "821702f19fe298bd2f925b7f9db2f548e4610a94163674ab48e2d7eb3ba3f5c3"
+    },
+    {
+      "file": "module-system-capability_registry.html",
+      "source_sha256": "f9857fc3be6ec625afb949b189e0ce9610dcc2ed4ce5337d4cfde0567a3a6e63"
+    },
+    {
+      "file": "module-system-config_manager.html",
+      "source_sha256": "87436e417f2798bba1a79d5433769869c41e8b46ee5611a85f147d9b1508ced3"
+    },
+    {
+      "file": "module-system-context_store.html",
+      "source_sha256": "7b5ad93fcf698796b3a1d5d5ced8f3951878837c5bfddb3afd9c7f49f2c112b2"
+    },
+    {
+      "file": "module-system-evidence_store.html",
+      "source_sha256": "4eea70d79c248d579807498ff2a343a2e6c64a95022e25d91abd6c954f854fc1"
+    },
+    {
+      "file": "module-system-evolution_manager.html",
+      "source_sha256": "a4b15fb0e8724dd2c3eb695111652cc10f8b37052d4c76ca43f22f28bb2b4f8f"
+    },
+    {
+      "file": "module-system-knowledge_memory.html",
+      "source_sha256": "f59ce75278382c1688f9f1778f7aec5a49457eefe3fe3971b9ba6e956fe64aa5"
+    },
+    {
+      "file": "module-system-reflection_engine.html",
+      "source_sha256": "d04cdf11f394773a04ef1991b738cb064902f403589c3ee125c2ad8c4715c1df"
+    },
+    {
+      "file": "module-system-team_planner.html",
+      "source_sha256": "145afed2ab677f2e83944335031ec46d48241772b1a4fea2360ca583f92f90f0"
+    },
+    {
+      "file": "module-system-team_runtime.html",
+      "source_sha256": "287749576cae3569cfcf323306de587c79f5a104e344228244c9a8a55377eeab"
+    },
+    {
+      "file": "module-system-team_verifier.html",
+      "source_sha256": "1422c8c3ff59cff479b6dddccef934ec3f2dc76562ebf2dc26c262412238d693"
+    },
+    {
+      "file": "modules.html",
+      "source_sha256": "cb73cc5e875796dfd1f365b6235608dbaa6b548ac5fe6bbcf07417c820e76efd"
+    }
+  ]
 }

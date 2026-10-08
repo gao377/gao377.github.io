@@ -1,1 +1,0 @@
-import{t as e}from"./define.Bx2kna6k.js";function t(t,n){return e(n,t.variants.map(({id:e})=>e))}export{t};

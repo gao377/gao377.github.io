@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>Agentic Embodied System</title>
+<title>开发者文档撰写规范</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,158 +698,406 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>Agentic Embodied System</h1><p class="am-sub">开发者手册 · 从任务接口理解机器人软件</p><div class="am-head-meta"><span><b>doc_id</b>index</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>开发者文档撰写规范</h1><p class="am-sub">保持实现、接口、参数与证据一致</p><div class="am-head-meta"><span><b>doc_id</b>authoring</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<p>文档回答三个问题：系统怎样工作、开发者从哪里修改、结果由什么证据支持。正文以实际代码为准，设计意图和未实现内容单独标记。</p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 从一条能力请求开始</a><a href="#panel-B">B · 按你的工作进入</a><a href="#panel-C">C · 实现与实验分开阅读</a><a href="#panel-D">D · 源码与阅读方式</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 阅读路径与网站组织</a><a href="#panel-B">B · 文档与代码的对应规则</a><a href="#panel-C">C · 每个模块的固定模板</a><a href="#panel-D">D · 每个算法的固定模板</a><a href="#panel-E">E · 实验报告与证据规则</a><a href="#panel-F">F · 页面与排版规则</a><a href="#panel-G">G · 开发者如何接续</a><a href="#panel-H">H · 构建、发布与信息边界</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>从一条能力请求开始</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。</p>
-</div>
-<figure class="am-diagram am-flow"><svg viewBox="0 0 232 657" width="232" height="657" role="img" aria-label="流程图：系统任务、本机能力路由、导航与操作、感知与状态、协调器与执行器、本体网关、机器人" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M127.1,49 L145.8,65 Q164.5,81 164.5,97 L164.5,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="72" width="33" height="18" rx="3"/><text x="164.5" y="81" text-anchor="middle" dominant-baseline="central">请求</text></g></g><g data-step="1"><path class="am-edge" d="M164.5,148 L164.5,164 Q164.5,180 145.8,196 L127.1,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="171" width="33" height="18" rx="3"/><text x="164.5" y="180" text-anchor="middle" dominant-baseline="central">执行</text></g></g><g data-step="2"><path class="am-edge" d="M91.2,608 L77,592 Q62.9,576 62.9,551.3 Q62.9,526.5 62.9,501.8 Q62.9,477 62.9,452.3 Q62.9,427.5 62.9,402.8 Q62.9,378 62.9,353.3 Q62.9,328.5 62.9,303.8 Q62.9,279 77,263 L91.2,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="46.4" y="418.5" width="33" height="18" rx="3"/><text x="62.9" y="427.5" text-anchor="middle" dominant-baseline="central">观测</text></g></g><g data-step="3"><path class="am-edge" d="M122.1,247 L136.2,263 Q150.4,279 150.4,295 L150.4,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="116.6" y="270" width="67.5" height="18" rx="3"/><text x="150.4" y="279" text-anchor="middle" dominant-baseline="central">轨迹或速度</text></g></g><g data-step="4"><path class="am-edge" d="M150.4,346 L150.4,362 Q150.4,378 150.4,394 L150.4,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="369" width="56" height="18" rx="3"/><text x="150.4" y="378" text-anchor="middle" dominant-baseline="central">授权命令</text></g></g><g data-step="5"><path class="am-edge" d="M150.4,445 L150.4,461 Q150.4,477 150.4,493 L150.4,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="113.1" y="468" width="74.6" height="18" rx="3"/><text x="150.4" y="477" text-anchor="middle" dominant-baseline="central">SDK与DDS</text></g></g><g data-step="6"><path class="am-edge am-edge--dashed" d="M150.4,544 L150.4,560 Q150.4,576 136.2,592 L122.1,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="567" width="56" height="18" rx="3"/><text x="150.4" y="576" text-anchor="middle" dominant-baseline="central">测量反馈</text></g></g><g data-step="7"><path class="am-edge am-edge--dashed" d="M86.2,212 L67.5,196 Q48.8,180 48.8,155.3 Q48.8,130.5 48.8,105.8 Q48.8,81 67.5,65 L86.2,49" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="121.5" width="67.5" height="18" rx="3"/><text x="48.8" y="130.5" text-anchor="middle" dominant-baseline="central">状态与结果</text></g></g></g><g><g class="am-node am-node--rect" data-key="系统任务" data-step="0"><rect class="am-node-shape" x="66.6" y="14" width="80" height="35" rx="3"/><text x="106.6" y="31.5" text-anchor="middle" dominant-baseline="central">系统任务</text></g><g class="am-node am-node--rect" data-key="本机能力路由" data-step="0"><rect class="am-node-shape" x="111.5" y="113" width="106" height="35" rx="3"/><text x="164.5" y="130.5" text-anchor="middle" dominant-baseline="central">本机能力路由</text></g><g class="am-node am-node--rect" data-key="导航与操作" data-step="1"><rect class="am-node-shape" x="60.1" y="212" width="93" height="35" rx="3"/><text x="106.6" y="229.5" text-anchor="middle" dominant-baseline="central">导航与操作</text></g><g class="am-node am-node--rect" data-key="感知与状态" data-step="2"><rect class="am-node-shape" x="60.1" y="608" width="93" height="35" rx="3"/><text x="106.6" y="625.5" text-anchor="middle" dominant-baseline="central">感知与状态</text></g><g class="am-node am-node--rect" data-key="协调器与执行器" data-step="3"><rect class="am-node-shape" x="90.9" y="311" width="119" height="35" rx="3"/><text x="150.4" y="328.5" text-anchor="middle" dominant-baseline="central">协调器与执行器</text></g><g class="am-node am-node--rect" data-key="本体网关" data-step="4"><rect class="am-node-shape" x="110.4" y="410" width="80" height="35" rx="3"/><text x="150.4" y="427.5" text-anchor="middle" dominant-baseline="central">本体网关</text></g><g class="am-node am-node--rect" data-key="机器人" data-step="5"><rect class="am-node-shape" x="116.9" y="509" width="67" height="35" rx="3"/><text x="150.4" y="526.5" text-anchor="middle" dominant-baseline="central">机器人</text></g></g></svg></figure></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>按你的工作进入</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>阅读路径与网站组织</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>你要做的事</th>
 <th>入口</th>
-<th>读完应能完成</th>
+<th>读者要完成的事</th>
+<th>内容</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>先运行软件</td>
-<td><a href="getting-started.html">快速开始</a></td>
-<td>启动两个容器并提交 mock 请求</td>
+<td>快速上手</td>
+<td>启动软件、查看一次能力请求</td>
+<td>环境、命令、预期输出、停止与排错</td>
 </tr>
 <tr>
-<td>理解系统结构</td>
-<td><a href="architecture.html">架构与数据流</a></td>
-<td>找到控制权、观测和结果的传递边界</td>
+<td>架构导览</td>
+<td>理解模块如何协作</td>
+<td>部署、模块、控制流、数据流、责任边界</td>
 </tr>
 <tr>
-<td>修改一个模块</td>
-<td><a href="modules.html">25 个模块</a></td>
-<td>找到职责、调用和源码入口</td>
+<td>模块手册</td>
+<td>找到修改入口</td>
+<td>职责、能力、接口、文件、依赖、检查</td>
 </tr>
 <tr>
-<td>替换或调参算法</td>
-<td><a href="algorithms.html">算法手册</a></td>
-<td>理解输入、原理、参数与失败条件</td>
+<td>算法手册</td>
+<td>理解并替换具体实现</td>
+<td>原理、实现、参数、适用条件、限制</td>
 </tr>
 <tr>
-<td>使用能力接口</td>
-<td><a href="interfaces.html">接口契约</a></td>
-<td>正确处理坐标、时钟和执行生命周期</td>
+<td>场景与实验</td>
+<td>理解哪些结论已得到验证</td>
+<td>条件、步骤、指标、结果、证据范围</td>
 </tr>
 <tr>
-<td>判断实验结论</td>
-<td><a href="experiments.html">实验摘要</a></td>
-<td>区分软件检查与物理任务证据</td>
-</tr>
-<tr>
-<td>补充实现与文档</td>
-<td><a href="development.html">开发指南</a></td>
-<td>运行相关检查并更新对应页面</td>
+<td>开发与文档贡献</td>
+<td>延续已有实现</td>
+<td>扩展步骤、代码约定、文档模板、审查清单</td>
 </tr>
 </tbody></table></div>
+<p>首页提供上述入口。主题页保持独立链接，不把全部内容塞入单页。
+每页开头写结论，再给机制与证据。页面末尾列出相关接口、算法和检查。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>文档与代码的对应规则</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>每页记录文档 ID、适用版本、源码位置、配置位置及证据索引。
+版本使用提交 SHA；发布前可先使用内容清单 SHA。
+文件引用采用仓库相对路径，并附函数或类名。
+行号只是辅助定位，不能作为唯一引用。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>事实类型</th>
+<th>写法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实现事实</td>
+<td>指向实际代码、配置及调用者</td>
+</tr>
+<tr>
+<td>官方算法说明</td>
+<td>指向原论文或官方实现的固定版本</td>
+</tr>
+<tr>
+<td>工程分析</td>
+<td>明确标为分析，写出前提</td>
+</tr>
+<tr>
+<td>实测结果</td>
+<td>附环境、版本、运行条件和证据编号</td>
+</tr>
+<tr>
+<td>未验证或未实现</td>
+<td>明确说明边界，不写成已具备能力</td>
+</tr>
+</tbody></table></div>
+<p>公开网页可链接私有源码路径，但不内嵌源码正文。
+页面构建工具会把 Markdown 嵌入 HTML，源稿同样必须符合公开范围。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>实现与实验分开阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>每个模块的固定模板</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>模块页采用以下顺序：</p>
+<ol>
+<li>写明职责、上游调用者和下游依赖。</li>
+<li>列出对外能力，不把内部辅助函数当作能力。</li>
+<li>定义输入输出、单位、坐标、时间和来源。</li>
+<li>说明正常流程、状态转换和控制责任。</li>
+<li>关联内部算法页与实现文件。</li>
+<li>列出配置、启动和最小检查方法。</li>
+<li>说明失败、取消、恢复与能力交接。</li>
+<li>说明扩展位置和不可跨越的模块边界。</li>
+</ol>
+<p>接口表至少包含：名称、类型、必填性、含义、单位或坐标、校验规则。
+时序图用于跨模块调用；状态图用于能力生命周期。
+图中的每条箭头必须注明是请求、观测、命令还是反馈。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>源码与阅读方式</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="https://github.com/gao377/agentic-embodied-system">私有代码仓库</a> 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。</p>
-<p>文档用固定版本的 <a href="https://github.com/QingYunA/answer-me-with-html">answer-me-with-html</a> 构建。
-每页自带目录、明暗模式和可复制源稿。</p>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>每个算法的固定模板</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>必写内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>作用</td>
+<td>解决什么问题，在哪个能力阶段调用</td>
+</tr>
+<tr>
+<td>来源</td>
+<td>官方仓库或论文、固定版本、许可证</td>
+</tr>
+<tr>
+<td>复用方式</td>
+<td>原样调用、适配、修改或项目自有实现</td>
+</tr>
+<tr>
+<td>输入输出</td>
+<td>维度、单位、坐标、时间、状态假设</td>
+</tr>
+<tr>
+<td>数学原理</td>
+<td>变量、目标函数、约束或更新式</td>
+</tr>
+<tr>
+<td>实现路径</td>
+<td>入口、关键函数、求解器、执行线程或进程</td>
+</tr>
+<tr>
+<td>参数</td>
+<td>默认值、配置文件、含义、调节影响</td>
+</tr>
+<tr>
+<td>运行特性</td>
+<td>触发频率、耗时来源、超时与资源需求</td>
+</tr>
+<tr>
+<td>边界</td>
+<td>无解、遮挡、数据过期、异常状态如何处理</td>
+</tr>
+<tr>
+<td>验证与替换</td>
+<td>最小复现、已验证范围、替换时必须保持的契约</td>
+</tr>
+</tbody></table></div>
+<p>公式必须解释所有符号。没有优化目标的实现不称为优化器。
+模板抓握、几何候选、运动规划与触觉执行分别描述。
+声明使用某算法时，必须确认它被当前执行路径调用。
+仅下载了库或保留了候选接口，不能写成正在使用。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>实验报告与证据规则</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>每个实验摘要应包含：目的、代码版本、环境、模型、配置、输入、步骤、指标定义、实际结果、证据编号及结论边界。
+采用以下分类，不能互相替代：</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>能支持的结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单元或数值检查</td>
+<td>指定函数及输入的行为</td>
+</tr>
+<tr>
+<td>mock 接口运行</td>
+<td>软件通信和编排契约</td>
+</tr>
+<tr>
+<td>原生库离线检查</td>
+<td>指定模型与算法的计算行为</td>
+</tr>
+<tr>
+<td>物理仿真分项</td>
+<td>指定场景中的能力行为</td>
+</tr>
+<tr>
+<td>物理仿真整任务</td>
+<td>同版完整链路的任务结果</td>
+</tr>
+<tr>
+<td>实机分项或整任务</td>
+<td>指定硬件与条件下的实际表现</td>
+</tr>
+</tbody></table></div>
+<p>实验记录应区分成功、失败、取消和未运行。
+用户暂停不能记作算法失败，也不能记作成功。
+展示已完成实验时，要保留影响结论的失败案例和适用限制。
+未经核对，不从截图、退出码或模型加载成功推导任务成功。
+公开页展示摘要和必要指标；原始录包、日志、视频及私有路径保留在内部。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-F">
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>页面与排版规则</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>使用 <code>answer-me-with-html</code> 的 Markdown 和 CLI 构建。
+单个主题页使用 3 至 8 个内容面板。
+架构和调用链用 flow，交互用 sequence，目录用 tree。
+参数、接口和算法选型用表格。长过程拆成独立主题页。</p>
+<p>命名与代码保持一致。首次出现的缩写应解释。
+每句话只表达一个重点，先写行为，再写原因。
+示例命令写明执行目录、前提、预期输出和停止方式。
+不要把示例数值写成实测指标。</p>
+<p>不生成装饰图片。已有实验图像须有来源、版本和说明。
+网页支持离线阅读、窄屏、键盘操作及稳定链接。
+图表必须检查标签遮挡、箭头方向和反馈链路。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>开发者如何接续</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>修改代码时，同步更新受影响的模块页、算法页和接口说明。
+修改参数时，更新参数表及适用配置。
+改变实验条件后，新结果归属新版本，不覆盖旧结果。
+新增算法时，写清替代对象、输入输出契约和最小检查命令。</p>
+<p>提交前检查以下内容：</p>
+<ul>
+<li>页面列出的文件、函数、配置和链接存在。</li>
+<li>默认值与代码及配置一致。</li>
+<li>模块间调用符合既定分工。</li>
+<li>示例可复现，依赖与外部资产有获取说明。</li>
+<li>实现状态和实验结论有证据。</li>
+<li>源稿与生成网页内容一致。</li>
+</ul>
+</div></div>
+</section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>构建、发布与信息边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>Markdown 是内容源，HTML 是可重建产物。
+构建工具固定版本，网站目录记录页面清单。
+私有代码仓库保存源稿、模板和构建入口。
+公开网站只接收经过审阅的 HTML 与必要静态资源。</p>
+<p>不发布凭据、本机路径、原始实验记录、开发进度、内部实施计划或私有源码正文。
+公开架构、算法细节及实验摘要以用户确认的范围为准。</p>
+<p>页面确认后再上传代码和文档。替换旧网站前保留原提交与恢复入口。
+发布后检查链接、页面加载、窄屏布局和站点实际部署版本。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
-<div class="am-lightbox-backdrop"></div>
-<div class="am-lightbox-header">
-<div class="am-lightbox-title">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-<span class="am-lightbox-title-text"></span>
-</div>
-<div class="am-lightbox-actions">
-<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
-</div>
-</div>
-<div class="am-lightbox-stage">
-<div class="am-lightbox-canvas am-diagram"></div>
-</div>
-</div>
 <footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 08:35</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: Agentic Embodied System
-subtitle: 开发者手册 · 从任务接口理解机器人软件
+title: 开发者文档撰写规范
+subtitle: 保持实现、接口、参数与证据一致
 lang: zh
-doc_id: index
+doc_id: authoring
 implementation: 634b9fd872961744
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 从一条能力请求开始
+文档回答三个问题：系统怎样工作、开发者从哪里修改、结果由什么证据支持。正文以实际代码为准，设计意图和未实现内容单独标记。
 
-系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。
+## A 阅读路径与网站组织
 
-```flow TB
-系统任务 -&gt; 本机能力路由: 请求
-本机能力路由 -&gt; 导航与操作: 执行
-感知与状态 -&gt; 导航与操作: 观测
-导航与操作 -&gt; 协调器与执行器: 轨迹或速度
-协调器与执行器 -&gt; 本体网关: 授权命令
-本体网关 -&gt; 机器人: SDK与DDS
-机器人 --&gt; 感知与状态: 测量反馈
-导航与操作 --&gt; 系统任务: 状态与结果
-```
-
-## B 按你的工作进入
-
-| 你要做的事 | 入口 | 读完应能完成 |
+| 入口 | 读者要完成的事 | 内容 |
 | --- | --- | --- |
-| 先运行软件 | [快速开始](getting-started.html) | 启动两个容器并提交 mock 请求 |
-| 理解系统结构 | [架构与数据流](architecture.html) | 找到控制权、观测和结果的传递边界 |
-| 修改一个模块 | [25 个模块](modules.html) | 找到职责、调用和源码入口 |
-| 替换或调参算法 | [算法手册](algorithms.html) | 理解输入、原理、参数与失败条件 |
-| 使用能力接口 | [接口契约](interfaces.html) | 正确处理坐标、时钟和执行生命周期 |
-| 判断实验结论 | [实验摘要](experiments.html) | 区分软件检查与物理任务证据 |
-| 补充实现与文档 | [开发指南](development.html) | 运行相关检查并更新对应页面 |
+| 快速上手 | 启动软件、查看一次能力请求 | 环境、命令、预期输出、停止与排错 |
+| 架构导览 | 理解模块如何协作 | 部署、模块、控制流、数据流、责任边界 |
+| 模块手册 | 找到修改入口 | 职责、能力、接口、文件、依赖、检查 |
+| 算法手册 | 理解并替换具体实现 | 原理、实现、参数、适用条件、限制 |
+| 场景与实验 | 理解哪些结论已得到验证 | 条件、步骤、指标、结果、证据范围 |
+| 开发与文档贡献 | 延续已有实现 | 扩展步骤、代码约定、文档模板、审查清单 |
 
-## C 实现与实验分开阅读
+首页提供上述入口。主题页保持独立链接，不把全部内容塞入单页。
+每页开头写结论，再给机制与证据。页面末尾列出相关接口、算法和检查。
 
-系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。
+## B 文档与代码的对应规则
 
-## D 源码与阅读方式
+每页记录文档 ID、适用版本、源码位置、配置位置及证据索引。
+版本使用提交 SHA；发布前可先使用内容清单 SHA。
+文件引用采用仓库相对路径，并附函数或类名。
+行号只是辅助定位，不能作为唯一引用。
 
-[私有代码仓库](https://github.com/gao377/agentic-embodied-system) 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。
+| 事实类型 | 写法 |
+| --- | --- |
+| 实现事实 | 指向实际代码、配置及调用者 |
+| 官方算法说明 | 指向原论文或官方实现的固定版本 |
+| 工程分析 | 明确标为分析，写出前提 |
+| 实测结果 | 附环境、版本、运行条件和证据编号 |
+| 未验证或未实现 | 明确说明边界，不写成已具备能力 |
 
-文档用固定版本的 [answer-me-with-html](https://github.com/QingYunA/answer-me-with-html) 构建。
-每页自带目录、明暗模式和可复制源稿。
+公开网页可链接私有源码路径，但不内嵌源码正文。
+页面构建工具会把 Markdown 嵌入 HTML，源稿同样必须符合公开范围。
+
+## C 每个模块的固定模板
+
+模块页采用以下顺序：
+
+1. 写明职责、上游调用者和下游依赖。
+2. 列出对外能力，不把内部辅助函数当作能力。
+3. 定义输入输出、单位、坐标、时间和来源。
+4. 说明正常流程、状态转换和控制责任。
+5. 关联内部算法页与实现文件。
+6. 列出配置、启动和最小检查方法。
+7. 说明失败、取消、恢复与能力交接。
+8. 说明扩展位置和不可跨越的模块边界。
+
+接口表至少包含：名称、类型、必填性、含义、单位或坐标、校验规则。
+时序图用于跨模块调用；状态图用于能力生命周期。
+图中的每条箭头必须注明是请求、观测、命令还是反馈。
+
+## D 每个算法的固定模板
+
+| 项目 | 必写内容 |
+| --- | --- |
+| 作用 | 解决什么问题，在哪个能力阶段调用 |
+| 来源 | 官方仓库或论文、固定版本、许可证 |
+| 复用方式 | 原样调用、适配、修改或项目自有实现 |
+| 输入输出 | 维度、单位、坐标、时间、状态假设 |
+| 数学原理 | 变量、目标函数、约束或更新式 |
+| 实现路径 | 入口、关键函数、求解器、执行线程或进程 |
+| 参数 | 默认值、配置文件、含义、调节影响 |
+| 运行特性 | 触发频率、耗时来源、超时与资源需求 |
+| 边界 | 无解、遮挡、数据过期、异常状态如何处理 |
+| 验证与替换 | 最小复现、已验证范围、替换时必须保持的契约 |
+
+公式必须解释所有符号。没有优化目标的实现不称为优化器。
+模板抓握、几何候选、运动规划与触觉执行分别描述。
+声明使用某算法时，必须确认它被当前执行路径调用。
+仅下载了库或保留了候选接口，不能写成正在使用。
+
+## E 实验报告与证据规则
+
+每个实验摘要应包含：目的、代码版本、环境、模型、配置、输入、步骤、指标定义、实际结果、证据编号及结论边界。
+采用以下分类，不能互相替代：
+
+| 类别 | 能支持的结论 |
+| --- | --- |
+| 单元或数值检查 | 指定函数及输入的行为 |
+| mock 接口运行 | 软件通信和编排契约 |
+| 原生库离线检查 | 指定模型与算法的计算行为 |
+| 物理仿真分项 | 指定场景中的能力行为 |
+| 物理仿真整任务 | 同版完整链路的任务结果 |
+| 实机分项或整任务 | 指定硬件与条件下的实际表现 |
+
+实验记录应区分成功、失败、取消和未运行。
+用户暂停不能记作算法失败，也不能记作成功。
+展示已完成实验时，要保留影响结论的失败案例和适用限制。
+未经核对，不从截图、退出码或模型加载成功推导任务成功。
+公开页展示摘要和必要指标；原始录包、日志、视频及私有路径保留在内部。
+
+## F 页面与排版规则
+
+使用 `answer-me-with-html` 的 Markdown 和 CLI 构建。
+单个主题页使用 3 至 8 个内容面板。
+架构和调用链用 flow，交互用 sequence，目录用 tree。
+参数、接口和算法选型用表格。长过程拆成独立主题页。
+
+命名与代码保持一致。首次出现的缩写应解释。
+每句话只表达一个重点，先写行为，再写原因。
+示例命令写明执行目录、前提、预期输出和停止方式。
+不要把示例数值写成实测指标。
+
+不生成装饰图片。已有实验图像须有来源、版本和说明。
+网页支持离线阅读、窄屏、键盘操作及稳定链接。
+图表必须检查标签遮挡、箭头方向和反馈链路。
+
+## G 开发者如何接续
+
+修改代码时，同步更新受影响的模块页、算法页和接口说明。
+修改参数时，更新参数表及适用配置。
+改变实验条件后，新结果归属新版本，不覆盖旧结果。
+新增算法时，写清替代对象、输入输出契约和最小检查命令。
+
+提交前检查以下内容：
+
+- 页面列出的文件、函数、配置和链接存在。
+- 默认值与代码及配置一致。
+- 模块间调用符合既定分工。
+- 示例可复现，依赖与外部资产有获取说明。
+- 实现状态和实验结论有证据。
+- 源稿与生成网页内容一致。
+
+## H 构建、发布与信息边界
+
+Markdown 是内容源，HTML 是可重建产物。
+构建工具固定版本，网站目录记录页面清单。
+私有代码仓库保存源稿、模板和构建入口。
+公开网站只接收经过审阅的 HTML 与必要静态资源。
+
+不发布凭据、本机路径、原始实验记录、开发进度、内部实施计划或私有源码正文。
+公开架构、算法细节及实验摘要以用户确认的范围为准。
+
+页面确认后再上传代码和文档。替换旧网站前保留原提交与恢复入口。
+发布后检查链接、页面加载、窄屏布局和站点实际部署版本。
 </textarea>
 <script>
 (() => {

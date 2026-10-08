@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>Agentic Embodied System</title>
+<title>evidence_buffer · 文件与符号</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,158 +698,72 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>Agentic Embodied System</h1><p class="am-sub">开发者手册 · 从任务接口理解机器人软件</p><div class="am-head-meta"><span><b>doc_id</b>index</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>evidence_buffer · 文件与符号</h1><p class="am-sub">按当前源码 AST 提取，不嵌入函数正文</p><div class="am-head-meta"><span><b>doc_id</b>files-robot-evidence_buffer</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 从一条能力请求开始</a><a href="#panel-B">B · 按你的工作进入</a><a href="#panel-C">C · 实现与实验分开阅读</a><a href="#panel-D">D · 源码与阅读方式</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 所属模块</a><a href="#panel-B">B · 源码导航</a><a href="#panel-C">C · 使用方式</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>从一条能力请求开始</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。</p>
-</div>
-<figure class="am-diagram am-flow"><svg viewBox="0 0 232 657" width="232" height="657" role="img" aria-label="流程图：系统任务、本机能力路由、导航与操作、感知与状态、协调器与执行器、本体网关、机器人" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M127.1,49 L145.8,65 Q164.5,81 164.5,97 L164.5,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="72" width="33" height="18" rx="3"/><text x="164.5" y="81" text-anchor="middle" dominant-baseline="central">请求</text></g></g><g data-step="1"><path class="am-edge" d="M164.5,148 L164.5,164 Q164.5,180 145.8,196 L127.1,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="171" width="33" height="18" rx="3"/><text x="164.5" y="180" text-anchor="middle" dominant-baseline="central">执行</text></g></g><g data-step="2"><path class="am-edge" d="M91.2,608 L77,592 Q62.9,576 62.9,551.3 Q62.9,526.5 62.9,501.8 Q62.9,477 62.9,452.3 Q62.9,427.5 62.9,402.8 Q62.9,378 62.9,353.3 Q62.9,328.5 62.9,303.8 Q62.9,279 77,263 L91.2,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="46.4" y="418.5" width="33" height="18" rx="3"/><text x="62.9" y="427.5" text-anchor="middle" dominant-baseline="central">观测</text></g></g><g data-step="3"><path class="am-edge" d="M122.1,247 L136.2,263 Q150.4,279 150.4,295 L150.4,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="116.6" y="270" width="67.5" height="18" rx="3"/><text x="150.4" y="279" text-anchor="middle" dominant-baseline="central">轨迹或速度</text></g></g><g data-step="4"><path class="am-edge" d="M150.4,346 L150.4,362 Q150.4,378 150.4,394 L150.4,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="369" width="56" height="18" rx="3"/><text x="150.4" y="378" text-anchor="middle" dominant-baseline="central">授权命令</text></g></g><g data-step="5"><path class="am-edge" d="M150.4,445 L150.4,461 Q150.4,477 150.4,493 L150.4,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="113.1" y="468" width="74.6" height="18" rx="3"/><text x="150.4" y="477" text-anchor="middle" dominant-baseline="central">SDK与DDS</text></g></g><g data-step="6"><path class="am-edge am-edge--dashed" d="M150.4,544 L150.4,560 Q150.4,576 136.2,592 L122.1,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="567" width="56" height="18" rx="3"/><text x="150.4" y="576" text-anchor="middle" dominant-baseline="central">测量反馈</text></g></g><g data-step="7"><path class="am-edge am-edge--dashed" d="M86.2,212 L67.5,196 Q48.8,180 48.8,155.3 Q48.8,130.5 48.8,105.8 Q48.8,81 67.5,65 L86.2,49" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="121.5" width="67.5" height="18" rx="3"/><text x="48.8" y="130.5" text-anchor="middle" dominant-baseline="central">状态与结果</text></g></g></g><g><g class="am-node am-node--rect" data-key="系统任务" data-step="0"><rect class="am-node-shape" x="66.6" y="14" width="80" height="35" rx="3"/><text x="106.6" y="31.5" text-anchor="middle" dominant-baseline="central">系统任务</text></g><g class="am-node am-node--rect" data-key="本机能力路由" data-step="0"><rect class="am-node-shape" x="111.5" y="113" width="106" height="35" rx="3"/><text x="164.5" y="130.5" text-anchor="middle" dominant-baseline="central">本机能力路由</text></g><g class="am-node am-node--rect" data-key="导航与操作" data-step="1"><rect class="am-node-shape" x="60.1" y="212" width="93" height="35" rx="3"/><text x="106.6" y="229.5" text-anchor="middle" dominant-baseline="central">导航与操作</text></g><g class="am-node am-node--rect" data-key="感知与状态" data-step="2"><rect class="am-node-shape" x="60.1" y="608" width="93" height="35" rx="3"/><text x="106.6" y="625.5" text-anchor="middle" dominant-baseline="central">感知与状态</text></g><g class="am-node am-node--rect" data-key="协调器与执行器" data-step="3"><rect class="am-node-shape" x="90.9" y="311" width="119" height="35" rx="3"/><text x="150.4" y="328.5" text-anchor="middle" dominant-baseline="central">协调器与执行器</text></g><g class="am-node am-node--rect" data-key="本体网关" data-step="4"><rect class="am-node-shape" x="110.4" y="410" width="80" height="35" rx="3"/><text x="150.4" y="427.5" text-anchor="middle" dominant-baseline="central">本体网关</text></g><g class="am-node am-node--rect" data-key="机器人" data-step="5"><rect class="am-node-shape" x="116.9" y="509" width="67" height="35" rx="3"/><text x="150.4" y="526.5" text-anchor="middle" dominant-baseline="central">机器人</text></g></g></svg></figure></div>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>所属模块</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="module-robot-evidence_buffer.html">本机证据缓存</a> · 本目录 2 个 Python 文件。</p>
+</div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>按你的工作进入</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>源码导航</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>你要做的事</th>
-<th>入口</th>
-<th>读完应能完成</th>
+<th>文件</th>
+<th>顶层类或函数</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>先运行软件</td>
-<td><a href="getting-started.html">快速开始</a></td>
-<td>启动两个容器并提交 mock 请求</td>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/evidence_buffer/__init__.py"><strong>init</strong>.py</a></td>
+<td>导出或模块初始化</td>
 </tr>
 <tr>
-<td>理解系统结构</td>
-<td><a href="architecture.html">架构与数据流</a></td>
-<td>找到控制权、观测和结果的传递边界</td>
-</tr>
-<tr>
-<td>修改一个模块</td>
-<td><a href="modules.html">25 个模块</a></td>
-<td>找到职责、调用和源码入口</td>
-</tr>
-<tr>
-<td>替换或调参算法</td>
-<td><a href="algorithms.html">算法手册</a></td>
-<td>理解输入、原理、参数与失败条件</td>
-</tr>
-<tr>
-<td>使用能力接口</td>
-<td><a href="interfaces.html">接口契约</a></td>
-<td>正确处理坐标、时钟和执行生命周期</td>
-</tr>
-<tr>
-<td>判断实验结论</td>
-<td><a href="experiments.html">实验摘要</a></td>
-<td>区分软件检查与物理任务证据</td>
-</tr>
-<tr>
-<td>补充实现与文档</td>
-<td><a href="development.html">开发指南</a></td>
-<td>运行相关检查并更新对应页面</td>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/evidence_buffer/runtime.py">runtime.py</a></td>
+<td><code>EvidenceBuffer</code></td>
 </tr>
 </tbody></table></div>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>实现与实验分开阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>源码与阅读方式</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="https://github.com/gao377/agentic-embodied-system">私有代码仓库</a> 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。</p>
-<p>文档用固定版本的 <a href="https://github.com/QingYunA/answer-me-with-html">answer-me-with-html</a> 构建。
-每页自带目录、明暗模式和可复制源稿。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>使用方式</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>源码链接需要私有仓库权限。符号用于定位，接口语义以模块页与共享契约为准。
+第三方代码与原生扩展另见算法页和依赖说明。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
-<div class="am-lightbox-backdrop"></div>
-<div class="am-lightbox-header">
-<div class="am-lightbox-title">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-<span class="am-lightbox-title-text"></span>
-</div>
-<div class="am-lightbox-actions">
-<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
-</div>
-</div>
-<div class="am-lightbox-stage">
-<div class="am-lightbox-canvas am-diagram"></div>
-</div>
-</div>
 <footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 08:35</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: Agentic Embodied System
-subtitle: 开发者手册 · 从任务接口理解机器人软件
+title: evidence_buffer · 文件与符号
+subtitle: 按当前源码 AST 提取，不嵌入函数正文
 lang: zh
-doc_id: index
+doc_id: files-robot-evidence_buffer
 implementation: 634b9fd872961744
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 从一条能力请求开始
+## A 所属模块
 
-系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。
+[本机证据缓存](module-robot-evidence_buffer.html) · 本目录 2 个 Python 文件。
 
-```flow TB
-系统任务 -&gt; 本机能力路由: 请求
-本机能力路由 -&gt; 导航与操作: 执行
-感知与状态 -&gt; 导航与操作: 观测
-导航与操作 -&gt; 协调器与执行器: 轨迹或速度
-协调器与执行器 -&gt; 本体网关: 授权命令
-本体网关 -&gt; 机器人: SDK与DDS
-机器人 --&gt; 感知与状态: 测量反馈
-导航与操作 --&gt; 系统任务: 状态与结果
-```
+## B 源码导航
 
-## B 按你的工作进入
+| 文件 | 顶层类或函数 |
+| --- | --- |
+| [__init__.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/evidence_buffer/__init__.py) | 导出或模块初始化 |
+| [runtime.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/evidence_buffer/runtime.py) | `EvidenceBuffer` |
 
-| 你要做的事 | 入口 | 读完应能完成 |
-| --- | --- | --- |
-| 先运行软件 | [快速开始](getting-started.html) | 启动两个容器并提交 mock 请求 |
-| 理解系统结构 | [架构与数据流](architecture.html) | 找到控制权、观测和结果的传递边界 |
-| 修改一个模块 | [25 个模块](modules.html) | 找到职责、调用和源码入口 |
-| 替换或调参算法 | [算法手册](algorithms.html) | 理解输入、原理、参数与失败条件 |
-| 使用能力接口 | [接口契约](interfaces.html) | 正确处理坐标、时钟和执行生命周期 |
-| 判断实验结论 | [实验摘要](experiments.html) | 区分软件检查与物理任务证据 |
-| 补充实现与文档 | [开发指南](development.html) | 运行相关检查并更新对应页面 |
+## C 使用方式
 
-## C 实现与实验分开阅读
-
-系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。
-
-## D 源码与阅读方式
-
-[私有代码仓库](https://github.com/gao377/agentic-embodied-system) 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。
-
-文档用固定版本的 [answer-me-with-html](https://github.com/QingYunA/answer-me-with-html) 构建。
-每页自带目录、明暗模式和可复制源稿。
+源码链接需要私有仓库权限。符号用于定位，接口语义以模块页与共享契约为准。
+第三方代码与原生扩展另见算法页和依赖说明。
 </textarea>
 <script>
 (() => {

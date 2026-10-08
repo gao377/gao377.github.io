@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>Agentic Embodied System</title>
+<title>环境、依赖与资产</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,158 +698,218 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>Agentic Embodied System</h1><p class="am-sub">开发者手册 · 从任务接口理解机器人软件</p><div class="am-head-meta"><span><b>doc_id</b>index</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>环境、依赖与资产</h1><p class="am-sub">保持实现、接口、参数与证据一致</p><div class="am-head-meta"><span><b>doc_id</b>dependencies</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 从一条能力请求开始</a><a href="#panel-B">B · 按你的工作进入</a><a href="#panel-C">C · 实现与实验分开阅读</a><a href="#panel-D">D · 源码与阅读方式</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 分层环境</a><a href="#panel-B">B · 源码快照</a><a href="#panel-C">C · 组合模型</a><a href="#panel-D">D · 需要另行提供的资产</a><a href="#panel-E">E · 许可证</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>从一条能力请求开始</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。</p>
-</div>
-<figure class="am-diagram am-flow"><svg viewBox="0 0 232 657" width="232" height="657" role="img" aria-label="流程图：系统任务、本机能力路由、导航与操作、感知与状态、协调器与执行器、本体网关、机器人" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M127.1,49 L145.8,65 Q164.5,81 164.5,97 L164.5,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="72" width="33" height="18" rx="3"/><text x="164.5" y="81" text-anchor="middle" dominant-baseline="central">请求</text></g></g><g data-step="1"><path class="am-edge" d="M164.5,148 L164.5,164 Q164.5,180 145.8,196 L127.1,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="171" width="33" height="18" rx="3"/><text x="164.5" y="180" text-anchor="middle" dominant-baseline="central">执行</text></g></g><g data-step="2"><path class="am-edge" d="M91.2,608 L77,592 Q62.9,576 62.9,551.3 Q62.9,526.5 62.9,501.8 Q62.9,477 62.9,452.3 Q62.9,427.5 62.9,402.8 Q62.9,378 62.9,353.3 Q62.9,328.5 62.9,303.8 Q62.9,279 77,263 L91.2,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="46.4" y="418.5" width="33" height="18" rx="3"/><text x="62.9" y="427.5" text-anchor="middle" dominant-baseline="central">观测</text></g></g><g data-step="3"><path class="am-edge" d="M122.1,247 L136.2,263 Q150.4,279 150.4,295 L150.4,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="116.6" y="270" width="67.5" height="18" rx="3"/><text x="150.4" y="279" text-anchor="middle" dominant-baseline="central">轨迹或速度</text></g></g><g data-step="4"><path class="am-edge" d="M150.4,346 L150.4,362 Q150.4,378 150.4,394 L150.4,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="369" width="56" height="18" rx="3"/><text x="150.4" y="378" text-anchor="middle" dominant-baseline="central">授权命令</text></g></g><g data-step="5"><path class="am-edge" d="M150.4,445 L150.4,461 Q150.4,477 150.4,493 L150.4,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="113.1" y="468" width="74.6" height="18" rx="3"/><text x="150.4" y="477" text-anchor="middle" dominant-baseline="central">SDK与DDS</text></g></g><g data-step="6"><path class="am-edge am-edge--dashed" d="M150.4,544 L150.4,560 Q150.4,576 136.2,592 L122.1,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="567" width="56" height="18" rx="3"/><text x="150.4" y="576" text-anchor="middle" dominant-baseline="central">测量反馈</text></g></g><g data-step="7"><path class="am-edge am-edge--dashed" d="M86.2,212 L67.5,196 Q48.8,180 48.8,155.3 Q48.8,130.5 48.8,105.8 Q48.8,81 67.5,65 L86.2,49" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="121.5" width="67.5" height="18" rx="3"/><text x="48.8" y="130.5" text-anchor="middle" dominant-baseline="central">状态与结果</text></g></g></g><g><g class="am-node am-node--rect" data-key="系统任务" data-step="0"><rect class="am-node-shape" x="66.6" y="14" width="80" height="35" rx="3"/><text x="106.6" y="31.5" text-anchor="middle" dominant-baseline="central">系统任务</text></g><g class="am-node am-node--rect" data-key="本机能力路由" data-step="0"><rect class="am-node-shape" x="111.5" y="113" width="106" height="35" rx="3"/><text x="164.5" y="130.5" text-anchor="middle" dominant-baseline="central">本机能力路由</text></g><g class="am-node am-node--rect" data-key="导航与操作" data-step="1"><rect class="am-node-shape" x="60.1" y="212" width="93" height="35" rx="3"/><text x="106.6" y="229.5" text-anchor="middle" dominant-baseline="central">导航与操作</text></g><g class="am-node am-node--rect" data-key="感知与状态" data-step="2"><rect class="am-node-shape" x="60.1" y="608" width="93" height="35" rx="3"/><text x="106.6" y="625.5" text-anchor="middle" dominant-baseline="central">感知与状态</text></g><g class="am-node am-node--rect" data-key="协调器与执行器" data-step="3"><rect class="am-node-shape" x="90.9" y="311" width="119" height="35" rx="3"/><text x="150.4" y="328.5" text-anchor="middle" dominant-baseline="central">协调器与执行器</text></g><g class="am-node am-node--rect" data-key="本体网关" data-step="4"><rect class="am-node-shape" x="110.4" y="410" width="80" height="35" rx="3"/><text x="150.4" y="427.5" text-anchor="middle" dominant-baseline="central">本体网关</text></g><g class="am-node am-node--rect" data-key="机器人" data-step="5"><rect class="am-node-shape" x="116.9" y="509" width="67" height="35" rx="3"/><text x="150.4" y="526.5" text-anchor="middle" dominant-baseline="central">机器人</text></g></g></svg></figure></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>按你的工作进入</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>分层环境</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>你要做的事</th>
-<th>入口</th>
-<th>读完应能完成</th>
+<th>环境</th>
+<th>内容</th>
+<th>构建入口</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>先运行软件</td>
-<td><a href="getting-started.html">快速开始</a></td>
-<td>启动两个容器并提交 mock 请求</td>
+<td>基础双容器</td>
+<td>Ubuntu 22.04、ROS 2 Humble、Python 3.10、CycloneDDS</td>
+<td><code>deploy/Dockerfile</code>、<code>deploy/compose.yaml</code></td>
 </tr>
 <tr>
-<td>理解系统结构</td>
-<td><a href="architecture.html">架构与数据流</a></td>
-<td>找到控制权、观测和结果的传递边界</td>
+<td>G1 设备与 IK</td>
+<td>SDK2、XR 模型、Pinocchio、CasADi</td>
+<td><code>scripts/prepare_g1_dependencies.py</code>、<code>deploy/Dockerfile</code> 的 robot target / ROBOT_DEPS=g1</td>
 </tr>
 <tr>
-<td>修改一个模块</td>
-<td><a href="modules.html">25 个模块</a></td>
-<td>找到职责、调用和源码入口</td>
+<td>G1 操作</td>
+<td>MoveIt 2、OMPL、自有 Python 执行链</td>
+<td><code>deploy/Dockerfile.g1-manip</code></td>
 </tr>
 <tr>
-<td>替换或调参算法</td>
-<td><a href="algorithms.html">算法手册</a></td>
-<td>理解输入、原理、参数与失败条件</td>
+<td>原生算法</td>
+<td>NeuPAN、PCT、TARE、Lightning、SAMURAI、Torch</td>
+<td><code>deploy/Dockerfile.g1-warehouse</code></td>
 </tr>
 <tr>
-<td>使用能力接口</td>
-<td><a href="interfaces.html">接口契约</a></td>
-<td>正确处理坐标、时钟和执行生命周期</td>
+<td>操作工位</td>
+<td>Pink、Clarabel、Tesseract/TrajOpt、原生碰撞与 PBVS 扩展</td>
+<td><code>deploy/Dockerfile.g1-manipulation-workbench</code> 及 <code>deploy/</code> 下相应扩展层</td>
 </tr>
 <tr>
-<td>判断实验结论</td>
-<td><a href="experiments.html">实验摘要</a></td>
-<td>区分软件检查与物理任务证据</td>
+<td>仿真</td>
+<td>Isaac Sim 5.1、Isaac Lab 2.3.0、宇树场景适配</td>
+<td><code>deploy/Dockerfile.g1-sim</code>，显式传入 <code>ISAAC_SIM_IMAGE</code></td>
 </tr>
 <tr>
-<td>补充实现与文档</td>
-<td><a href="development.html">开发指南</a></td>
-<td>运行相关检查并更新对应页面</td>
+<td>文档</td>
+<td>Node.js 20+、answer-me-with-html 0.4.14</td>
+<td><code>python3 tools/docs/build.py</code></td>
 </tr>
 </tbody></table></div>
+<p>基础 mock 镜像可直接构建。完整 GPU 原生镜像包含多个依赖层，必须按 Dockerfile 的 <code>FROM</code>、<code>COPY</code> 和 <code>RUN</code> 检查前置产物。仓库不声称全新机器上无需外部资产即可启动物理仿真。
+不要混用 Isaac 自带 Python 与 ROS/G1 Python 的二进制扩展。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>源码快照</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>模块独用依赖放在模块 <code>thirdparty/</code>，设备共用库放在后端。
+这些目录是已复制的源码快照，不是 Git 子模块，也不依赖其他工作区。</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/verify_sources.py</span></code></pre></figure>
+<div class="am-md"><p><code>docs/vendor-files.json</code> 验证已发布快照的文件集合和内容。
+<code>docs/upstreams.json</code> 记录 SDK/XR 原始提交与显式补丁。
+各 <code>SOURCE.json</code>、<code>SOURCES.md</code> 和 LICENSE 保留其他依赖的来源。
+修改快照时，应记录原因、差异和重新验证结果后更新清单。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>实现与实验分开阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>组合模型</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>生成模型需要 PyYAML。下列命令创建新文件，不覆盖已有产物：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/build_g1_revo2_model.py \</span><span class="am-ln">  --g1 src/robot_app/robot_app/backends/unitree_g1/thirdparty/xr_teleoperate/assets/g1/g1_body29_hand14.urdf \</span><span class="am-ln">  --hands src/robot_app/robot_app/backends/unitree_g1/thirdparty/brainco_description/revo2_system \</span><span class="am-ln">  --mounts configs/robots/g1_revo2_mount_candidate.yaml \</span><span class="am-ln">  --output artifacts/simulation/g1_revo2/g1_29_revo2.urdf</span></code></pre></figure>
+<div class="am-md"><p>安装变换文件是候选配置，不能代替硬件测量。
+生成 USD、质量分布模型及无质量坐标框架时使用同目录下的模型脚本。
+不同模型产物须保留一致的源文件身份。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>源码与阅读方式</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="https://github.com/gao377/agentic-embodied-system">私有代码仓库</a> 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。</p>
-<p>文档用固定版本的 <a href="https://github.com/QingYunA/answer-me-with-html">answer-me-with-html</a> 构建。
-每页自带目录、明暗模式和可复制源稿。</p>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>需要另行提供的资产</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>资产</th>
+<th>来源或要求</th>
+<th>使用位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Isaac Sim 5.1 镜像</td>
+<td>使用已获许可的本地 NVIDIA 镜像</td>
+<td><code>ISAAC_SIM_IMAGE</code></td>
+</tr>
+<tr>
+<td>Unitree USD 场景/桌面</td>
+<td>官方 <code>unitree_sim_isaaclab_usds</code> 数据集，固定版本见仿真 SOURCES.md</td>
+<td><code>artifacts/simulation/unitree</code></td>
+</tr>
+<tr>
+<td>warehouse 环境</td>
+<td>已获使用许可的场景文件</td>
+<td><code>G1_WAREHOUSE_ASSETS</code> 或场景配置</td>
+</tr>
+<tr>
+<td>SAM2.1 small 权重</td>
+<td>SAM2 官方权重；SHA 见 perception/thirdparty/SOURCES.md</td>
+<td><code>artifacts/dependencies/sam2/sam2.1_hiera_small.pt</code></td>
+</tr>
+<tr>
+<td>目标检测模型</td>
+<td>当前感知 profile 指定的 YOLO 或 GroundingDINO 文件</td>
+<td>配置及 Dockerfile 指定目录</td>
+</tr>
+<tr>
+<td>G1 几何验收记录</td>
+<td>与本体模型和 AMO 身份一致的几何检查结果</td>
+<td>navigation profile 的 <code>basic_geometry</code></td>
+</tr>
+<tr>
+<td>设备/触觉标定</td>
+<td>实际硬件测量结果，不能复制 SIM 数值</td>
+<td>设备专属配置目录</td>
+</tr>
+</tbody></table></div>
+<p>AMO 源码与三个参考权重随其快照保留，加载前校验固定身份。
+外部模型下载后校验哈希；不要把匿名下载成功视为模型正确。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>许可证</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>详见 <a href="licenses.html">第三方说明</a>。模型、权重和场景可能有独立于代码的条款。
+本仓库中的小型测试数据是去除内部运行标识的数值回归输入，不包含原始实验录包。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
-<div class="am-lightbox-backdrop"></div>
-<div class="am-lightbox-header">
-<div class="am-lightbox-title">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-<span class="am-lightbox-title-text"></span>
-</div>
-<div class="am-lightbox-actions">
-<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
-</div>
-</div>
-<div class="am-lightbox-stage">
-<div class="am-lightbox-canvas am-diagram"></div>
-</div>
-</div>
 <footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 08:35</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: Agentic Embodied System
-subtitle: 开发者手册 · 从任务接口理解机器人软件
+title: 环境、依赖与资产
+subtitle: 保持实现、接口、参数与证据一致
 lang: zh
-doc_id: index
+doc_id: dependencies
 implementation: 634b9fd872961744
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 从一条能力请求开始
+## 分层环境
 
-系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。
+| 环境 | 内容 | 构建入口 |
+| --- | --- | --- |
+| 基础双容器 | Ubuntu 22.04、ROS 2 Humble、Python 3.10、CycloneDDS | `deploy/Dockerfile`、`deploy/compose.yaml` |
+| G1 设备与 IK | SDK2、XR 模型、Pinocchio、CasADi | `scripts/prepare_g1_dependencies.py`、`deploy/Dockerfile` 的 robot target / ROBOT_DEPS=g1 |
+| G1 操作 | MoveIt 2、OMPL、自有 Python 执行链 | `deploy/Dockerfile.g1-manip` |
+| 原生算法 | NeuPAN、PCT、TARE、Lightning、SAMURAI、Torch | `deploy/Dockerfile.g1-warehouse` |
+| 操作工位 | Pink、Clarabel、Tesseract/TrajOpt、原生碰撞与 PBVS 扩展 | `deploy/Dockerfile.g1-manipulation-workbench` 及 `deploy/` 下相应扩展层 |
+| 仿真 | Isaac Sim 5.1、Isaac Lab 2.3.0、宇树场景适配 | `deploy/Dockerfile.g1-sim`，显式传入 `ISAAC_SIM_IMAGE` |
+| 文档 | Node.js 20+、answer-me-with-html 0.4.14 | `python3 tools/docs/build.py` |
 
-```flow TB
-系统任务 -&gt; 本机能力路由: 请求
-本机能力路由 -&gt; 导航与操作: 执行
-感知与状态 -&gt; 导航与操作: 观测
-导航与操作 -&gt; 协调器与执行器: 轨迹或速度
-协调器与执行器 -&gt; 本体网关: 授权命令
-本体网关 -&gt; 机器人: SDK与DDS
-机器人 --&gt; 感知与状态: 测量反馈
-导航与操作 --&gt; 系统任务: 状态与结果
+基础 mock 镜像可直接构建。完整 GPU 原生镜像包含多个依赖层，必须按 Dockerfile 的 `FROM`、`COPY` 和 `RUN` 检查前置产物。仓库不声称全新机器上无需外部资产即可启动物理仿真。
+不要混用 Isaac 自带 Python 与 ROS/G1 Python 的二进制扩展。
+
+## 源码快照
+
+模块独用依赖放在模块 `thirdparty/`，设备共用库放在后端。
+这些目录是已复制的源码快照，不是 Git 子模块，也不依赖其他工作区。
+
+```bash
+python3 scripts/verify_sources.py
 ```
 
-## B 按你的工作进入
+`docs/vendor-files.json` 验证已发布快照的文件集合和内容。
+`docs/upstreams.json` 记录 SDK/XR 原始提交与显式补丁。
+各 `SOURCE.json`、`SOURCES.md` 和 LICENSE 保留其他依赖的来源。
+修改快照时，应记录原因、差异和重新验证结果后更新清单。
 
-| 你要做的事 | 入口 | 读完应能完成 |
+## 组合模型
+
+生成模型需要 PyYAML。下列命令创建新文件，不覆盖已有产物：
+
+```bash
+python3 scripts/build_g1_revo2_model.py \
+  --g1 src/robot_app/robot_app/backends/unitree_g1/thirdparty/xr_teleoperate/assets/g1/g1_body29_hand14.urdf \
+  --hands src/robot_app/robot_app/backends/unitree_g1/thirdparty/brainco_description/revo2_system \
+  --mounts configs/robots/g1_revo2_mount_candidate.yaml \
+  --output artifacts/simulation/g1_revo2/g1_29_revo2.urdf
+```
+
+安装变换文件是候选配置，不能代替硬件测量。
+生成 USD、质量分布模型及无质量坐标框架时使用同目录下的模型脚本。
+不同模型产物须保留一致的源文件身份。
+
+## 需要另行提供的资产
+
+| 资产 | 来源或要求 | 使用位置 |
 | --- | --- | --- |
-| 先运行软件 | [快速开始](getting-started.html) | 启动两个容器并提交 mock 请求 |
-| 理解系统结构 | [架构与数据流](architecture.html) | 找到控制权、观测和结果的传递边界 |
-| 修改一个模块 | [25 个模块](modules.html) | 找到职责、调用和源码入口 |
-| 替换或调参算法 | [算法手册](algorithms.html) | 理解输入、原理、参数与失败条件 |
-| 使用能力接口 | [接口契约](interfaces.html) | 正确处理坐标、时钟和执行生命周期 |
-| 判断实验结论 | [实验摘要](experiments.html) | 区分软件检查与物理任务证据 |
-| 补充实现与文档 | [开发指南](development.html) | 运行相关检查并更新对应页面 |
+| Isaac Sim 5.1 镜像 | 使用已获许可的本地 NVIDIA 镜像 | `ISAAC_SIM_IMAGE` |
+| Unitree USD 场景/桌面 | 官方 `unitree_sim_isaaclab_usds` 数据集，固定版本见仿真 SOURCES.md | `artifacts/simulation/unitree` |
+| warehouse 环境 | 已获使用许可的场景文件 | `G1_WAREHOUSE_ASSETS` 或场景配置 |
+| SAM2.1 small 权重 | SAM2 官方权重；SHA 见 perception/thirdparty/SOURCES.md | `artifacts/dependencies/sam2/sam2.1_hiera_small.pt` |
+| 目标检测模型 | 当前感知 profile 指定的 YOLO 或 GroundingDINO 文件 | 配置及 Dockerfile 指定目录 |
+| G1 几何验收记录 | 与本体模型和 AMO 身份一致的几何检查结果 | navigation profile 的 `basic_geometry` |
+| 设备/触觉标定 | 实际硬件测量结果，不能复制 SIM 数值 | 设备专属配置目录 |
 
-## C 实现与实验分开阅读
+AMO 源码与三个参考权重随其快照保留，加载前校验固定身份。
+外部模型下载后校验哈希；不要把匿名下载成功视为模型正确。
 
-系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。
+## 许可证
 
-## D 源码与阅读方式
-
-[私有代码仓库](https://github.com/gao377/agentic-embodied-system) 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。
-
-文档用固定版本的 [answer-me-with-html](https://github.com/QingYunA/answer-me-with-html) 构建。
-每页自带目录、明暗模式和可复制源稿。
+详见 [第三方说明](licenses.html)。模型、权重和场景可能有独立于代码的条款。
+本仓库中的小型测试数据是去除内部运行标识的数值回归输入，不包含原始实验录包。
 </textarea>
 <script>
 (() => {

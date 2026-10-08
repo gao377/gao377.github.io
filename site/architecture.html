@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>Agentic Embodied System</title>
+<title>架构与数据流</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,81 +698,103 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>Agentic Embodied System</h1><p class="am-sub">开发者手册 · 从任务接口理解机器人软件</p><div class="am-head-meta"><span><b>doc_id</b>index</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>架构与数据流</h1><p class="am-sub">系统决策、机器人能力与设备执行的分层</p><div class="am-head-meta"><span><b>doc_id</b>architecture</span><span><b>implementation</b>634b9fd872961744</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 从一条能力请求开始</a><a href="#panel-B">B · 按你的工作进入</a><a href="#panel-C">C · 实现与实验分开阅读</a><a href="#panel-D">D · 源码与阅读方式</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 两个部署单元</a><a href="#panel-B">B · 三条主链</a><a href="#panel-C">C · 请求时序</a><a href="#panel-D">D · 数据、时间和控制权</a><a href="#panel-E">E · 实现边界</a><a href="#panel-F">F · 代码组织</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>从一条能力请求开始</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。</p>
-</div>
-<figure class="am-diagram am-flow"><svg viewBox="0 0 232 657" width="232" height="657" role="img" aria-label="流程图：系统任务、本机能力路由、导航与操作、感知与状态、协调器与执行器、本体网关、机器人" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M127.1,49 L145.8,65 Q164.5,81 164.5,97 L164.5,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="72" width="33" height="18" rx="3"/><text x="164.5" y="81" text-anchor="middle" dominant-baseline="central">请求</text></g></g><g data-step="1"><path class="am-edge" d="M164.5,148 L164.5,164 Q164.5,180 145.8,196 L127.1,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148" y="171" width="33" height="18" rx="3"/><text x="164.5" y="180" text-anchor="middle" dominant-baseline="central">执行</text></g></g><g data-step="2"><path class="am-edge" d="M91.2,608 L77,592 Q62.9,576 62.9,551.3 Q62.9,526.5 62.9,501.8 Q62.9,477 62.9,452.3 Q62.9,427.5 62.9,402.8 Q62.9,378 62.9,353.3 Q62.9,328.5 62.9,303.8 Q62.9,279 77,263 L91.2,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="46.4" y="418.5" width="33" height="18" rx="3"/><text x="62.9" y="427.5" text-anchor="middle" dominant-baseline="central">观测</text></g></g><g data-step="3"><path class="am-edge" d="M122.1,247 L136.2,263 Q150.4,279 150.4,295 L150.4,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="116.6" y="270" width="67.5" height="18" rx="3"/><text x="150.4" y="279" text-anchor="middle" dominant-baseline="central">轨迹或速度</text></g></g><g data-step="4"><path class="am-edge" d="M150.4,346 L150.4,362 Q150.4,378 150.4,394 L150.4,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="369" width="56" height="18" rx="3"/><text x="150.4" y="378" text-anchor="middle" dominant-baseline="central">授权命令</text></g></g><g data-step="5"><path class="am-edge" d="M150.4,445 L150.4,461 Q150.4,477 150.4,493 L150.4,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="113.1" y="468" width="74.6" height="18" rx="3"/><text x="150.4" y="477" text-anchor="middle" dominant-baseline="central">SDK与DDS</text></g></g><g data-step="6"><path class="am-edge am-edge--dashed" d="M150.4,544 L150.4,560 Q150.4,576 136.2,592 L122.1,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="567" width="56" height="18" rx="3"/><text x="150.4" y="576" text-anchor="middle" dominant-baseline="central">测量反馈</text></g></g><g data-step="7"><path class="am-edge am-edge--dashed" d="M86.2,212 L67.5,196 Q48.8,180 48.8,155.3 Q48.8,130.5 48.8,105.8 Q48.8,81 67.5,65 L86.2,49" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="121.5" width="67.5" height="18" rx="3"/><text x="48.8" y="130.5" text-anchor="middle" dominant-baseline="central">状态与结果</text></g></g></g><g><g class="am-node am-node--rect" data-key="系统任务" data-step="0"><rect class="am-node-shape" x="66.6" y="14" width="80" height="35" rx="3"/><text x="106.6" y="31.5" text-anchor="middle" dominant-baseline="central">系统任务</text></g><g class="am-node am-node--rect" data-key="本机能力路由" data-step="0"><rect class="am-node-shape" x="111.5" y="113" width="106" height="35" rx="3"/><text x="164.5" y="130.5" text-anchor="middle" dominant-baseline="central">本机能力路由</text></g><g class="am-node am-node--rect" data-key="导航与操作" data-step="1"><rect class="am-node-shape" x="60.1" y="212" width="93" height="35" rx="3"/><text x="106.6" y="229.5" text-anchor="middle" dominant-baseline="central">导航与操作</text></g><g class="am-node am-node--rect" data-key="感知与状态" data-step="2"><rect class="am-node-shape" x="60.1" y="608" width="93" height="35" rx="3"/><text x="106.6" y="625.5" text-anchor="middle" dominant-baseline="central">感知与状态</text></g><g class="am-node am-node--rect" data-key="协调器与执行器" data-step="3"><rect class="am-node-shape" x="90.9" y="311" width="119" height="35" rx="3"/><text x="150.4" y="328.5" text-anchor="middle" dominant-baseline="central">协调器与执行器</text></g><g class="am-node am-node--rect" data-key="本体网关" data-step="4"><rect class="am-node-shape" x="110.4" y="410" width="80" height="35" rx="3"/><text x="150.4" y="427.5" text-anchor="middle" dominant-baseline="central">本体网关</text></g><g class="am-node am-node--rect" data-key="机器人" data-step="5"><rect class="am-node-shape" x="116.9" y="509" width="67" height="35" rx="3"/><text x="150.4" y="526.5" text-anchor="middle" dominant-baseline="central">机器人</text></g></g></svg></figure></div>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>两个部署单元</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 420 360" width="420" height="360" role="img" aria-label="流程图：system_app、robot_app、G1后端、DDS设备或仿真桥、ROS2传感器" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M121.5,212 L98.9,196 Q76.2,180 124.4,163 L172.6,145.9" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="171" width="122.5" height="18" rx="3"/><text x="76.2" y="180" text-anchor="middle" dominant-baseline="central">ROS2任务与能力请求</text></g></g><g data-step="1"><path class="am-edge am-edge--dashed" d="M216.2,148 L216.2,164 Q216.2,180 193.6,196 L171,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="159.5" y="171" width="113.5" height="18" rx="3"/><text x="216.2" y="180" text-anchor="middle" dominant-baseline="central">能力目录和执行证据</text></g></g><g data-step="2"><path class="am-edge" d="M258.9,148 L297.9,164 Q336.9,180 336.9,196 L336.9,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="297.4" y="171" width="79" height="18" rx="3"/><text x="336.9" y="180" text-anchor="middle" dominant-baseline="central">统一设备接口</text></g></g><g data-step="3"><path class="am-edge" d="M336.9,247 L336.9,263 Q336.9,279 336.9,295 L336.9,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="303.1" y="270" width="67.5" height="18" rx="3"/><text x="336.9" y="279" text-anchor="middle" dominant-baseline="central">控制与反馈</text></g></g><g data-step="4"><path class="am-edge" d="M216.2,49 L216.2,65 Q216.2,81 216.2,97 L216.2,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="176.3" y="72" width="79.9" height="18" rx="3"/><text x="216.2" y="81" text-anchor="middle" dominant-baseline="central">RGBD与点云</text></g></g></g><g><g class="am-node am-node--rect" data-key="system_app" data-step="0"><rect class="am-node-shape" x="95.4" y="212" width="101.6" height="35" rx="3"/><text x="146.2" y="229.5" text-anchor="middle" dominant-baseline="central">system_app</text></g><g class="am-node am-node--rect" data-key="robot_app" data-step="0"><rect class="am-node-shape" x="172.6" y="113" width="87.3" height="35" rx="3"/><text x="216.2" y="130.5" text-anchor="middle" dominant-baseline="central">robot_app</text></g><g class="am-node am-node--rect" data-key="G1后端" data-step="2"><rect class="am-node-shape" x="300.6" y="212" width="72.5" height="35" rx="3"/><text x="336.9" y="229.5" text-anchor="middle" dominant-baseline="central">G1后端</text></g><g class="am-node am-node--rect" data-key="DDS设备或仿真桥" data-step="3"><rect class="am-node-shape" x="268.3" y="311" width="137.2" height="35" rx="3"/><text x="336.9" y="328.5" text-anchor="middle" dominant-baseline="central">DDS设备或仿真桥</text></g><g class="am-node am-node--rect" data-key="ROS2传感器" data-step="4"><rect class="am-node-shape" x="164.7" y="14" width="103.1" height="35" rx="3"/><text x="216.2" y="31.5" text-anchor="middle" dominant-baseline="central">ROS2传感器</text></g></g></svg></figure>
+<div class="am-md"><p><code>system_app</code> 可运行在联网工控机，<code>robot_app</code> 面向各机器人实例。
+二者共享 <code>embodied_core</code> 类型与 <code>embodied_interfaces</code> 消息。
+上层契约不直接暴露某个机器人 SDK。</p>
+</div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>按你的工作进入</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>三条主链</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>你要做的事</th>
-<th>入口</th>
-<th>读完应能完成</th>
+<th>链路</th>
+<th>输入 → 处理 → 输出</th>
+<th>所有者</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>先运行软件</td>
-<td><a href="getting-started.html">快速开始</a></td>
-<td>启动两个容器并提交 mock 请求</td>
+<td>空间与导航</td>
+<td>激光/IMU → SLAM/局部图 → 全局及局部路径 → 本体速度</td>
+<td>spatial、navigation</td>
 </tr>
 <tr>
-<td>理解系统结构</td>
-<td><a href="architecture.html">架构与数据流</a></td>
-<td>找到控制权、观测和结果的传递边界</td>
+<td>局部操作</td>
+<td>RGB-D/关节 → 物体与支撑面 → 臂手规划 → 轨迹及抓握</td>
+<td>perception、state、manipulation</td>
 </tr>
 <tr>
-<td>修改一个模块</td>
-<td><a href="modules.html">25 个模块</a></td>
-<td>找到职责、调用和源码入口</td>
+<td>执行与反馈</td>
+<td>能力请求 → 控制权 → 执行器 → 网关 → SDK反馈</td>
+<td>local_task、coordinator、executor、gateway</td>
+</tr>
+</tbody></table></div>
+<p>感知和状态直接服务导航及操作，不能仅提供给任务规划。
+操作的目标误差在本体局部坐标内计算。
+导航的路线目标在地图坐标内计算；工位精调用相对视觉目标。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-C">
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>请求时序</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-seq"><svg viewBox="0 0 935 470" width="935" height="470" role="img" aria-label="时序图：系统、本机路由、协调器、能力提供者、感知和状态、执行器、本体网关、SDK" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><line class="am-lifeline" x1="54" y1="42" x2="54" y2="466"/><g data-key="系统"><rect class="am-actor" x="12" y="8" width="84" height="34" rx="2"/><text x="54" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">系统</text></g><line class="am-lifeline" x1="176.1" y1="42" x2="176.1" y2="466"/><g data-key="本机路由"><rect class="am-actor" x="134.1" y="8" width="84" height="34" rx="2"/><text x="176.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">本机路由</text></g><line class="am-lifeline" x1="288.1" y1="42" x2="288.1" y2="466"/><g data-key="协调器"><rect class="am-actor" x="246.1" y="8" width="84" height="34" rx="2"/><text x="288.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">协调器</text></g><line class="am-lifeline" x1="404.6" y1="42" x2="404.6" y2="466"/><g data-key="能力提供者"><rect class="am-actor" x="358.1" y="8" width="93" height="34" rx="2"/><text x="404.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">能力提供者</text></g><line class="am-lifeline" x1="525.6" y1="42" x2="525.6" y2="466"/><g data-key="感知和状态"><rect class="am-actor" x="479.1" y="8" width="93" height="34" rx="2"/><text x="525.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">感知和状态</text></g><line class="am-lifeline" x1="642.1" y1="42" x2="642.1" y2="466"/><g data-key="执行器"><rect class="am-actor" x="600.1" y="8" width="84" height="34" rx="2"/><text x="642.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">执行器</text></g><line class="am-lifeline" x1="768.1" y1="42" x2="768.1" y2="466"/><g data-key="本体网关"><rect class="am-actor" x="726.1" y="8" width="84" height="34" rx="2"/><text x="768.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">本体网关</text></g><line class="am-lifeline" x1="880.1" y1="42" x2="880.1" y2="466"/><g data-key="SDK"><rect class="am-actor" x="838.1" y="8" width="84" height="34" rx="2"/><text x="880.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">SDK</text></g><g data-step="0"><text x="115.1" y="70" text-anchor="middle">assess / submit</text><path class="am-edge" d="M54,80 L174.1,80" marker-end="url(#am2-arrow)"/></g><g data-step="1"><text x="232.1" y="110" text-anchor="middle">申请运动资源</text><path class="am-edge" d="M176.1,120 L286.1,120" marker-end="url(#am2-arrow)"/></g><g data-step="2"><text x="290.4" y="150" text-anchor="middle">start</text><path class="am-edge" d="M176.1,160 L402.6,160" marker-end="url(#am2-arrow)"/></g><g data-step="3"><text x="465.1" y="190" text-anchor="middle">读取带时间观测</text><path class="am-edge" d="M404.6,200 L523.6,200" marker-end="url(#am2-arrow)"/></g><g data-step="4"><text x="523.4" y="230" text-anchor="middle">提交轨迹或速度</text><path class="am-edge" d="M404.6,240 L640.1,240" marker-end="url(#am2-arrow)"/></g><g data-step="5"><text x="705.1" y="270" text-anchor="middle">受租约约束的命令</text><path class="am-edge" d="M642.1,280 L766.1,280" marker-end="url(#am2-arrow)"/></g><g data-step="6"><text x="824.1" y="310" text-anchor="middle">写入控制</text><path class="am-edge" d="M768.1,320 L878.1,320" marker-end="url(#am2-arrow)"/></g><g data-step="7"><text x="702.9" y="350" text-anchor="middle">测量反馈</text><path class="am-edge am-edge--dashed" d="M880.1,360 L527.6,360" marker-end="url(#am2-arrow)"/></g><g data-step="8"><text x="290.4" y="390" text-anchor="middle">phase / conditions / result</text><path class="am-edge am-edge--dashed" d="M404.6,400 L178.1,400" marker-end="url(#am2-arrow)"/></g><g data-step="9"><text x="115.1" y="430" text-anchor="middle">完成或失败证据</text><path class="am-edge am-edge--dashed" d="M176.1,440 L56,440" marker-end="url(#am2-arrow)"/></g></svg></figure></div>
+</section>
+<section class="am-panel" id="panel-D">
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>数据、时间和控制权</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>观测有 frame、源时间和来源。SIM 使用仿真时钟，REAL 使用各设备源时间与执行时钟。
+时钟不同的值不能直接相减；源新鲜度与执行超时分别计算。
+运动命令携带控制权，设备写入经统一网关。</p>
+<p>pick、display、place 要保持下肢零速。
+approach 只有升级至允许的下肢微调阶段才可申请微动。
+当前网关限制平移模长不超过 0.02 m/s，偏航不超过 0.05 rad/s。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>实现边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>对象</th>
+<th>代码的实际含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>系统规划</td>
+<td>固定导览目标选择与任务步骤，未接入通用 LLM 规划</td>
 </tr>
 <tr>
-<td>替换或调参算法</td>
-<td><a href="algorithms.html">算法手册</a></td>
-<td>理解输入、原理、参数与失败条件</td>
+<td>知识记忆</td>
+<td>查询接口和固定样例，不等于完整结构化空间记忆系统</td>
 </tr>
 <tr>
-<td>使用能力接口</td>
-<td><a href="interfaces.html">接口契约</a></td>
-<td>正确处理坐标、时钟和执行生命周期</td>
+<td>反思与演化</td>
+<td>明确标为 MOCK 的返回与发布禁用标记</td>
 </tr>
 <tr>
-<td>判断实验结论</td>
-<td><a href="experiments.html">实验摘要</a></td>
-<td>区分软件检查与物理任务证据</td>
+<td>VLA</td>
+<td>保留策略扩展位置，不作为当前抓放默认控制</td>
 </tr>
 <tr>
-<td>补充实现与文档</td>
-<td><a href="development.html">开发指南</a></td>
-<td>运行相关检查并更新对应页面</td>
+<td>approach 下肢升级</td>
+<td>局部目标伺服，但目前仍经导航输入和局部障碍检查依赖</td>
+</tr>
+<tr>
+<td>多机器人</td>
+<td>按 robot_id 的契约和能力目录；不等同于异构协作实测</td>
 </tr>
 </tbody></table></div>
 </div></div>
 </section>
-<section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>实现与实验分开阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>源码与阅读方式</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="https://github.com/gao377/agentic-embodied-system">私有代码仓库</a> 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。</p>
-<p>文档用固定版本的 <a href="https://github.com/QingYunA/answer-me-with-html">answer-me-with-html</a> 构建。
-每页自带目录、明暗模式和可复制源稿。</p>
+<section class="am-panel" id="panel-F">
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>代码组织</h2></header>
+<div class="am-panel-body"><div class="am-tree"><div class="am-tree-root am-tree-root--solo"><div class="am-tree-box am-tree-box--root" data-key="仓库" data-step="0">仓库</div></div><ul class="am-tree-list"><li data-key="src" data-step="1"><span class="am-tree-label">src</span><ul><li data-key="embodied_interfaces" data-step="2"><span class="am-tree-label">embodied_interfaces</span><span class="am-tree-sub">ROS接口定义</span></li><li data-key="embodied_core" data-step="3"><span class="am-tree-label">embodied_core</span><span class="am-tree-sub">数据与契约</span></li><li data-key="system_app" data-step="4"><span class="am-tree-label">system_app</span><span class="am-tree-sub">系统端11个模块</span></li><li data-key="robot_app" data-step="5"><span class="am-tree-label">robot_app</span><span class="am-tree-sub">机器人端14个模块</span><ul><li data-key="backends/unitree_g1" data-step="6"><span class="am-tree-label">backends/unitree_g1</span><span class="am-tree-sub">G1与REVO2设备适配</span></li></ul></li></ul></li><li data-key="configs" data-step="7"><span class="am-tree-label">configs</span><span class="am-tree-sub">参数与标定引用</span></li><li data-key="deploy" data-step="8"><span class="am-tree-label">deploy</span><span class="am-tree-sub">容器与原生依赖</span></li><li data-key="simulation" data-step="9"><span class="am-tree-label">simulation</span><span class="am-tree-sub">传感器和设备仿真适配</span></li><li data-key="tools" data-step="10"><span class="am-tree-label">tools</span><span class="am-tree-sub">只读观察与文档工具</span></li><li data-key="tests" data-step="11"><span class="am-tree-label">tests</span><span class="am-tree-sub">分层验证</span></li></ul></div>
+<div class="am-md"><p><a href="modules.html">模块索引</a> · <a href="dependencies.html">部署与依赖</a> · <a href="interfaces.html">接口</a></p>
 </div></div>
 </section>
 </div>
@@ -797,59 +819,95 @@ Agentic 是任务与能力分层的组织方式，不代表任意任务已自主
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: Agentic Embodied System
-subtitle: 开发者手册 · 从任务接口理解机器人软件
+title: 架构与数据流
+subtitle: 系统决策、机器人能力与设备执行的分层
 lang: zh
-doc_id: index
+doc_id: architecture
 implementation: 634b9fd872961744
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 从一条能力请求开始
-
-系统端处理任务与上下文，机器人端提供可调用的本机能力。
-感知、空间状态、运动规划与设备控制各有独立职责。
-G1 示例使用 AMO 下肢控制、双臂操作和 REVO2 灵巧手。
+## A 两个部署单元
 
 ```flow TB
-系统任务 -&gt; 本机能力路由: 请求
-本机能力路由 -&gt; 导航与操作: 执行
-感知与状态 -&gt; 导航与操作: 观测
-导航与操作 -&gt; 协调器与执行器: 轨迹或速度
-协调器与执行器 -&gt; 本体网关: 授权命令
-本体网关 -&gt; 机器人: SDK与DDS
-机器人 --&gt; 感知与状态: 测量反馈
-导航与操作 --&gt; 系统任务: 状态与结果
+system_app -&gt; robot_app: ROS2任务与能力请求
+robot_app --&gt; system_app: 能力目录和执行证据
+robot_app -&gt; G1后端: 统一设备接口
+G1后端 -&gt; DDS设备或仿真桥: 控制与反馈
+ROS2传感器 -&gt; robot_app: RGBD与点云
 ```
 
-## B 按你的工作进入
+`system_app` 可运行在联网工控机，`robot_app` 面向各机器人实例。
+二者共享 `embodied_core` 类型与 `embodied_interfaces` 消息。
+上层契约不直接暴露某个机器人 SDK。
 
-| 你要做的事 | 入口 | 读完应能完成 |
+## B 三条主链
+
+| 链路 | 输入 → 处理 → 输出 | 所有者 |
 | --- | --- | --- |
-| 先运行软件 | [快速开始](getting-started.html) | 启动两个容器并提交 mock 请求 |
-| 理解系统结构 | [架构与数据流](architecture.html) | 找到控制权、观测和结果的传递边界 |
-| 修改一个模块 | [25 个模块](modules.html) | 找到职责、调用和源码入口 |
-| 替换或调参算法 | [算法手册](algorithms.html) | 理解输入、原理、参数与失败条件 |
-| 使用能力接口 | [接口契约](interfaces.html) | 正确处理坐标、时钟和执行生命周期 |
-| 判断实验结论 | [实验摘要](experiments.html) | 区分软件检查与物理任务证据 |
-| 补充实现与文档 | [开发指南](development.html) | 运行相关检查并更新对应页面 |
+| 空间与导航 | 激光/IMU → SLAM/局部图 → 全局及局部路径 → 本体速度 | spatial、navigation |
+| 局部操作 | RGB-D/关节 → 物体与支撑面 → 臂手规划 → 轨迹及抓握 | perception、state、manipulation |
+| 执行与反馈 | 能力请求 → 控制权 → 执行器 → 网关 → SDK反馈 | local_task、coordinator、executor、gateway |
 
-## C 实现与实验分开阅读
+感知和状态直接服务导航及操作，不能仅提供给任务规划。
+操作的目标误差在本体局部坐标内计算。
+导航的路线目标在地图坐标内计算；工位精调用相对视觉目标。
 
-系统端任务选择、记忆和反思含固定逻辑或 mock 实现。
-Agentic 是任务与能力分层的组织方式，不代表任意任务已自主完成。
-算法手册指出实际调用路径，也标出可选实现与启用条件。
-实验页只陈述已核对结果，不能由接口存在推导实机能力。
+## C 请求时序
 
-## D 源码与阅读方式
+```sequence
+系统 -&gt; 本机路由: assess / submit
+本机路由 -&gt; 协调器: 申请运动资源
+本机路由 -&gt; 能力提供者: start
+能力提供者 -&gt; 感知和状态: 读取带时间观测
+能力提供者 -&gt; 执行器: 提交轨迹或速度
+执行器 -&gt; 本体网关: 受租约约束的命令
+本体网关 -&gt; SDK: 写入控制
+SDK --&gt; 感知和状态: 测量反馈
+能力提供者 --&gt; 本机路由: phase / conditions / result
+本机路由 --&gt; 系统: 完成或失败证据
+```
 
-[私有代码仓库](https://github.com/gao377/agentic-embodied-system) 需要访问权限。
-公开页说明架构、接口、算法和实验摘要，不包含私有源码正文。
-每个模块页附源码入口；文件索引帮助已授权开发者定位实现。
+## D 数据、时间和控制权
 
-文档用固定版本的 [answer-me-with-html](https://github.com/QingYunA/answer-me-with-html) 构建。
-每页自带目录、明暗模式和可复制源稿。
+观测有 frame、源时间和来源。SIM 使用仿真时钟，REAL 使用各设备源时间与执行时钟。
+时钟不同的值不能直接相减；源新鲜度与执行超时分别计算。
+运动命令携带控制权，设备写入经统一网关。
+
+pick、display、place 要保持下肢零速。
+approach 只有升级至允许的下肢微调阶段才可申请微动。
+当前网关限制平移模长不超过 0.02 m/s，偏航不超过 0.05 rad/s。
+
+## E 实现边界
+
+| 对象 | 代码的实际含义 |
+| --- | --- |
+| 系统规划 | 固定导览目标选择与任务步骤，未接入通用 LLM 规划 |
+| 知识记忆 | 查询接口和固定样例，不等于完整结构化空间记忆系统 |
+| 反思与演化 | 明确标为 MOCK 的返回与发布禁用标记 |
+| VLA | 保留策略扩展位置，不作为当前抓放默认控制 |
+| approach 下肢升级 | 局部目标伺服，但目前仍经导航输入和局部障碍检查依赖 |
+| 多机器人 | 按 robot_id 的契约和能力目录；不等同于异构协作实测 |
+
+## F 代码组织
+
+```tree
+仓库
+  src
+    embodied_interfaces | ROS接口定义
+    embodied_core | 数据与契约
+    system_app | 系统端11个模块
+    robot_app | 机器人端14个模块
+      backends/unitree_g1 | G1与REVO2设备适配
+  configs | 参数与标定引用
+  deploy | 容器与原生依赖
+  simulation | 传感器和设备仿真适配
+  tools | 只读观察与文档工具
+  tests | 分层验证
+```
+
+[模块索引](modules.html) · [部署与依赖](dependencies.html) · [接口](interfaces.html)
 </textarea>
 <script>
 (() => {
