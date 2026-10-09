@@ -1,38 +1,50 @@
 {
-  "implementation_sha256": "ec030fd7714cb86df18cfd60bdd1648a623be307e4bc9d3318282e99ad7fcaab",
+  "implementation_sha256": "370e694d928b04e3325921905e359690a8eb28fcbf6d8e41b45203de0d802921",
   "renderer": "answer-me-with-html@0.4.14",
-  "navigation_sha256": "8d0935730ec090b7711b4623c3e68d26e0c2e4adce858b2da23b9f7f08b1440c",
+  "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
     {
       "label": "首页",
       "href": "index.html"
     },
     {
-      "label": "架构",
+      "label": "系统架构",
       "href": "architecture.html"
     },
     {
-      "label": "模块",
+      "label": "软件映射",
+      "href": "architecture-map.html"
+    },
+    {
+      "label": "运行时图册",
+      "href": "runtime-internals.html"
+    },
+    {
+      "label": "算法架构图",
+      "href": "algorithms.html#panel-A"
+    },
+    {
+      "label": "软件模块",
       "href": "modules.html"
     },
     {
-      "label": "算法",
-      "href": "algorithms.html"
-    },
-    {
-      "label": "接口",
+      "label": "能力接口",
       "href": "interfaces.html"
     },
     {
-      "label": "场景",
+      "label": "场景启动",
       "href": "scenarios.html"
     },
     {
-      "label": "实验",
+      "label": "实验结果",
       "href": "experiments.html"
     },
     {
-      "label": "规范",
+      "label": "成功录像",
+      "href": "experiment-recordings.html"
+    },
+    {
+      "label": "编写规范",
       "href": "authoring.html"
     }
   ],
@@ -131,7 +143,7 @@
     },
     {
       "file": "authoring.html",
-      "source_sha256": "7c13d39ed4567f85bf2e7ae0f871e8f18e4fe1d177829d27856b9a555c7caa82"
+      "source_sha256": "2a3c41d6f4b71703a4d048654e8b0c81fbd8b94492d6a7697066b59d226a0546"
     },
     {
       "file": "dependencies.html",
@@ -143,11 +155,11 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "efc6932cd03a2308ef99c57e83bcdc2138c16e932845a23c23ab55c22153ab68"
+      "source_sha256": "8fccf222d14cd62148b907d8797a4ecb5888833f6d43d5bd11b9287e480a4f0f"
     },
     {
       "file": "experiments.html",
-      "source_sha256": "415434417715e86b5cef85971d398496b3994a9ff0ced061963806ceda858e21"
+      "source_sha256": "f7587a9890255a4399331074cddf683f56f2951f69fb62a9112cf454e4e18760"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -259,7 +271,7 @@
     },
     {
       "file": "index.html",
-      "source_sha256": "cb33b46cd97b514c64513cdeb81a0493e5b83ca76efbd32da1e3ebff07e3226c"
+      "source_sha256": "395dc413e40e33b6fae8e3793da6d2ce4163f7285a15b78942a87c3034306feb"
     },
     {
       "file": "interface-catalog.html",
@@ -500,68 +512,68 @@
       "sha256": "423d8a46ba7bdb1a62c3759e3ab7c9a0d2d5bfa34ffa30bb9ed8ad3d25b01c3e"
     },
     {
-      "file": "media/approach-base-isaac.mp4",
-      "sha256": "e17cc73f300eca653fbc2be7bbc5779b088f99a0f8ae3fe96862f555417e6714"
+      "file": "media/approach-base-isaac-20x.mp4",
+      "sha256": "aa2b17100c7799c65758985b9f4c877f352551b7e51c0a248a33a2636d13b393"
     },
     {
-      "file": "media/approach-base-perception.mp4",
-      "sha256": "38e9cd49ec4ae92a243d19833587eea655dd7cf32bd08cb6344ef33f115c3d1a"
+      "file": "media/approach-base-perception-20x.mp4",
+      "sha256": "72fcd7d79c0dcd3bede80d8a9a0184c3cf86f1de66269677cabf9c5d2c13baa3"
     },
     {
-      "file": "media/approach-base-sensors.mp4",
-      "sha256": "7be94e1d376d2ad0c7a70fa11d733b611a87a2c7a0cb5fd65560e11a0ddb06a6"
+      "file": "media/approach-base-sensors-20x.mp4",
+      "sha256": "2de701099e93529af1792ef9f4569d4dc6122e3a2476187d2c271ba0b3c4b33b"
     },
     {
-      "file": "media/arm-hand-isaac.mp4",
-      "sha256": "a5e9e78a1fce90bea2da4320a8c0edae01cdd62895c60acba9915683e4a31a71"
+      "file": "media/arm-hand-isaac-20x.mp4",
+      "sha256": "d7f2be52c3dfd282dd1031f51159226530179ce3747db0215e110e14dee2d67e"
     },
     {
-      "file": "media/arm-hand-perception.mp4",
-      "sha256": "25e41a18e746b12d817e8db44f894adbe31c6542e5c25eeb08aaf71c6d68747e"
+      "file": "media/arm-hand-perception-20x.mp4",
+      "sha256": "044e2f0f9c1b5bf96e28c8c08c93a8f60c43cc7a151930cc23f2d2412cd30e04"
     },
     {
-      "file": "media/arm-hand-sensors.mp4",
-      "sha256": "571779947ae06b7acf77edcdb55351ea18cefea4d7a62ebf540a44a3dff0ef68"
+      "file": "media/arm-hand-sensors-20x.mp4",
+      "sha256": "7f8a80b769a0ef818ed3cd3dc9104eab119a1dea2ceffc9bd357c3f150db7c88"
     },
     {
-      "file": "media/cancel-isaac.mp4",
-      "sha256": "4226dfe52f1c66e0440d357f969dab910118a6b27aa1d2fe28819f4abea26e87"
+      "file": "media/cancel-isaac-20x.mp4",
+      "sha256": "7117090a808443b296d4fb1c82e6cb6f9009e07997118db4ab882803997b0d8f"
     },
     {
-      "file": "media/cancel-perception.mp4",
-      "sha256": "e5cacafcce810b57c66696ef5c503384bceb52304f5fbd74a0c7c8990454356e"
+      "file": "media/cancel-perception-20x.mp4",
+      "sha256": "cc9ed1f9fa41b1d61de111706082a466dd6d158f2f10f80ef5c6a9b8432768d3"
     },
     {
-      "file": "media/cancel-sensors.mp4",
-      "sha256": "4bb3b91756edcf1059e94c50f6ddb5448f3ac01836799df7aab68d05932c6295"
+      "file": "media/cancel-sensors-20x.mp4",
+      "sha256": "06017c9882f73e9a00dbb70fb834db32b3a3fc8976179e4eedcb91a24190bef0"
     },
     {
-      "file": "media/manip-left-isaac.mp4",
-      "sha256": "154b7eba1dd7409d2030c1390932bdab5fe3a32439e49dc13b98e4e3072f97cf"
+      "file": "media/manip-left-isaac-20x.mp4",
+      "sha256": "d65dd3499c171f763daee35272866be298ccd95f4f3a8560b7c298cab98dca2e"
     },
     {
-      "file": "media/manip-left-perception.mp4",
-      "sha256": "1c8acbefb30816f07045deba7698062f1345bb5752ae8c44f65b9d100012a63a"
+      "file": "media/manip-left-perception-20x.mp4",
+      "sha256": "03767867b6a1d802ad6e4c6287da03a09a83e7aa930538a86ccb29953f615652"
     },
     {
-      "file": "media/manip-left-sensors.mp4",
-      "sha256": "d09fdbcc46e23c5f9765b9464db82d1c34dfcae68953e1d363badb543b6aab77"
+      "file": "media/manip-left-sensors-20x.mp4",
+      "sha256": "017d6f52f8629457b3fc5860c9d19728e4a13dd7d651f7de99b7a438c4df9b72"
     },
     {
-      "file": "media/manip-right-isaac.mp4",
-      "sha256": "f93cee3bd835db767b38c85597c4e0ff35f7f26e06b247f136a6e99447104f0c"
+      "file": "media/manip-right-isaac-20x.mp4",
+      "sha256": "e1fd42adfd18c39be6af1459afe3312641bb809df8e5c31b7aec4fb2ba095e13"
     },
     {
-      "file": "media/manip-right-perception.mp4",
-      "sha256": "5871b6f4311de7dbf81da0001f829080477d63336986390ae0922233f9e65144"
+      "file": "media/manip-right-perception-20x.mp4",
+      "sha256": "b057561eca6a4fd46c767620299071016a1ffc0cf54eb926b9dcfc7e7f8ae67e"
     },
     {
-      "file": "media/manip-right-sensors.mp4",
-      "sha256": "cffd5f420f38d0734ebd89d0e2068aec8d5729e44b8452864c21cef46c8ed028"
+      "file": "media/manip-right-sensors-20x.mp4",
+      "sha256": "b624ad13557c6e8d6e9d19e63416ecb716bb6b874be3f43d2e095993c084ac0a"
     },
     {
-      "file": "media/warehouse-station-isaac.mp4",
-      "sha256": "b4ba815ec80aee4e324a71dadb06e408220ef361c8603f0a77897a8dbe48c432"
+      "file": "media/warehouse-station-isaac-20x.mp4",
+      "sha256": "2500a8ff8130490c0e539e8a2376516a6b64c0759d5b7069af22079900ffdd51"
     }
   ]
 }
