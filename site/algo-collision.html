@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>原生碰撞与路径修复</title>
+<title>Pink球体距离约束</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,95 +698,145 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>原生碰撞与路径修复</h1><p class="am-sub">使用成熟库检查，模型语义需要项目配置</p><div class="am-head-meta"><span><b>doc_id</b>algo-collision</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>Pink球体距离约束</h1><p class="am-sub">原生BodySphericalBarrier，明确覆盖范围</p><div class="am-head-meta"><span><b>doc_id</b>algo-collision</span><span><b>implementation</b>58d173a00d463bce</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 输入与输出</a><a href="#panel-B">B · 模型与原理</a><a href="#panel-C">C · 保留的限制</a><a href="#panel-D">D · 实现与来源</a><a href="#panel-E">E · 适用边界</a><a href="#panel-F">F · 独立实验入口</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>作用与输入输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>输入URDF/SRDF、当前关节、局部场景、接触白名单与候选路径。输出有效性、最近接触或修复路径。</p>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>输入与输出</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>输入G1/REVO2模型、实测全身关节、活动臂和关节参考。
+输出球体距离余量、限制球对和采样数量。
+该结果不提供世界障碍或指尖碰撞证书。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>MoveIt原生PlanningScene负责状态和轨迹碰撞语义。允许接触矩阵用于有意的目标接触，仍须检查环境障碍。
-自由路径可由MoveIt规划器生成走廊；受末端参考约束的路径使用Tesseract/TrajOpt SQP，包含连续碰撞约束与关节jerk代价。
-几何和允许接触来自感知与配置。运行时不读取仿真物体真值。</p>
-</div></div>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>模型与原理</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>复用Pink原生<code>BodySphericalBarrier</code>，将<code>h=||c₁−c₂||²−d_min²</code>加入差分IK约束。
+七个球体覆盖躯干，以及左右肘、腕和掌根。
+球心与半径来自URDF碰撞几何的原生局部包围盒。
+活动臂与躯干、左右臂之间的球对参与约束。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1316 134" width="1316" height="134" role="img" aria-label="流程图：URDF几何、原生局部包围球、实测全身q、Pink配置、BodySphericalBarrier、Pink差分IK、实际插值采样、明确范围的结果" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M105.7,31.5 L146.1,31.5 Q186.5,31.5 226.8,31.5 L267.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="147" y="22.5" width="79" height="18" rx="3"/><text x="186.5" y="31.5" text-anchor="middle" dominant-baseline="central">七个身体部位</text></g></g><g data-step="1"><path class="am-edge" d="M103.5,102.5 L145,102.5 Q186.5,102.5 236.2,102.5 L285.9,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="129.7" y="93.5" width="113.5" height="18" rx="3"/><text x="186.5" y="102.5" text-anchor="middle" dominant-baseline="central">固定身体、求活动臂</text></g></g><g data-step="2"><path class="am-edge" d="M386.2,31.5 L412.2,31.5 Q438.2,31.5 464.2,31.5 L490.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="410.2" y="22.5" width="56" height="18" rx="3"/><text x="438.2" y="31.5" text-anchor="middle" dominant-baseline="central">球心距离</text></g></g><g data-step="3"><path class="am-edge" d="M646.6,31.5 L672.6,31.5 Q698.6,31.5 724.6,31.5 L750.6,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="670.6" y="22.5" width="56" height="18" rx="3"/><text x="698.6" y="31.5" text-anchor="middle" dominant-baseline="central">每步约束</text></g></g><g data-step="4"><path class="am-edge" d="M845.2,31.5 L874.1,31.5 Q903,31.5 931.8,31.5 L960.7,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="869.2" y="22.5" width="67.5" height="18" rx="3"/><text x="903" y="31.5" text-anchor="middle" dominant-baseline="central">共用执行器</text></g></g><g data-step="5"><path class="am-edge" d="M1066.7,31.5 L1095.6,31.5 Q1124.5,31.5 1153.3,31.5 L1182.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1090.7" y="22.5" width="67.5" height="18" rx="3"/><text x="1124.5" y="31.5" text-anchor="middle" dominant-baseline="central">余量与球对</text></g></g></g><g><g class="am-node am-node--rect" data-key="URDF几何" data-step="0"><rect class="am-node-shape" x="14" y="14" width="91.7" height="35" rx="3"/><text x="59.9" y="31.5" text-anchor="middle" dominant-baseline="central">URDF几何</text></g><g class="am-node am-node--rect" data-key="原生局部包围球" data-step="0"><rect class="am-node-shape" x="267.2" y="14" width="119" height="35" rx="3"/><text x="326.7" y="31.5" text-anchor="middle" dominant-baseline="central">原生局部包围球</text></g><g class="am-node am-node--rect" data-key="实测全身q" data-step="1"><rect class="am-node-shape" x="16.2" y="85" width="87.3" height="35" rx="3"/><text x="59.9" y="102.5" text-anchor="middle" dominant-baseline="central">实测全身q</text></g><g class="am-node am-node--rect" data-key="Pink配置" data-step="1"><rect class="am-node-shape" x="285.9" y="85" width="81.6" height="35" rx="3"/><text x="326.7" y="102.5" text-anchor="middle" dominant-baseline="central">Pink配置</text></g><g class="am-node am-node--rect" data-key="BodySphericalBarrier" data-step="2"><rect class="am-node-shape" x="490.2" y="14" width="156.4" height="35" rx="3"/><text x="568.4" y="31.5" text-anchor="middle" dominant-baseline="central">BodySphericalBarrier</text></g><g class="am-node am-node--rect" data-key="Pink差分IK" data-step="3"><rect class="am-node-shape" x="750.6" y="14" width="94.6" height="35" rx="3"/><text x="797.9" y="31.5" text-anchor="middle" dominant-baseline="central">Pink差分IK</text></g><g class="am-node am-node--rect" data-key="实际插值采样" data-step="4"><rect class="am-node-shape" x="960.7" y="14" width="106" height="35" rx="3"/><text x="1013.7" y="31.5" text-anchor="middle" dominant-baseline="central">实际插值采样</text></g><g class="am-node am-node--rect" data-key="明确范围的结果" data-step="5"><rect class="am-node-shape" x="1182.2" y="14" width="119" height="35" rx="3"/><text x="1241.7" y="31.5" text-anchor="middle" dominant-baseline="central">明确范围的结果</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>路径修复最多取9个优化节点，原参考仍为8至80个样本。SQP示例最多40次迭代、30秒。插值回原采样后重新检查完整轨迹。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>保留的限制</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>原关节限位、前方TCP工作区、速度、加速度、力矩、实测起点、触觉和执行租约保持。
+手预成形验证REVO2官方映射和关节限位，不输出指尖碰撞通过结论。
+刚性本体平移不改变自体球距；BASE检查不据此宣称外部路径无障碍。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与复用来源</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="https://github.com/moveit/moveit2">MoveIt 2</a>、<a href="https://github.com/tesseract-robotics/tesseract">Tesseract</a>、<a href="https://github.com/tesseract-robotics/trajopt">TrajOpt</a>。项目原生绑定复用这些实现。</p>
-<ul>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/native_collision.py">modules/manipulation_runtime/native_collision.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_path_optimization.py">modules/manipulation_runtime/cartesian_path_optimization.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/trajopt_scene.py">modules/manipulation_runtime/trajopt_scene.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/moveit_provider.py">modules/manipulation_runtime/moveit_provider.py</a></li>
-</ul>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与来源</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>复用<a href="https://github.com/stephane-caron/pink">Pink</a>与Pinocchio原生API。
+<code>spherical_barriers.py</code>构造球对，<code>pink_collision.py</code>检查状态与共用插值。
+<code>hand_preform.py</code>只验证官方手部映射与限位。
+MoveIt的Get/ApplyPlanningScene服务暂用于局部场景数据与附着关系。
+当前REVO2操作不调用其路径规划、FCL校核或自动修复。
+历史相关源码保留，不能视为默认备用路径。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>上肢前方工作域和关节限制仍由profile定义。不要把自身模型误差造成的误报简单变成取消检查；先核对模型、SRDF与实际接触语义。RGB-D近距离精度不足的接触细节由触觉承担。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>包围球较保守；球体重叠可能拒绝实际不接触的构型。
+该模型不覆盖肩、指尖、台面、其他世界障碍和附着物。
+未覆盖距离报告为空，不填无限大或PASS。
+RGB-D与触觉仍分别负责观测和接触反馈。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>验证与替换</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>对终点和路径分别检查。离线碰撞无误不保证真实接触任务成功，也不能证明未观测区域没有障碍。</p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>独立实验入口</h2></header>
+<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/run_scenario.py workbench-pink-barrier --check</span><span class="am-ln">python3 scripts/run_scenario.py workbench-pink-barrier</span></code></pre></figure>
+<div class="am-md"><p>该SIM入口执行右臂向前8cm、向上3cm的自由轨迹，另一臂保持，下肢原地站立。
+模型加载与规划在独立进程执行，仍共用EXEC、SDK和AMO。
+自由轨迹完成不证明抓取或完整物理碰撞验证通过。</p>
 <p><a href="algorithms.html">算法目录</a> · <a href="modules.html">模块目录</a> · <a href="experiments.html">实验口径</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 02:39</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: 原生碰撞与路径修复
-subtitle: 使用成熟库检查，模型语义需要项目配置
+title: Pink球体距离约束
+subtitle: 原生BodySphericalBarrier，明确覆盖范围
 lang: zh
 doc_id: algo-collision
-implementation: 370e694d928b04e3
+implementation: 58d173a00d463bce
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-## A 作用与输入输出
+## A 输入与输出
 
-输入URDF/SRDF、当前关节、局部场景、接触白名单与候选路径。输出有效性、最近接触或修复路径。
+输入G1/REVO2模型、实测全身关节、活动臂和关节参考。
+输出球体距离余量、限制球对和采样数量。
+该结果不提供世界障碍或指尖碰撞证书。
 
-## B 原理和调用链
+## B 模型与原理
 
-MoveIt原生PlanningScene负责状态和轨迹碰撞语义。允许接触矩阵用于有意的目标接触，仍须检查环境障碍。
-自由路径可由MoveIt规划器生成走廊；受末端参考约束的路径使用Tesseract/TrajOpt SQP，包含连续碰撞约束与关节jerk代价。
-几何和允许接触来自感知与配置。运行时不读取仿真物体真值。
+复用Pink原生`BodySphericalBarrier`，将`h=||c₁−c₂||²−d_min²`加入差分IK约束。
+七个球体覆盖躯干，以及左右肘、腕和掌根。
+球心与半径来自URDF碰撞几何的原生局部包围盒。
+活动臂与躯干、左右臂之间的球对参与约束。
 
-## C 参数与运行特性
+```flow LR
+URDF几何 -&gt; 原生局部包围球: 七个身体部位
+实测全身q -&gt; Pink配置: 固定身体、求活动臂
+原生局部包围球 -&gt; BodySphericalBarrier: 球心距离
+BodySphericalBarrier -&gt; Pink差分IK: 每步约束
+Pink差分IK -&gt; 实际插值采样: 共用执行器
+实际插值采样 -&gt; 明确范围的结果: 余量与球对
+```
 
-路径修复最多取9个优化节点，原参考仍为8至80个样本。SQP示例最多40次迭代、30秒。插值回原采样后重新检查完整轨迹。
+## C 保留的限制
 
-## D 实现与复用来源
+原关节限位、前方TCP工作区、速度、加速度、力矩、实测起点、触觉和执行租约保持。
+手预成形验证REVO2官方映射和关节限位，不输出指尖碰撞通过结论。
+刚性本体平移不改变自体球距；BASE检查不据此宣称外部路径无障碍。
 
-[MoveIt 2](https://github.com/moveit/moveit2)、[Tesseract](https://github.com/tesseract-robotics/tesseract)、[TrajOpt](https://github.com/tesseract-robotics/trajopt)。项目原生绑定复用这些实现。
+## D 实现与来源
 
-- [modules/manipulation_runtime/native_collision.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/native_collision.py)
-- [modules/manipulation_runtime/cartesian_path_optimization.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_path_optimization.py)
-- [modules/manipulation_runtime/trajopt_scene.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/trajopt_scene.py)
-- [modules/manipulation_runtime/moveit_provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/moveit_provider.py)
+复用[Pink](https://github.com/stephane-caron/pink)与Pinocchio原生API。
+`spherical_barriers.py`构造球对，`pink_collision.py`检查状态与共用插值。
+`hand_preform.py`只验证官方手部映射与限位。
+MoveIt的Get/ApplyPlanningScene服务暂用于局部场景数据与附着关系。
+当前REVO2操作不调用其路径规划、FCL校核或自动修复。
+历史相关源码保留，不能视为默认备用路径。
 
-## E 适用条件与失败处理
+## E 适用边界
 
-上肢前方工作域和关节限制仍由profile定义。不要把自身模型误差造成的误报简单变成取消检查；先核对模型、SRDF与实际接触语义。RGB-D近距离精度不足的接触细节由触觉承担。
+包围球较保守；球体重叠可能拒绝实际不接触的构型。
+该模型不覆盖肩、指尖、台面、其他世界障碍和附着物。
+未覆盖距离报告为空，不填无限大或PASS。
+RGB-D与触觉仍分别负责观测和接触反馈。
 
-## F 验证与替换
+## F 独立实验入口
 
-对终点和路径分别检查。离线碰撞无误不保证真实接触任务成功，也不能证明未观测区域没有障碍。
+```bash
+python3 scripts/run_scenario.py workbench-pink-barrier --check
+python3 scripts/run_scenario.py workbench-pink-barrier
+```
+
+该SIM入口执行右臂向前8cm、向上3cm的自由轨迹，另一臂保持，下肢原地站立。
+模型加载与规划在独立进程执行，仍共用EXEC、SDK和AMO。
+自由轨迹完成不证明抓取或完整物理碰撞验证通过。
 
 [算法目录](algorithms.html) · [模块目录](modules.html) · [实验口径](experiments.html)
 </textarea>

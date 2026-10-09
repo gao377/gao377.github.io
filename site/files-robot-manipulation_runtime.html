@@ -698,13 +698,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>manipulation_runtime · 文件与符号</h1><p class="am-sub">按当前源码 AST 提取，不嵌入函数正文</p><div class="am-head-meta"><span><b>doc_id</b>files-robot-manipulation_runtime</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>manipulation_runtime · 文件与符号</h1><p class="am-sub">按当前源码 AST 提取，不嵌入函数正文</p><div class="am-head-meta"><span><b>doc_id</b>files-robot-manipulation_runtime</span><span><b>implementation</b>58d173a00d463bce</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 所属模块</a><a href="#panel-B">B · 源码导航</a><a href="#panel-C">C · 使用方式</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>所属模块</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="module-robot-manipulation_runtime.html">本体局部操作</a> · 本目录 87 个 Python 文件。</p>
+<div class="am-panel-body"><div class="am-md"><p><a href="module-robot-manipulation_runtime.html">本体局部操作</a> · 本目录 93 个 Python 文件。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -718,7 +718,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </thead>
 <tbody><tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/__init__.py"><strong>init</strong>.py</a></td>
-<td>导出或模块初始化</td>
+<td></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/adaptive_grasp_execution.py">adaptive_grasp_execution.py</a></td>
@@ -794,7 +794,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/arm_selection.py">arm_selection.py</a></td>
-<td><code>ArmSelection</code>, <code>held_arm_reference</code>, <code>check_hand_hypotheses</code>, <code>collision_checked_seed</code>, <code>assess_arm</code>, <code>screen_with_posture_recovery</code>, <code>select_arm</code></td>
+<td><code>ArmSelection</code>, <code>selection_budget</code>, <code>held_arm_reference</code>, <code>check_hand_hypotheses</code>, <code>collision_checked_seed</code>, <code>assess_arm</code>, <code>screen_with_posture_recovery</code>, <code>select_arm</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/bimanual_constraints.py">bimanual_constraints.py</a></td>
@@ -842,7 +842,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_worker.py">cartesian_worker.py</a></td>
-<td><code>finish_candidate</code>, <code>solve_cartesian</code></td>
+<td><code>solve_cartesian</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/command_hand.py">command_hand.py</a></td>
@@ -858,7 +858,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/empty_hand_state.py">empty_hand_state.py</a></td>
-<td><code>EmptyHandState</code></td>
+<td></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/functional.py">functional.py</a></td>
@@ -890,7 +890,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/joint_preparation.py">joint_preparation.py</a></td>
-<td><code>_replan</code>, <code>plan_joint_preparation</code></td>
+<td><code>plan_joint_preparation</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/joint_target.py">joint_target.py</a></td>
+<td><code>JointTargetProposal</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/local_planning_frame.py">local_planning_frame.py</a></td>
@@ -950,7 +954,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/operation_workspace.py">operation_workspace.py</a></td>
-<td><code>moveit_operation_constraints</code>, <code>apply_front_workspace</code></td>
+<td><code>check_front_workspace</code>, <code>moveit_operation_constraints</code>, <code>apply_front_workspace</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/payload_dynamics.py">payload_dynamics.py</a></td>
@@ -1001,6 +1005,18 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td><code>verify_pick</code></td>
 </tr>
 <tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pink_barrier_trial.py">pink_barrier_trial.py</a></td>
+<td><code>solve_trial</code>, <code>plan_trial</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pink_collision.py">pink_collision.py</a></td>
+<td><code>PinkPathResult</code>, <code>PinkCollisionChecker</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pink_trajectory.py">pink_trajectory.py</a></td>
+<td><code>trajectory_from_rollout</code>, <code>verify_pink_trajectory</code></td>
+</tr>
+<tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/place.py">place.py</a></td>
 <td><code>PlaceTargets</code>, <code>make_place_targets</code>, <code>submit_place_stage</code>, <code>G1PlaceOperation</code></td>
 </tr>
@@ -1015,6 +1031,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/planning_state.py">planning_state.py</a></td>
 <td><code>_revo2_names</code>, <code>validate_planning_state</code>, <code>legacy_planning_state</code>, <code>measured_planning_state</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/planning_worker.py">planning_worker.py</a></td>
+<td><code>PlanningWorker</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/provider.py">provider.py</a></td>
@@ -1034,7 +1054,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/revo2_hand_command.py">revo2_hand_command.py</a></td>
-<td><code>Revo2HandCommand</code></td>
+<td></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/runtime.py">runtime.py</a></td>
@@ -1043,6 +1063,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/scene_bridge.py">scene_bridge.py</a></td>
 <td><code>_set_stamp</code>, <code>box_object</code>, <code>cylinder_object</code>, <code>hand_contact_links</code>, <code>attached_object</code>, <code>remove_world_object</code>, <code>with_object_touch</code>, <code>make_scene_request</code>, <code>with_support_contact</code>, <code>support_clearance_pairs</code>, <code>SceneBridge</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/spherical_barriers.py">spherical_barriers.py</a></td>
+<td><code>arm_spherical_barriers</code>, <code>barrier_sample</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/stage_execution.py">stage_execution.py</a></td>
@@ -1076,7 +1100,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 02:39</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1084,20 +1108,20 @@ title: manipulation_runtime · 文件与符号
 subtitle: 按当前源码 AST 提取，不嵌入函数正文
 lang: zh
 doc_id: files-robot-manipulation_runtime
-implementation: 370e694d928b04e3
+implementation: 58d173a00d463bce
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
 ## A 所属模块
 
-[本体局部操作](module-robot-manipulation_runtime.html) · 本目录 87 个 Python 文件。
+[本体局部操作](module-robot-manipulation_runtime.html) · 本目录 93 个 Python 文件。
 
 ## B 源码导航
 
 | 文件 | 顶层类或函数 |
 | --- | --- |
-| [__init__.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/__init__.py) | 导出或模块初始化 |
+| [__init__.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/__init__.py) |  |
 | [adaptive_grasp_execution.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/adaptive_grasp_execution.py) | `AdaptiveGraspExecution` |
 | [adaptive_hand_grasp.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/adaptive_hand_grasp.py) | `AdaptiveGraspProfile`, `AdaptiveHandGrasp` |
 | [amo_posture_cost.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/amo_posture_cost.py) | `AmoPostureCost` |
@@ -1116,7 +1140,7 @@ implementation: 370e694d928b04e3
 | [approach_torso.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/approach_torso.py) | `TorsoApproachExecution` |
 | [approach_visual.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/approach_visual.py) | `ApproachVisualServo` |
 | [arm_posture_preference.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/arm_posture_preference.py) | `stowed_other_arm`, `load_metrics`, `preference_key`, `outward_elbow_tasks`, `elbow_preference_metrics` |
-| [arm_selection.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/arm_selection.py) | `ArmSelection`, `held_arm_reference`, `check_hand_hypotheses`, `collision_checked_seed`, `assess_arm`, `screen_with_posture_recovery`, `select_arm` |
+| [arm_selection.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/arm_selection.py) | `ArmSelection`, `selection_budget`, `held_arm_reference`, `check_hand_hypotheses`, `collision_checked_seed`, `assess_arm`, `screen_with_posture_recovery`, `select_arm` |
 | [bimanual_constraints.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/bimanual_constraints.py) | `constraint_times`, `BimanualTcpConstraints` |
 | [bimanual_kinematics.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/bimanual_kinematics.py) | `BimanualKinematics` |
 | [bimanual_planner.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/bimanual_planner.py) | `resample_seed`, `BimanualPlanner` |
@@ -1128,11 +1152,11 @@ implementation: 370e694d928b04e3
 | [cartesian_reference.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_reference.py) | `minimum_jerk_reference`, `reference_timing`, `joint_feasible_reference`, `retime_geometric_seed` |
 | [cartesian_segments.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_segments.py) | `feasible_cartesian_target`, `make_cartesian_request`, `CartesianPlanner`, `trajectory_from_cartesian_response` |
 | [cartesian_target_reference.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_target_reference.py) | `current_targets` |
-| [cartesian_worker.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_worker.py) | `finish_candidate`, `solve_cartesian` |
+| [cartesian_worker.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_worker.py) | `solve_cartesian` |
 | [command_hand.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/command_hand.py) | `HandCommand` |
 | [differential_ik.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/differential_ik.py) | `DifferentialArmPath` |
 | [display.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/display.py) | `DisplayTarget`, `make_display_target`, `G1DisplayOperation` |
-| [empty_hand_state.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/empty_hand_state.py) | `EmptyHandState` |
+| [empty_hand_state.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/empty_hand_state.py) |  |
 | [functional.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/functional.py) | `_target_matrix`, `FunctionalManipulation` |
 | [grasp_binding.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/grasp_binding.py) | `bind_grasp_profile`, `selected_arm_feedback`, `alternate_access` |
 | [grasp_candidates.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/grasp_candidates.py) | `GraspCandidate`, `rigid_transform`, `grasp_profiles`, `grasp_candidate` |
@@ -1140,7 +1164,8 @@ implementation: 370e694d928b04e3
 | [grasp_verification.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/grasp_verification.py) | `LiftVerification` |
 | [hand_preform.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/hand_preform.py) | `check_hand_preshape`, `NativeHandPreshape` |
 | [holding_context.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/holding_context.py) | `pose_matrix`, `_pose`, `create_holding_context`, `release_retreat_in_pelvis`, `original_in_pelvis`, `update_holding_context`, `holding_matches_observation`, `holding_ready`, `read_held_state`, `update_holding_from_feedback` |
-| [joint_preparation.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/joint_preparation.py) | `_replan`, `plan_joint_preparation` |
+| [joint_preparation.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/joint_preparation.py) | `plan_joint_preparation` |
+| [joint_target.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/joint_target.py) | `JointTargetProposal` |
 | [local_planning_frame.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/local_planning_frame.py) | `bind_local_planning_frame` |
 | [minimum_jerk.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/minimum_jerk.py) | `optimize_minimum_jerk` |
 | [minimum_jerk_qp.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/minimum_jerk_qp.py) | `solve_linear_opti` |
@@ -1155,7 +1180,7 @@ implementation: 370e694d928b04e3
 | [operation_requirements.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/operation_requirements.py) | `TcpRegion`, `OperationPhase`, `OperationRequirement`, `compile_reach_requirement`, `compile_pick_requirement` |
 | [operation_scenes.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/operation_scenes.py) | `_hand_range`, `compile_pick_scenes`, `compile_access_scene` |
 | [operation_seed_planner.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/operation_seed_planner.py) | `_transformed_object`, `scene_plan_goal`, `OperationSeedPlanner` |
-| [operation_workspace.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/operation_workspace.py) | `moveit_operation_constraints`, `apply_front_workspace` |
+| [operation_workspace.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/operation_workspace.py) | `check_front_workspace`, `moveit_operation_constraints`, `apply_front_workspace` |
 | [payload_dynamics.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/payload_dynamics.py) | `configure_payload_dynamics` |
 | [pick.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pick.py) | `submit_pick_stage`, `G1PickOperation` |
 | [pick_descent.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pick_descent.py) | `next_descent_target`, `start_pick_descent`, `continue_pick_descent` |
@@ -1168,17 +1193,22 @@ implementation: 370e694d928b04e3
 | [pick_snapshot.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pick_snapshot.py) | `validate_entity_target`, `validate_pick_target`, `step_pick_arm`, `step_pick_preform` |
 | [pick_start.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pick_start.py) | `begin_preshape`, `step_pick_hand`, `begin_touch_query`, `begin_pick_inputs`, `begin_lift_attachment` |
 | [pick_verification.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pick_verification.py) | `verify_pick` |
+| [pink_barrier_trial.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pink_barrier_trial.py) | `solve_trial`, `plan_trial` |
+| [pink_collision.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pink_collision.py) | `PinkPathResult`, `PinkCollisionChecker` |
+| [pink_trajectory.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/pink_trajectory.py) | `trajectory_from_rollout`, `verify_pink_trajectory` |
 | [place.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/place.py) | `PlaceTargets`, `make_place_targets`, `submit_place_stage`, `G1PlaceOperation` |
 | [planning_scene.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/planning_scene.py) | `ros_pose_matrix`, `PlanningSceneReader` |
 | [planning_snapshot.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/planning_snapshot.py) | `arm_acceleration`, `validate_planning_start` |
 | [planning_state.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/planning_state.py) | `_revo2_names`, `validate_planning_state`, `legacy_planning_state`, `measured_planning_state` |
+| [planning_worker.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/planning_worker.py) | `PlanningWorker` |
 | [provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/provider.py) | `ProviderStep`, `ManipulationProvider` |
 | [reach.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/reach.py) | `_transform`, `solve_reach_ik`, `submit_reach_plan` |
 | [reachability.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/reachability.py) | `ReachabilityThresholds`, `ReachabilityReport`, `ReachabilityEvaluator` |
 | [revo2_grasp_profile.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/revo2_grasp_profile.py) | `Revo2GraspProfile` |
-| [revo2_hand_command.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/revo2_hand_command.py) | `Revo2HandCommand` |
+| [revo2_hand_command.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/revo2_hand_command.py) |  |
 | [runtime.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/runtime.py) | `ManipulationRuntime` |
 | [scene_bridge.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/scene_bridge.py) | `_set_stamp`, `box_object`, `cylinder_object`, `hand_contact_links`, `attached_object`, `remove_world_object`, `with_object_touch`, `make_scene_request`, `with_support_contact`, `support_clearance_pairs`, `SceneBridge` |
+| [spherical_barriers.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/spherical_barriers.py) | `arm_spherical_barriers`, `barrier_sample` |
 | [stage_execution.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/stage_execution.py) | `CartesianStageExecution` |
 | [trajectory_constraints.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/trajectory_constraints.py) | `ArmTrajectoryLimits`, `verify_trajectory_bounds` |
 | [trajopt_scene.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/trajopt_scene.py) | `native_modules`, `base_environment`, `add_object`, `snapshot_environment`, `collision_config` |

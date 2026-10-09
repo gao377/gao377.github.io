@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "370e694d928b04e3325921905e359690a8eb28fcbf6d8e41b45203de0d802921",
+  "implementation_sha256": "58d173a00d463bce6085854fd4102e23fd73553b565e311b813ce3d6afb67981",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -63,11 +63,11 @@
     },
     {
       "file": "algo-cartesian.html",
-      "source_sha256": "17f64c17001c7bcf597b60da8951e8a256cef2e965619e433d488ba9daaecf4d"
+      "source_sha256": "3dcffeb60c2dce40c7243235ae18264b886e7f730cda7c1f5bce5669ae4707e1"
     },
     {
       "file": "algo-collision.html",
-      "source_sha256": "be3867034ab52c33619262db092705bb8b8b87da5f3fe037d984102c38442e72"
+      "source_sha256": "d81fa400f3c6b7f75c7104dc13e746ad1119c2a85c28c99f4e530e52d479e734"
     },
     {
       "file": "algo-execution.html",
@@ -127,11 +127,11 @@
     },
     {
       "file": "algo-trajectory.html",
-      "source_sha256": "c5f4cc038e434d452a8a00f34c4b4a025dea35f2b30a6d8e4451e4bf8740c1e0"
+      "source_sha256": "35d5af258d4f9365e687e085d88d8f05de46d385b2ece5133905628e2832eba3"
     },
     {
       "file": "algorithms.html",
-      "source_sha256": "9acb8547d4963c7cacb2fbf6c0586c06074515ba5e03011459b77f8dc0cffc04"
+      "source_sha256": "90d8074ce2433bdccd21ee65bf6d11ced5fa012a24614ed3b9a2275f9dddbb93"
     },
     {
       "file": "architecture-map.html",
@@ -187,7 +187,7 @@
     },
     {
       "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "feb8842c10ee3d5e220b6180e90b271ff446f3b290c1b62dff8b02620a563b6e"
+      "source_sha256": "6c821af084de4acb14575855592a08b1e8ba95182a232a1fbe03fb885e1f1f81"
     },
     {
       "file": "files-robot-motion_coordinator.html",
@@ -311,7 +311,7 @@
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "6b5733a6ea351d89b5073fa9c5b2468d88100ce2f9a27d99744fbedb0854b389"
+      "source_sha256": "971b8979d5b9ca0102c6ad6ac5a1128728016d2d389bdd872d7334efe74a7b01"
     },
     {
       "file": "module-robot-motion_coordinator.html",
@@ -391,7 +391,7 @@
     },
     {
       "file": "runtime-internals.html",
-      "source_sha256": "e0652a9b4f2c1ac454feaa9ec603c617a8de792238de193f8871873d48716fdb"
+      "source_sha256": "eb1929066eaf0e16d5909deaf436dc612a086581aad7d099ecd0d5deb05075d0"
     },
     {
       "file": "scenarios.html",
@@ -405,15 +405,15 @@
     },
     {
       "file": "diagrams/algorithm-map.drawio",
-      "sha256": "a6751aaf417786f2d57dbfdee2387b01780fae7b02642da3edd8721291d7fb09"
+      "sha256": "b5b1309de0a9d2760a9e4d4f78575477eaa3efb0a8c6933c0912ccc85f98bab4"
     },
     {
       "file": "diagrams/algorithm-map.html",
-      "sha256": "8beb6993bbcebe4e81747bd47c9c044295898369515a0ac7e9711e391c27fa78"
+      "sha256": "64475b1a1241c25d2bd8f3abb42db7feb8159a875e55cb5c368b35a85f060f05"
     },
     {
       "file": "diagrams/algorithm-map.svg",
-      "sha256": "09b36ece7b911318528e34b2d71d8e446ee0131cdf4834c37afc706d6a414a79"
+      "sha256": "0ceb6182918f09837660817e9753587bd0dce0c95c59682a02b74828490991c8"
     },
     {
       "file": "diagrams/body-adapter.drawio",
@@ -429,15 +429,15 @@
     },
     {
       "file": "diagrams/manipulation-runtime.drawio",
-      "sha256": "6594921cfc577a1a3af568a2f1d0ec18ec129456ef1d48b1778ca4f371aa85c0"
+      "sha256": "9e0d13efdff1f32ffa796412f3e1ef6954e49bc663114125db738a22a7cfc5dc"
     },
     {
       "file": "diagrams/manipulation-runtime.html",
-      "sha256": "d9d98c553ab1d3bc6f515eadab29119ae09ee32e2419b0058168d6be271fedd7"
+      "sha256": "8d165827f01c55c26b6d4d32a52a31080497ff38f0ec73edada557573105559d"
     },
     {
       "file": "diagrams/manipulation-runtime.svg",
-      "sha256": "1ecc796b37ccc907365846919ab1e5969a738cc5ce35719b0110ca517ec19072"
+      "sha256": "4d009ffc18b56e75b8c48ce37ab19863e14e9dbc4fd3e410a9aa24b7b359fddd"
     },
     {
       "file": "diagrams/navigation-runtime.drawio",

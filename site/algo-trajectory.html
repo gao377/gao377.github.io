@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>最小jerk约束轨迹与重定时</title>
+<title>最小jerk参考与执行插值</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,109 +698,106 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>最小jerk约束轨迹与重定时</h1><p class="am-sub">共享规划服务于pick、display和place</p><div class="am-head-meta"><span><b>doc_id</b>algo-trajectory</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>最小jerk参考与执行插值</h1><p class="am-sub">区分末端目标曲线、Pink关节参考和C2轨迹</p><div class="am-head-meta"><span><b>doc_id</b>algo-trajectory</span><span><b>implementation</b>58d173a00d463bce</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 当前操作路径</a><a href="#panel-B">B · 参考与约束</a><a href="#panel-C">C · 执行与轨迹替换</a><a href="#panel-D">D · 实现与来源</a><a href="#panel-E">E · 时间与失败</a><a href="#panel-F">F · 验证边界</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>作用与输入输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>输入离散关节参考、初始q/dq/ddq、末端目标、关节及场景约束。输出C2连续的时间参数化轨迹。</p>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>当前操作路径</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>pick、display、place共用末端minimum-jerk参考与Pink差分IK。
+关节结点交给统一JointTrajectory与现有执行器。
+当前Pink路径使用线性关节插值，不接额外关节空间平滑QP。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>最小化关节jerk平方积分或离散等价项，并满足q、dq、ddq边界与连续性约束。
-线性CasADi Opti模型提取Hessian、梯度和约束矩阵，交给qpsolvers/Clarabel求解。
-非线性TCP和路径问题使用相应原生/优化路径，不把所有约束都称为线性QP。
-特定差分IK无解或轨迹QP不可行分支使用TOTG，再按原约束求C2轨迹。</p>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>参考与约束</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>平移使用五次时间律；姿态在SO(3)上插值。
+每步Pink求解加入关节位置、速度、加速度和球体约束。
+轨迹检查覆盖原限位、结点速度、位置差分速度和速度差分加速度。
+这些检查不等于连续关节加速度证明。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>接触参考管道示例0.0025rad，自由运动0.02rad。规划端点位置/姿态容差示例5mm/0.01rad。执行器的测量到位容差是另一层，不能混为感知精度。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>执行与轨迹替换</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>EXEC使用唯一SDK写入者，保留实测起点、期限、取消和租约检查。
+含q/dq/ddq的轨迹可由SciPy BPoly插值。
+连续余段替换仍须满足原C2接缝；不能把缺少ddq的Pink参考直接当作C2轨迹。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与复用来源</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>CasADi、Clarabel、MoveIt TOTG及SciPy插值；项目连接统一trajectory契约。</p>
-<ul>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/minimum_jerk.py">modules/manipulation_runtime/minimum_jerk.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/minimum_jerk_qp.py">modules/manipulation_runtime/minimum_jerk_qp.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/trajectory_constraints.py">modules/manipulation_runtime/trajectory_constraints.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_worker.py">modules/manipulation_runtime/cartesian_worker.py</a></li>
-</ul>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与来源</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>复用SciPy、Pink、Pinocchio及Clarabel。
+<code>cartesian_reference.py</code>生成末端参考，<code>pink_trajectory.py</code>形成当前关节轨迹。
+<code>action_executor/trajectory_sampler.py</code>实现实际插值。
+<code>minimum_jerk.py</code>、<code>minimum_jerk_qp.py</code>与旧重定时代码保留为历史实现，不在当前REVO2操作路径自动启用。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>当前求解有两类：仅线性关节约束时使用Clarabel QP；带符号TCP或前方工作域时使用IPOPT。
-当前渐进Cartesian主链使用Clarabel；IPOPT位于保留的plan_bimanual路径。
-二者不能统称为一个线性QP。</p>
-<p><code>cartesian_worker</code>在特定不可行分支使用MoveIt TOTG并放长时长，再回到同一轨迹检查。
-耗时分析须同时记录分支触发、原生求解壁钟和输出轨迹时长。</p>
-<p>轨迹时间是机器人执行所需仿真秒，算法壁钟耗时是规划开销；RTF又决定现实等待时间。三者分别报告。QP失败保留状态与诊断，不能放宽约束伪装有解。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>时间与失败</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>轨迹时长是执行参考所需的仿真秒，算法墙钟是现实计算耗时。
+RTF决定仿真执行对应的现实等待；三个值分别记录。
+任何约束拒绝或预算耗尽返回原因，不自动调用MoveIt TOTG或TrajOpt。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>验证与替换</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>复核端点、C2、最大速度/加速度及整条轨迹有效性。重定时或插值后必须重新检查最终轨迹。</p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>验证边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>复核末端残差、导数限制及实际采样球体余量。
+实际执行仍须依据本体反馈确认TCP；冻结身体的离线路径不能证明腰变化时的跟踪精度。</p>
 <p><a href="algorithms.html">算法目录</a> · <a href="modules.html">模块目录</a> · <a href="experiments.html">实验口径</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 02:39</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: 最小jerk约束轨迹与重定时
-subtitle: 共享规划服务于pick、display和place
+title: 最小jerk参考与执行插值
+subtitle: 区分末端目标曲线、Pink关节参考和C2轨迹
 lang: zh
 doc_id: algo-trajectory
-implementation: 370e694d928b04e3
+implementation: 58d173a00d463bce
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-## A 作用与输入输出
+## A 当前操作路径
 
-输入离散关节参考、初始q/dq/ddq、末端目标、关节及场景约束。输出C2连续的时间参数化轨迹。
+pick、display、place共用末端minimum-jerk参考与Pink差分IK。
+关节结点交给统一JointTrajectory与现有执行器。
+当前Pink路径使用线性关节插值，不接额外关节空间平滑QP。
 
-## B 原理和调用链
+## B 参考与约束
 
-最小化关节jerk平方积分或离散等价项，并满足q、dq、ddq边界与连续性约束。
-线性CasADi Opti模型提取Hessian、梯度和约束矩阵，交给qpsolvers/Clarabel求解。
-非线性TCP和路径问题使用相应原生/优化路径，不把所有约束都称为线性QP。
-特定差分IK无解或轨迹QP不可行分支使用TOTG，再按原约束求C2轨迹。
+平移使用五次时间律；姿态在SO(3)上插值。
+每步Pink求解加入关节位置、速度、加速度和球体约束。
+轨迹检查覆盖原限位、结点速度、位置差分速度和速度差分加速度。
+这些检查不等于连续关节加速度证明。
 
-## C 参数与运行特性
+## C 执行与轨迹替换
 
-接触参考管道示例0.0025rad，自由运动0.02rad。规划端点位置/姿态容差示例5mm/0.01rad。执行器的测量到位容差是另一层，不能混为感知精度。
+EXEC使用唯一SDK写入者，保留实测起点、期限、取消和租约检查。
+含q/dq/ddq的轨迹可由SciPy BPoly插值。
+连续余段替换仍须满足原C2接缝；不能把缺少ddq的Pink参考直接当作C2轨迹。
 
-## D 实现与复用来源
+## D 实现与来源
 
-CasADi、Clarabel、MoveIt TOTG及SciPy插值；项目连接统一trajectory契约。
+复用SciPy、Pink、Pinocchio及Clarabel。
+`cartesian_reference.py`生成末端参考，`pink_trajectory.py`形成当前关节轨迹。
+`action_executor/trajectory_sampler.py`实现实际插值。
+`minimum_jerk.py`、`minimum_jerk_qp.py`与旧重定时代码保留为历史实现，不在当前REVO2操作路径自动启用。
 
-- [modules/manipulation_runtime/minimum_jerk.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/minimum_jerk.py)
-- [modules/manipulation_runtime/minimum_jerk_qp.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/minimum_jerk_qp.py)
-- [modules/manipulation_runtime/trajectory_constraints.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/trajectory_constraints.py)
-- [modules/manipulation_runtime/cartesian_worker.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/manipulation_runtime/cartesian_worker.py)
+## E 时间与失败
 
-## E 适用条件与失败处理
+轨迹时长是执行参考所需的仿真秒，算法墙钟是现实计算耗时。
+RTF决定仿真执行对应的现实等待；三个值分别记录。
+任何约束拒绝或预算耗尽返回原因，不自动调用MoveIt TOTG或TrajOpt。
 
-当前求解有两类：仅线性关节约束时使用Clarabel QP；带符号TCP或前方工作域时使用IPOPT。
-当前渐进Cartesian主链使用Clarabel；IPOPT位于保留的plan_bimanual路径。
-二者不能统称为一个线性QP。
+## F 验证边界
 
-`cartesian_worker`在特定不可行分支使用MoveIt TOTG并放长时长，再回到同一轨迹检查。
-耗时分析须同时记录分支触发、原生求解壁钟和输出轨迹时长。
-
-轨迹时间是机器人执行所需仿真秒，算法壁钟耗时是规划开销；RTF又决定现实等待时间。三者分别报告。QP失败保留状态与诊断，不能放宽约束伪装有解。
-
-## F 验证与替换
-
-复核端点、C2、最大速度/加速度及整条轨迹有效性。重定时或插值后必须重新检查最终轨迹。
+复核末端残差、导数限制及实际采样球体余量。
+实际执行仍须依据本体反馈确认TCP；冻结身体的离线路径不能证明腰变化时的跟踪精度。
 
 [算法目录](algorithms.html) · [模块目录](modules.html) · [实验口径](experiments.html)
 </textarea>

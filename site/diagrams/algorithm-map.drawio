@@ -139,7 +139,7 @@
             <mxGeometry as="geometry" x="930.0" y="923" width="240" height="83" />
           </mxCell>
         </object>
-        <object id="collision" label="&lt;b&gt;原生碰撞与路径修复 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;MoveIt；条件TrajOpt回退&lt;/font&gt;" link="../algo-collision.html" tooltip="打开对应算法专题">
+        <object id="collision" label="&lt;b&gt;Pink球体距离约束 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;BodySphericalBarrier；限定球对&lt;/font&gt;" link="../algo-collision.html" tooltip="打开对应算法专题">
           <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
             <mxGeometry as="geometry" x="670.0" y="1030" width="240" height="83" />
           </mxCell>
