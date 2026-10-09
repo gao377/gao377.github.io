@@ -16,9 +16,13 @@ class Links(HTMLParser):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
+        self.anchors = []
+        self.anchor = None
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
+        if tag == 'a':
+            self.anchor = ['', attrs.get('href', '')]
         attribute = {'a': 'href', 'iframe': 'src', 'img': 'src', 'script': 'src',
                      'video': 'src', 'source': 'src'}.get(tag)
         if not attribute or attribute not in attrs:
@@ -27,6 +31,15 @@ class Links(HTMLParser):
         if not link.scheme and link.path:
             target = (self.parent/unquote(link.path)).resolve()
             assert target.is_relative_to(root.resolve()) and target.is_file(), attrs[attribute]
+
+    def handle_data(self, data):
+        if self.anchor is not None:
+            self.anchor[0] += data
+
+    def handle_endtag(self, tag):
+        if tag == 'a' and self.anchor is not None:
+            self.anchors.append(tuple(self.anchor))
+            self.anchor = None
 
 assets = release.get('assets', [])
 for row in assets:
@@ -45,5 +58,9 @@ for name in sorted(expected | {row['file'] for row in assets}):
     assert 'docs/superpowers' not in content
     assert not re.search(r'(?i:sk-[a-z0-9]{20,}|gh[pousr]_[a-z0-9]{30,}|dckr_pat_[a-z0-9_-]{20,})', content)
     if path.suffix == '.html':
-        Links(path.parent).feed(content)
+        parser = Links(path.parent)
+        parser.feed(content)
+        if name in expected:
+            navigation = [(item['label'], item['href']) for item in release['navigation']]
+            assert navigation and parser.anchors[:len(navigation)] == navigation, name
 print(f'Verified {len(expected)} public documentation pages and {len(assets)} assets.')

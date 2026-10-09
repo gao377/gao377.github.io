@@ -1,354 +1,389 @@
 {
   "implementation_sha256": "ec030fd7714cb86df18cfd60bdd1648a623be307e4bc9d3318282e99ad7fcaab",
   "renderer": "answer-me-with-html@0.4.14",
+  "navigation_sha256": "8d0935730ec090b7711b4623c3e68d26e0c2e4adce858b2da23b9f7f08b1440c",
+  "navigation": [
+    {
+      "label": "首页",
+      "href": "index.html"
+    },
+    {
+      "label": "架构",
+      "href": "architecture.html"
+    },
+    {
+      "label": "模块",
+      "href": "modules.html"
+    },
+    {
+      "label": "算法",
+      "href": "algorithms.html"
+    },
+    {
+      "label": "接口",
+      "href": "interfaces.html"
+    },
+    {
+      "label": "场景",
+      "href": "scenarios.html"
+    },
+    {
+      "label": "实验",
+      "href": "experiments.html"
+    },
+    {
+      "label": "规范",
+      "href": "authoring.html"
+    }
+  ],
   "pages": [
     {
       "file": "algo-amo.html",
-      "source_sha256": "7b0a081afe4b2660b9da10e24ad17ecb34dc342f5a7370db50455c3cf35b25ac"
+      "source_sha256": "387c4cd4a4655ae56dbfda58f0e3bac09aa7b8c9b69512d1e9dff446bbdf046f"
     },
     {
       "file": "algo-approach.html",
-      "source_sha256": "0a2222d1cae49b3231779833756689b48663f53d2506dd1436ab02e9f5654b7e"
+      "source_sha256": "4c5c6e5241ffa1b75544f544cad6265ff4cff534a8ffe8a2d5b4cd7a8baceb98"
     },
     {
       "file": "algo-body-state.html",
-      "source_sha256": "791532f5c832b924ca4c9a5aad8c61247027ce4b6b88a5cc4baa803b0a719776"
+      "source_sha256": "c06abc1016aea71760f48fd792b085fe02a85821b42b146bd78848dccce70520"
     },
     {
       "file": "algo-cartesian.html",
-      "source_sha256": "88826b76e4cd55c3378a2b7b0c1404cb453a6fab9ce1eb551c185820293a3c0d"
+      "source_sha256": "17f64c17001c7bcf597b60da8951e8a256cef2e965619e433d488ba9daaecf4d"
     },
     {
       "file": "algo-collision.html",
-      "source_sha256": "9c09d6793564eb5900f058a2531099080ec06820b6d45dd83afaffa42ca6ed0a"
+      "source_sha256": "be3867034ab52c33619262db092705bb8b8b87da5f3fe037d984102c38442e72"
     },
     {
       "file": "algo-execution.html",
-      "source_sha256": "a79858db45354d55781aa275615d2bf2591f9c7294daa1a34634723ac0acdbe8"
+      "source_sha256": "ff99f3f6624ae886f21cf4d38dce01c25f04564615099cf61198976357eae20f"
     },
     {
       "file": "algo-exploration.html",
-      "source_sha256": "955a4b0f6ab5b956f9b0a8cfe4cc7d0b1938aa34ad5166f04d331a87a9017c1c"
+      "source_sha256": "5d59538035b56617cbe61f5f603a23aa7947950f801cf3e31fec396379424b5f"
     },
     {
       "file": "algo-fdm.html",
-      "source_sha256": "f891c805e1af1a62f1a02b4956b50747d76b32b6d964942455aab4f5f9bb6c3c"
+      "source_sha256": "5ca3b3b49aa159df583ecc17366c13a9af512f840281cacd38b3298262f7aea0"
     },
     {
       "file": "algo-grasp.html",
-      "source_sha256": "2cd06d4446e3070a546eb3b9cdb0978a90c56f81a95cdb8d918e1ec916893058"
+      "source_sha256": "3f7e337746dee44a13aaddac7e26c0943080c4e9c6414e704a90cc5992238d47"
     },
     {
       "file": "algo-maps.html",
-      "source_sha256": "80ff358f9d46269df96bbbddd9e5c18f2d2dc1234a24a09e5fc389fc07791a62"
+      "source_sha256": "7426af78c292c51a93c14f13b85170dca48ffa19e94cc13dfe466bf8a5d9a0ff"
     },
     {
       "file": "algo-neupan.html",
-      "source_sha256": "7f2089048d1f817f3e2003a049bafbc8918618139ed54fa7b05761f3a2aa7f94"
+      "source_sha256": "939743a58ce4cc11fca73b8a547e1ae15b610b3f35a40ecb5caeb9c7e04ff14f"
     },
     {
       "file": "algo-pbvs.html",
-      "source_sha256": "fe9f06537d400a9aec88cf76f4de194a0e02e40497c1640b5d0e3dc378e091fd"
+      "source_sha256": "76f85f796fc369cc26280d90a5422b06c136a89be61721f305df576dce7f4c56"
     },
     {
       "file": "algo-pct.html",
-      "source_sha256": "0a79a5cee2261de9e6bc32e679151b78db53550d3a54e43a72f3e42138e09d56"
+      "source_sha256": "b68e5eb599f3e476861ba8878403fcda21448f87eb54d82c40e27708cc8f0e2b"
     },
     {
       "file": "algo-perception.html",
-      "source_sha256": "95a6bdaa96214f35ea667dff1ec6eb08d30e1ffb291be311c6542701e9bfd9ee"
+      "source_sha256": "76640a8f87ffe13f95d523a57bf336cc54510e9dc8d61318ea5cc33732c1dbea"
     },
     {
       "file": "algo-sensing.html",
-      "source_sha256": "59cb92773f80d55f5a8c0b8b208ec6e94f978b0861ede11796ae279e6ad53575"
+      "source_sha256": "9cf72c6d756b202f11254a10abc66a1f8c8a7796a3e9c08b2e43771ce55e7032"
     },
     {
       "file": "algo-slam.html",
-      "source_sha256": "efe4f83f9a581046190386ad57a6eb989b68b99e67d5a6152141f1e128235290"
+      "source_sha256": "3c73f8a53b3be24646be3ca942c0858fb91dde5e57cf81ffb2d252129a72d0d1"
     },
     {
       "file": "algo-support.html",
-      "source_sha256": "a130b9ae408549b65eea31006a01385fe42e129c323468baa643e804faebe0c5"
+      "source_sha256": "27a27dfd4e030e181d5e1d278fe08d3d8630b7da72fbdf44e639efe84ed6d1dd"
     },
     {
       "file": "algo-tactile.html",
-      "source_sha256": "b7fd8d458b03d8a2cc0727f9515e90e0df3eefdbe190c2a9ea7e176a48a1440e"
+      "source_sha256": "dc9a32af10d432e2da05e5ce775180901cbdbc8d713e58d1adfa0b185bea38aa"
     },
     {
       "file": "algo-task.html",
-      "source_sha256": "001559f8bf401059517266ead9d1ab8b19a3b4e05755afc99831dd52db3c4de9"
+      "source_sha256": "575dd1b09fa2bfbb6428114d2f337cad9e6d7bb93fe426d3e54aa9e41011a08f"
     },
     {
       "file": "algo-trajectory.html",
-      "source_sha256": "440f1b07ea1599ca0916250a9eeae4a7760bdafbacf492b07a834a78105b20a9"
+      "source_sha256": "c5f4cc038e434d452a8a00f34c4b4a025dea35f2b30a6d8e4451e4bf8740c1e0"
     },
     {
       "file": "algorithms.html",
-      "source_sha256": "648c4246e4c40ed42e171c90f27db14355fcf63adec20dd5ccea5b1fb2c48bc9"
+      "source_sha256": "9acb8547d4963c7cacb2fbf6c0586c06074515ba5e03011459b77f8dc0cffc04"
     },
     {
       "file": "architecture-map.html",
-      "source_sha256": "06854da2c94da77dba9e46de4e03a847efb2ed40bb46b2ff53d3e3775bb74ca0"
+      "source_sha256": "21c5fb4a2fd7f7aaf6d2df08227e5057aae62733179b98e01abe3a3b24eab004"
     },
     {
       "file": "architecture.html",
-      "source_sha256": "62aac4710c30e260cb201825322e9704bdca042b8e76069e5e5c85b5c9525cad"
+      "source_sha256": "627b9a6acb0d81cbb9e3c41a52aabe3e3e5ab92ff36bdddaa1b0e6ce326815e5"
     },
     {
       "file": "authoring.html",
-      "source_sha256": "4fa73af05bba8c9674848cbb47e362187ebe0c7055399643816d52535e793dd1"
+      "source_sha256": "7c13d39ed4567f85bf2e7ae0f871e8f18e4fe1d177829d27856b9a555c7caa82"
     },
     {
       "file": "dependencies.html",
-      "source_sha256": "ca53cd296b3f877aceb272b6c336508f734334d8e75575279ef64c80962357b9"
+      "source_sha256": "e277d0070198e8fb98330b66174de8c6c46dd8562760096537c640635fe585ac"
     },
     {
       "file": "development.html",
-      "source_sha256": "0870e702731e1fa8b264f433804a024c00869b5270cbef4413bd6a7ec5929ddf"
+      "source_sha256": "092fdbb0129356e45db62ab8713f8c24c0039ce4e45a3521ae34af4acff20e95"
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "beb744f6a6cebb8dd0c13784811e5c3e3bd1d1cfe0231bbd685a9a5f7a4acf82"
+      "source_sha256": "efc6932cd03a2308ef99c57e83bcdc2138c16e932845a23c23ab55c22153ab68"
     },
     {
       "file": "experiments.html",
-      "source_sha256": "0d002c446928cf52e9a41803472a89146abf39f7a11ab66736b28c509c97d8e9"
+      "source_sha256": "415434417715e86b5cef85971d398496b3994a9ff0ced061963806ceda858e21"
     },
     {
       "file": "files-robot-action_executor.html",
-      "source_sha256": "ed9fe1fd918328df3575dd2ad6950421083ff575aec7813a6da2774e0444c7bf"
+      "source_sha256": "3c6421af31bea4f940f82350d028580c65474ec71981fb98df9468b68c6764b0"
     },
     {
       "file": "files-robot-body_gateway.html",
-      "source_sha256": "8961b894e95ab3b4da56f275418753479faae07de204847519967999ab7a7468"
+      "source_sha256": "e719ff103fa499686b1dcd462a17a29665a0a60b1dbdb303be2640c7119ee72d"
     },
     {
       "file": "files-robot-config_client.html",
-      "source_sha256": "ab369c3b49e30a63ec7362820120a45752a91ba13c604adc903c63db021b3d0e"
+      "source_sha256": "6c0dd194646276ba10a5e8548e8bca6d3c2ec406bec221ded73a7d922408d641"
     },
     {
       "file": "files-robot-evidence_buffer.html",
-      "source_sha256": "4715bbfb0cbd50ac8a28e7de7180dcbfb0ba4ea93eb40b5265787ac06459761a"
+      "source_sha256": "c8074c2d0476b56a58e6fcc27b5d7abf9caa74c6f376ed283c3059f4283ef2aa"
     },
     {
       "file": "files-robot-interaction_runtime.html",
-      "source_sha256": "44cac82da0b75b78e210fedca13f793b18d51e062953412a9e2233d5cfe32363"
+      "source_sha256": "551784defa12dc121f7147a9762ad0aebc827947db6fba7923074030cd9efce4"
     },
     {
       "file": "files-robot-local_task_runtime.html",
-      "source_sha256": "f6a4d186a4f21b7bc07411cf55118f76a6b3b4a88de9901c5316e8fb8304b667"
+      "source_sha256": "cb3618d024c8227a2dbfc69d4dfff8271badc90d1985d9be137f8be4889fc53f"
     },
     {
       "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "e203ec06db7ecf3d54ae5a5c89622ea25b5112ce1ef12f4c39784da4c4085f05"
+      "source_sha256": "feb8842c10ee3d5e220b6180e90b271ff446f3b290c1b62dff8b02620a563b6e"
     },
     {
       "file": "files-robot-motion_coordinator.html",
-      "source_sha256": "5929a479c5affdb0f1b954fb9ea694177a1f61c064e5a4caa2bf30e7f8db10e7"
+      "source_sha256": "9fde3500d007e35e1dcdb17227afd92aee95e19133ca8d2a2e55a66d6eba3791"
     },
     {
       "file": "files-robot-navigation_runtime.html",
-      "source_sha256": "637bebb3c8ccb36c918b4248bd2db7d40318420cd3b52a1717da63b01799daef"
+      "source_sha256": "0afb954ff1de542dd1684f635d4ceb38726cd63da324a6763985f6f5d017ce03"
     },
     {
       "file": "files-robot-perception_runtime.html",
-      "source_sha256": "4cbbdf3eb0261a88710ef649cbddebba811dccea3e30ef5fb09f72ebd9a4a94a"
+      "source_sha256": "98898794a34707493ffb851d21feb77302c656755fdec382563cd52d7d8bf475"
     },
     {
       "file": "files-robot-protection_runtime.html",
-      "source_sha256": "a4fb27b177310f196d52e04661bc4f07f96a4dfa0ce3ef9b6a9045d684347dd4"
+      "source_sha256": "92c325b93916ed4fc4df52f58002d47b606456ba3d27b7c7875cef55eed21ee3"
     },
     {
       "file": "files-robot-sensor_adapters.html",
-      "source_sha256": "9675306646a4a53f2728685dd9a7ae35d06b4653880dced90099c3f513c3f9cd"
+      "source_sha256": "eb3c5e3dc8c653d2391a99855b0dfb27b1c29f4edc316636a2a559eb567f7f21"
     },
     {
       "file": "files-robot-spatial_runtime.html",
-      "source_sha256": "c67b20a212a7ed3d549a631fda994d757b59c486e4772ac2bb466e3b344e9945"
+      "source_sha256": "9f1d76816e97d00dedc1ae1bbc8ee4bab242273133c09bd5ad067c9ba44e1366"
     },
     {
       "file": "files-robot-state_estimation.html",
-      "source_sha256": "4073e81f6771387a789834109b53577498d8de1060399e00753e1e313b4c37b1"
+      "source_sha256": "7ae63f7032fa425fb7c14af0e850e858e074f1dedcfb9defb4624aa30ba18ec4"
     },
     {
       "file": "files-system-candidate_builder.html",
-      "source_sha256": "aee36c8a6f4fa62620b41510525c71e9801655568839fbc874e7cb9a0df626fa"
+      "source_sha256": "97c9b54c59325244bbc2ab8ce7ca72f6fc59e55d6a91abef25d7249edabfd7c4"
     },
     {
       "file": "files-system-capability_registry.html",
-      "source_sha256": "b5530bbc4cf0ba34954840212ec7f46b4037f6619e8ca33b1a11419e51f42eda"
+      "source_sha256": "f49c9bf62e18ad31fd043551bef6507ffc36e038cabb0ad0a1d2fb621d88abaa"
     },
     {
       "file": "files-system-config_manager.html",
-      "source_sha256": "1689fcddcbfee150eab3a73727f00f5acbb2ac27028a0c004d9c84a7c4f6a113"
+      "source_sha256": "9688ecfeced67ad1835b6f7d55b45e4ef7fc848c03091a49f68d42e28f8274c1"
     },
     {
       "file": "files-system-context_store.html",
-      "source_sha256": "2ae71259d265d927d74b955c159bc732674c07128980424ae4f4dcb9b82d5d87"
+      "source_sha256": "e26d9dcc5e2f85beb656d40badd365b7bb2b9eb54c3acb577459d85884125a8d"
     },
     {
       "file": "files-system-evidence_store.html",
-      "source_sha256": "e3d850af56eb4b6fe2ce7856d4025033fb7069fc886ca8364eb904ca387834d7"
+      "source_sha256": "38292fbcb44d8b6104aa656cb2a95c021dd4432dacde71c9b99e4905c9d1af53"
     },
     {
       "file": "files-system-evolution_manager.html",
-      "source_sha256": "30716bcdd48f001fd5f68a5a12e2109fefd1c42e140d8914141eae978bc25d01"
+      "source_sha256": "e3db83f92c818dea2df4378bf786e1e576269dcc292b64912a2d5107ce7812f9"
     },
     {
       "file": "files-system-knowledge_memory.html",
-      "source_sha256": "d884e454f671ec68b44bbb69b6655267340c8f9367c99a06cf12c70b8b6f6987"
+      "source_sha256": "4f29a6293868cccdb5ea677fa3bb745cd354d558173da62625dd6c4aede224f5"
     },
     {
       "file": "files-system-reflection_engine.html",
-      "source_sha256": "cfea2084d5aa954ab53d184eb092caead8dad11f30c49d20a66bb812f28ad2a2"
+      "source_sha256": "0a332e626c21850a17b503116e854c54016679bd8d00dd358a65160805c27fe8"
     },
     {
       "file": "files-system-team_planner.html",
-      "source_sha256": "16dbc897e46ab96d19b504e54d8df04f6a7eee168ba4f064e9c70dffad81ea0f"
+      "source_sha256": "b1b1c44a9b47ba594e8a8e6f4fbf127e9c1f61eb84ceb86a899898beec1c839c"
     },
     {
       "file": "files-system-team_runtime.html",
-      "source_sha256": "4116ce6d6a67311d137905e3b55f71c1e243d8be4644d27bb62dc10533ad6bd9"
+      "source_sha256": "e3a9dbdd63952194178b9a680776a12a5b8e45ceff838006a3334995e5888dfb"
     },
     {
       "file": "files-system-team_verifier.html",
-      "source_sha256": "aa2378174f40b594c6e3f82015ebedea5cf14deb58aa33bdb3757dd306e4203a"
+      "source_sha256": "778fdbb676143fcc89e972ab7bc1e9b42159b9e8439cd64bf8c2579da8c611b6"
     },
     {
       "file": "getting-started.html",
-      "source_sha256": "364f785faee814198975077cedfc3967860aa95cbcb22e1d5030f794b8e9e4a2"
+      "source_sha256": "2678fa836f80f260613232fab6480fe2d8da4379a3c989b15f6c3ff243ad53a2"
     },
     {
       "file": "images.html",
-      "source_sha256": "7570e866faceef2c6874fee94c9b8ae553c9cc963d7953dd854218776bdda779"
+      "source_sha256": "da46c03898044f04c9d7774ded853c3bac476e3b4cadca8ecd8c98d63502d5f2"
     },
     {
       "file": "index.html",
-      "source_sha256": "d7473ee63cc23cf480282ed4e0069a4c877b8493872744edd38d68637705b893"
+      "source_sha256": "cb33b46cd97b514c64513cdeb81a0493e5b83ca76efbd32da1e3ebff07e3226c"
     },
     {
       "file": "interface-catalog.html",
-      "source_sha256": "f2d4da316263b057d1f84238e420ed97fb9d2cbf996869ce66df65d5eeb4553f"
+      "source_sha256": "f1f4eb8d6dd4ff1adfc8707ee1a5a1bfccfa7f7439e67948ede2b65e50456286"
     },
     {
       "file": "interfaces.html",
-      "source_sha256": "1ba27fd768ac227a5ee314e5b12789d02d6c57affec69c19b05f6f1f2b087170"
+      "source_sha256": "55d9d52dccc974e2e0d563e8405e9a492195ed17fd058ba2fbec2e30eaa61ec1"
     },
     {
       "file": "licenses.html",
-      "source_sha256": "8fe2b83ca8c1c72a3017a78bf2e357bf783bc76eba5d980f97262c6431922254"
+      "source_sha256": "91668ba679ab47c8060cef96d27f5e6c09fb2aef641ff75c509ae94861073111"
     },
     {
       "file": "module-robot-action_executor.html",
-      "source_sha256": "7057b51fb8640e7be70566124e1fc1229788096c11f8873db3d9606128d35c8a"
+      "source_sha256": "f9206ea514cd87a88bdef114df7144c0b7194f6b5aca261adb9ad1ae7fd493bb"
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "097cfa407ed28eb43e5e1603ca17e18324ddcefed010a607a22dc0b0ad8bcc38"
+      "source_sha256": "cb915ba1ed738827fe2c6a5f7d30c0dd644e287b6158c8041225be37b7806b0e"
     },
     {
       "file": "module-robot-config_client.html",
-      "source_sha256": "7bb819443fc6fa5865dfca1b90732ca3030825bb44cb1901b3b4b16509d9250a"
+      "source_sha256": "1b5ca3d9ea62ed9b4666e40f7b82918269d80f0f45583dba8da557be7ceb6093"
     },
     {
       "file": "module-robot-evidence_buffer.html",
-      "source_sha256": "c3c9745710b60c2a4e0dcc849d764d509c03282078e9b74dd36de67ea4d7d607"
+      "source_sha256": "ede5c67cf8b5e84584e83663f1335cad83d8252966f253440269b1c79d066462"
     },
     {
       "file": "module-robot-interaction_runtime.html",
-      "source_sha256": "22e3fab3f59ae1c6ce7f55073af11fdb341371d4ae8debee0aa1b8cc409a8084"
+      "source_sha256": "919ffaa8b570ea4181b7b43230e2332b7b1df10780e103855cb9f13115b91232"
     },
     {
       "file": "module-robot-local_task_runtime.html",
-      "source_sha256": "21a9f1492eef90b4045316b08f8b0409e95a61983f337e1f0ab3cd5c12c36b98"
+      "source_sha256": "7e9cb54fc2610950f1a822a061eaa49a874d3a0d4f4e0dc04a060efd5ab73f84"
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "e874e4d330ac1f8db670d028121f554fcd3dc84efa60c8c2e6451aa4042b9a61"
+      "source_sha256": "6b5733a6ea351d89b5073fa9c5b2468d88100ce2f9a27d99744fbedb0854b389"
     },
     {
       "file": "module-robot-motion_coordinator.html",
-      "source_sha256": "ece745989c9ac7aed546897fe9cd6d0a89adf8021e284d24ff8ffe3212a359aa"
+      "source_sha256": "d6951b26516ac16e033ef066da210dca36e967c1b88803c0803170e448e4dc5e"
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "295f6c7e6fca1349605656e80cf500f1ff64f15335ac707587e93197cd781723"
+      "source_sha256": "7f63a1b6c2b146d9c01143f03289801072dd4c22f5bd8f28f96b421ed9407fe6"
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "97fe1a8b2e3c273524cea317324726cdf36aa4c90d77f75e14f8477c57ec2a9f"
+      "source_sha256": "ff09e7c23289f106482ed664ec8f92abffce9bc3023d479352ad896967cb29f1"
     },
     {
       "file": "module-robot-protection_runtime.html",
-      "source_sha256": "39912e998f753349e2f07607c85bb350808e572c7145eb26fd0cc8768b2c6443"
+      "source_sha256": "4f461f7a426eedf3ab03a08e5adb9c1601acc0299ded2f79fb02bcb9a3efceab"
     },
     {
       "file": "module-robot-sensor_adapters.html",
-      "source_sha256": "0f7685716a9de2f78db4934db8882988c5a849e506b95aa5110aca91f77519a7"
+      "source_sha256": "6bb522ad5875feec032710b5804856bc3d0f35696f8d66a8aa34fc919adf9b61"
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "b682bb6fcf71c9b540f47707d0545a0b887ab1ed3d3108a795c08f1e25654ce2"
+      "source_sha256": "7d9d61a5407804c14a3d149810fa3e3eb1107c2eb3e6ea90353f10ada06d7c0e"
     },
     {
       "file": "module-robot-state_estimation.html",
-      "source_sha256": "af8357ca431549ef83a2c4ad56dd412e1a5543b915f54a05c78f97e124c4fb30"
+      "source_sha256": "dd9721cebe01ccd9e2c9c028c80411dd3c52cd264bf416d62f1da961f625a920"
     },
     {
       "file": "module-system-candidate_builder.html",
-      "source_sha256": "0f4a647c1b23f17b924b3bd4c7b30ce175200a54e8ae1643c7a022f01daadb95"
+      "source_sha256": "4076679c3280fc67fff6c2ea666362b024b5f77a7b02846e7e38f1a4a7e77f34"
     },
     {
       "file": "module-system-capability_registry.html",
-      "source_sha256": "ed7c305db5e62bdaf71a58aee316e841f4888cd2dc5cfb2e6d913c8877535b82"
+      "source_sha256": "77efebdfad3c2aed785e2ab4d0fdd02d8288bcd77cf6afd1d5fa8df46253f175"
     },
     {
       "file": "module-system-config_manager.html",
-      "source_sha256": "cb3626afda90f53abeb1de23baac66aa024f8a2ceb1d3f232bd4313d35a85cb9"
+      "source_sha256": "387ff9075144a6ce98cdd7eec239765b8dad52c656f12eafc1e08324eaf0d1a8"
     },
     {
       "file": "module-system-context_store.html",
-      "source_sha256": "d6b3f3b04c8851cad55d2a0dfb506dde461e7bfb5ee1615c95fdbd520a7a92f6"
+      "source_sha256": "f2e9c9b71a350f037deebe1ee0b849a98e29446d20f48eb81f127da0ee43988d"
     },
     {
       "file": "module-system-evidence_store.html",
-      "source_sha256": "664921133271424fc0c73d591c83b7e5e8aad4431835c7e37f92fd7fef3ad9ce"
+      "source_sha256": "b55d9cfb0b454c155c140f83a1d7e7f2fa83d7d07aa32d086772cb5af76230fc"
     },
     {
       "file": "module-system-evolution_manager.html",
-      "source_sha256": "22c385c32c129812218326a221f1e88db743bb502fa5fc2cf813e94b8180499a"
+      "source_sha256": "a7e61500bfafe0afdf5d7ffd0037826a0ae7e5ccf93a762b10c30c6d4148167c"
     },
     {
       "file": "module-system-knowledge_memory.html",
-      "source_sha256": "144adeffe4281b67a69d61440da7b563df7e2e8a9025424ba620123ddccd77c4"
+      "source_sha256": "cb632c8b8639363a29f1a321c426377ea58a9e1af872cfda6901de700bc816dd"
     },
     {
       "file": "module-system-reflection_engine.html",
-      "source_sha256": "c4d04bdbd1c4009b76c2db654331c9044dcd62bf4b9762ab535a03a1cc77c60e"
+      "source_sha256": "79ac3d5dc0e4a7fbb8ca175a5b2b9caeeb57122fcfe7f91a53d3f019b8dd0141"
     },
     {
       "file": "module-system-team_planner.html",
-      "source_sha256": "5c63c3b2f5c89bf87560482579641bc8e0945233c5d7c804190f49d0710bb2b9"
+      "source_sha256": "3ee97230ad696cdbef5fdcb3f72c3c1431c6f2abc32e9c50b27b4595e4ce86d8"
     },
     {
       "file": "module-system-team_runtime.html",
-      "source_sha256": "b4deb08b0391911a2d3755e2a81a2ce846ebe47100475b52c4f3823e5a5ab758"
+      "source_sha256": "803f549a1e533b7248a8b88d90b21e80280e8720ad274658733798f922bd0bbb"
     },
     {
       "file": "module-system-team_verifier.html",
-      "source_sha256": "426e1cd4cf11a939efc1c926de57e773caee51cde89c374e6238fff814d86470"
+      "source_sha256": "74693b37fda0092cddc33bb2b1b58a63b3e483d284d84bb3792ca82489db1497"
     },
     {
       "file": "modules.html",
-      "source_sha256": "a556d51a14d3339e69af51b06bc0d67a01ac10886195d5770d91883a4208bde9"
+      "source_sha256": "d5973e9817f048bc405acff51bb66b51dfedd308972ffef6de8c2759682f4400"
     },
     {
       "file": "runtime-internals.html",
-      "source_sha256": "0b4364292caeff23f702311501229ea6d3130540d71379973612d7abc26b40ee"
+      "source_sha256": "e0652a9b4f2c1ac454feaa9ec603c617a8de792238de193f8871873d48716fdb"
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "f0c800ee9f88576bc82e542e96007780008a751c405d57dfeed29aec93eb714d"
+      "source_sha256": "653c9117525d397e5ceb1b2224020f2051d265d3310fe07eb81a9326a626dcdc"
     }
   ],
   "assets": [
