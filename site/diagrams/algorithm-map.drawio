@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="32.3.0" type="device">
+  <diagram name="算法实现与软件归属" id="algorithm-map">
+    <mxGraphModel dx="1680" dy="1330" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1680" pageHeight="1330" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="算法实现在哪里：从观测到技能，再到机器人" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=30;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="45" y="22" width="1410" height="48" />
+        </mxCell>
+        <mxCell id="intro" value="点击算法节点进入专题。模块容器表示代码归属；箭头表示主要运行关系。" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=18;fontColor=#52677D;fontStyle=0;">
+          <mxGeometry as="geometry" x="45" y="79" width="1410" height="34" />
+        </mxCell>
+        <mxCell id="task-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="650.0" y="130" width="540" height="155" />
+        </mxCell>
+        <mxCell id="task-group-title" value="系统任务 / 本机路由 · SW-02 / SW-03 / SW-05" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="668.0" y="140" width="504" height="30" />
+        </mxCell>
+        <object id="task" label="&lt;b&gt;任务编排与能力路由 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;固定流程；调用真实能力&lt;/font&gt;" link="../algo-task.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="670.0" y="198" width="500" height="67" />
+          </mxCell>
+        </object>
+        <mxCell id="sensor-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="45" y="335" width="345" height="125" />
+        </mxCell>
+        <mxCell id="sensor-group-title" value="sensor_adapters · SW-15" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="63" y="345" width="309" height="30" />
+        </mxCell>
+        <object id="sensing" label="&lt;b&gt;传感适配与源时间 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;RGB-D / LiDAR / IMU&lt;/font&gt;" link="../algo-sensing.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="65" y="385" width="305" height="58" />
+          </mxCell>
+        </object>
+        <mxCell id="state-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="45" y="520" width="345" height="140" />
+        </mxCell>
+        <mxCell id="state-group-title" value="state_estimation · SW-14" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="63" y="530" width="309" height="30" />
+        </mxCell>
+        <object id="body-state" label="&lt;b&gt;本体FK与相对判稳 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;SDK关节 / IMU → 局部参考&lt;/font&gt;" link="../algo-body-state.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="65" y="577" width="305" height="65" />
+          </mxCell>
+        </object>
+        <mxCell id="perception-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="45" y="720" width="345" height="225" />
+        </mxCell>
+        <mxCell id="perception-group-title" value="perception_runtime · SW-13" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="63" y="730" width="309" height="30" />
+        </mxCell>
+        <object id="perception" label="&lt;b&gt;目标检测 / 跟踪 / 几何 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;SAMURAI / OpenCV / Open3D&lt;/font&gt;" link="../algo-perception.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="65" y="777" width="305" height="67" />
+          </mxCell>
+        </object>
+        <object id="support" label="&lt;b&gt;支撑面与工位关系 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;RGB-D台面 / 目标局部参考&lt;/font&gt;" link="../algo-support.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="65" y="857" width="305" height="67" />
+          </mxCell>
+        </object>
+        <mxCell id="spatial-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="45" y="1005" width="345" height="225" />
+        </mxCell>
+        <mxCell id="spatial-group-title" value="spatial_runtime · SW-12" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="63" y="1015" width="309" height="30" />
+        </mxCell>
+        <object id="slam" label="&lt;b&gt;激光惯性定位建图 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;Lightning / 动态雷达外参&lt;/font&gt;" link="../algo-slam.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="65" y="1062" width="305" height="67" />
+          </mxCell>
+        </object>
+        <object id="maps" label="&lt;b&gt;地图版本与重定位 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;地图快照 / ScanContext / ICP&lt;/font&gt;" link="../algo-maps.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="65" y="1142" width="305" height="67" />
+          </mxCell>
+        </object>
+        <mxCell id="navigation-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="650.0" y="335" width="540" height="340" />
+        </mxCell>
+        <mxCell id="navigation-group-title" value="navigation_runtime · SW-06" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="668.0" y="345" width="504" height="30" />
+        </mxCell>
+        <mxCell id="navigation-group-sub" value="当前主链：NeuPAN；精调由任务显式调用" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=14;fontColor=#52677D;fontStyle=0;">
+          <mxGeometry as="geometry" x="668.0" y="378" width="504" height="25" />
+        </mxCell>
+        <object id="neupan" label="&lt;b&gt;NeuPAN局部规划 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;更新点云 / 终端制动&lt;/font&gt;" link="../algo-neupan.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="670.0" y="410" width="240" height="77" />
+          </mxCell>
+        </object>
+        <object id="pbvs" label="&lt;b&gt;视觉 / SE(2)精调 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;ViSP PBVS / 地图到位&lt;/font&gt;" link="../algo-pbvs.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="930.0" y="410" width="240" height="77" />
+          </mxCell>
+        </object>
+        <object id="pct" label="&lt;b&gt;PCT全局路径 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;组件已有 · 主链未接入&lt;/font&gt;" link="../algo-pct.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F0F1F4;strokeColor=#939AA5;">
+            <mxGeometry as="geometry" x="670.0" y="508" width="240" height="63" />
+          </mxCell>
+        </object>
+        <object id="tare" label="&lt;b&gt;TARE探索路线 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;组件已有 · 会话未接入&lt;/font&gt;" link="../algo-exploration.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F0F1F4;strokeColor=#939AA5;">
+            <mxGeometry as="geometry" x="930.0" y="508" width="240" height="63" />
+          </mxCell>
+        </object>
+        <object id="fdm" label="&lt;b&gt;FDM / MPPI运动预测 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;可选分支 · 需合格模型&lt;/font&gt;" link="../algo-fdm.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#FFF3D7;strokeColor=#B87C13;">
+            <mxGeometry as="geometry" x="670.0" y="592" width="500" height="60" />
+          </mxCell>
+        </object>
+        <mxCell id="manipulation-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="650.0" y="740" width="540" height="405" />
+        </mxCell>
+        <mxCell id="manipulation-group-title" value="manipulation_runtime · SW-07" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="668.0" y="750" width="504" height="30" />
+        </mxCell>
+        <mxCell id="manipulation-group-sub" value="本体局部目标；能力独立，规划与持物状态共用" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=14;fontColor=#52677D;fontStyle=0;">
+          <mxGeometry as="geometry" x="668.0" y="783" width="504" height="25" />
+        </mxCell>
+        <object id="approach" label="&lt;b&gt;三级approach接近 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;上肢 → 腰 → 低速本体&lt;/font&gt;" link="../algo-approach.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="670.0" y="816" width="240" height="83" />
+          </mxCell>
+        </object>
+        <object id="grasp" label="&lt;b&gt;模板与选臂 / 抓放编排 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;pick / display / place&lt;/font&gt;" link="../algo-grasp.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="930.0" y="816" width="240" height="83" />
+          </mxCell>
+        </object>
+        <object id="cartesian" label="&lt;b&gt;渐进式笛卡尔IK ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;Pink / Pinocchio / 双臂&lt;/font&gt;" link="../algo-cartesian.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="670.0" y="923" width="240" height="83" />
+          </mxCell>
+        </object>
+        <object id="trajectory" label="&lt;b&gt;最小jerk与重定时 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;CasADi / Clarabel / TOTG&lt;/font&gt;" link="../algo-trajectory.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="930.0" y="923" width="240" height="83" />
+          </mxCell>
+        </object>
+        <object id="collision" label="&lt;b&gt;原生碰撞与路径修复 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;MoveIt；条件TrajOpt回退&lt;/font&gt;" link="../algo-collision.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="670.0" y="1030" width="240" height="83" />
+          </mxCell>
+        </object>
+        <object id="tactile" label="&lt;b&gt;REVO2预成形 / 触觉 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;接触 → 保持 / 释放&lt;/font&gt;" link="../algo-tactile.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="930.0" y="1030" width="240" height="83" />
+          </mxCell>
+        </object>
+        <mxCell id="executor-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="1280.0" y="520" width="330" height="155" />
+        </mxCell>
+        <mxCell id="executor-group-title" value="执行与控制权 · SW-08 / SW-09" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="1298.0" y="530" width="294" height="30" />
+        </mxCell>
+        <object id="execution" label="&lt;b&gt;轨迹执行与控制租约 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;统一采样 / 停止 / 交接&lt;/font&gt;" link="../algo-execution.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="1300.0" y="588" width="290" height="67" />
+          </mxCell>
+        </object>
+        <mxCell id="gateway-group" value="" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#F2F6FA;strokeColor=#9DB2C6;">
+          <mxGeometry as="geometry" x="1280.0" y="810" width="330" height="235" />
+        </mxCell>
+        <mxCell id="gateway-group-title" value="body_gateway · SW-11" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=20;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="1298.0" y="820" width="294" height="30" />
+        </mxCell>
+        <mxCell id="gateway-group-sub" value="G1后端：本体适配的实际实现" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=14;fontColor=#52677D;fontStyle=0;">
+          <mxGeometry as="geometry" x="1298.0" y="853" width="294" height="25" />
+        </mxCell>
+        <object id="amo" label="&lt;b&gt;AMO与双臂并行 ↗&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px&quot;&gt;腿腰策略 + 上肢轨迹&lt;/font&gt;" link="../algo-amo.html" tooltip="打开对应算法专题">
+          <mxCell vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;rounded=1;whiteSpace=wrap;html=1;arcSize=12;spacing=12;align=left;verticalAlign=middle;strokeWidth=1.5;fontSize=18;fontColor=#19344C;fillColor=#E5F3ED;strokeColor=#277A5B;">
+            <mxGeometry as="geometry" x="1300.0" y="883" width="290" height="77" />
+          </mxCell>
+        </object>
+        <mxCell id="sdk" value="Unitree SDK / REVO2 SDK" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=19;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry as="geometry" x="1300.0" y="977" width="290" height="42" />
+        </mxCell>
+        <mxCell id="legend" value="绿色：当前执行机制　黄色：条件可选　灰色：已有组件未接入主链" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=17;fontColor=#52677D;fontStyle=0;">
+          <mxGeometry as="geometry" x="650.0" y="1180" width="940" height="32" />
+        </mxCell>
+        <mxCell id="boundary" value="图中状态表示装配范围，不表示仿真或实机验收；VLA / HQP / 自主Agent不在当前主链。" vertex="1" parent="1" style="fontFamily=Noto Sans CJK SC;text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontSize=16;fontColor=#52677D;fontStyle=0;">
+          <mxGeometry as="geometry" x="650.0" y="1222" width="940" height="52" />
+        </mxCell>
+        <mxCell id="task-nav" value="能力请求" edge="1" parent="1" source="task-group" target="navigation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#70589B;strokeColor=#70589B;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=.5;exitY=1;entryX=.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="task-manip" value="能力请求" edge="1" parent="1" source="task-group" target="manipulation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#70589B;strokeColor=#70589B;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.5;entryX=.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1225" y="208" />
+              <mxPoint x="1225" y="707" />
+              <mxPoint x="920" y="707" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sensor-nav" value="局部点云" edge="1" parent="1" source="sensor-group" target="navigation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.4;entryX=0;entryY=.2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="perception-manip" value="目标 / 台面" edge="1" parent="1" source="perception-group" target="manipulation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.55;entryX=0;entryY=.5;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="perception-nav" value="视觉工位关系" edge="1" parent="1" source="perception-group" target="navigation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.15;entryX=0;entryY=.85;">
+          <mxGeometry as="geometry" relative="1" x="-.35" y="-12">
+            <Array as="points">
+              <mxPoint x="550" y="750" />
+              <mxPoint x="550" y="625" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="spatial-nav" value="定位 / 地图" edge="1" parent="1" source="spatial-group" target="navigation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.15;entryX=0;entryY=.4;">
+          <mxGeometry as="geometry" relative="1" x=".75" y="-10">
+            <Array as="points">
+              <mxPoint x="460" y="1040" />
+              <mxPoint x="460" y="475" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nav-exec" value="本体速度" edge="1" parent="1" source="navigation-group" target="executor-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.56;entryX=0;entryY=.45;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="manip-exec" value="臂手轨迹&lt;br&gt;身体参考" edge="1" parent="1" source="manipulation-group" target="executor-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.32;entryX=0;entryY=.8;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1235" y="870" />
+              <mxPoint x="1235" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="exec-gateway" value="带租约命令" edge="1" parent="1" source="executor-group" target="gateway-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=.5;exitY=1;entryX=.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="feedback" value="SDK反馈" edge="1" parent="1" source="gateway-group" target="state-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#277A5B;strokeColor=#277A5B;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.5;entryX=0;entryY=.5;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1640" y="925" />
+              <mxPoint x="1640" y="1298" />
+              <mxPoint x="22" y="1298" />
+              <mxPoint x="22" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="state-nav" value="本体状态" edge="1" parent="1" source="state-group" target="navigation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=1;exitY=.5;entryX=0;entryY=0.75;">
+          <mxGeometry as="geometry" relative="1">
+            </mxGeometry>
+        </mxCell>
+        <mxCell id="state-manip" value="本体局部参考" edge="1" parent="1" source="state-group" target="manipulation-group" style="fontFamily=Noto Sans CJK SC;edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=14;fontColor=#527595;strokeColor=#527595;labelBackgroundColor=#FFFFFF;jumpStyle=arc;exitX=.7;exitY=1;entryX=0;entryY=0.08;">
+          <mxGeometry as="geometry" relative="1" x="-.35" y="12">
+            <Array as="points">
+              <mxPoint x="285" y="695" />
+              <mxPoint x="610" y="695" />
+              <mxPoint x="610" y="772" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

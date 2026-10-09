@@ -19,7 +19,8 @@ class Links(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
-        attribute = {'a': 'href', 'iframe': 'src', 'img': 'src', 'script': 'src'}.get(tag)
+        attribute = {'a': 'href', 'iframe': 'src', 'img': 'src', 'script': 'src',
+                     'video': 'src', 'source': 'src'}.get(tag)
         if not attribute or attribute not in attrs:
             return
         link = urlparse(attrs[attribute])
@@ -34,6 +35,10 @@ for row in assets:
 
 for name in sorted(expected | {row['file'] for row in assets}):
     path = root/name
+    if path.suffix == '.mp4':
+        # Binary recordings are covered by the asset SHA256 check above.
+        assert path.stat().st_size < 100 * 1024 * 1024, name
+        continue
     content = path.read_text()
     assert '/home/gnc' not in content
     assert 'artifacts/research' not in content

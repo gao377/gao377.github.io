@@ -1,0 +1,247 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="32.3.0" type="device">
+  <diagram name="感知：组件与模块边界" id="感知：组件与模块边界">
+    <mxGraphModel dx="1540" dy="1350" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1540" pageHeight="1350" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="text1" value="感知：组件与模块边界" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=32;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="45" y="25" width="1450" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="text3" value="按接口与算法职责阅读；每条线说明请求、观测、指令或反馈。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
+          <mxGeometry x="45" y="85" width="1450" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="P_IN" value="&lt;b&gt;RGB-D接入&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RegisteredObjectRos&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="180" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="P_SYNC" value="&lt;b&gt;源时刻几何&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;TF / IMU Slerp&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="540" y="180" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="P_MODEL" value="&lt;b&gt;检测与跟踪&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;Grounding DINO / SAMURAI&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1030" y="180" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="P_GEOM" value="&lt;b&gt;注册目标几何&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;Open3D / OpenCV / SciPy&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1030" y="460" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="P_SUPPORT" value="&lt;b&gt;支撑面与参考&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;CPU进程 / CAD / SIFT-PnP&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="540" y="460" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="P_CACHE" value="&lt;b&gt;最新观测缓存&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;LatestObjectObservation&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="460" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="P_NAV" value="&lt;b&gt;导航相对参考&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;VisualNavigationReference&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="540" y="750" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="N" value="&lt;b&gt;Navigation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;工位视觉精调&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F1FA;strokeColor=#527595;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1030" y="750" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="M" value="&lt;b&gt;Manipulation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;结构化局部观测&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F1FA;strokeColor=#527595;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="750" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="MOCK" value="&lt;b&gt;mock场景&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;PerceptionRuntime.observe&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="50" y="1010" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell value="RGB-D / K" edge="1" parent="1" source="P_IN" target="P_SYNC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="对齐帧" edge="1" parent="1" source="P_SYNC" target="P_MODEL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="mask" edge="1" parent="1" source="P_MODEL" target="P_GEOM" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="目标几何" edge="1" parent="1" source="P_GEOM" target="P_SUPPORT" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="目标/台面" edge="1" parent="1" source="P_SUPPORT" target="P_CACHE" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="局部观测与原stamp" edge="1" parent="1" source="P_CACHE" target="M" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell value="参考种子" edge="1" parent="1" source="P_CACHE" target="P_NAV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v21">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="512" />
+              <mxPoint x="460" y="802" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="工位关系" edge="1" parent="1" source="P_NAV" target="N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;fontColor=#42698D;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=1;entryPerimeter=1;dashed=0;" id="v22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-active" value="活动实现" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="45.0" y="1255" width="285.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-optional" value="条件 / 可选" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="335.0" y="1255" width="285.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-mock" value="MOCK" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="625.0" y="1255" width="285.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-external" value="外部模块" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F1FA;strokeColor=#527595;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="915.0" y="1255" width="285.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-unwired" value="未接入本链" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F5F7;strokeColor=#8992A3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1205.0" y="1255" width="285.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="text28" value="实线表示本页调用或供数；虚线为条件分支。颜色说明装配角色，不代表物理或实机验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;fontStyle=0;">
+          <mxGeometry x="45" y="1295" width="1450" height="34" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="感知：像素、坐标与参考运行流" id="感知：像素、坐标与参考运行流">
+    <mxGraphModel dx="1450" dy="1428.0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1450" pageHeight="1428.0" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="text1" value="感知：像素、坐标与参考运行流" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=32;fontColor=#19344C;fontStyle=1;">
+          <mxGeometry x="45" y="25" width="1360" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="text3" value="箭头标注请求、观测、指令或反馈；框内第二行对应实际实现。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
+          <mxGeometry x="45" y="85" width="1360" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="RGBD" value="&lt;b&gt;相机源帧&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;RGB、深度、K&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="430.39904" y="139.99904" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="MASK" value="&lt;b&gt;单对象mask&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;检测初始化 / SAMURAI更新&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="297.19903999999997" y="316.39904" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="POINTS" value="&lt;b&gt;深度反投影&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;p_C=z K^-1 [u,v,1]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="430.39904" y="492.79903999999993" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="TF" value="&lt;b&gt;源时刻TF及重力&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;camera→pelvis / IMU&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="815.5990400000001" y="492.79903999999993" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="LOCAL" value="&lt;b&gt;本体局部位姿&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;方块顶面或圆柱几何&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="622.39904" y="669.19904" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="SUP" value="&lt;b&gt;台面观测&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;独立平面 / 可选ICP&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="490.39904" y="845.59904" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="REF" value="&lt;b&gt;跨帧视觉参考&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;SIFT / PnP / 深度复核&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="370.39904" y="1021.9990399999999" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="OBS" value="&lt;b&gt;ObjectObservation&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;原stamp / valid / reason&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="755.5990400000001" y="1021.9990399999999" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="NAVREF" value="&lt;b&gt;工位相对关系&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;供Navigation读取&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:13px&quot;&gt;活动实现&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="370.39904" y="1198.39904" width="337.20192" height="99.60191999999999" as="geometry" />
+        </mxCell>
+        <mxCell value="RGB" edge="1" parent="1" source="RGBD" target="MASK" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v14">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="545.732" y="260.588" />
+              <mxPoint x="527.18" y="284.8159999999999" />
+            </Array>
+            <mxPoint x="16.10807950841945" y="4.822530059832673" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="深度和K" edge="1" parent="1" source="RGBD" target="POINTS" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="638.4079999999999" y="275.04799999999994" />
+              <mxPoint x="657.8" y="316.4" />
+              <mxPoint x="657.8" y="416.0" />
+              <mxPoint x="642.1519999999999" y="449.3719999999999" />
+            </Array>
+            <mxPoint x="28.200000000000045" y="6.004381336163931" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="mask内深度" edge="1" parent="1" source="MASK" target="POINTS" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="519.068" y="436.988" />
+              <mxPoint x="537.62" y="461.21599999999995" />
+            </Array>
+            <mxPoint x="51.091920491580595" y="4.822530059832673" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="局部点云" edge="1" parent="1" source="POINTS" target="LOCAL" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="676.304" y="613.856" />
+              <mxPoint x="703.7239999999999" y="638.7080000000001" />
+            </Array>
+            <mxPoint x="41.72336911172226" y="4.09869646843606" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="采样时刻变换" edge="1" parent="1" source="TF" target="LOCAL" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="906.4159999999999" y="613.856" />
+              <mxPoint x="878.816" y="638.7080000000001" />
+            </Array>
+            <mxPoint x="47.05130200584108" y="4.097225019957818" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="邻近目标关联" edge="1" parent="1" source="LOCAL" target="SUP" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v19">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="738.212" y="789.788" />
+              <mxPoint x="719.828" y="814.0160000000001" />
+            </Array>
+            <mxPoint x="47.33759679113473" y="4.826728510900125" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="目标几何" edge="1" parent="1" source="LOCAL" target="OBS" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v20">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="826.652" y="785.0719999999999" />
+              <mxPoint x="834.2" y="798.8" />
+              <mxPoint x="852.2" y="845.6" />
+              <mxPoint x="883.5319999999999" y="943.4959999999999" />
+            </Array>
+            <mxPoint x="48.878550156764504" y="7.552589880844835" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="台面纹理与深度" edge="1" parent="1" source="SUP" target="REF" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v21">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="611.1320000000001" y="966.0079999999999" />
+              <mxPoint x="594.596" y="989.9839999999999" />
+            </Array>
+            <mxPoint x="54.07145060986056" y="5.117620958997577" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="支撑几何" edge="1" parent="1" source="SUP" target="OBS" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v22">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="766.28" y="966.9799999999999" />
+              <mxPoint x="805.376" y="992.636" />
+            </Array>
+            <mxPoint x="44.21132935416017" y="3.424070644320068" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell value="当前相对变换" edge="1" parent="1" source="REF" target="NAVREF" style="edgeStyle=none;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#324F68;labelBackgroundColor=#FFFFFF;dashed=0;" id="v23">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="539.0" y="1141.844" />
+              <mxPoint x="539.0" y="1165.076" />
+            </Array>
+            <mxPoint x="46.200000000000045" y="5.996399999999994" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-active" value="活动实现" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="45.0" y="1328.0" width="267.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-optional" value="条件 / 可选" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2D7;strokeColor=#AB7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="317.0" y="1328.0" width="267.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-mock" value="MOCK" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0EDF7;strokeColor=#8764A8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="589.0" y="1328.0" width="267.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-external" value="外部模块" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E9F1FA;strokeColor=#527595;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="861.0" y="1328.0" width="267.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-unwired" value="未接入本链" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F5F7;strokeColor=#8992A3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+          <mxGeometry x="1133.0" y="1328.0" width="267.0" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="text29" value="实线表示本页调用或供数；虚线为条件分支。颜色说明装配角色，不代表物理或实机验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#19344C;fontStyle=0;">
+          <mxGeometry x="45" y="1368.0" width="1360" height="34" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

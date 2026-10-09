@@ -698,95 +698,263 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>目标检测、跟踪与RGB-D几何</h1><p class="am-sub">识别和跟踪属于perception_runtime</p><div class="am-head-meta"><span><b>doc_id</b>algo-perception</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>目标检测、跟踪与RGB-D几何</h1><p class="am-sub">注册目标的检测与三维估计；图像处理集中在 perception_runtime</p><div class="am-head-meta"><span><b>doc_id</b>algo-perception</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 算法选择与适用对象</a><a href="#panel-B">B · 从像素到本体几何</a><a href="#panel-C">C · 方块与圆柱的估计方法</a><a href="#panel-D">D · 跟踪与遮挡状态</a><a href="#panel-E">E · 调度、参数与代码入口</a><a href="#panel-F">F · 复用来源与可替换边界</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>作用与输入输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>输入彩色图、对齐深度、相机标定与源时刻本体状态。输出本体局部目标位姿、几何、观测质量和时间。</p>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>算法选择与适用对象</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>默认注册方块路径使用 Grounding DINO 初始化目标框。
+SAM2.1生成初始mask，SAMURAI维护跨帧mask。
+三维位置来自对齐深度、图像源时刻TF与IMU。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>后端</th>
+<th>用途</th>
+<th>选择条件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>grounded_cube</td>
+<td>注册方块</td>
+<td>当前方块profile</td>
+</tr>
+<tr>
+<td>grounded_bottle</td>
+<td>注册水瓶</td>
+<td>水瓶profile</td>
+</tr>
+<tr>
+<td>yolo_bottle</td>
+<td>单水瓶分割</td>
+<td>可选YOLO权重</td>
+</tr>
+<tr>
+<td>red</td>
+<td>红色物体连通域</td>
+<td>特定演示对象</td>
+</tr>
+</tbody></table></div>
+<p>上述后端是替代关系，不串联执行全部检测器。
+<a href="module-robot-perception_runtime.html">感知模块</a></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>检测后端提供初始框或mask；SAMURAI/SAM2.1维持跨帧mask。深度反投影 <code>p_C = z K⁻¹[u,v,1]</code>，再用采样时刻 <code>T_BC</code> 转入本体frame。
-方块路径按可见顶面恢复几何；圆柱路径使用已知半径拟合。物体profile给出先验尺寸，不是任意物体六维识别器。</p>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>从像素到本体几何</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 370 756" width="370" height="756" role="img" aria-label="流程图：语义框、SAM初始mask、当前RGB、SAMURAI、深度反投影、相机内参、本体点云、IMU重力" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M71.9,49 L71.9,65 Q71.9,81 71.9,97 L71.9,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="49.7" y="72" width="44.5" height="18" rx="3"/><text x="71.9" y="81" text-anchor="middle" dominant-baseline="central">初始化</text></g></g><g data-step="1"><path class="am-edge" d="M207.3,148 L207.3,164 Q207.3,180 185.4,196 L163.6,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="176.2" y="171" width="62.2" height="18" rx="3"/><text x="207.3" y="180" text-anchor="middle" dominant-baseline="central">更新mask</text></g></g><g data-step="2"><path class="am-edge" d="M71.9,148 L71.9,164 Q71.9,180 93.8,196 L115.7,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="43.9" y="171" width="56" height="18" rx="3"/><text x="71.9" y="180" text-anchor="middle" dominant-baseline="central">目标种子</text></g></g><g data-step="3"><path class="am-edge" d="M139.6,247 L139.6,263 Q139.6,279 159,295 L178.3,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="108.5" y="270" width="62.2" height="18" rx="3"/><text x="139.6" y="279" text-anchor="middle" dominant-baseline="central">有效mask</text></g></g><g data-step="4"><path class="am-edge" d="M259.4,247 L259.4,263 Q259.4,279 240,295 L220.7,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="250.5" y="270" width="17.8" height="18" rx="3"/><text x="259.4" y="279" text-anchor="middle" dominant-baseline="central">K</text></g></g><g data-step="5"><path class="am-edge" d="M199.5,346 L199.5,362 Q199.5,378 199.5,394 L199.5,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="135.3" y="369" width="128.5" height="18" rx="3"/><text x="199.5" y="378" text-anchor="middle" dominant-baseline="central">源时刻camera到pelvis</text></g></g><g data-step="6"><path class="am-edge" d="M314.6,445 L314.6,461 Q314.6,477 296,493 L277.4,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="275.1" y="468" width="79" height="18" rx="3"/><text x="314.6" y="477" text-anchor="middle" dominant-baseline="central">图像时刻插值</text></g></g><g data-step="7"><path class="am-edge" d="M199.5,445 L199.5,461 Q199.5,477 218.1,493 L236.7,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="171.5" y="468" width="56" height="18" rx="3"/><text x="199.5" y="477" text-anchor="middle" dominant-baseline="central">局部几何</text></g></g><g data-step="8"><path class="am-edge" d="M257.1,544 L257.1,560 Q257.1,576 257.1,592 L257.1,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="223.5" y="567" width="67" height="18" rx="3"/><text x="257.1" y="576" text-anchor="middle" dominant-baseline="central">profile选择</text></g></g><g data-step="9"><path class="am-edge" d="M257.1,643 L257.1,659 Q257.1,675 257.1,691 L257.1,707" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="196.1" y="666" width="122" height="18" rx="3"/><text x="257.1" y="675" text-anchor="middle" dominant-baseline="central">pelvis位姿与源stamp</text></g></g></g><g><g class="am-node am-node--rect" data-key="语义框" data-step="0"><rect class="am-node-shape" x="38.4" y="14" width="67" height="35" rx="3"/><text x="71.9" y="31.5" text-anchor="middle" dominant-baseline="central">语义框</text></g><g class="am-node am-node--rect" data-key="SAM初始mask" data-step="0"><rect class="am-node-shape" x="14" y="113" width="115.9" height="35" rx="3"/><text x="71.9" y="130.5" text-anchor="middle" dominant-baseline="central">SAM初始mask</text></g><g class="am-node am-node--rect" data-key="当前RGB" data-step="1"><rect class="am-node-shape" x="165.9" y="113" width="82.9" height="35" rx="3"/><text x="207.3" y="130.5" text-anchor="middle" dominant-baseline="central">当前RGB</text></g><g class="am-node am-node--rect" data-key="SAMURAI" data-step="1"><rect class="am-node-shape" x="95.9" y="212" width="87.5" height="35" rx="3"/><text x="139.6" y="229.5" text-anchor="middle" dominant-baseline="central">SAMURAI</text></g><g class="am-node am-node--rect" data-key="深度反投影" data-step="3"><rect class="am-node-shape" x="153" y="311" width="93" height="35" rx="3"/><text x="199.5" y="328.5" text-anchor="middle" dominant-baseline="central">深度反投影</text></g><g class="am-node am-node--rect" data-key="相机内参" data-step="4"><rect class="am-node-shape" x="219.4" y="212" width="80" height="35" rx="3"/><text x="259.4" y="229.5" text-anchor="middle" dominant-baseline="central">相机内参</text></g><g class="am-node am-node--rect" data-key="本体点云" data-step="5"><rect class="am-node-shape" x="159.5" y="410" width="80" height="35" rx="3"/><text x="199.5" y="427.5" text-anchor="middle" dominant-baseline="central">本体点云</text></g><g class="am-node am-node--rect" data-key="IMU重力" data-step="6"><rect class="am-node-shape" x="275.5" y="410" width="78.2" height="35" rx="3"/><text x="314.6" y="427.5" text-anchor="middle" dominant-baseline="central">IMU重力</text></g><g class="am-node am-node--rect" data-key="重力调平" data-step="6"><rect class="am-node-shape" x="217.1" y="509" width="80" height="35" rx="3"/><text x="257.1" y="526.5" text-anchor="middle" dominant-baseline="central">重力调平</text></g><g class="am-node am-node--rect" data-key="方块顶面或圆柱几何" data-step="8"><rect class="am-node-shape" x="184.6" y="608" width="145" height="35" rx="3"/><text x="257.1" y="625.5" text-anchor="middle" dominant-baseline="central">方块顶面或圆柱几何</text></g><g class="am-node am-node--rect" data-key="ObjectObservation" data-step="9"><rect class="am-node-shape" x="185.1" y="707" width="144" height="35" rx="3"/><text x="257.1" y="724.5" text-anchor="middle" dominant-baseline="central">ObjectObservation</text></g></g></svg></figure>
+<div class="am-md"><p><code>p_C = z · K⁻¹[u,v,1]</code>，<code>p_B = T_BC(t_image) · p_C</code>。
+重力调平用于估计物体高度与上方向。
+结果转换回pelvis坐标输出。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>算法在异步视觉工作进程执行。相机10Hz不保证每帧重模型完成。目标尺寸、mask质量、深度阈值和跟踪模型由profile决定。不要把TCP残差3mm解释成RGB-D有3mm精度。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>方块与圆柱的估计方法</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>几何</th>
+<th>估计过程</th>
+<th>重要限制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>方块</td>
+<td>Open3D RANSAC找顶面；OpenCV最小矩形；扣除半高恢复中心</td>
+<td>已知正方形尺寸；顶面须可见</td>
+</tr>
+<tr>
+<td>方块方向</td>
+<td>SciPy C4旋转群选择连续等价轴</td>
+<td>yaw只能确定到90°对称</td>
+</tr>
+<tr>
+<td>圆柱</td>
+<td>mask深度中位点、半径修正、上下沿高度</td>
+<td>直立轴与注册尺寸假设</td>
+</tr>
+<tr>
+<td>水瓶</td>
+<td>复用圆柱主轴，再拟合水平圆心</td>
+<td>不是任意非刚体形状拟合</td>
+</tr>
+</tbody></table></div>
+<p>默认5cm方块要求顶面跨度达到边长80%。
+3mm平面拟合阈值是拟合参数，不是相机测量精度。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与复用来源</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="https://github.com/yangchris11/samurai">SAMURAI</a> 固定commit 76ba195984892b0d1e3db5d9c9f90bb62175680a；OpenCV/Open3D/SciPy。检测器按环境选择，下载模型不等于已启用。</p>
-<ul>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/target_tracker.py">modules/perception_runtime/target_tracker.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/box_geometry.py">modules/perception_runtime/box_geometry.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/cylinder_geometry.py">modules/perception_runtime/cylinder_geometry.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/registered_object.py">modules/perception_runtime/registered_object.py</a></li>
-</ul>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>跟踪与遮挡状态</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>SAMURAI最多缓存profile规定的帧数。
+达到上限时，用上一mask和图像重新初始化局部窗口。
+同一源stamp只读取一次结果；时间回绕重置跟踪状态。</p>
+<p>顶面不完整、不可见或跟踪丢失会触发当前帧重新检测。
+新检测仍不可用时输出明确失败原因。
+操作模块可保留任务内旧目标，感知不会刷新旧目标时间。</p>
+<p><a href="algo-grasp.html">抓取与触觉</a> · <a href="algo-support.html">支撑面观测</a></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>遮挡时输出明确状态。操作可按其有界目标保持规则继续，感知不捏造新观测。无法观测的几何不能由USD真值补全。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>调度、参数与代码入口</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>项目</th>
+<th>当前实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>推理调度</td>
+<td>LatestObjectObservation 单工作线程</td>
+</tr>
+<tr>
+<td>RGB-D时差</td>
+<td>最大20ms</td>
+</tr>
+<tr>
+<td>方块观测年龄</td>
+<td>最大0.2s</td>
+</tr>
+<tr>
+<td>跟踪缓存</td>
+<td>profile配置；方块示例16帧</td>
+</tr>
+<tr>
+<td>深度有效区间</td>
+<td>大于0.1m且小于5m</td>
+</tr>
+<tr>
+<td>可视化</td>
+<td>发布本次RGB、mask及同stamp观测</td>
+</tr>
+</tbody></table></div>
+<p>主要文件：<a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/registered_object_ros.py">registered_object_ros.py</a>、<a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/box_geometry.py">box_geometry.py</a>、<a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/target_tracker.py">target_tracker.py</a>。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>验证与替换</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>检查遮挡mask、深度边界、坐标变换和时间对齐。替换模型须保留观测质量和源时间，不在manipulation内重建图像管线。</p>
-<p><a href="algorithms.html">算法目录</a> · <a href="modules.html">模块目录</a> · <a href="experiments.html">实验口径</a></p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>复用来源与可替换边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>采用<a href="https://github.com/yangchris11/samurai">SAMURAI官方实现</a>。
+仓库保留固定上游版本与模型来源。
+分割与几何重建是两个步骤。
+更换分割器须继续输出同一mask与源时间语义。</p>
+<p>新物体需要独立几何模型与观测条件。
+不能仅改类别名就宣称具有任意物体六维估计能力。
+<a href="files-robot-perception_runtime.html">文件索引</a> · <a href="experiments.html">实验口径</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 目标检测、跟踪与RGB-D几何
-subtitle: 识别和跟踪属于perception_runtime
+subtitle: 注册目标的检测与三维估计；图像处理集中在 perception_runtime
 lang: zh
 doc_id: algo-perception
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 作用与输入输出
+## A 算法选择与适用对象
 
-输入彩色图、对齐深度、相机标定与源时刻本体状态。输出本体局部目标位姿、几何、观测质量和时间。
+默认注册方块路径使用 Grounding DINO 初始化目标框。
+SAM2.1生成初始mask，SAMURAI维护跨帧mask。
+三维位置来自对齐深度、图像源时刻TF与IMU。
 
-## B 原理和调用链
+| 后端 | 用途 | 选择条件 |
+| --- | --- | --- |
+| grounded_cube | 注册方块 | 当前方块profile |
+| grounded_bottle | 注册水瓶 | 水瓶profile |
+| yolo_bottle | 单水瓶分割 | 可选YOLO权重 |
+| red | 红色物体连通域 | 特定演示对象 |
 
-检测后端提供初始框或mask；SAMURAI/SAM2.1维持跨帧mask。深度反投影 `p_C = z K⁻¹[u,v,1]`，再用采样时刻 `T_BC` 转入本体frame。
-方块路径按可见顶面恢复几何；圆柱路径使用已知半径拟合。物体profile给出先验尺寸，不是任意物体六维识别器。
+上述后端是替代关系，不串联执行全部检测器。
+[感知模块](module-robot-perception_runtime.html)
 
-## C 参数与运行特性
+## B 从像素到本体几何
 
-算法在异步视觉工作进程执行。相机10Hz不保证每帧重模型完成。目标尺寸、mask质量、深度阈值和跟踪模型由profile决定。不要把TCP残差3mm解释成RGB-D有3mm精度。
+```flow
+语义框 -&gt; SAM初始mask: 初始化
+当前RGB -&gt; SAMURAI: 更新mask
+SAM初始mask -&gt; SAMURAI: 目标种子
+SAMURAI -&gt; 深度反投影: 有效mask
+相机内参 -&gt; 深度反投影: K
+深度反投影 -&gt; 本体点云: 源时刻camera到pelvis
+IMU重力 -&gt; 重力调平: 图像时刻插值
+本体点云 -&gt; 重力调平: 局部几何
+重力调平 -&gt; 方块顶面或圆柱几何: profile选择
+方块顶面或圆柱几何 -&gt; ObjectObservation: pelvis位姿与源stamp
+```
 
-## D 实现与复用来源
+`p_C = z · K⁻¹[u,v,1]`，`p_B = T_BC(t_image) · p_C`。
+重力调平用于估计物体高度与上方向。
+结果转换回pelvis坐标输出。
 
-[SAMURAI](https://github.com/yangchris11/samurai) 固定commit 76ba195984892b0d1e3db5d9c9f90bb62175680a；OpenCV/Open3D/SciPy。检测器按环境选择，下载模型不等于已启用。
+## C 方块与圆柱的估计方法
 
-- [modules/perception_runtime/target_tracker.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/target_tracker.py)
-- [modules/perception_runtime/box_geometry.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/box_geometry.py)
-- [modules/perception_runtime/cylinder_geometry.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/cylinder_geometry.py)
-- [modules/perception_runtime/registered_object.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/registered_object.py)
+| 几何 | 估计过程 | 重要限制 |
+| --- | --- | --- |
+| 方块 | Open3D RANSAC找顶面；OpenCV最小矩形；扣除半高恢复中心 | 已知正方形尺寸；顶面须可见 |
+| 方块方向 | SciPy C4旋转群选择连续等价轴 | yaw只能确定到90°对称 |
+| 圆柱 | mask深度中位点、半径修正、上下沿高度 | 直立轴与注册尺寸假设 |
+| 水瓶 | 复用圆柱主轴，再拟合水平圆心 | 不是任意非刚体形状拟合 |
 
-## E 适用条件与失败处理
+默认5cm方块要求顶面跨度达到边长80%。
+3mm平面拟合阈值是拟合参数，不是相机测量精度。
 
-遮挡时输出明确状态。操作可按其有界目标保持规则继续，感知不捏造新观测。无法观测的几何不能由USD真值补全。
+## D 跟踪与遮挡状态
 
-## F 验证与替换
+SAMURAI最多缓存profile规定的帧数。
+达到上限时，用上一mask和图像重新初始化局部窗口。
+同一源stamp只读取一次结果；时间回绕重置跟踪状态。
 
-检查遮挡mask、深度边界、坐标变换和时间对齐。替换模型须保留观测质量和源时间，不在manipulation内重建图像管线。
+顶面不完整、不可见或跟踪丢失会触发当前帧重新检测。
+新检测仍不可用时输出明确失败原因。
+操作模块可保留任务内旧目标，感知不会刷新旧目标时间。
 
-[算法目录](algorithms.html) · [模块目录](modules.html) · [实验口径](experiments.html)
+[抓取与触觉](algo-grasp.html) · [支撑面观测](algo-support.html)
+
+## E 调度、参数与代码入口
+
+| 项目 | 当前实现 |
+| --- | --- |
+| 推理调度 | LatestObjectObservation 单工作线程 |
+| RGB-D时差 | 最大20ms |
+| 方块观测年龄 | 最大0.2s |
+| 跟踪缓存 | profile配置；方块示例16帧 |
+| 深度有效区间 | 大于0.1m且小于5m |
+| 可视化 | 发布本次RGB、mask及同stamp观测 |
+
+主要文件：[registered_object_ros.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/registered_object_ros.py)、[box_geometry.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/box_geometry.py)、[target_tracker.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/perception_runtime/target_tracker.py)。
+
+## F 复用来源与可替换边界
+
+采用[SAMURAI官方实现](https://github.com/yangchris11/samurai)。
+仓库保留固定上游版本与模型来源。
+分割与几何重建是两个步骤。
+更换分割器须继续输出同一mask与源时间语义。
+
+新物体需要独立几何模型与观测条件。
+不能仅改类别名就宣称具有任意物体六维估计能力。
+[文件索引](files-robot-perception_runtime.html) · [实验口径](experiments.html)
 </textarea>
 <script>
 (() => {

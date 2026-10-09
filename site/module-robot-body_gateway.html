@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>本体网关 · body_gateway</title>
+<title>本体适配与网关 · body_gateway</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,122 +698,292 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>本体网关 · body_gateway</h1><p class="am-sub">robot_app 的模块责任与开发入口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-body_gateway</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>本体适配与网关 · body_gateway</h1><p class="am-sub">SW-11 / RB-05：统一控制权、AMO与臂手SDK出口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-body_gateway</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<p><a href="diagrams/body-adapter.html">内部可编辑多页图</a> · <a href="diagrams/body-adapter.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责</a><a href="#panel-B">B · 输入与输出</a><a href="#panel-C">C · 执行边界</a><a href="#panel-D">D · 算法与实现</a><a href="#panel-E">E · 开发检查</a><a href="#panel-F">F · 扩展与阅读</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · body_adapter 在代码中的位置</a><a href="#panel-B">B · 命令合成视图</a><a href="#panel-C">C · 四类命令与生命周期</a><a href="#panel-D">D · 一次控制周期</a><a href="#panel-E">E · 后端选择与文件映射</a><a href="#panel-F">F · 开发与验证边界</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><strong>架构归属：SW-11 → RB-05。实现标记：I。</strong></p>
-<p><a href="architecture-map.html">系统与软件映射</a> · <a href="architecture.html">可编辑架构图</a></p>
-<p>校验控制权并调用设备接口。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>输入与输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>body_adapter 在代码中的位置</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><strong>SW-11 → RB-05。body_adapter 是本体适配职责名称。</strong>
+实际代码由 BodyGateway 与 unitree_g1 后端共同承担。
+仓库没有新增一个名为 body_adapter 的运行时。</p>
+<div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>项目</th>
-<th>内容</th>
+<th>层次</th>
+<th>代码对象</th>
+<th>责任</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>输入</td>
-<td>带租约的统一命令</td>
+<td>能力执行</td>
+<td>ActionExecutor</td>
+<td>轨迹采样、完成与停止语义</td>
 </tr>
 <tr>
-<td>输出</td>
-<td>设备调用结果、停止反馈</td>
+<td>统一出口</td>
+<td>BodyGateway</td>
+<td>租约、保护和操作阶段速度检查</td>
 </tr>
 <tr>
-<td>下游或数据依赖</td>
-<td>G1 backend、protection_runtime</td>
+<td>G1 后端</td>
+<td>G1AmoBodyBackend</td>
+<td>AMO、双臂、双手命令调度</td>
+</tr>
+<tr>
+<td>SDK 会话</td>
+<td>G1UserControlSession / G1SdkContext</td>
+<td>模式切换、DDS 发布、真实反馈</td>
 </tr>
 </tbody></table></div>
-<p>对外ROS能力遵循<a href="interfaces.html">统一契约</a>。时间、坐标、来源不能由调用者省略。</p>
+<p><a href="architecture-map.html">架构映射</a> · <a href="https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/backends/unitree_g1">后端目录</a></p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>命令合成视图</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 456 954" width="456" height="954" role="img" aria-label="流程图：导航或操作、共用执行器、BodyGateway、AMO后端、AMO策略、身体命令合成、单DDS会话、G1本体" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M201.3,49 L201.3,65 Q201.3,81 201.3,97 L201.3,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="156" y="72" width="90.5" height="18" rx="3"/><text x="201.3" y="81" text-anchor="middle" dominant-baseline="central">能力命令与轨迹</text></g></g><g data-step="1"><path class="am-edge" d="M201.3,148 L201.3,164 Q201.3,180 201.3,196 L201.3,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="149.8" y="171" width="102.9" height="18" rx="3"/><text x="201.3" y="180" text-anchor="middle" dominant-baseline="central">command和lease</text></g></g><g data-step="2"><path class="am-edge" d="M201.3,247 L201.3,263 Q201.3,279 201.3,295 L201.3,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="167.5" y="270" width="67.5" height="18" rx="3"/><text x="201.3" y="279" text-anchor="middle" dominant-baseline="central">已校验命令</text></g></g><g data-step="3"><path class="am-edge" d="M243.9,342.4 L298.3,360.2 Q352.7,378 352.7,394 L352.7,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="295.9" y="369" width="113.5" height="18" rx="3"/><text x="352.7" y="378" text-anchor="middle" dominant-baseline="central">速度方向和躯干参考</text></g></g><g data-step="4"><path class="am-edge" d="M365.5,445 L377.3,461 Q389,477 321.6,494.8 L254.3,512.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="337.3" y="468" width="103.4" height="18" rx="3"/><text x="389" y="477" text-anchor="middle" dominant-baseline="central">15维腿腰绝对目标</text></g></g><g data-step="5"><path class="am-edge" d="M201.3,346 L201.3,362 Q201.3,378 201.3,402.8 Q201.3,427.5 201.3,452.3 Q201.3,477 201.3,493 L201.3,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="148.9" y="418.5" width="104.8" height="18" rx="3"/><text x="201.3" y="427.5" text-anchor="middle" dominant-baseline="central">14维臂q与dq及tau</text></g></g><g data-step="6"><path class="am-edge" d="M201.3,544 L201.3,560 Q201.3,576 201.3,592 L201.3,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="154.2" y="567" width="94.2" height="18" rx="3"/><text x="201.3" y="576" text-anchor="middle" dominant-baseline="central">29关节LowCmd</text></g></g><g data-step="7"><path class="am-edge" d="M201.3,643 L201.3,659 Q201.3,675 179.5,691 L157.8,707" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="153.3" y="666" width="96" height="18" rx="3"/><text x="201.3" y="675" text-anchor="middle" dominant-baseline="central">rt/user_lowcmd</text></g></g><g data-step="8"><path class="am-edge" d="M158.7,344.2 L112.7,361.1 Q66.7,378 66.7,402.8 Q66.7,427.5 66.7,452.3 Q66.7,477 66.7,501.8 Q66.7,526.5 66.7,551.3 Q66.7,576 66.7,592 L66.7,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="468" width="103.4" height="18" rx="3"/><text x="66.7" y="477" text-anchor="middle" dominant-baseline="central">双手12维位置目标</text></g></g><g data-step="9"><path class="am-edge" d="M66.7,643 L66.7,659 Q66.7,675 88.4,691 L110.2,707" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="25.9" y="666" width="81.5" height="18" rx="3"/><text x="66.7" y="675" text-anchor="middle" dominant-baseline="central">双手SDK命令</text></g></g><g data-step="10"><path class="am-edge" d="M134,742 L134,758 Q134,774 151.1,790 L168.3,806" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="83.8" y="765" width="100.4" height="18" rx="3"/><text x="134" y="774" text-anchor="middle" dominant-baseline="central">关节与IMU及触觉</text></g></g><g data-step="11"><path class="am-edge" d="M232.7,806 L274.5,790 Q316.3,774 316.3,749.3 Q316.3,724.5 316.3,699.8 Q316.3,675 316.3,650.3 Q316.3,625.5 316.3,600.8 Q316.3,576 316.3,551.3 Q316.3,526.5 316.3,501.8 Q316.3,477 328.1,461 L339.8,445" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="288.3" y="616.5" width="56" height="18" rx="3"/><text x="316.3" y="625.5" text-anchor="middle" dominant-baseline="central">实测状态</text></g></g><g data-step="12"><path class="am-edge" d="M187,841 L187,857 Q187,873 187,889 L187,905" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="142.6" y="864" width="88.9" height="18" rx="3"/><text x="187" y="873" text-anchor="middle" dominant-baseline="central">实测关节与IMU</text></g></g></g><g><g class="am-node am-node--rect" data-key="导航或操作" data-step="0"><rect class="am-node-shape" x="154.8" y="14" width="93" height="35" rx="3"/><text x="201.3" y="31.5" text-anchor="middle" dominant-baseline="central">导航或操作</text></g><g class="am-node am-node--rect" data-key="共用执行器" data-step="0"><rect class="am-node-shape" x="154.8" y="113" width="93" height="35" rx="3"/><text x="201.3" y="130.5" text-anchor="middle" dominant-baseline="central">共用执行器</text></g><g class="am-node am-node--rect" data-key="BodyGateway" data-step="1"><rect class="am-node-shape" x="144.1" y="212" width="114.3" height="35" rx="3"/><text x="201.3" y="229.5" text-anchor="middle" dominant-baseline="central">BodyGateway</text></g><g class="am-node am-node--rect" data-key="AMO后端" data-step="2"><rect class="am-node-shape" x="158.7" y="311" width="85.2" height="35" rx="3"/><text x="201.3" y="328.5" text-anchor="middle" dominant-baseline="central">AMO后端</text></g><g class="am-node am-node--rect" data-key="AMO策略" data-step="3"><rect class="am-node-shape" x="310.1" y="410" width="85.2" height="35" rx="3"/><text x="352.7" y="427.5" text-anchor="middle" dominant-baseline="central">AMO策略</text></g><g class="am-node am-node--rect" data-key="身体命令合成" data-step="4"><rect class="am-node-shape" x="148.3" y="509" width="106" height="35" rx="3"/><text x="201.3" y="526.5" text-anchor="middle" dominant-baseline="central">身体命令合成</text></g><g class="am-node am-node--rect" data-key="单DDS会话" data-step="6"><rect class="am-node-shape" x="152.2" y="608" width="98.2" height="35" rx="3"/><text x="201.3" y="625.5" text-anchor="middle" dominant-baseline="central">单DDS会话</text></g><g class="am-node am-node--rect" data-key="G1本体" data-step="7"><rect class="am-node-shape" x="97.8" y="707" width="72.5" height="35" rx="3"/><text x="134" y="724.5" text-anchor="middle" dominant-baseline="central">G1本体</text></g><g class="am-node am-node--rect" data-key="REVO2适配" data-step="8"><rect class="am-node-shape" x="17.2" y="608" width="99" height="35" rx="3"/><text x="66.7" y="625.5" text-anchor="middle" dominant-baseline="central">REVO2适配</text></g><g class="am-node am-node--rect" data-key="共享反馈缓存" data-step="10"><rect class="am-node-shape" x="134" y="806" width="106" height="35" rx="3"/><text x="187" y="823.5" text-anchor="middle" dominant-baseline="central">共享反馈缓存</text></g><g class="am-node am-node--rect" data-key="本体判稳" data-step="12"><rect class="am-node-shape" x="147" y="905" width="80" height="35" rx="3"/><text x="187" y="922.5" text-anchor="middle" dominant-baseline="central">本体判稳</text></g></g></svg></figure>
+<div class="am-md"><p>上肢与 AMO 同时运行。
+AMO读取实测上肢状态；策略输出只占腿腰 15 个关节。
+双臂 14 关节由上肢轨迹提供，最终合成一次身体写入。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>执行边界</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>单一设备写入边界；上层模块不得直接调用SDK。
-输入不足时明确返回原因，不构造假观测或假成功。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>四类命令与生命周期</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>内容</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BODY_VELOCITY</td>
+<td>vx、vy、yaw_rate</td>
+<td>有限有效期；到期归零</td>
+</tr>
+<tr>
+<td>TORSO_REFERENCE</td>
+<td>高度偏移、yaw、pitch、roll</td>
+<td>输入策略的目标；不等于实际腰关节角</td>
+</tr>
+<tr>
+<td>JOINT_REFERENCE</td>
+<td>双臂 q；可带 dq、ddq、tau</td>
+<td>动态轨迹或限速位置趋近</td>
+</tr>
+<tr>
+<td>HAND_REFERENCE</td>
+<td>左右各 6 路归一化位置</td>
+<td>REVO2 P/V 命令；触觉另路读取</td>
+</tr>
+</tbody></table></div>
+<p>操作阶段默认下肢零速。
+只有 approach 获准身体微调后，才接受非零速度。
+该路径平移不超过 0.02m/s，转速不超过 0.05rad/s。</p>
+<p>正常臂轨迹完成保留仍有效的躯干保持责任。
+取消或故障会归零速度与躯干请求。
+任务结束与退出低层控制会话是两种操作。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>算法与实现</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="algo-execution.html">execution</a> · <a href="algo-amo.html">amo</a></p>
-<p><a href="files-robot-body_gateway.html">本模块文件和符号索引</a></p>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>一次控制周期</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-seq"><svg viewBox="0 0 956 390" width="956" height="390" role="img" aria-label="时序图：SDK反馈、AMO后端、时序调度、AMO策略、执行器、SDK会话、G1本体、判稳器" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><line class="am-lifeline" x1="54" y1="42" x2="54" y2="386"/><g data-key="SDK反馈"><rect class="am-actor" x="12" y="8" width="84" height="34" rx="2"/><text x="54" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">SDK反馈</text></g><line class="am-lifeline" x1="179.7" y1="42" x2="179.7" y2="386"/><g data-key="AMO后端"><rect class="am-actor" x="137.1" y="8" width="85.2" height="34" rx="2"/><text x="179.7" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">AMO后端</text></g><line class="am-lifeline" x1="336.4" y1="42" x2="336.4" y2="386"/><g data-key="时序调度"><rect class="am-actor" x="294.4" y="8" width="84" height="34" rx="2"/><text x="336.4" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">时序调度</text></g><line class="am-lifeline" x1="449" y1="42" x2="449" y2="386"/><g data-key="AMO策略"><rect class="am-actor" x="406.4" y="8" width="85.2" height="34" rx="2"/><text x="449" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">AMO策略</text></g><line class="am-lifeline" x1="561.6" y1="42" x2="561.6" y2="386"/><g data-key="执行器"><rect class="am-actor" x="519.6" y="8" width="84" height="34" rx="2"/><text x="561.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">执行器</text></g><line class="am-lifeline" x1="673.6" y1="42" x2="673.6" y2="386"/><g data-key="SDK会话"><rect class="am-actor" x="631.6" y="8" width="84" height="34" rx="2"/><text x="673.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">SDK会话</text></g><line class="am-lifeline" x1="789.7" y1="42" x2="789.7" y2="386"/><g data-key="G1本体"><rect class="am-actor" x="747.7" y="8" width="84" height="34" rx="2"/><text x="789.7" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">G1本体</text></g><line class="am-lifeline" x1="901.7" y1="42" x2="901.7" y2="386"/><g data-key="判稳器"><rect class="am-actor" x="859.7" y="8" width="84" height="34" rx="2"/><text x="901.7" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">判稳器</text></g><g data-step="0"><text x="116.9" y="70" text-anchor="middle">29关节与IMU源帧</text><path class="am-edge" d="M54,80 L177.7,80" marker-end="url(#am2-arrow)"/></g><g data-step="1"><text x="258.1" y="110" text-anchor="middle">检查源时间与50Hz周期</text><path class="am-edge" d="M179.7,120 L334.4,120" marker-end="url(#am2-arrow)"/></g><g data-step="2"><text x="314.4" y="150" text-anchor="middle">实测状态和有效参考</text><path class="am-edge" d="M179.7,160 L447,160" marker-end="url(#am2-arrow)"/></g><g data-step="3"><text x="314.4" y="190" text-anchor="middle">腿腰15维目标</text><path class="am-edge am-edge--dashed" d="M449,200 L181.7,200" marker-end="url(#am2-arrow)"/></g><g data-step="4"><text x="370.7" y="230" text-anchor="middle">当前14维双臂轨迹样本</text><path class="am-edge" d="M561.6,240 L181.7,240" marker-end="url(#am2-arrow)"/></g><g data-step="5"><text x="426.7" y="270" text-anchor="middle">合成29关节绝对目标</text><path class="am-edge" d="M179.7,280 L671.6,280" marker-end="url(#am2-arrow)"/></g><g data-step="6"><text x="731.7" y="310" text-anchor="middle">LowCmd和CRC</text><path class="am-edge" d="M673.6,320 L787.7,320" marker-end="url(#am2-arrow)"/></g><g data-step="7"><text x="540.7" y="350" text-anchor="middle">本帧反馈和实际发出速度</text><path class="am-edge" d="M179.7,360 L899.7,360" marker-end="url(#am2-arrow)"/></g></svg></figure>
+<div class="am-md"><p>默认策略、身体命令为 50Hz；物理仿真基线为 250Hz。
+SDK到达时间和源时间均保留。
+旧帧或时钟回绕不能作为新的控制周期。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>开发检查</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>先查调用者、provider注册与配置，再改最小实现。
-运行 <code>tests/unit</code> 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>后端选择与文件映射</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>分支或文件</th>
+<th>作用</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>assembly.make_body_backend</td>
+<td>REVO2 且使能运动时选择 AMO</td>
+<td>活动分支</td>
+</tr>
+<tr>
+<td>amo_body_backend.py</td>
+<td>目标缓存、调度、合成与故障传播</td>
+<td>活动实现</td>
+</tr>
+<tr>
+<td>amo_observation.py / amo_policy.py</td>
+<td>上游观测与已校验权重推理</td>
+<td>活动实现</td>
+</tr>
+<tr>
+<td>body_command.py / control_session.py</td>
+<td>绝对角、LowCmd、SDK会话</td>
+<td>活动实现</td>
+</tr>
+<tr>
+<td>sdk_context.py</td>
+<td>本体与双手的共享反馈缓存</td>
+<td>活动实现</td>
+</tr>
+<tr>
+<td>body_backend.py</td>
+<td>传统SDK与校验复用</td>
+<td>兼容分支；非当前AMO运控</td>
+</tr>
+<tr>
+<td>backends/mock</td>
+<td>无硬件协议演示</td>
+<td>mock；不证明物理效果</td>
+</tr>
+</tbody></table></div>
+<p>AMO不封装在 LocoClient 的运动算法内部。
+会话仅借 LocoClient 切入或退出 UserCtrl。
+实际运控命令发送到 rt/user_lowcmd。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>扩展与阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>不把下游模块的感知、状态或SDK逻辑复制进来。
-<a href="development.html">开发指南</a> · <a href="experiments.html">实验口径</a></p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>开发与验证边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="algo-amo.html">AMO细节</a> · <a href="algo-body-state.html">本体判稳</a> · <a href="module-robot-action_executor.html">执行器</a></p>
+<p>替换策略保留关节顺序、单位、源时间和单写入者。
+验证模型能推理、SDK能收发和物理任务成功须分别记录。
+SIM/REAL共用业务接口；权重、标定及退出配置按部署校验。</p>
+<p><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/body_gateway/runtime.py">网关源码</a> · <a href="files-robot-body_gateway.html">文件索引</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: 本体网关 · body_gateway
-subtitle: robot_app 的模块责任与开发入口
+title: 本体适配与网关 · body_gateway
+subtitle: SW-11 / RB-05：统一控制权、AMO与臂手SDK出口
 lang: zh
 doc_id: module-robot-body_gateway
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 职责
+[内部可编辑多页图](diagrams/body-adapter.html) · [draw.io图源](diagrams/body-adapter.drawio) · [五模块对照](runtime-internals.html)
 
-**架构归属：SW-11 → RB-05。实现标记：I。**
+## A body_adapter 在代码中的位置
 
-[系统与软件映射](architecture-map.html) · [可编辑架构图](architecture.html)
+**SW-11 → RB-05。body_adapter 是本体适配职责名称。**
+实际代码由 BodyGateway 与 unitree_g1 后端共同承担。
+仓库没有新增一个名为 body_adapter 的运行时。
 
-校验控制权并调用设备接口。
+| 层次 | 代码对象 | 责任 |
+| --- | --- | --- |
+| 能力执行 | ActionExecutor | 轨迹采样、完成与停止语义 |
+| 统一出口 | BodyGateway | 租约、保护和操作阶段速度检查 |
+| G1 后端 | G1AmoBodyBackend | AMO、双臂、双手命令调度 |
+| SDK 会话 | G1UserControlSession / G1SdkContext | 模式切换、DDS 发布、真实反馈 |
 
-## B 输入与输出
+[架构映射](architecture-map.html) · [后端目录](https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/backends/unitree_g1)
 
-| 项目 | 内容 |
-| --- | --- |
-| 输入 | 带租约的统一命令 |
-| 输出 | 设备调用结果、停止反馈 |
-| 下游或数据依赖 | G1 backend、protection_runtime |
+## B 命令合成视图
 
-对外ROS能力遵循[统一契约](interfaces.html)。时间、坐标、来源不能由调用者省略。
+```flow
+导航或操作 -&gt; 共用执行器: 能力命令与轨迹
+共用执行器 -&gt; BodyGateway: command和lease
+BodyGateway -&gt; AMO后端: 已校验命令
+AMO后端 -&gt; AMO策略: 速度方向和躯干参考
+AMO策略 -&gt; 身体命令合成: 15维腿腰绝对目标
+AMO后端 -&gt; 身体命令合成: 14维臂q与dq及tau
+身体命令合成 -&gt; 单DDS会话: 29关节LowCmd
+单DDS会话 -&gt; G1本体: rt/user_lowcmd
+AMO后端 -&gt; REVO2适配: 双手12维位置目标
+REVO2适配 -&gt; G1本体: 双手SDK命令
+G1本体 -&gt; 共享反馈缓存: 关节与IMU及触觉
+共享反馈缓存 -&gt; AMO策略: 实测状态
+共享反馈缓存 -&gt; 本体判稳: 实测关节与IMU
+```
 
-## C 执行边界
+上肢与 AMO 同时运行。
+AMO读取实测上肢状态；策略输出只占腿腰 15 个关节。
+双臂 14 关节由上肢轨迹提供，最终合成一次身体写入。
 
-单一设备写入边界；上层模块不得直接调用SDK。
-输入不足时明确返回原因，不构造假观测或假成功。
+## C 四类命令与生命周期
 
-## D 算法与实现
+| 命令 | 内容 | 行为 |
+| --- | --- | --- |
+| BODY_VELOCITY | vx、vy、yaw_rate | 有限有效期；到期归零 |
+| TORSO_REFERENCE | 高度偏移、yaw、pitch、roll | 输入策略的目标；不等于实际腰关节角 |
+| JOINT_REFERENCE | 双臂 q；可带 dq、ddq、tau | 动态轨迹或限速位置趋近 |
+| HAND_REFERENCE | 左右各 6 路归一化位置 | REVO2 P/V 命令；触觉另路读取 |
 
-[execution](algo-execution.html) · [amo](algo-amo.html)
+操作阶段默认下肢零速。
+只有 approach 获准身体微调后，才接受非零速度。
+该路径平移不超过 0.02m/s，转速不超过 0.05rad/s。
 
-[本模块文件和符号索引](files-robot-body_gateway.html)
+正常臂轨迹完成保留仍有效的躯干保持责任。
+取消或故障会归零速度与躯干请求。
+任务结束与退出低层控制会话是两种操作。
 
-## E 开发检查
+## D 一次控制周期
 
-先查调用者、provider注册与配置，再改最小实现。
-运行 `tests/unit` 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。
+```sequence
+SDK反馈 -&gt; AMO后端: 29关节与IMU源帧
+AMO后端 -&gt; 时序调度: 检查源时间与50Hz周期
+AMO后端 -&gt; AMO策略: 实测状态和有效参考
+AMO策略 --&gt; AMO后端: 腿腰15维目标
+执行器 -&gt; AMO后端: 当前14维双臂轨迹样本
+AMO后端 -&gt; SDK会话: 合成29关节绝对目标
+SDK会话 -&gt; G1本体: LowCmd和CRC
+AMO后端 -&gt; 判稳器: 本帧反馈和实际发出速度
+```
 
-## F 扩展与阅读
+默认策略、身体命令为 50Hz；物理仿真基线为 250Hz。
+SDK到达时间和源时间均保留。
+旧帧或时钟回绕不能作为新的控制周期。
 
-不把下游模块的感知、状态或SDK逻辑复制进来。
-[开发指南](development.html) · [实验口径](experiments.html)
+## E 后端选择与文件映射
+
+| 分支或文件 | 作用 | 状态 |
+| --- | --- | --- |
+| assembly.make_body_backend | REVO2 且使能运动时选择 AMO | 活动分支 |
+| amo_body_backend.py | 目标缓存、调度、合成与故障传播 | 活动实现 |
+| amo_observation.py / amo_policy.py | 上游观测与已校验权重推理 | 活动实现 |
+| body_command.py / control_session.py | 绝对角、LowCmd、SDK会话 | 活动实现 |
+| sdk_context.py | 本体与双手的共享反馈缓存 | 活动实现 |
+| body_backend.py | 传统SDK与校验复用 | 兼容分支；非当前AMO运控 |
+| backends/mock | 无硬件协议演示 | mock；不证明物理效果 |
+
+AMO不封装在 LocoClient 的运动算法内部。
+会话仅借 LocoClient 切入或退出 UserCtrl。
+实际运控命令发送到 rt/user_lowcmd。
+
+## F 开发与验证边界
+
+[AMO细节](algo-amo.html) · [本体判稳](algo-body-state.html) · [执行器](module-robot-action_executor.html)
+
+替换策略保留关节顺序、单位、源时间和单写入者。
+验证模型能推理、SDK能收发和物理任务成功须分别记录。
+SIM/REAL共用业务接口；权重、标定及退出配置按部署校验。
+
+[网关源码](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/body_gateway/runtime.py) · [文件索引](files-robot-body_gateway.html)
 </textarea>
 <script>
 (() => {

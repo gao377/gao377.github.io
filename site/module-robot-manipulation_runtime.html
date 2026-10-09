@@ -698,122 +698,304 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>本体局部操作 · manipulation_runtime</h1><p class="am-sub">robot_app 的模块责任与开发入口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-manipulation_runtime</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>本体局部操作 · manipulation_runtime</h1><p class="am-sub">SW-07 → RB-03 · 六项能力、一条共享规划链、独立触觉闭环</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-manipulation_runtime</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="experiments.html">实验</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责</a><a href="#panel-B">B · 输入与输出</a><a href="#panel-C">C · 执行边界</a><a href="#panel-D">D · 算法与实现</a><a href="#panel-E">E · 开发检查</a><a href="#panel-F">F · 扩展与阅读</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 模块边界</a><a href="#panel-B">B · 实际装配与两条入口</a><a href="#panel-C">C · 三种可编辑功能视图</a><a href="#panel-D">D · 信息与控制接口</a><a href="#panel-E">E · 共用算法与恢复层次</a><a href="#panel-F">F · 能力交接与取消</a><a href="#panel-G">G · 文件导航与扩展位置</a><a href="#panel-H">H · 验证边界</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><strong>架构归属：SW-07 → RB-03。实现标记：I。</strong></p>
-<p><a href="architecture-map.html">系统与软件映射</a> · <a href="architecture.html">可编辑架构图</a></p>
-<p>approach、reach、command_hand、pick、display、place。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>输入与输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>模块边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><strong>I：下列能力已有功能代码；不代表所有场景均通过物理或实机验收。</strong>
+本模块消费局部物体、本体快照和触觉，负责操作决策与臂手运动。
+RGB-D处理由perception负责，FK与支撑参考由state_estimation提供，SDK写入归后端。
+操作不读取SLAM地图或仿真物体真值。</p>
+<div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>项目</th>
-<th>内容</th>
+<th>能力</th>
+<th>当前职责</th>
+<th>边界</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>输入</td>
-<td>局部目标、场景、本体快照、触觉与持物上下文</td>
+<td>approach</td>
+<td>上肢可达性 → 腰部 → 必要时低速下肢接近</td>
+<td>只输出可操作条件与交接，不串行执行抓放</td>
 </tr>
 <tr>
-<td>输出</td>
-<td>臂手轨迹、状态和责任交接</td>
+<td>reach</td>
+<td>一个或两个TCP目标的到位</td>
+<td>支持双臂任务；不等于双臂协同抓物</td>
 </tr>
 <tr>
-<td>下游或数据依赖</td>
-<td>perception、state、coordinator、executor、原生规划库</td>
+<td>command_hand</td>
+<td>左、右或双手的参数化动作</td>
+<td>位置动作完成不等于物理抓住</td>
+</tr>
+<tr>
+<td>pick</td>
+<td>候选选臂、预抓取、触觉闭合、抬升、持物</td>
+<td>当前物体模板选择一只手；不自动推导双臂接触分配</td>
+</tr>
+<tr>
+<td>display</td>
+<td>持物状态下朝观众方向展示并保持</td>
+<td>当前保持抓取朝向、受限前伸</td>
+</tr>
+<tr>
+<td>place</td>
+<td>回原支撑位置、释放、撤离、确认空手</td>
+<td>不是任意新表面的通用放置规划</td>
 </tr>
 </tbody></table></div>
-<p>对外ROS能力遵循<a href="interfaces.html">统一契约</a>。时间、坐标、来源不能由调用者省略。</p>
 </div></div>
 </section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>实际装配与两条入口</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>G1装配入口为<code>capability_assembly.attach_g1_manipulation</code>。
+公共请求进入<code>G1ManipulationCapabilityProvider</code>，每次只运行一个主动能力。
+<code>runtime.py</code>中的<code>ManipulationRuntime</code>用于fixture装配，不能与真实G1入口混读。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1366 134" width="1366" height="134" role="img" aria-label="流程图：公共能力请求、G1能力Provider、六项独立能力、共享规划与执行、执行器和网关、触觉反馈、持物监督" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M338.5,31.5 L375.8,31.5 Q413.2,31.5 450.5,41.2 L487.8,51" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="367.9" y="22.5" width="90.5" height="18" rx="3"/><text x="413.2" y="31.5" text-anchor="middle" dominant-baseline="central">参数与执行身份</text></g></g><g data-step="1"><path class="am-edge" d="M610.7,67 L652.6,67 Q694.5,67 736.3,67 L778.2,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="634.7" y="58" width="119.5" height="18" rx="3"/><text x="694.5" y="67" text-anchor="middle" dominant-baseline="central">start / step / cancel</text></g></g><g data-step="2"><path class="am-edge" d="M884.2,67 L910.2,67 Q936.2,67 962.2,67 L988.2,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="908.2" y="58" width="56" height="18" rx="3"/><text x="936.2" y="67" text-anchor="middle" dominant-baseline="central">局部目标</text></g></g><g data-step="3"><path class="am-edge" d="M1107.2,67 L1141.8,67 Q1176.4,67 1211.1,67 L1245.7,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1131.2" y="58" width="90.5" height="18" rx="3"/><text x="1176.4" y="67" text-anchor="middle" dominant-baseline="central">臂手轨迹与租约</text></g></g><g data-step="4"><path class="am-edge" d="M94,102.5 L128.6,102.5 Q163.3,102.5 204.4,102.5 L245.5,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="118" y="93.5" width="90.5" height="18" rx="3"/><text x="163.3" y="102.5" text-anchor="middle" dominant-baseline="central">能力间继续保持</text></g></g><g data-step="5"><path class="am-edge" d="M325.5,102.5 L369.3,102.5 Q413.2,102.5 450.5,92.8 L487.8,83" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="362.5" y="93.5" width="101.3" height="18" rx="3"/><text x="413.2" y="102.5" text-anchor="middle" dominant-baseline="central">HOLDING或失败</text></g></g></g><g><g class="am-node am-node--rect" data-key="公共能力请求" data-step="0"><rect class="am-node-shape" x="232.5" y="14" width="106" height="35" rx="3"/><text x="285.5" y="31.5" text-anchor="middle" dominant-baseline="central">公共能力请求</text></g><g class="am-node am-node--rect" data-key="G1能力Provider" data-step="0"><rect class="am-node-shape" x="487.8" y="49.5" width="122.9" height="35" rx="3"/><text x="549.3" y="67" text-anchor="middle" dominant-baseline="central">G1能力Provider</text></g><g class="am-node am-node--rect" data-key="六项独立能力" data-step="1"><rect class="am-node-shape" x="778.2" y="49.5" width="106" height="35" rx="3"/><text x="831.2" y="67" text-anchor="middle" dominant-baseline="central">六项独立能力</text></g><g class="am-node am-node--rect" data-key="共享规划与执行" data-step="2"><rect class="am-node-shape" x="988.2" y="49.5" width="119" height="35" rx="3"/><text x="1047.7" y="67" text-anchor="middle" dominant-baseline="central">共享规划与执行</text></g><g class="am-node am-node--rect" data-key="执行器和网关" data-step="3"><rect class="am-node-shape" x="1245.7" y="49.5" width="106" height="35" rx="3"/><text x="1298.7" y="67" text-anchor="middle" dominant-baseline="central">执行器和网关</text></g><g class="am-node am-node--rect" data-key="触觉反馈" data-step="4"><rect class="am-node-shape" x="14" y="85" width="80" height="35" rx="3"/><text x="54" y="102.5" text-anchor="middle" dominant-baseline="central">触觉反馈</text></g><g class="am-node am-node--rect" data-key="持物监督" data-step="4"><rect class="am-node-shape" x="245.5" y="85" width="80" height="35" rx="3"/><text x="285.5" y="102.5" text-anchor="middle" dominant-baseline="central">持物监督</text></g></g></svg></figure></div>
+</section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>执行边界</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>共用规划，能力保持独立；approach不自动调用pick/display/place。
-输入不足时明确返回原因，不构造假观测或假成功。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>三种可编辑功能视图</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>组件视图展示内部职责；规划视图展开算法链；时序视图区分抓取动作与持物交接。
+图中绿色是活动链，黄色是条件分支，紫色是fixture，灰色是未接入组件。</p>
+</div>
+<iframe title="操作运行时：组件、规划与执行时序" src="diagrams/manipulation-runtime.html" width="100%" height="820" loading="lazy" style="border:1px solid #d3dee8;border-radius:10px" allowfullscreen></iframe>
+<div class="am-md"><p><a href="diagrams/manipulation-runtime.html">全窗口与切页</a> · <a href="diagrams/manipulation-runtime.drawio">可编辑图源</a> · <a href="diagrams/manipulation-runtime.svg">SVG预览</a></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>算法与实现</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="algo-approach.html">approach</a> · <a href="algo-grasp.html">grasp</a> · <a href="algo-cartesian.html">cartesian</a> · <a href="algo-trajectory.html">trajectory</a> · <a href="algo-collision.html">collision</a> · <a href="algo-tactile.html">tactile</a></p>
-<p><a href="files-robot-manipulation_runtime.html">本模块文件和符号索引</a></p>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>信息与控制接口</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>来源/去向</th>
+<th>交换内容</th>
+<th>坐标与时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>perception → 操作</td>
+<td>物体、支撑面、可见性及观测来源</td>
+<td>pelvis局部目标，保留原始观测时间</td>
+</tr>
+<tr>
+<td>state_estimation → 操作</td>
+<td>q/dq、TCP、站立参考、本体稳定性</td>
+<td>对齐观测时刻；重力对齐本体/足间参考</td>
+</tr>
+<tr>
+<td>场景 → 原生规划库</td>
+<td>局部障碍、附着物与允许接触矩阵</td>
+<td>同一规划参考，不通过SLAM补假定位</td>
+</tr>
+<tr>
+<td>操作 → executor</td>
+<td>轨迹、手参考、受限本体速度</td>
+<td>共享运动租约；统一设备写入</td>
+</tr>
+<tr>
+<td>REVO2后端 → 抓握监督</td>
+<td>五指接触与切向信号、六电机状态</td>
+<td>单位、标定ID与反馈时效一起检查</td>
+</tr>
+</tbody></table></div>
+<p>目标来自pelvis；执行中可锁定<code>standing_foot_midpoint</code>参考以吸收身体摆动。
+这种局部参考由状态模块维护，不是新建全局定位器。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>开发检查</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>先查调用者、provider注册与配置，再改最小实现。
-运行 <code>tests/unit</code> 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>共用算法与恢复层次</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="algo-grasp.html">选臂与抓取</a> → <a href="algo-cartesian.html">渐进IK</a> → <a href="algo-trajectory.html">轨迹优化</a> → <a href="algo-collision.html">原生路径检查</a>。
+<a href="algo-tactile.html">触觉</a>闭合与持物监督在同一控制链持续运行。</p>
+<p>候选筛选只证明候选可继续规划；执行前仍从当前关节生成轨迹。
+轨迹完成后用SDK/FK检查真实端点，触觉随后确认接触。
+这些检查针对不同事实，不能仅因名字相似就合并。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>扩展与阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>不把下游模块的感知、状态或SDK逻辑复制进来。
-<a href="development.html">开发指南</a> · <a href="experiments.html">实验口径</a></p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>能力交接与取消</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>approach成功后保留<code>HANDOFF_PENDING</code>，供下一能力接收本体条件。
+pick成功产生持物上下文；display沿用它；place确认释放后清除。
+pick、display、place的下肢参考保持零速。
+仅approach在上肢与腰不足时允许低速下肢命令。</p>
+<p>取消必须停止主动臂动作、处理持物责任、等待本体反馈并释放租约。
+取消返回、机械停止和重新受理下一能力是三个不同观察点。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>文件导航与扩展位置</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>责任</th>
+<th>文件入口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>能力接口与装配</td>
+<td>capability_provider.py、capability_assembly.py</td>
+</tr>
+<tr>
+<td>三层接近</td>
+<td>approach.py、upper_cartesian_assessment.py、approach_torso.py、approach_base.py</td>
+</tr>
+<tr>
+<td>抓放状态机</td>
+<td>pick.py、pick_descent.py、display.py、place.py</td>
+</tr>
+<tr>
+<td>共享规划</td>
+<td>bimanual_planner.py、cartesian_worker.py、differential_ik.py、minimum_jerk.py</td>
+</tr>
+<tr>
+<td>接触与交接</td>
+<td>adaptive_grasp_execution.py、holding_context.py、approach_handoff.py</td>
+</tr>
+<tr>
+<td>兼容/未装配路径</td>
+<td>runtime.py为fixture；OperationPathPlanner与amo_posture_refinement未在生产装配</td>
+</tr>
+</tbody></table></div>
+<p><a href="files-robot-manipulation_runtime.html">完整文件与符号索引</a>给出私有源码入口。
+新物体优先扩展几何与抓握profile；新能力复用共享规划与执行。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>验证边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="experiments.html">实验页</a>分别列出左右三指、BASE接近和臂手动作的证据。
+双臂reach通过不代表双臂协同抓取通过。
+单工位四能力通过也不代表导航、操作、返回的完整任务通过。
+VLA、任意物体抓取和模型辨识后的全身优化均不能由现有接口存在推定为实现。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 本体局部操作 · manipulation_runtime
-subtitle: robot_app 的模块责任与开发入口
+subtitle: SW-07 → RB-03 · 六项能力、一条共享规划链、独立触觉闭环
 lang: zh
 doc_id: module-robot-manipulation_runtime
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
-[首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
+[首页](index.html) · [运行时图册](runtime-internals.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [实验](experiments.html)
 
-## A 职责
+## A 模块边界
 
-**架构归属：SW-07 → RB-03。实现标记：I。**
+**I：下列能力已有功能代码；不代表所有场景均通过物理或实机验收。**
+本模块消费局部物体、本体快照和触觉，负责操作决策与臂手运动。
+RGB-D处理由perception负责，FK与支撑参考由state_estimation提供，SDK写入归后端。
+操作不读取SLAM地图或仿真物体真值。
 
-[系统与软件映射](architecture-map.html) · [可编辑架构图](architecture.html)
+| 能力 | 当前职责 | 边界 |
+| --- | --- | --- |
+| approach | 上肢可达性 → 腰部 → 必要时低速下肢接近 | 只输出可操作条件与交接，不串行执行抓放 |
+| reach | 一个或两个TCP目标的到位 | 支持双臂任务；不等于双臂协同抓物 |
+| command_hand | 左、右或双手的参数化动作 | 位置动作完成不等于物理抓住 |
+| pick | 候选选臂、预抓取、触觉闭合、抬升、持物 | 当前物体模板选择一只手；不自动推导双臂接触分配 |
+| display | 持物状态下朝观众方向展示并保持 | 当前保持抓取朝向、受限前伸 |
+| place | 回原支撑位置、释放、撤离、确认空手 | 不是任意新表面的通用放置规划 |
 
-approach、reach、command_hand、pick、display、place。
+## B 实际装配与两条入口
 
-## B 输入与输出
+G1装配入口为`capability_assembly.attach_g1_manipulation`。
+公共请求进入`G1ManipulationCapabilityProvider`，每次只运行一个主动能力。
+`runtime.py`中的`ManipulationRuntime`用于fixture装配，不能与真实G1入口混读。
 
-| 项目 | 内容 |
+```flow LR
+公共能力请求 -&gt; G1能力Provider: 参数与执行身份
+G1能力Provider -&gt; 六项独立能力: start / step / cancel
+六项独立能力 -&gt; 共享规划与执行: 局部目标
+共享规划与执行 -&gt; 执行器和网关: 臂手轨迹与租约
+触觉反馈 -&gt; 持物监督: 能力间继续保持
+持物监督 -&gt; G1能力Provider: HOLDING或失败
+```
+
+## C 三种可编辑功能视图
+
+组件视图展示内部职责；规划视图展开算法链；时序视图区分抓取动作与持物交接。
+图中绿色是活动链，黄色是条件分支，紫色是fixture，灰色是未接入组件。
+
+```html
+&lt;iframe title=&quot;操作运行时：组件、规划与执行时序&quot; src=&quot;diagrams/manipulation-runtime.html&quot; width=&quot;100%&quot; height=&quot;820&quot; loading=&quot;lazy&quot; style=&quot;border:1px solid #d3dee8;border-radius:10px&quot; allowfullscreen&gt;&lt;/iframe&gt;
+```
+
+[全窗口与切页](diagrams/manipulation-runtime.html) · [可编辑图源](diagrams/manipulation-runtime.drawio) · [SVG预览](diagrams/manipulation-runtime.svg)
+
+## D 信息与控制接口
+
+| 来源/去向 | 交换内容 | 坐标与时间 |
+| --- | --- | --- |
+| perception → 操作 | 物体、支撑面、可见性及观测来源 | pelvis局部目标，保留原始观测时间 |
+| state_estimation → 操作 | q/dq、TCP、站立参考、本体稳定性 | 对齐观测时刻；重力对齐本体/足间参考 |
+| 场景 → 原生规划库 | 局部障碍、附着物与允许接触矩阵 | 同一规划参考，不通过SLAM补假定位 |
+| 操作 → executor | 轨迹、手参考、受限本体速度 | 共享运动租约；统一设备写入 |
+| REVO2后端 → 抓握监督 | 五指接触与切向信号、六电机状态 | 单位、标定ID与反馈时效一起检查 |
+
+目标来自pelvis；执行中可锁定`standing_foot_midpoint`参考以吸收身体摆动。
+这种局部参考由状态模块维护，不是新建全局定位器。
+
+## E 共用算法与恢复层次
+
+[选臂与抓取](algo-grasp.html) → [渐进IK](algo-cartesian.html) → [轨迹优化](algo-trajectory.html) → [原生路径检查](algo-collision.html)。
+[触觉](algo-tactile.html)闭合与持物监督在同一控制链持续运行。
+
+候选筛选只证明候选可继续规划；执行前仍从当前关节生成轨迹。
+轨迹完成后用SDK/FK检查真实端点，触觉随后确认接触。
+这些检查针对不同事实，不能仅因名字相似就合并。
+
+## F 能力交接与取消
+
+approach成功后保留`HANDOFF_PENDING`，供下一能力接收本体条件。
+pick成功产生持物上下文；display沿用它；place确认释放后清除。
+pick、display、place的下肢参考保持零速。
+仅approach在上肢与腰不足时允许低速下肢命令。
+
+取消必须停止主动臂动作、处理持物责任、等待本体反馈并释放租约。
+取消返回、机械停止和重新受理下一能力是三个不同观察点。
+
+## G 文件导航与扩展位置
+
+| 责任 | 文件入口 |
 | --- | --- |
-| 输入 | 局部目标、场景、本体快照、触觉与持物上下文 |
-| 输出 | 臂手轨迹、状态和责任交接 |
-| 下游或数据依赖 | perception、state、coordinator、executor、原生规划库 |
+| 能力接口与装配 | capability_provider.py、capability_assembly.py |
+| 三层接近 | approach.py、upper_cartesian_assessment.py、approach_torso.py、approach_base.py |
+| 抓放状态机 | pick.py、pick_descent.py、display.py、place.py |
+| 共享规划 | bimanual_planner.py、cartesian_worker.py、differential_ik.py、minimum_jerk.py |
+| 接触与交接 | adaptive_grasp_execution.py、holding_context.py、approach_handoff.py |
+| 兼容/未装配路径 | runtime.py为fixture；OperationPathPlanner与amo_posture_refinement未在生产装配 |
 
-对外ROS能力遵循[统一契约](interfaces.html)。时间、坐标、来源不能由调用者省略。
+[完整文件与符号索引](files-robot-manipulation_runtime.html)给出私有源码入口。
+新物体优先扩展几何与抓握profile；新能力复用共享规划与执行。
 
-## C 执行边界
+## H 验证边界
 
-共用规划，能力保持独立；approach不自动调用pick/display/place。
-输入不足时明确返回原因，不构造假观测或假成功。
-
-## D 算法与实现
-
-[approach](algo-approach.html) · [grasp](algo-grasp.html) · [cartesian](algo-cartesian.html) · [trajectory](algo-trajectory.html) · [collision](algo-collision.html) · [tactile](algo-tactile.html)
-
-[本模块文件和符号索引](files-robot-manipulation_runtime.html)
-
-## E 开发检查
-
-先查调用者、provider注册与配置，再改最小实现。
-运行 `tests/unit` 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。
-
-## F 扩展与阅读
-
-不把下游模块的感知、状态或SDK逻辑复制进来。
-[开发指南](development.html) · [实验口径](experiments.html)
+[实验页](experiments.html)分别列出左右三指、BASE接近和臂手动作的证据。
+双臂reach通过不代表双臂协同抓取通过。
+单工位四能力通过也不代表导航、操作、返回的完整任务通过。
+VLA、任意物体抓取和模型辨识后的全身优化均不能由现有接口存在推定为实现。
 </textarea>
 <script>
 (() => {

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>定位、建图与地图 · spatial_runtime</title>
+<title>空间运行架构 · spatial_runtime</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,122 +698,299 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>定位、建图与地图 · spatial_runtime</h1><p class="am-sub">robot_app 的模块责任与开发入口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-spatial_runtime</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>空间运行架构 · spatial_runtime</h1><p class="am-sub">SW-12 的建图会话、定位坐标、重定位与地图版本</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-spatial_runtime</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">模块映射</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a></p>
+<p><a href="diagrams/spatial-runtime.html">内部可编辑多页图</a> · <a href="diagrams/spatial-runtime.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责</a><a href="#panel-B">B · 输入与输出</a><a href="#panel-C">C · 执行边界</a><a href="#panel-D">D · 算法与实现</a><a href="#panel-E">E · 开发检查</a><a href="#panel-F">F · 扩展与阅读</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与公共能力</a><a href="#panel-B">B · 组件和坐标数据流</a><a href="#panel-C">C · 在线建图状态视图</a><a href="#panel-D">D · 重定位时序</a><a href="#panel-E">E · 算法与参数入口</a><a href="#panel-F">F · 地图内容与用途边界</a><a href="#panel-G">G · 文件与开发边界</a><a href="#panel-H">H · 验证方法</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><strong>架构归属：SW-12 → RB-01。实现标记：I。</strong></p>
-<p><a href="architecture-map.html">系统与软件映射</a> · <a href="architecture.html">可编辑架构图</a></p>
-<p>build_map、localize、relocalize。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>输入与输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责与公共能力</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><strong>SW-12 → RB-01。空间模块拥有度量定位、地图产物及其版本。</strong>
+本体状态提供关节相关TF，传感适配提供激光与IMU。导航消费空间结果；图像目标识别仍由感知模块负责。</p>
+<div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>项目</th>
-<th>内容</th>
+<th>公共能力</th>
+<th>会话语义</th>
+<th>实现出口</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>输入</td>
-<td>激光/IMU、map_ref、初始位置</td>
+<td>spatial.build_map</td>
+<td>启动后持续建图，显式finalize保存</td>
+<td>OnlineMapping→MapRef</td>
 </tr>
 <tr>
-<td>输出</td>
-<td>定位反馈和版本化地图引用</td>
+<td>spatial.localize</td>
+<td>加载已校验地图，持续报告定位质量</td>
+<td>LocalizationNode→SpatialPoseTracker</td>
 </tr>
 <tr>
-<td>下游或数据依赖</td>
-<td>Lightning、ScanContext、ICP</td>
+<td>spatial.relocalize</td>
+<td>现有定位会话内重新检索与注册</td>
+<td>ScanContext→ICP→重启定位→新反馈确认</td>
 </tr>
 </tbody></table></div>
-<p>对外ROS能力遵循<a href="interfaces.html">统一契约</a>。时间、坐标、来源不能由调用者省略。</p>
+<p>G1装配注册这些provider；运行就绪仍取决于传感、原生程序和地图。离线建图工具与在线公共能力不是同一入口。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>组件和坐标数据流</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 1307 243" width="1307" height="243" role="img" aria-label="流程图：传感适配、Lightning、位姿桥、本体状态、SpatialPoseTracker、FrameOutput、导航、地图包" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M94,86 L134,86 Q173.9,86 213.9,86 L253.9,86" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="118" y="77" width="111.9" height="18" rx="3"/><text x="173.9" y="86" text-anchor="middle" dominant-baseline="central">激光逐点时间与IMU</text></g></g><g data-step="1"><path class="am-edge" d="M338.4,103.5 L396.6,128 Q454.9,152.5 521.7,160.9 L588.6,169.3" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="387.5" y="143.5" width="134.7" height="18" rx="3"/><text x="454.9" y="152.5" text-anchor="middle" dominant-baseline="central">map到躯干IMU原生结果</text></g></g><g data-step="2"><path class="am-edge" d="M336.8,211.5 L395.8,211.5 Q454.9,211.5 521.7,196.3 L588.6,181.1" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="386" y="202.5" width="137.7" height="18" rx="3"/><text x="454.9" y="211.5" text-anchor="middle" dominant-baseline="central">同戳pelvis到IMU动态TF</text></g></g><g data-step="3"><path class="am-edge" d="M655.6,182 L713.9,196.7 Q772.1,211.5 844.3,165.8 L916.5,120" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="725.6" y="202.5" width="93" height="18" rx="3"/><text x="772.1" y="211.5" text-anchor="middle" dominant-baseline="central">map到base位姿</text></g></g><g data-step="4"><path class="am-edge" d="M339.6,90.5 L397.2,96.5 Q454.9,102.5 538.5,102.5 Q622.1,102.5 697.1,102.5 Q772.1,102.5 821.1,102.5 L870.1,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="571.1" y="93.5" width="102" height="18" rx="3"/><text x="622.1" y="102.5" text-anchor="middle" dominant-baseline="central">独立定位质量反馈</text></g></g><g data-step="5"><path class="am-edge" d="M655.6,173.5 L713.9,173.5 Q772.1,173.5 831.1,173.5 L890.1,173.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="704.6" y="164.5" width="135.1" height="18" rx="3"/><text x="772.1" y="173.5" text-anchor="middle" dominant-baseline="central">唯一map到base TF出口</text></g></g><g data-step="6"><path class="am-edge" d="M1018.2,102.5 L1066.9,102.5 Q1115.5,102.5 1168.2,102.5 L1220.9,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1042.2" y="93.5" width="146.6" height="18" rx="3"/><text x="1115.5" y="102.5" text-anchor="middle" dominant-baseline="central">带质量与版本的locate结果</text></g></g><g data-step="7"><path class="am-edge" d="M339.6,71.2 L397.2,51.4 Q454.9,31.5 521.7,31.5 L588.6,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="363.6" y="22.5" width="182.5" height="18" rx="3"/><text x="454.9" y="31.5" text-anchor="middle" dominant-baseline="central">点云、优化关键帧与局部关键帧云</text></g></g><g data-step="8"><path class="am-edge" d="M655.6,31.5 L713.9,31.5 Q772.1,31.5 833.1,31.5 L894.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="698.1" y="22.5" width="148" height="18" rx="3"/><text x="772.1" y="31.5" text-anchor="middle" dominant-baseline="central">内容版本与可信根目录校验</text></g></g><g data-step="9"><path class="am-edge" d="M994.2,31.5 L1054.9,31.5 Q1115.5,31.5 1164.2,31.5 L1212.9,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1072.9" y="22.5" width="85.2" height="18" rx="3"/><text x="1115.5" y="31.5" text-anchor="middle" dominant-baseline="central">已确认MapRef</text></g></g></g><g><g class="am-node am-node--rect" data-key="传感适配" data-step="0"><rect class="am-node-shape" x="14" y="68.5" width="80" height="35" rx="3"/><text x="54" y="86" text-anchor="middle" dominant-baseline="central">传感适配</text></g><g class="am-node am-node--rect" data-key="Lightning" data-step="0"><rect class="am-node-shape" x="253.9" y="68.5" width="85.7" height="35" rx="3"/><text x="296.8" y="86" text-anchor="middle" dominant-baseline="central">Lightning</text></g><g class="am-node am-node--rect" data-key="位姿桥" data-step="1"><rect class="am-node-shape" x="588.6" y="156" width="67" height="35" rx="3"/><text x="622.1" y="173.5" text-anchor="middle" dominant-baseline="central">位姿桥</text></g><g class="am-node am-node--rect" data-key="本体状态" data-step="2"><rect class="am-node-shape" x="256.8" y="194" width="80" height="35" rx="3"/><text x="296.8" y="211.5" text-anchor="middle" dominant-baseline="central">本体状态</text></g><g class="am-node am-node--rect" data-key="SpatialPoseTracker" data-step="3"><rect class="am-node-shape" x="870.1" y="85" width="148.1" height="35" rx="3"/><text x="944.2" y="102.5" text-anchor="middle" dominant-baseline="central">SpatialPoseTracker</text></g><g class="am-node am-node--rect" data-key="FrameOutput" data-step="5"><rect class="am-node-shape" x="890.1" y="156" width="108.1" height="35" rx="3"/><text x="944.2" y="173.5" text-anchor="middle" dominant-baseline="central">FrameOutput</text></g><g class="am-node am-node--rect" data-key="导航" data-step="6"><rect class="am-node-shape" x="1220.9" y="85" width="64" height="35" rx="3"/><text x="1252.9" y="102.5" text-anchor="middle" dominant-baseline="central">导航</text></g><g class="am-node am-node--rect" data-key="地图包" data-step="7"><rect class="am-node-shape" x="588.6" y="14" width="67" height="35" rx="3"/><text x="622.1" y="31.5" text-anchor="middle" dominant-baseline="central">地图包</text></g><g class="am-node am-node--rect" data-key="MapCatalog" data-step="8"><rect class="am-node-shape" x="894.2" y="14" width="100" height="35" rx="3"/><text x="944.2" y="31.5" text-anchor="middle" dominant-baseline="central">MapCatalog</text></g><g class="am-node am-node--rect" data-key="定位会话" data-step="9"><rect class="am-node-shape" x="1212.9" y="14" width="80" height="35" rx="3"/><text x="1252.9" y="31.5" text-anchor="middle" dominant-baseline="central">定位会话</text></g></g></svg></figure>
+<div class="am-md"><p>原生Lightning消息的 <code>lidar_link</code> 标签不直接等于机器人base。桥接明确解释其IMU数值语义，再使用同戳URDF关节TF组合。不要直接复制原生消息作为本体位姿。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>执行边界</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>地图输出按内容校验；不要以进程退出或服务码代替地图验证。
-输入不足时明确返回原因，不构造假观测或假成功。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>在线建图状态视图</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 1869 151" width="1869" height="151" role="img" aria-label="流程图：接收建图请求、等待IMU、建图中、mapping_ready、保存中、校验地图、建立检索索引、返回MapRef" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M120,73 L164.5,73 Q208.9,73 253.4,73 L297.8,73" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="144" y="64" width="129.8" height="18" rx="3"/><text x="208.9" y="73" text-anchor="middle" dominant-baseline="central">唯一map_id与原生进程</text></g></g><g data-step="1"><path class="am-edge" d="M376,82.8 L410.6,91.5 Q445.3,100.3 479.9,100.3 L514.5,100.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="400" y="91.3" width="90.5" height="18" rx="3"/><text x="445.3" y="100.3" text-anchor="middle" dominant-baseline="central">静止初始化通过</text></g></g><g data-step="2"><path class="am-edge" d="M581.5,100.3 L629.6,100.3 Q677.7,100.3 727.4,100.3 L777.2,100.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="605.5" y="91.3" width="144.3" height="18" rx="3"/><text x="677.7" y="100.3" text-anchor="middle" dominant-baseline="central">新鲜LIO_TRACKING质量</text></g></g><g data-step="3"><path class="am-edge" d="M897.5,100.3 L929.5,100.3 Q961.6,100.3 991.9,100.3 L1022.3,100.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="924.8" y="91.3" width="73.5" height="18" rx="3"/><text x="961.6" y="100.3" text-anchor="middle" dominant-baseline="central">显式finalize</text></g></g><g data-step="4"><path class="am-edge" d="M1089.3,105.4 L1134.1,112.3 Q1178.9,119.3 1223.7,119.3 L1268.5,119.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1113.3" y="110.3" width="131.2" height="18" rx="3"/><text x="1178.9" y="119.3" text-anchor="middle" dominant-baseline="central">SIGINT后等待原生落盘</text></g></g><g data-step="5"><path class="am-edge" d="M1348.5,119.3 L1391.8,119.3 Q1435,119.3 1478.3,119.3 L1521.5,119.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1372.5" y="110.3" width="125" height="18" rx="3"/><text x="1435" y="119.3" text-anchor="middle" dominant-baseline="central">优化关键帧与局部点云</text></g></g><g data-step="6"><path class="am-edge" d="M1627.5,119.3 L1659.3,119.3 Q1691,119.3 1722.8,119.3 L1754.5,119.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1651.5" y="110.3" width="79" height="18" rx="3"/><text x="1691" y="119.3" text-anchor="middle" dominant-baseline="central">计算内容版本</text></g></g><g data-step="7"><path class="am-edge am-edge--dashed" d="M374.8,55.5 L410,39.3 Q445.3,23 496.6,23 Q548,23 612.8,23 Q677.7,23 757.5,23 Q837.3,23 899.5,23 Q961.6,23 1008.7,23 Q1055.8,23 1117.4,23 Q1178.9,23 1223.7,28 L1268.5,33" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="774.8" y="14" width="125" height="18" rx="3"/><text x="837.3" y="23" text-anchor="middle" dominant-baseline="central">初始化超时或进程失败</text></g></g><g data-step="8"><path class="am-edge am-edge--dashed" d="M1089.3,90.6 L1134.1,77.7 Q1178.9,64.8 1223.7,55.3 L1268.5,45.9" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1122.2" y="55.8" width="113.5" height="18" rx="3"/><text x="1178.9" y="64.8" text-anchor="middle" dominant-baseline="central">保存超时或产物缺失</text></g></g></g><g><g class="am-node am-node--rect" data-key="接收建图请求" data-step="0"><rect class="am-node-shape" x="14" y="55.5" width="106" height="35" rx="3"/><text x="67" y="73" text-anchor="middle" dominant-baseline="central">接收建图请求</text></g><g class="am-node am-node--rect" data-key="等待IMU" data-step="0"><rect class="am-node-shape" x="297.8" y="55.5" width="78.2" height="35" rx="3"/><text x="336.9" y="73" text-anchor="middle" dominant-baseline="central">等待IMU</text></g><g class="am-node am-node--rect" data-key="建图中" data-step="1"><rect class="am-node-shape" x="514.5" y="82.8" width="67" height="35" rx="3"/><text x="548" y="100.3" text-anchor="middle" dominant-baseline="central">建图中</text></g><g class="am-node am-node--rect" data-key="mapping_ready" data-step="2"><rect class="am-node-shape" x="777.2" y="82.8" width="120.3" height="35" rx="3"/><text x="837.3" y="100.3" text-anchor="middle" dominant-baseline="central">mapping_ready</text></g><g class="am-node am-node--rect" data-key="保存中" data-step="3"><rect class="am-node-shape" x="1022.3" y="82.8" width="67" height="35" rx="3"/><text x="1055.8" y="100.3" text-anchor="middle" dominant-baseline="central">保存中</text></g><g class="am-node am-node--rect" data-key="校验地图" data-step="4"><rect class="am-node-shape" x="1268.5" y="101.8" width="80" height="35" rx="3"/><text x="1308.5" y="119.3" text-anchor="middle" dominant-baseline="central">校验地图</text></g><g class="am-node am-node--rect" data-key="建立检索索引" data-step="5"><rect class="am-node-shape" x="1521.5" y="101.8" width="106" height="35" rx="3"/><text x="1574.5" y="119.3" text-anchor="middle" dominant-baseline="central">建立检索索引</text></g><g class="am-node am-node--rect" data-key="返回MapRef" data-step="6"><rect class="am-node-shape" x="1754.5" y="101.8" width="100" height="35" rx="3"/><text x="1804.5" y="119.3" text-anchor="middle" dominant-baseline="central">返回MapRef</text></g><g class="am-node am-node--rect" data-key="失败结束" data-step="7"><rect class="am-node-shape" x="1268.5" y="20" width="80" height="35" rx="3"/><text x="1308.5" y="37.5" text-anchor="middle" dominant-baseline="central">失败结束</text></g></g></svg></figure>
+<div class="am-md"><p><code>mapping_ready</code>表示可消费建图定位。<code>map_saved</code>只在产物、索引和版本生成后成立。启动进程或收到第一条odom均不能代替这两个条件。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>算法与实现</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="algo-slam.html">slam</a> · <a href="algo-maps.html">maps</a></p>
-<p><a href="files-robot-spatial_runtime.html">本模块文件和符号索引</a></p>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>重定位时序</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-seq"><svg viewBox="0 0 1038 470" width="1038" height="470" role="img" aria-label="时序图：本机任务层、空间provider、传感适配、ScanContext、ICP、LocalizationNode、SpatialPoseTracker" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am3-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><line class="am-lifeline" x1="58.5" y1="42" x2="58.5" y2="466"/><g data-key="本机任务层"><rect class="am-actor" x="12" y="8" width="93" height="34" rx="2"/><text x="58.5" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">本机任务层</text></g><line class="am-lifeline" x1="273.4" y1="42" x2="273.4" y2="466"/><g data-key="空间provider"><rect class="am-actor" x="222" y="8" width="102.9" height="34" rx="2"/><text x="273.4" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">空间provider</text></g><line class="am-lifeline" x1="399.4" y1="42" x2="399.4" y2="466"/><g data-key="传感适配"><rect class="am-actor" x="357.4" y="8" width="84" height="34" rx="2"/><text x="399.4" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">传感适配</text></g><line class="am-lifeline" x1="521.9" y1="42" x2="521.9" y2="466"/><g data-key="ScanContext"><rect class="am-actor" x="469.4" y="8" width="105" height="34" rx="2"/><text x="521.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">ScanContext</text></g><line class="am-lifeline" x1="644.4" y1="42" x2="644.4" y2="466"/><g data-key="ICP"><rect class="am-actor" x="602.4" y="8" width="84" height="34" rx="2"/><text x="644.4" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">ICP</text></g><line class="am-lifeline" x1="781.9" y1="42" x2="781.9" y2="466"/><g data-key="LocalizationNode"><rect class="am-actor" x="714.4" y="8" width="135.1" height="34" rx="2"/><text x="781.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">LocalizationNode</text></g><line class="am-lifeline" x1="951.6" y1="42" x2="951.6" y2="466"/><g data-key="SpatialPoseTracker"><rect class="am-actor" x="877.5" y="8" width="148.1" height="34" rx="2"/><text x="951.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">SpatialPoseTracker</text></g><g data-step="0"><text x="166" y="70" text-anchor="middle">relocalize(当前MapRef)</text><path class="am-edge" d="M58.5,80 L271.4,80" marker-end="url(#am3-arrow)"/></g><g data-step="1"><text x="336.4" y="110" text-anchor="middle">读取真实最新扫描</text><path class="am-edge" d="M273.4,120 L397.4,120" marker-end="url(#am3-arrow)"/></g><g data-step="2"><text x="397.7" y="150" text-anchor="middle">变换到索引坐标后检索</text><path class="am-edge" d="M273.4,160 L519.9,160" marker-end="url(#am3-arrow)"/></g><g data-step="3"><text x="397.7" y="190" text-anchor="middle">候选关键帧</text><path class="am-edge am-edge--dashed" d="M521.9,200 L275.4,200" marker-end="url(#am3-arrow)"/></g><g data-step="4"><text x="458.9" y="230" text-anchor="middle">验证候选几何注册</text><path class="am-edge" d="M273.4,240 L642.4,240" marker-end="url(#am3-arrow)"/></g><g data-step="5"><text x="458.9" y="270" text-anchor="middle">位姿、RMSE与内点比例</text><path class="am-edge am-edge--dashed" d="M644.4,280 L275.4,280" marker-end="url(#am3-arrow)"/></g><g data-step="6"><text x="527.7" y="310" text-anchor="middle">使用验证位姿重启原生定位</text><path class="am-edge" d="M273.4,320 L779.9,320" marker-end="url(#am3-arrow)"/></g><g data-step="7"><text x="527.7" y="350" text-anchor="middle">新鲜原生匹配反馈</text><path class="am-edge am-edge--dashed" d="M781.9,360 L275.4,360" marker-end="url(#am3-arrow)"/></g><g data-step="8"><text x="612.5" y="390" text-anchor="middle">确认两个不同的新质量时间戳</text><path class="am-edge" d="M273.4,400 L949.6,400" marker-end="url(#am3-arrow)"/></g><g data-step="9"><text x="166" y="430" text-anchor="middle">localization_restored或明确失败</text><path class="am-edge am-edge--dashed" d="M273.4,440 L60.5,440" marker-end="url(#am3-arrow)"/></g></svg></figure>
+<div class="am-md"><p>候选检索失败或ICP不通过时拒绝恢复。重启前的排队消息不能用于确认。重定位不获得运动租约，也不主动移动机器人。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>开发检查</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>先查调用者、provider注册与配置，再改最小实现。
-运行 <code>tests/unit</code> 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>算法与参数入口</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>组成</th>
+<th>采用实现</th>
+<th>配置或边界</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="algo-slam.html">激光惯性建图</a></td>
+<td>模块内Lightning原生快照</td>
+<td>固定外参与逐点采样时间</td>
+</tr>
+<tr>
+<td>地图定位</td>
+<td>Lightning原生匹配质量</td>
+<td>NDT_MATCH等有效匹配来源</td>
+</tr>
+<tr>
+<td><a href="algo-maps.html">地点检索与注册</a></td>
+<td>ScanContext与强制ICP</td>
+<td>禁止registration=none</td>
+</tr>
+<tr>
+<td>本体位姿转换</td>
+<td>既有FrameStore与TF组合</td>
+<td>map→IMU→pelvis→base</td>
+</tr>
+<tr>
+<td>版本与产物</td>
+<td>hashlib、PCL读写、关键帧检查</td>
+<td>MapRef身份与内容一致</td>
+</tr>
+</tbody></table></div>
+<p>SpatialPoseTracker的默认位姿年龄为0.5s，质量年龄为1s。导航还可对自身输入施加更短年龄要求。地图保存等待上限60s；离线工具默认执行上限600s。</p>
+<p>SIM初始化profile用50Hz IMU、2s窗口、100帧。外参、重力参数和静止统计阈值保留在profile，不复制为其他本体的默认值。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>扩展与阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>不把下游模块的感知、状态或SDK逻辑复制进来。
-<a href="development.html">开发指南</a> · <a href="experiments.html">实验口径</a></p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>地图内容与用途边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>产物</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>global.pcd、分块PCD、index.txt</td>
+<td>原生地图加载</td>
+</tr>
+<tr>
+<td>keyframes.csv</td>
+<td>优化后的关键帧位姿</td>
+</tr>
+<tr>
+<td>keyframe_clouds、frame元数据</td>
+<td>本体局部查询云与索引对齐</td>
+</tr>
+<tr>
+<td>scancontext.npz</td>
+<td>重定位候选检索</td>
+</tr>
+<tr>
+<td>profile.yaml、内容哈希</td>
+<td>外参、来源与版本一致性</td>
+</tr>
+</tbody></table></div>
+<p>当前公共保存链生成Lightning地图包。二维PGM/YAML导出、地图标注和结构化空间记忆不属于该保存实现。后续二维地图由空间模块提供，人工语义由系统记忆模块拥有。</p>
+<p>地图锚点保存关键帧ID及相对位姿，重建时使用优化关键帧。不能将一次建图时的绝对坐标直接视为永久空间记忆。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>文件与开发边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><ul>
+<li><code>g1_assembly.py</code>：在线建图、定位工厂和唯一位姿出口装配。</li>
+<li><code>capability_provider.py</code>：会话、保存、重定位与取消管理。</li>
+<li><code>online_mapping.py</code> / <code>localization_node.py</code>：原生进程生命周期。</li>
+<li><code>g1_lightning_bridge.py</code> / <code>body_frame.py</code>：同戳坐标转换与输出。</li>
+<li><code>relocalize.py</code>：原生索引、候选检索与几何注册。</li>
+<li><code>map_catalog.py</code> / <code>map_snapshot.py</code> / <code>map_anchors.py</code>：地图身份与锚点。</li>
+</ul>
+<p><a href="files-robot-spatial_runtime.html">文件和符号索引</a> · <a href="https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/spatial_runtime">私有源码</a></p>
+<p>空间模块不生成导航速度，不接管任务编排。导航探索须消费本模块的建图就绪与地图结果，不能另写一套SLAM状态。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>验证方法</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>分别核查逐点时间、IMU外参、腰部动态TF、map版本、匹配质量和保存产物。重定位需验证候选、ICP以及重启后的新反馈。</p>
+<p>地图文件结构通过，不代表定位精度或探索覆盖率通过。复验时绑定机器人模型、传感profile、原生版本和场景，保留失败来源。</p>
+<p><a href="development.html">开发指南</a> · <a href="experiments.html">实验口径</a> · <a href="interfaces.html">接口契约</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: 定位、建图与地图 · spatial_runtime
-subtitle: robot_app 的模块责任与开发入口
+title: 空间运行架构 · spatial_runtime
+subtitle: SW-12 的建图会话、定位坐标、重定位与地图版本
 lang: zh
 doc_id: module-robot-spatial_runtime
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
-[首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
+[首页](index.html) · [系统架构](architecture.html) · [模块映射](architecture-map.html) · [算法](algorithms.html) · [接口](interfaces.html)
 
-## A 职责
+[内部可编辑多页图](diagrams/spatial-runtime.html) · [draw.io图源](diagrams/spatial-runtime.drawio) · [五模块对照](runtime-internals.html)
 
-**架构归属：SW-12 → RB-01。实现标记：I。**
+## A 职责与公共能力
 
-[系统与软件映射](architecture-map.html) · [可编辑架构图](architecture.html)
+**SW-12 → RB-01。空间模块拥有度量定位、地图产物及其版本。**
+本体状态提供关节相关TF，传感适配提供激光与IMU。导航消费空间结果；图像目标识别仍由感知模块负责。
 
-build_map、localize、relocalize。
+| 公共能力 | 会话语义 | 实现出口 |
+| --- | --- | --- |
+| spatial.build_map | 启动后持续建图，显式finalize保存 | OnlineMapping→MapRef |
+| spatial.localize | 加载已校验地图，持续报告定位质量 | LocalizationNode→SpatialPoseTracker |
+| spatial.relocalize | 现有定位会话内重新检索与注册 | ScanContext→ICP→重启定位→新反馈确认 |
 
-## B 输入与输出
+G1装配注册这些provider；运行就绪仍取决于传感、原生程序和地图。离线建图工具与在线公共能力不是同一入口。
 
-| 项目 | 内容 |
+## B 组件和坐标数据流
+
+```flow LR
+传感适配 -&gt; Lightning: 激光逐点时间与IMU
+Lightning -&gt; 位姿桥: map到躯干IMU原生结果
+本体状态 -&gt; 位姿桥: 同戳pelvis到IMU动态TF
+位姿桥 -&gt; SpatialPoseTracker: map到base位姿
+Lightning -&gt; SpatialPoseTracker: 独立定位质量反馈
+位姿桥 -&gt; FrameOutput: 唯一map到base TF出口
+SpatialPoseTracker -&gt; 导航: 带质量与版本的locate结果
+Lightning -&gt; 地图包: 点云、优化关键帧与局部关键帧云
+地图包 -&gt; MapCatalog: 内容版本与可信根目录校验
+MapCatalog -&gt; 定位会话: 已确认MapRef
+```
+
+原生Lightning消息的 `lidar_link` 标签不直接等于机器人base。桥接明确解释其IMU数值语义，再使用同戳URDF关节TF组合。不要直接复制原生消息作为本体位姿。
+
+## C 在线建图状态视图
+
+```flow LR
+接收建图请求 -&gt; 等待IMU: 唯一map_id与原生进程
+等待IMU -&gt; 建图中: 静止初始化通过
+建图中 -&gt; mapping_ready: 新鲜LIO_TRACKING质量
+mapping_ready -&gt; 保存中: 显式finalize
+保存中 -&gt; 校验地图: SIGINT后等待原生落盘
+校验地图 -&gt; 建立检索索引: 优化关键帧与局部点云
+建立检索索引 -&gt; 返回MapRef: 计算内容版本
+等待IMU --&gt; 失败结束: 初始化超时或进程失败
+保存中 --&gt; 失败结束: 保存超时或产物缺失
+```
+
+`mapping_ready`表示可消费建图定位。`map_saved`只在产物、索引和版本生成后成立。启动进程或收到第一条odom均不能代替这两个条件。
+
+## D 重定位时序
+
+```sequence
+本机任务层 -&gt; 空间provider: relocalize(当前MapRef)
+空间provider -&gt; 传感适配: 读取真实最新扫描
+空间provider -&gt; ScanContext: 变换到索引坐标后检索
+ScanContext --&gt; 空间provider: 候选关键帧
+空间provider -&gt; ICP: 验证候选几何注册
+ICP --&gt; 空间provider: 位姿、RMSE与内点比例
+空间provider -&gt; LocalizationNode: 使用验证位姿重启原生定位
+LocalizationNode --&gt; 空间provider: 新鲜原生匹配反馈
+空间provider -&gt; SpatialPoseTracker: 确认两个不同的新质量时间戳
+空间provider --&gt; 本机任务层: localization_restored或明确失败
+```
+
+候选检索失败或ICP不通过时拒绝恢复。重启前的排队消息不能用于确认。重定位不获得运动租约，也不主动移动机器人。
+
+## E 算法与参数入口
+
+| 组成 | 采用实现 | 配置或边界 |
+| --- | --- | --- |
+| [激光惯性建图](algo-slam.html) | 模块内Lightning原生快照 | 固定外参与逐点采样时间 |
+| 地图定位 | Lightning原生匹配质量 | NDT_MATCH等有效匹配来源 |
+| [地点检索与注册](algo-maps.html) | ScanContext与强制ICP | 禁止registration=none |
+| 本体位姿转换 | 既有FrameStore与TF组合 | map→IMU→pelvis→base |
+| 版本与产物 | hashlib、PCL读写、关键帧检查 | MapRef身份与内容一致 |
+
+SpatialPoseTracker的默认位姿年龄为0.5s，质量年龄为1s。导航还可对自身输入施加更短年龄要求。地图保存等待上限60s；离线工具默认执行上限600s。
+
+SIM初始化profile用50Hz IMU、2s窗口、100帧。外参、重力参数和静止统计阈值保留在profile，不复制为其他本体的默认值。
+
+## F 地图内容与用途边界
+
+| 产物 | 用途 |
 | --- | --- |
-| 输入 | 激光/IMU、map_ref、初始位置 |
-| 输出 | 定位反馈和版本化地图引用 |
-| 下游或数据依赖 | Lightning、ScanContext、ICP |
+| global.pcd、分块PCD、index.txt | 原生地图加载 |
+| keyframes.csv | 优化后的关键帧位姿 |
+| keyframe_clouds、frame元数据 | 本体局部查询云与索引对齐 |
+| scancontext.npz | 重定位候选检索 |
+| profile.yaml、内容哈希 | 外参、来源与版本一致性 |
 
-对外ROS能力遵循[统一契约](interfaces.html)。时间、坐标、来源不能由调用者省略。
+当前公共保存链生成Lightning地图包。二维PGM/YAML导出、地图标注和结构化空间记忆不属于该保存实现。后续二维地图由空间模块提供，人工语义由系统记忆模块拥有。
 
-## C 执行边界
+地图锚点保存关键帧ID及相对位姿，重建时使用优化关键帧。不能将一次建图时的绝对坐标直接视为永久空间记忆。
 
-地图输出按内容校验；不要以进程退出或服务码代替地图验证。
-输入不足时明确返回原因，不构造假观测或假成功。
+## G 文件与开发边界
 
-## D 算法与实现
+- `g1_assembly.py`：在线建图、定位工厂和唯一位姿出口装配。
+- `capability_provider.py`：会话、保存、重定位与取消管理。
+- `online_mapping.py` / `localization_node.py`：原生进程生命周期。
+- `g1_lightning_bridge.py` / `body_frame.py`：同戳坐标转换与输出。
+- `relocalize.py`：原生索引、候选检索与几何注册。
+- `map_catalog.py` / `map_snapshot.py` / `map_anchors.py`：地图身份与锚点。
 
-[slam](algo-slam.html) · [maps](algo-maps.html)
+[文件和符号索引](files-robot-spatial_runtime.html) · [私有源码](https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/spatial_runtime)
 
-[本模块文件和符号索引](files-robot-spatial_runtime.html)
+空间模块不生成导航速度，不接管任务编排。导航探索须消费本模块的建图就绪与地图结果，不能另写一套SLAM状态。
 
-## E 开发检查
+## H 验证方法
 
-先查调用者、provider注册与配置，再改最小实现。
-运行 `tests/unit` 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。
+分别核查逐点时间、IMU外参、腰部动态TF、map版本、匹配质量和保存产物。重定位需验证候选、ICP以及重启后的新反馈。
 
-## F 扩展与阅读
+地图文件结构通过，不代表定位精度或探索覆盖率通过。复验时绑定机器人模型、传感profile、原生版本和场景，保留失败来源。
 
-不把下游模块的感知、状态或SDK逻辑复制进来。
-[开发指南](development.html) · [实验口径](experiments.html)
+[开发指南](development.html) · [实验口径](experiments.html) · [接口契约](interfaces.html)
 </textarea>
 <script>
 (() => {

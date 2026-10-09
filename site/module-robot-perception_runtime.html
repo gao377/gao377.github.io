@@ -698,122 +698,302 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>局部视觉与场景 · perception_runtime</h1><p class="am-sub">robot_app 的模块责任与开发入口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-perception_runtime</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>局部视觉与场景 · perception_runtime</h1><p class="am-sub">SW-13 / RB-01：以采样时刻的 RGB-D 生成本体局部观测</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-perception_runtime</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<p><a href="diagrams/perception-runtime.html">内部可编辑多页图</a> · <a href="diagrams/perception-runtime.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责</a><a href="#panel-B">B · 输入与输出</a><a href="#panel-C">C · 执行边界</a><a href="#panel-D">D · 算法与实现</a><a href="#panel-E">E · 开发检查</a><a href="#panel-F">F · 扩展与阅读</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与实现入口</a><a href="#panel-B">B · 组件与数据流</a><a href="#panel-C">C · 输入输出契约</a><a href="#panel-D">D · 一帧图像如何供给两个模块</a><a href="#panel-E">E · 文件、算法与扩展点</a><a href="#panel-F">F · 有效性与使用限制</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><strong>架构归属：SW-13 → RB-01。实现标记：I。</strong></p>
-<p><a href="architecture-map.html">系统与软件映射</a> · <a href="architecture.html">可编辑架构图</a></p>
-<p>检测跟踪物体，估计几何和支撑面。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>输入与输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责与实现入口</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><strong>SW-13 → RB-01。活动实现：RegisteredObjectRos + LatestObjectObservation。</strong>
+本模块识别、跟踪目标并恢复局部几何。
+导航和操作读取结构化观测，共用同一视觉结果。</p>
+<div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>项目</th>
-<th>内容</th>
+<th>范围</th>
+<th>当前实现</th>
+<th>边界</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>输入</td>
-<td>RGB-D、相机内外参、源时刻本体状态</td>
+<td>注册方块</td>
+<td>Grounding DINO、SAM2.1/SAMURAI、顶面几何</td>
+<td>已知尺寸；单个目标；方位有四重对称</td>
 </tr>
 <tr>
-<td>输出</td>
-<td>局部ObjectObservation、支撑面、场景快照</td>
+<td>圆柱或水瓶</td>
+<td>可配置检测与圆柱几何</td>
+<td>由物体 profile 选择；不是方块路径</td>
 </tr>
 <tr>
-<td>下游或数据依赖</td>
-<td>state_estimation、SAMURAI、Open3D/OpenCV</td>
+<td>支撑面与工位参考</td>
+<td>Open3D 平面/CAD、OpenCV SIFT/PnP</td>
+<td>局部台面参考；不依赖 SLAM</td>
+</tr>
+<tr>
+<td>mock 场景</td>
+<td>PerceptionRuntime.observe</td>
+<td>只用于 mock 装配；不表示真实图像处理</td>
 </tr>
 </tbody></table></div>
-<p>对外ROS能力遵循<a href="interfaces.html">统一契约</a>。时间、坐标、来源不能由调用者省略。</p>
+<p><a href="architecture-map.html">架构映射</a> · <a href="https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/perception_runtime">源码目录</a></p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>组件与数据流</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 275 954" width="275" height="954" role="img" aria-label="流程图：RGB深度内参、时间帧配对、源时刻几何、单视觉工作线程、检测跟踪、目标几何、支撑面工作进程、最新观测缓存" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M155.6,49 L155.6,65 Q155.6,81 155.6,97 L155.6,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="107.4" y="72" width="96.3" height="18" rx="3"/><text x="155.6" y="81" text-anchor="middle" dominant-baseline="central">message_filters</text></g></g><g data-step="1"><path class="am-edge" d="M155.6,148 L155.6,164 Q155.6,180 155.6,196 L155.6,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="114.8" y="171" width="81.5" height="18" rx="3"/><text x="155.6" y="180" text-anchor="middle" dominant-baseline="central">TF和IMU插值</text></g></g><g data-step="2"><path class="am-edge" d="M155.6,247 L155.6,263 Q155.6,279 155.6,295 L155.6,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="121.8" y="270" width="67.5" height="18" rx="3"/><text x="155.6" y="279" text-anchor="middle" dominant-baseline="central">完整图像包</text></g></g><g data-step="3"><path class="am-edge" d="M155.6,346 L155.6,362 Q155.6,378 155.6,394 L155.6,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="102.8" y="369" width="105.5" height="18" rx="3"/><text x="155.6" y="378" text-anchor="middle" dominant-baseline="central">DINO与SAMURAI</text></g></g><g data-step="4"><path class="am-edge" d="M155.6,445 L155.6,461 Q155.6,477 155.6,493 L155.6,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="107.2" y="468" width="96.7" height="18" rx="3"/><text x="155.6" y="477" text-anchor="middle" dominant-baseline="central">mask与对齐深度</text></g></g><g data-step="5"><path class="am-edge" d="M155.6,544 L155.6,560 Q155.6,576 155.6,592 L155.6,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="98.8" y="567" width="113.5" height="18" rx="3"/><text x="155.6" y="576" text-anchor="middle" dominant-baseline="central">局部点云与物体结果</text></g></g><g data-step="6"><path class="am-edge" d="M155.6,643 L155.6,659 Q155.6,675 155.6,691 L155.6,707" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="99.3" y="666" width="112.6" height="18" rx="3"/><text x="155.6" y="675" text-anchor="middle" dominant-baseline="central">ObjectObservation</text></g></g><g data-step="7"><path class="am-edge" d="M178.4,742 L199.2,758 Q220.1,774 220.1,790 L220.1,806" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="180.6" y="765" width="79" height="18" rx="3"/><text x="220.1" y="774" text-anchor="middle" dominant-baseline="central">目标与支撑面</text></g></g><g data-step="8"><path class="am-edge" d="M132.8,742 L111.9,758 Q91.1,774 91.1,790 L91.1,806" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="55.7" y="765" width="70.7" height="18" rx="3"/><text x="91.1" y="774" text-anchor="middle" dominant-baseline="central">SIFT与PnP</text></g></g><g data-step="9"><path class="am-edge" d="M91.1,841 L91.1,857 Q91.1,873 91.1,889 L91.1,905" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="864" width="152.1" height="18" rx="3"/><text x="91.1" y="873" text-anchor="middle" dominant-baseline="central">LocalNavigationReference</text></g></g></g><g><g class="am-node am-node--rect" data-key="RGB深度内参" data-step="0"><rect class="am-node-shape" x="101.1" y="14" width="108.9" height="35" rx="3"/><text x="155.6" y="31.5" text-anchor="middle" dominant-baseline="central">RGB深度内参</text></g><g class="am-node am-node--rect" data-key="时间帧配对" data-step="0"><rect class="am-node-shape" x="109.1" y="113" width="93" height="35" rx="3"/><text x="155.6" y="130.5" text-anchor="middle" dominant-baseline="central">时间帧配对</text></g><g class="am-node am-node--rect" data-key="源时刻几何" data-step="1"><rect class="am-node-shape" x="109.1" y="212" width="93" height="35" rx="3"/><text x="155.6" y="229.5" text-anchor="middle" dominant-baseline="central">源时刻几何</text></g><g class="am-node am-node--rect" data-key="单视觉工作线程" data-step="2"><rect class="am-node-shape" x="96.1" y="311" width="119" height="35" rx="3"/><text x="155.6" y="328.5" text-anchor="middle" dominant-baseline="central">单视觉工作线程</text></g><g class="am-node am-node--rect" data-key="检测跟踪" data-step="3"><rect class="am-node-shape" x="115.6" y="410" width="80" height="35" rx="3"/><text x="155.6" y="427.5" text-anchor="middle" dominant-baseline="central">检测跟踪</text></g><g class="am-node am-node--rect" data-key="目标几何" data-step="4"><rect class="am-node-shape" x="115.6" y="509" width="80" height="35" rx="3"/><text x="155.6" y="526.5" text-anchor="middle" dominant-baseline="central">目标几何</text></g><g class="am-node am-node--rect" data-key="支撑面工作进程" data-step="5"><rect class="am-node-shape" x="96.1" y="608" width="119" height="35" rx="3"/><text x="155.6" y="625.5" text-anchor="middle" dominant-baseline="central">支撑面工作进程</text></g><g class="am-node am-node--rect" data-key="最新观测缓存" data-step="6"><rect class="am-node-shape" x="102.6" y="707" width="106" height="35" rx="3"/><text x="155.6" y="724.5" text-anchor="middle" dominant-baseline="central">最新观测缓存</text></g><g class="am-node am-node--rect" data-key="操作能力" data-step="7"><rect class="am-node-shape" x="180.1" y="806" width="80" height="35" rx="3"/><text x="220.1" y="823.5" text-anchor="middle" dominant-baseline="central">操作能力</text></g><g class="am-node am-node--rect" data-key="工位视觉参考" data-step="8"><rect class="am-node-shape" x="38.1" y="806" width="106" height="35" rx="3"/><text x="91.1" y="823.5" text-anchor="middle" dominant-baseline="central">工位视觉参考</text></g><g class="am-node am-node--rect" data-key="导航精调" data-step="9"><rect class="am-node-shape" x="51.1" y="905" width="80" height="35" rx="3"/><text x="91.1" y="922.5" text-anchor="middle" dominant-baseline="central">导航精调</text></g></g></svg></figure>
+<div class="am-md"><p>视觉推理使用一个线程；支撑面原生计算使用一个 CPU 进程。
+模型在应用启动阶段加载。
+控制循环读取已完成结果，不在能力 tick 中加载模型。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>执行边界</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>图像算法只能在此模块；操作读取其结构化结果。
-输入不足时明确返回原因，不构造假观测或假成功。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>输入输出契约</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>契约</th>
+<th>内容与约束</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>图像输入</td>
+<td>同 frame 的 RGB、对齐深度和 CameraInfo；允许时差 20ms</td>
+</tr>
+<tr>
+<td>几何输入</td>
+<td>图像时刻 camera→pelvis TF；同刻 IMU 重力轴</td>
+</tr>
+<tr>
+<td>ObjectObservation</td>
+<td>object_id、pelvis 位姿、geometry_ref、stamp、origin、valid、reason</td>
+</tr>
+<tr>
+<td>SupportObservation</td>
+<td>台面几何、表面法向、coverage、配准不确定度与源 stamp</td>
+</tr>
+<tr>
+<td>LocalNavigationReference</td>
+<td>当前与期望工位关系、参考身份、源时间、有效性</td>
+</tr>
+<tr>
+<td>放置参考</td>
+<td>support_reference 身份；读取当前图像计算的局部变换</td>
+</tr>
+</tbody></table></div>
+<p>缓存保留原图像时间，不把读取时间写成观测时间。
+方块 profile 的新鲜度上限为 0.2s。
+SIM 和 REAL 都提供同一类观测。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>算法与实现</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="algo-perception.html">perception</a> · <a href="algo-support.html">support</a></p>
-<p><a href="files-robot-perception_runtime.html">本模块文件和符号索引</a></p>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>一帧图像如何供给两个模块</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-seq"><svg viewBox="0 0 1231 510" width="1231" height="510" role="img" aria-label="时序图：相机、感知接入、TF与IMU、视觉线程、检测跟踪、支撑面进程、观测缓存、操作能力、导航精调、工位参考" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><line class="am-lifeline" x1="54" y1="42" x2="54" y2="506"/><g data-key="相机"><rect class="am-actor" x="12" y="8" width="84" height="34" rx="2"/><text x="54" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">相机</text></g><line class="am-lifeline" x1="166" y1="42" x2="166" y2="506"/><g data-key="感知接入"><rect class="am-actor" x="124" y="8" width="84" height="34" rx="2"/><text x="166" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">感知接入</text></g><line class="am-lifeline" x1="334.9" y1="42" x2="334.9" y2="506"/><g data-key="TF与IMU"><rect class="am-actor" x="292.9" y="8" width="84" height="34" rx="2"/><text x="334.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">TF与IMU</text></g><line class="am-lifeline" x1="446.9" y1="42" x2="446.9" y2="506"/><g data-key="视觉线程"><rect class="am-actor" x="404.9" y="8" width="84" height="34" rx="2"/><text x="446.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">视觉线程</text></g><line class="am-lifeline" x1="579.9" y1="42" x2="579.9" y2="506"/><g data-key="检测跟踪"><rect class="am-actor" x="537.9" y="8" width="84" height="34" rx="2"/><text x="579.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">检测跟踪</text></g><line class="am-lifeline" x1="696.4" y1="42" x2="696.4" y2="506"/><g data-key="支撑面进程"><rect class="am-actor" x="649.9" y="8" width="93" height="34" rx="2"/><text x="696.4" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">支撑面进程</text></g><line class="am-lifeline" x1="812.9" y1="42" x2="812.9" y2="506"/><g data-key="观测缓存"><rect class="am-actor" x="770.9" y="8" width="84" height="34" rx="2"/><text x="812.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">观测缓存</text></g><line class="am-lifeline" x1="938.9" y1="42" x2="938.9" y2="506"/><g data-key="操作能力"><rect class="am-actor" x="896.9" y="8" width="84" height="34" rx="2"/><text x="938.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">操作能力</text></g><line class="am-lifeline" x1="1050.9" y1="42" x2="1050.9" y2="506"/><g data-key="导航精调"><rect class="am-actor" x="1008.9" y="8" width="84" height="34" rx="2"/><text x="1050.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">导航精调</text></g><line class="am-lifeline" x1="1176.9" y1="42" x2="1176.9" y2="506"/><g data-key="工位参考"><rect class="am-actor" x="1134.9" y="8" width="84" height="34" rx="2"/><text x="1176.9" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">工位参考</text></g><g data-step="0"><text x="110" y="70" text-anchor="middle">RGB深度内参</text><path class="am-edge" d="M54,80 L164,80" marker-end="url(#am2-arrow)"/></g><g data-step="1"><text x="250.5" y="110" text-anchor="middle">查询图像源时刻</text><path class="am-edge" d="M166,120 L332.9,120" marker-end="url(#am2-arrow)"/></g><g data-step="2"><text x="250.5" y="150" text-anchor="middle">camera到pelvis与重力轴</text><path class="am-edge am-edge--dashed" d="M334.9,160 L168,160" marker-end="url(#am2-arrow)"/></g><g data-step="3"><text x="306.5" y="190" text-anchor="middle">完整图像包</text><path class="am-edge" d="M166,200 L444.9,200" marker-end="url(#am2-arrow)"/></g><g data-step="4"><text x="513.4" y="230" text-anchor="middle">初始化或更新mask</text><path class="am-edge" d="M446.9,240 L577.9,240" marker-end="url(#am2-arrow)"/></g><g data-step="5"><text x="513.4" y="270" text-anchor="middle">mask或跟踪失败</text><path class="am-edge am-edge--dashed" d="M579.9,280 L448.9,280" marker-end="url(#am2-arrow)"/></g><g data-step="6"><text x="571.7" y="310" text-anchor="middle">深度几何计算</text><path class="am-edge" d="M446.9,320 L694.4,320" marker-end="url(#am2-arrow)"/></g><g data-step="7"><text x="571.7" y="350" text-anchor="middle">台面与局部参考</text><path class="am-edge am-edge--dashed" d="M696.4,360 L448.9,360" marker-end="url(#am2-arrow)"/></g><g data-step="8"><text x="629.9" y="390" text-anchor="middle">原始stamp和有效性</text><path class="am-edge" d="M446.9,400 L810.9,400" marker-end="url(#am2-arrow)"/></g><g data-step="9"><text x="875.9" y="430" text-anchor="middle">读取对象和支撑面</text><path class="am-edge" d="M938.9,440 L814.9,440" marker-end="url(#am2-arrow)"/></g><g data-step="10"><text x="1113.9" y="470" text-anchor="middle">读取当前相对关系</text><path class="am-edge" d="M1050.9,480 L1174.9,480" marker-end="url(#am2-arrow)"/></g></svg></figure>
+<div class="am-md"><p>跟踪丢失返回无效状态。
+操作能力可依其任务规则继续使用已捕获目标。
+感知不替操作决定重抓，也不伪造新观测。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>开发检查</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>先查调用者、provider注册与配置，再改最小实现。
-运行 <code>tests/unit</code> 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>文件、算法与扩展点</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>责任</th>
+<th>复用算法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>registered_object_ros.py</td>
+<td>ROS 配对、TF/IMU 对齐、结果装配</td>
+<td>message_filters、tf2</td>
+</tr>
+<tr>
+<td>bottle_mask.py / target_tracker.py</td>
+<td>检测种子与跨帧 mask</td>
+<td>Grounding DINO、SAM2.1/SAMURAI</td>
+</tr>
+<tr>
+<td>box_geometry.py</td>
+<td>顶面、中心与方块轴连续性</td>
+<td>Open3D RANSAC、OpenCV、SciPy C4</td>
+</tr>
+<tr>
+<td>local_support_observation.py</td>
+<td>独立台面拟合及局部支撑</td>
+<td>Open3D、SciPy SVD</td>
+</tr>
+<tr>
+<td>registered_support_cad.py</td>
+<td>可选 CAD 配准</td>
+<td>Open3D point-to-plane ICP</td>
+</tr>
+<tr>
+<td>local_support_reference.py</td>
+<td>原放置点参考</td>
+<td>SIFT、PnP RANSAC、VVS</td>
+</tr>
+<tr>
+<td>navigation_reference.py</td>
+<td>导航用工位相对关系</td>
+<td>复用同一 PnP</td>
+</tr>
+<tr>
+<td>latest_object.py</td>
+<td>单工作线程和源时间缓存</td>
+<td>标准库 executor</td>
+</tr>
+</tbody></table></div>
+<p>新增物体先扩展 profile 和几何观测器。
+不要向 manipulation_runtime 复制图像处理。
+<a href="algo-perception.html">目标感知细节</a> · <a href="algo-support.html">支撑面与参考</a></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>扩展与阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>不把下游模块的感知、状态或SDK逻辑复制进来。
-<a href="development.html">开发指南</a> · <a href="experiments.html">实验口径</a></p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>有效性与使用限制</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>已知物体尺寸和 CAD 是任务先验。
+物体位置、台面位置仍来自真实 RGB-D。
+本实现不等价于任意物体六维姿态估计。</p>
+<p>方块顶面、目标语义或足够台面特征不可见时，结果带明确原因。
+PnP 的厘米级一致性阈值不是相机精度证明。
+近接触状态由触觉供给操作能力判断。</p>
+<p>可视化复用本次推理的图像、mask 和结果，不另跑检测器。
+<a href="files-robot-perception_runtime.html">文件索引</a> · <a href="module-robot-sensor_adapters.html">传感适配</a> · <a href="module-robot-state_estimation.html">本体状态</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 局部视觉与场景 · perception_runtime
-subtitle: robot_app 的模块责任与开发入口
+subtitle: SW-13 / RB-01：以采样时刻的 RGB-D 生成本体局部观测
 lang: zh
 doc_id: module-robot-perception_runtime
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 职责
+[内部可编辑多页图](diagrams/perception-runtime.html) · [draw.io图源](diagrams/perception-runtime.drawio) · [五模块对照](runtime-internals.html)
 
-**架构归属：SW-13 → RB-01。实现标记：I。**
+## A 职责与实现入口
 
-[系统与软件映射](architecture-map.html) · [可编辑架构图](architecture.html)
+**SW-13 → RB-01。活动实现：RegisteredObjectRos + LatestObjectObservation。**
+本模块识别、跟踪目标并恢复局部几何。
+导航和操作读取结构化观测，共用同一视觉结果。
 
-检测跟踪物体，估计几何和支撑面。
+| 范围 | 当前实现 | 边界 |
+| --- | --- | --- |
+| 注册方块 | Grounding DINO、SAM2.1/SAMURAI、顶面几何 | 已知尺寸；单个目标；方位有四重对称 |
+| 圆柱或水瓶 | 可配置检测与圆柱几何 | 由物体 profile 选择；不是方块路径 |
+| 支撑面与工位参考 | Open3D 平面/CAD、OpenCV SIFT/PnP | 局部台面参考；不依赖 SLAM |
+| mock 场景 | PerceptionRuntime.observe | 只用于 mock 装配；不表示真实图像处理 |
 
-## B 输入与输出
+[架构映射](architecture-map.html) · [源码目录](https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/perception_runtime)
 
-| 项目 | 内容 |
+## B 组件与数据流
+
+```flow
+RGB深度内参 -&gt; 时间帧配对: message_filters
+时间帧配对 -&gt; 源时刻几何: TF和IMU插值
+源时刻几何 -&gt; 单视觉工作线程: 完整图像包
+单视觉工作线程 -&gt; 检测跟踪: DINO与SAMURAI
+检测跟踪 -&gt; 目标几何: mask与对齐深度
+目标几何 -&gt; 支撑面工作进程: 局部点云与物体结果
+支撑面工作进程 -&gt; 最新观测缓存: ObjectObservation
+最新观测缓存 -&gt; 操作能力: 目标与支撑面
+最新观测缓存 -&gt; 工位视觉参考: SIFT与PnP
+工位视觉参考 -&gt; 导航精调: LocalNavigationReference
+```
+
+视觉推理使用一个线程；支撑面原生计算使用一个 CPU 进程。
+模型在应用启动阶段加载。
+控制循环读取已完成结果，不在能力 tick 中加载模型。
+
+## C 输入输出契约
+
+| 契约 | 内容与约束 |
 | --- | --- |
-| 输入 | RGB-D、相机内外参、源时刻本体状态 |
-| 输出 | 局部ObjectObservation、支撑面、场景快照 |
-| 下游或数据依赖 | state_estimation、SAMURAI、Open3D/OpenCV |
+| 图像输入 | 同 frame 的 RGB、对齐深度和 CameraInfo；允许时差 20ms |
+| 几何输入 | 图像时刻 camera→pelvis TF；同刻 IMU 重力轴 |
+| ObjectObservation | object_id、pelvis 位姿、geometry_ref、stamp、origin、valid、reason |
+| SupportObservation | 台面几何、表面法向、coverage、配准不确定度与源 stamp |
+| LocalNavigationReference | 当前与期望工位关系、参考身份、源时间、有效性 |
+| 放置参考 | support_reference 身份；读取当前图像计算的局部变换 |
 
-对外ROS能力遵循[统一契约](interfaces.html)。时间、坐标、来源不能由调用者省略。
+缓存保留原图像时间，不把读取时间写成观测时间。
+方块 profile 的新鲜度上限为 0.2s。
+SIM 和 REAL 都提供同一类观测。
 
-## C 执行边界
+## D 一帧图像如何供给两个模块
 
-图像算法只能在此模块；操作读取其结构化结果。
-输入不足时明确返回原因，不构造假观测或假成功。
+```sequence
+相机 -&gt; 感知接入: RGB深度内参
+感知接入 -&gt; TF与IMU: 查询图像源时刻
+TF与IMU --&gt; 感知接入: camera到pelvis与重力轴
+感知接入 -&gt; 视觉线程: 完整图像包
+视觉线程 -&gt; 检测跟踪: 初始化或更新mask
+检测跟踪 --&gt; 视觉线程: mask或跟踪失败
+视觉线程 -&gt; 支撑面进程: 深度几何计算
+支撑面进程 --&gt; 视觉线程: 台面与局部参考
+视觉线程 -&gt; 观测缓存: 原始stamp和有效性
+操作能力 -&gt; 观测缓存: 读取对象和支撑面
+导航精调 -&gt; 工位参考: 读取当前相对关系
+```
 
-## D 算法与实现
+跟踪丢失返回无效状态。
+操作能力可依其任务规则继续使用已捕获目标。
+感知不替操作决定重抓，也不伪造新观测。
 
-[perception](algo-perception.html) · [support](algo-support.html)
+## E 文件、算法与扩展点
 
-[本模块文件和符号索引](files-robot-perception_runtime.html)
+| 文件 | 责任 | 复用算法 |
+| --- | --- | --- |
+| registered_object_ros.py | ROS 配对、TF/IMU 对齐、结果装配 | message_filters、tf2 |
+| bottle_mask.py / target_tracker.py | 检测种子与跨帧 mask | Grounding DINO、SAM2.1/SAMURAI |
+| box_geometry.py | 顶面、中心与方块轴连续性 | Open3D RANSAC、OpenCV、SciPy C4 |
+| local_support_observation.py | 独立台面拟合及局部支撑 | Open3D、SciPy SVD |
+| registered_support_cad.py | 可选 CAD 配准 | Open3D point-to-plane ICP |
+| local_support_reference.py | 原放置点参考 | SIFT、PnP RANSAC、VVS |
+| navigation_reference.py | 导航用工位相对关系 | 复用同一 PnP |
+| latest_object.py | 单工作线程和源时间缓存 | 标准库 executor |
 
-## E 开发检查
+新增物体先扩展 profile 和几何观测器。
+不要向 manipulation_runtime 复制图像处理。
+[目标感知细节](algo-perception.html) · [支撑面与参考](algo-support.html)
 
-先查调用者、provider注册与配置，再改最小实现。
-运行 `tests/unit` 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。
+## F 有效性与使用限制
 
-## F 扩展与阅读
+已知物体尺寸和 CAD 是任务先验。
+物体位置、台面位置仍来自真实 RGB-D。
+本实现不等价于任意物体六维姿态估计。
 
-不把下游模块的感知、状态或SDK逻辑复制进来。
-[开发指南](development.html) · [实验口径](experiments.html)
+方块顶面、目标语义或足够台面特征不可见时，结果带明确原因。
+PnP 的厘米级一致性阈值不是相机精度证明。
+近接触状态由触觉供给操作能力判断。
+
+可视化复用本次推理的图像、mask 和结果，不另跑检测器。
+[文件索引](files-robot-perception_runtime.html) · [传感适配](module-robot-sensor_adapters.html) · [本体状态](module-robot-state_estimation.html)
 </textarea>
 <script>
 (() => {

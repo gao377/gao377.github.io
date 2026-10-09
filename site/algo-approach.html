@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>分层接近与可达性恢复</h1><p class="am-sub">上肢 → 腰部 → 下肢，按失败原因逐层升级</p><div class="am-head-meta"><span><b>doc_id</b>algo-approach</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>分层接近与可达性恢复</h1><p class="am-sub">上肢 → 腰部 → 下肢，按失败原因逐层升级</p><div class="am-head-meta"><span><b>doc_id</b>algo-approach</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -709,9 +709,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-B">
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>先用当前本体位姿评估上肢候选，包含IK可解性、关节限位、奇异裕量和路径。
+<div class="am-panel-body"><div class="am-md"><p>先用当前本体位姿评估上肢候选，包含IK可解性、关节限位和奇异裕量。
 若不足，求腰部候选并按实测AMO响应评估；执行后重新观测和求解上肢。
 只有腰部仍不足，才进入低速本体接近。每一级都从实际反馈重新判断，不一次性求全身目标。</p>
+<p>上肢和腰部候选均用Pink生成几何seed，检查当前access端点。
+该结果不是可执行路径证书；实际运动另做完整原生路径检查。
+下肢候选搜索才使用CasADi可达性评估，随后执行局部视觉伺服。
+候选可达后还要执行、判稳、重新感知和再次评估，才产生可操作快照。</p>
 </div>
 <figure class="am-diagram am-flow"><svg viewBox="0 0 356 360" width="356" height="360" role="img" aria-label="流程图：上肢评估、可操作快照、腰部候选、上肢复核、下肢微动" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M212.8,47.7 L254,64.3 Q295.3,81 295.3,97 L295.3,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="278.8" y="72" width="33" height="18" rx="3"/><text x="295.3" y="81" text-anchor="middle" dominant-baseline="central">可达</text></g></g><g data-step="1"><path class="am-edge" d="M172.8,49 L172.8,65 Q172.8,81 172.8,97 L172.8,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="121.8" y="72" width="102" height="18" rx="3"/><text x="172.8" y="81" text-anchor="middle" dominant-baseline="central">不可达或裕量不足</text></g></g><g data-step="2"><path class="am-edge" d="M172.8,148 L172.8,164 Q172.8,180 172.8,196 L172.8,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="127.5" y="171" width="90.5" height="18" rx="3"/><text x="172.8" y="180" text-anchor="middle" dominant-baseline="central">执行后重新观测</text></g></g><g data-step="3"><path class="am-edge" d="M172.8,247 L172.8,263 Q172.8,279 154.6,295 L136.4,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="139" y="270" width="67.5" height="18" rx="3"/><text x="172.8" y="279" text-anchor="middle" dominant-baseline="central">腰部仍不足</text></g></g><g data-step="4"><path class="am-edge" d="M96.6,311 L78.4,295 Q60.3,279 60.3,254.3 Q60.3,229.5 60.3,204.8 Q60.3,180 60.3,155.3 Q60.3,130.5 60.3,105.8 Q60.3,81 96.6,65 L133,49" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="171" width="90.5" height="18" rx="3"/><text x="60.3" y="180" text-anchor="middle" dominant-baseline="central">归零且反馈稳定</text></g></g></g><g><g class="am-node am-node--rect" data-key="上肢评估" data-step="0"><rect class="am-node-shape" x="132.8" y="14" width="80" height="35" rx="3"/><text x="172.8" y="31.5" text-anchor="middle" dominant-baseline="central">上肢评估</text></g><g class="am-node am-node--rect" data-key="可操作快照" data-step="0"><rect class="am-node-shape" x="248.8" y="113" width="93" height="35" rx="3"/><text x="295.3" y="130.5" text-anchor="middle" dominant-baseline="central">可操作快照</text></g><g class="am-node am-node--rect" data-key="腰部候选" data-step="1"><rect class="am-node-shape" x="132.8" y="113" width="80" height="35" rx="3"/><text x="172.8" y="130.5" text-anchor="middle" dominant-baseline="central">腰部候选</text></g><g class="am-node am-node--rect" data-key="上肢复核" data-step="2"><rect class="am-node-shape" x="132.8" y="212" width="80" height="35" rx="3"/><text x="172.8" y="229.5" text-anchor="middle" dominant-baseline="central">上肢复核</text></g><g class="am-node am-node--rect" data-key="下肢微动" data-step="3"><rect class="am-node-shape" x="76.5" y="311" width="80" height="35" rx="3"/><text x="116.5" y="328.5" text-anchor="middle" dominant-baseline="central">下肢微动</text></g></g></svg></figure></div>
 </section>
@@ -738,7 +742,12 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>腰部/下肢轴只有响应标定和范围证明有效才启用。下肢实现目前依赖navigation basic controller与navigation snapshot作障碍检查；不能声称整个能力已完全脱离导航输入。approach不执行抓握或展示。</p>
+<div class="am-panel-body"><div class="am-md"><p>腰部/下肢轴只有响应标定和范围证明有效才启用。
+当前下肢支路由<code>ApproachVisualServo</code>消费perception提供的物体相对关系。
+ViSP PBVS生成本体平面速度，再经共享executor交给AMO；不调用navigation或SLAM。</p>
+<p>目标遮挡时，下肢接近等待新鲜局部观测；这与pick接触阶段保持可信旧目标的策略不同。
+approach不执行抓握或展示。</p>
+<p><code>approach_visual.py</code>负责局部视觉误差到速度；本体状态估计和视觉重建仍留在各自模块。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -765,7 +774,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -773,7 +782,7 @@ title: 分层接近与可达性恢复
 subtitle: 上肢 → 腰部 → 下肢，按失败原因逐层升级
 lang: zh
 doc_id: algo-approach
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
@@ -784,9 +793,14 @@ implementation: 1349c6f04c8c4cc4
 
 ## B 原理和调用链
 
-先用当前本体位姿评估上肢候选，包含IK可解性、关节限位、奇异裕量和路径。
+先用当前本体位姿评估上肢候选，包含IK可解性、关节限位和奇异裕量。
 若不足，求腰部候选并按实测AMO响应评估；执行后重新观测和求解上肢。
 只有腰部仍不足，才进入低速本体接近。每一级都从实际反馈重新判断，不一次性求全身目标。
+
+上肢和腰部候选均用Pink生成几何seed，检查当前access端点。
+该结果不是可执行路径证书；实际运动另做完整原生路径检查。
+下肢候选搜索才使用CasADi可达性评估，随后执行局部视觉伺服。
+候选可达后还要执行、判稳、重新感知和再次评估，才产生可操作快照。
 
 ```flow TB
 上肢评估 -&gt; 可操作快照: 可达
@@ -817,7 +831,14 @@ implementation: 1349c6f04c8c4cc4
 
 ## E 适用条件与失败处理
 
-腰部/下肢轴只有响应标定和范围证明有效才启用。下肢实现目前依赖navigation basic controller与navigation snapshot作障碍检查；不能声称整个能力已完全脱离导航输入。approach不执行抓握或展示。
+腰部/下肢轴只有响应标定和范围证明有效才启用。
+当前下肢支路由`ApproachVisualServo`消费perception提供的物体相对关系。
+ViSP PBVS生成本体平面速度，再经共享executor交给AMO；不调用navigation或SLAM。
+
+目标遮挡时，下肢接近等待新鲜局部观测；这与pick接触阶段保持可信旧目标的策略不同。
+approach不执行抓握或展示。
+
+`approach_visual.py`负责局部视觉误差到速度；本体状态估计和视觉重建仍留在各自模块。
 
 ## F 验证与替换
 

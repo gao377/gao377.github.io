@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>TARE探索与返回</h1><p class="am-sub">探索提供路线，建图与运动仍由各自模块负责</p><div class="am-head-meta"><span><b>doc_id</b>algo-exploration</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>TARE探索与返回</h1><p class="am-sub">探索提供路线，建图与运动仍由各自模块负责</p><div class="am-head-meta"><span><b>doc_id</b>algo-exploration</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -709,8 +709,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-B">
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>TARE原生进程维护子空间和前沿，规划探索路径。适配层提供同戳点云/位姿；探索执行器将路点交给导航，spatial负责SLAM与地图保存。返回起点、停止和保存地图是明确步骤。</p>
-</div></div>
+<div class="am-panel-body"><div class="am-md"><p>TARE原生进程维护子空间和前沿，规划探索路径。适配层提供同戳点云与位姿，spatial负责SLAM与地图保存。</p>
+<p>当前生产装配尚未把TareProvider连接至navigation.explore。NavigateTo.start_path已提供版本化路径入口，但没有生产探索会话调用者。下图虚线表示需补充的编排连接。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1443 134" width="1443" height="134" role="img" aria-label="流程图：Lightning注册扫描、TARE输入桥、TARE原生进程、探索会话、NavigateTo、共同执行器、空间模块" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M151.7,67 L190.3,67 Q228.8,67 267.3,67 L305.9,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="175.7" y="58" width="106.1" height="18" rx="3"/><text x="228.8" y="67" text-anchor="middle" dominant-baseline="central">同戳扫描与动态TF</text></g></g><g data-step="1"><path class="am-edge" d="M408.2,67 L451.5,67 Q494.7,67 538,67 L581.2,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="432.2" y="58" width="125" height="18" rx="3"/><text x="494.7" y="67" text-anchor="middle" dominant-baseline="central">点云、地形与雷达位姿</text></g></g><g data-step="2"><path class="am-edge am-edge--dashed" d="M696.6,67 L745.6,67 Q794.6,67 843.6,67 L892.6,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="720.6" y="58" width="148" height="18" rx="3"/><text x="794.6" y="67" text-anchor="middle" dominant-baseline="central">路点、局部路径、完成状态</text></g></g><g data-step="3"><path class="am-edge am-edge--dashed" d="M972.6,78.8 L1013,90.6 Q1053.3,102.5 1093.7,102.5 L1134.1,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1019.6" y="93.5" width="67.5" height="18" rx="3"/><text x="1053.3" y="102.5" text-anchor="middle" dominant-baseline="central">版本化路径</text></g></g><g data-step="4"><path class="am-edge" d="M1231.8,102.5 L1257.8,102.5 Q1283.8,102.5 1309.8,102.5 L1335.8,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1255.8" y="93.5" width="56" height="18" rx="3"/><text x="1283.8" y="102.5" text-anchor="middle" dominant-baseline="central">本体参考</text></g></g><g data-step="5"><path class="am-edge am-edge--dashed" d="M972.6,55.2 L1013,43.4 Q1053.3,31.5 1098.1,31.5 L1142.9,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="996.6" y="22.5" width="113.5" height="18" rx="3"/><text x="1053.3" y="31.5" text-anchor="middle" dominant-baseline="central">开始建图与显式保存</text></g></g></g><g><g class="am-node am-node--rect" data-key="Lightning注册扫描" data-step="0"><rect class="am-node-shape" x="14" y="49.5" width="137.7" height="35" rx="3"/><text x="82.9" y="67" text-anchor="middle" dominant-baseline="central">Lightning注册扫描</text></g><g class="am-node am-node--rect" data-key="TARE输入桥" data-step="0"><rect class="am-node-shape" x="305.9" y="49.5" width="102.4" height="35" rx="3"/><text x="357" y="67" text-anchor="middle" dominant-baseline="central">TARE输入桥</text></g><g class="am-node am-node--rect" data-key="TARE原生进程" data-step="1"><rect class="am-node-shape" x="581.2" y="49.5" width="115.4" height="35" rx="3"/><text x="638.9" y="67" text-anchor="middle" dominant-baseline="central">TARE原生进程</text></g><g class="am-node am-node--rect" data-key="探索会话" data-step="2"><rect class="am-node-shape" x="892.6" y="49.5" width="80" height="35" rx="3"/><text x="932.6" y="67" text-anchor="middle" dominant-baseline="central">探索会话</text></g><g class="am-node am-node--rect" data-key="NavigateTo" data-step="3"><rect class="am-node-shape" x="1134.1" y="85" width="97.7" height="35" rx="3"/><text x="1182.9" y="102.5" text-anchor="middle" dominant-baseline="central">NavigateTo</text></g><g class="am-node am-node--rect" data-key="共同执行器" data-step="4"><rect class="am-node-shape" x="1335.8" y="85" width="93" height="35" rx="3"/><text x="1382.3" y="102.5" text-anchor="middle" dominant-baseline="central">共同执行器</text></g><g class="am-node am-node--rect" data-key="空间模块" data-step="5"><rect class="am-node-shape" x="1142.9" y="14" width="80" height="35" rx="3"/><text x="1182.9" y="31.5" text-anchor="middle" dominant-baseline="central">空间模块</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
@@ -733,7 +735,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>当前TareProvider明确约束SIM profile，不能原封不动声称支持真机。原生输出存在不代表完整探索已接受。进程退出和桥接失败都报告原因；点云空洞不以虚构地面修补。</p>
+<div class="am-panel-body"><div class="am-md"><p>当前TareProvider明确约束SIM profile。真机需要时钟、话题及启动配置适配。原生输出存在，不等于探索公共能力完成。</p>
+<p>输入桥根据实测低点拟合地面。地面候选不足时报告GROUND_UNAVAILABLE。地面筛选半径是本项目profile参数，不是“TARE必须在2米内看见地面”的通用要求。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -745,7 +748,22 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -753,7 +771,7 @@ title: TARE探索与返回
 subtitle: 探索提供路线，建图与运动仍由各自模块负责
 lang: zh
 doc_id: algo-exploration
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
@@ -764,7 +782,19 @@ implementation: 1349c6f04c8c4cc4
 
 ## B 原理和调用链
 
-TARE原生进程维护子空间和前沿，规划探索路径。适配层提供同戳点云/位姿；探索执行器将路点交给导航，spatial负责SLAM与地图保存。返回起点、停止和保存地图是明确步骤。
+TARE原生进程维护子空间和前沿，规划探索路径。适配层提供同戳点云与位姿，spatial负责SLAM与地图保存。
+
+当前生产装配尚未把TareProvider连接至navigation.explore。NavigateTo.start_path已提供版本化路径入口，但没有生产探索会话调用者。下图虚线表示需补充的编排连接。
+
+```flow LR
+Lightning注册扫描 -&gt; TARE输入桥: 同戳扫描与动态TF
+TARE输入桥 -&gt; TARE原生进程: 点云、地形与雷达位姿
+TARE原生进程 --&gt; 探索会话: 路点、局部路径、完成状态
+探索会话 --&gt; NavigateTo: 版本化路径
+NavigateTo -&gt; 共同执行器: 本体参考
+探索会话 --&gt; 空间模块: 开始建图与显式保存
+```
+
 
 ## C 参数与运行特性
 
@@ -785,7 +815,9 @@ TARE原生进程维护子空间和前沿，规划探索路径。适配层提供�
 
 ## E 适用条件与失败处理
 
-当前TareProvider明确约束SIM profile，不能原封不动声称支持真机。原生输出存在不代表完整探索已接受。进程退出和桥接失败都报告原因；点云空洞不以虚构地面修补。
+当前TareProvider明确约束SIM profile。真机需要时钟、话题及启动配置适配。原生输出存在，不等于探索公共能力完成。
+
+输入桥根据实测低点拟合地面。地面候选不足时报告GROUND_UNAVAILABLE。地面筛选半径是本项目profile参数，不是“TARE必须在2米内看见地面”的通用要求。
 
 ## F 验证与替换
 

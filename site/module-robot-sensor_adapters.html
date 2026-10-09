@@ -698,122 +698,256 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>传感器适配 · sensor_adapters</h1><p class="am-sub">robot_app 的模块责任与开发入口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-sensor_adapters</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>传感器适配 · sensor_adapters</h1><p class="am-sub">SW-15 / RB-05：保留源时间、frame与标定身份的数据入口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-sensor_adapters</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责</a><a href="#panel-B">B · 输入与输出</a><a href="#panel-C">C · 执行边界</a><a href="#panel-D">D · 算法与实现</a><a href="#panel-E">E · 开发检查</a><a href="#panel-F">F · 扩展与阅读</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与两类入口</a><a href="#panel-B">B · 数据通道视图</a><a href="#panel-C">C · 时间与有效性契约</a><a href="#panel-D">D · 格式与算法文件</a><a href="#panel-E">E · SIM与REAL的共用边界</a><a href="#panel-F">F · 开发方法</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><strong>架构归属：SW-15 → RB-05。实现标记：I。</strong></p>
-<p><a href="architecture-map.html">系统与软件映射</a> · <a href="architecture.html">可编辑架构图</a></p>
-<p>接收并规范化传感观测。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>输入与输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责与两类入口</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><strong>SW-15 → RB-05。负责观测格式与来源，输出可检查的传感样本。</strong></p>
+<div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>项目</th>
-<th>内容</th>
+<th>入口</th>
+<th>原始数据</th>
+<th>适配结果</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>输入</td>
-<td>ROS图像/深度/点云、SDK反馈</td>
+<td>G1SensorBackend</td>
+<td>共享SDK缓存中的关节、IMU、手与触觉</td>
+<td>本体/手部样本及历史</td>
 </tr>
 <tr>
-<td>输出</td>
-<td>带frame和源stamp的数据</td>
+<td>RosSensorIngress</td>
+<td>PointCloud2、Image、CameraInfo、Imu</td>
+<td>ROS传感样本及RGB-D配对</td>
 </tr>
 <tr>
-<td>下游或数据依赖</td>
-<td>ROS消息与后端只读接口</td>
+<td>replay</td>
+<td>记录数据</td>
+<td>回放观测；不表示设备执行</td>
 </tr>
 </tbody></table></div>
-<p>对外ROS能力遵循<a href="interfaces.html">统一契约</a>。时间、坐标、来源不能由调用者省略。</p>
+<p>目标检测、SLAM、轨迹规划各有所属模块。
+本模块不发送身体控制命令。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>数据通道视图</h2></header>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 612 459" width="612" height="459" role="img" aria-label="流程图：本体SDK、共享SDK缓存、G1SensorBackend、ROS传感器、RosSensorIngress、样本转换、SensorAdapters、StateEstimation" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M84.6,49 L84.6,65 Q84.6,81 84.6,97 L84.6,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="24.7" y="72" width="119.7" height="18" rx="3"/><text x="84.6" y="81" text-anchor="middle" dominant-baseline="central">LowState与双手反馈</text></g></g><g data-step="1"><path class="am-edge" d="M84.6,148 L84.6,164 Q84.6,180 84.6,196 L84.6,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="45.1" y="171" width="79" height="18" rx="3"/><text x="84.6" y="180" text-anchor="middle" dominant-baseline="central">实测帧和历史</text></g></g><g data-step="2"><path class="am-edge" d="M244.1,49 L244.1,65 Q244.1,81 244.1,97 L244.1,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="205.4" y="72" width="77.4" height="18" rx="3"/><text x="244.1" y="81" text-anchor="middle" dominant-baseline="central">图像点云IMU</text></g></g><g data-step="3"><path class="am-edge" d="M244.1,148 L244.1,164 Q244.1,180 244.1,196 L244.1,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="198.9" y="171" width="90.5" height="18" rx="3"/><text x="244.1" y="180" text-anchor="middle" dominant-baseline="central">单位与字段校验</text></g></g><g data-step="4"><path class="am-edge" d="M244.1,247 L244.1,263 Q244.1,279 218.3,295 L192.5,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="167.3" y="270" width="153.5" height="18" rx="3"/><text x="244.1" y="279" text-anchor="middle" dominant-baseline="central">frame与源stamp及接收时间</text></g></g><g data-step="5"><path class="am-edge" d="M84.6,247 L84.6,263 Q84.6,279 110.3,295 L136.1,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="39.3" y="270" width="90.5" height="18" rx="3"/><text x="84.6" y="279" text-anchor="middle" dominant-baseline="central">本体和触觉快照</text></g></g><g data-step="6"><path class="am-edge" d="M164.3,346 L164.3,362 Q164.3,378 164.3,394 L164.3,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="113.3" y="369" width="102" height="18" rx="3"/><text x="164.3" y="378" text-anchor="middle" dominant-baseline="central">同源时刻本体状态</text></g></g><g data-step="7"><path class="am-edge" d="M402.2,49 L402.2,65 Q402.2,81 402.2,97 L402.2,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="342.9" y="72" width="118.6" height="18" rx="3"/><text x="402.2" y="81" text-anchor="middle" dominant-baseline="central">RGBD同步与TF查询</text></g></g><g data-step="8"><path class="am-edge" d="M544.2,49 L544.2,65 Q544.2,81 544.2,97 L544.2,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="493.8" y="72" width="100.9" height="18" rx="3"/><text x="544.2" y="81" text-anchor="middle" dominant-baseline="central">SLAM所需点时间</text></g></g></g><g><g class="am-node am-node--rect" data-key="本体SDK" data-step="0"><rect class="am-node-shape" x="43.1" y="14" width="82.9" height="35" rx="3"/><text x="84.6" y="31.5" text-anchor="middle" dominant-baseline="central">本体SDK</text></g><g class="am-node am-node--rect" data-key="共享SDK缓存" data-step="0"><rect class="am-node-shape" x="30.1" y="113" width="108.9" height="35" rx="3"/><text x="84.6" y="130.5" text-anchor="middle" dominant-baseline="central">共享SDK缓存</text></g><g class="am-node am-node--rect" data-key="G1SensorBackend" data-step="1"><rect class="am-node-shape" x="14" y="212" width="141.1" height="35" rx="3"/><text x="84.6" y="229.5" text-anchor="middle" dominant-baseline="central">G1SensorBackend</text></g><g class="am-node am-node--rect" data-key="ROS传感器" data-step="2"><rect class="am-node-shape" x="196.2" y="14" width="95.9" height="35" rx="3"/><text x="244.1" y="31.5" text-anchor="middle" dominant-baseline="central">ROS传感器</text></g><g class="am-node am-node--rect" data-key="RosSensorIngress" data-step="2"><rect class="am-node-shape" x="175" y="113" width="138.2" height="35" rx="3"/><text x="244.1" y="130.5" text-anchor="middle" dominant-baseline="central">RosSensorIngress</text></g><g class="am-node am-node--rect" data-key="样本转换" data-step="3"><rect class="am-node-shape" x="204.1" y="212" width="80" height="35" rx="3"/><text x="244.1" y="229.5" text-anchor="middle" dominant-baseline="central">样本转换</text></g><g class="am-node am-node--rect" data-key="SensorAdapters" data-step="4"><rect class="am-node-shape" x="102.5" y="311" width="123.7" height="35" rx="3"/><text x="164.3" y="328.5" text-anchor="middle" dominant-baseline="central">SensorAdapters</text></g><g class="am-node am-node--rect" data-key="StateEstimation" data-step="6"><rect class="am-node-shape" x="101.6" y="410" width="125.5" height="35" rx="3"/><text x="164.3" y="427.5" text-anchor="middle" dominant-baseline="central">StateEstimation</text></g><g class="am-node am-node--rect" data-key="ROS相机" data-step="7"><rect class="am-node-shape" x="360.8" y="14" width="82.9" height="35" rx="3"/><text x="402.2" y="31.5" text-anchor="middle" dominant-baseline="central">ROS相机</text></g><g class="am-node am-node--rect" data-key="感知专用接入" data-step="7"><rect class="am-node-shape" x="349.2" y="113" width="106" height="35" rx="3"/><text x="402.2" y="130.5" text-anchor="middle" dominant-baseline="central">感知专用接入</text></g><g class="am-node am-node--rect" data-key="ROS激光" data-step="8"><rect class="am-node-shape" x="502.8" y="14" width="82.9" height="35" rx="3"/><text x="544.2" y="31.5" text-anchor="middle" dominant-baseline="central">ROS激光</text></g><g class="am-node am-node--rect" data-key="空间专用接入" data-step="8"><rect class="am-node-shape" x="491.2" y="113" width="106" height="35" rx="3"/><text x="544.2" y="130.5" text-anchor="middle" dominant-baseline="central">空间专用接入</text></g></g></svg></figure>
+<div class="am-md"><p>感知和空间还有算法专用ROS接入。
+不能把所有活动数据箭头画成经过 SensorAdapters。
+专用接入应继续保留一致的时间与坐标语义。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>执行边界</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>不实现目标识别或任务决策。
-输入不足时明确返回原因，不构造假观测或假成功。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>时间与有效性契约</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>stamp</td>
+<td>设备或ROS源时间；未知时明确留空</td>
+</tr>
+<tr>
+<td>received_at</td>
+<td>宿主收到样本的时间</td>
+</tr>
+<tr>
+<td>frame_id</td>
+<td>数据实际坐标系</td>
+</tr>
+<tr>
+<td>origin</td>
+<td>SIM、REAL或显式回放来源</td>
+</tr>
+<tr>
+<td>calibration_ref</td>
+<td>外参、手部或触觉标定身份</td>
+</tr>
+<tr>
+<td>valid / reason</td>
+<td>缺失、过期、字段或匹配错误</td>
+</tr>
+<tr>
+<td>feedback_epoch</td>
+<td>本体重置后区分历史批次</td>
+</tr>
+</tbody></table></div>
+<p>SensorSnapshot 的 UNVERIFIED 表示集合未证明同步。
+SOURCE_ASSOCIATED 表示按源时刻关联，不等于所有传感器同刻。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>算法与实现</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="algo-sensing.html">sensing</a></p>
-<p><a href="files-robot-sensor_adapters.html">本模块文件和符号索引</a></p>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>格式与算法文件</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>文件</th>
+<th>处理内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>point_cloud.py</td>
+<td>点云字段、逐点时间单位与基准</td>
+</tr>
+<tr>
+<td>rgbd.py / camera_info.py</td>
+<td>RGB/深度编码、尺寸、内参和配对</td>
+</tr>
+<tr>
+<td>imu.py</td>
+<td>IMU字段与有效性</td>
+</tr>
+<tr>
+<td>time_mapping.py</td>
+<td>时间类型与接收时间校验</td>
+</tr>
+<tr>
+<td>ros_input.py</td>
+<td>可选话题配置、缓存与新鲜度</td>
+</tr>
+<tr>
+<td>runtime.py</td>
+<td>合并本体与ROS传感接口</td>
+</tr>
+<tr>
+<td>backends/unitree_g1/sensor_backend.py</td>
+<td>SDK历史查询及手部关联</td>
+</tr>
+</tbody></table></div>
+<p><a href="https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/sensor_adapters">源码目录</a></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>开发检查</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>先查调用者、provider注册与配置，再改最小实现。
-运行 <code>tests/unit</code> 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>SIM与REAL的共用边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>仿真基线为物理250Hz、SDK控制50Hz、RGB-D与激光10Hz。
+消息源频率和实际接收频率分别记录。
+REVO2触觉由SDK适配提供；不通过RGB-D推断接触力。</p>
+<p>SIM桥适配消息、单位、关节名字和时钟。
+物体真值只供独立评价，不写入生产感知结果。
+REAL设备话题未配置时保持禁用，不猜测设备接口。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>扩展与阅读</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>不把下游模块的感知、状态或SDK逻辑复制进来。
-<a href="development.html">开发指南</a> · <a href="experiments.html">实验口径</a></p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>开发方法</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>新传感器先实现消息转换和profile。
+核对源stamp、frame、单位及标定，再接到算法消费者。</p>
+<p><a href="algo-sensing.html">源时间细节</a> · <a href="module-robot-state_estimation.html">本体状态</a> · <a href="files-robot-sensor_adapters.html">文件索引</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 传感器适配 · sensor_adapters
-subtitle: robot_app 的模块责任与开发入口
+subtitle: SW-15 / RB-05：保留源时间、frame与标定身份的数据入口
 lang: zh
 doc_id: module-robot-sensor_adapters
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 职责
+## A 职责与两类入口
 
-**架构归属：SW-15 → RB-05。实现标记：I。**
+**SW-15 → RB-05。负责观测格式与来源，输出可检查的传感样本。**
 
-[系统与软件映射](architecture-map.html) · [可编辑架构图](architecture.html)
+| 入口 | 原始数据 | 适配结果 |
+| --- | --- | --- |
+| G1SensorBackend | 共享SDK缓存中的关节、IMU、手与触觉 | 本体/手部样本及历史 |
+| RosSensorIngress | PointCloud2、Image、CameraInfo、Imu | ROS传感样本及RGB-D配对 |
+| replay | 记录数据 | 回放观测；不表示设备执行 |
 
-接收并规范化传感观测。
+目标检测、SLAM、轨迹规划各有所属模块。
+本模块不发送身体控制命令。
 
-## B 输入与输出
+## B 数据通道视图
 
-| 项目 | 内容 |
+```flow
+本体SDK -&gt; 共享SDK缓存: LowState与双手反馈
+共享SDK缓存 -&gt; G1SensorBackend: 实测帧和历史
+ROS传感器 -&gt; RosSensorIngress: 图像点云IMU
+RosSensorIngress -&gt; 样本转换: 单位与字段校验
+样本转换 -&gt; SensorAdapters: frame与源stamp及接收时间
+G1SensorBackend -&gt; SensorAdapters: 本体和触觉快照
+SensorAdapters -&gt; StateEstimation: 同源时刻本体状态
+ROS相机 -&gt; 感知专用接入: RGBD同步与TF查询
+ROS激光 -&gt; 空间专用接入: SLAM所需点时间
+```
+
+感知和空间还有算法专用ROS接入。
+不能把所有活动数据箭头画成经过 SensorAdapters。
+专用接入应继续保留一致的时间与坐标语义。
+
+## C 时间与有效性契约
+
+| 字段 | 含义 |
 | --- | --- |
-| 输入 | ROS图像/深度/点云、SDK反馈 |
-| 输出 | 带frame和源stamp的数据 |
-| 下游或数据依赖 | ROS消息与后端只读接口 |
+| stamp | 设备或ROS源时间；未知时明确留空 |
+| received_at | 宿主收到样本的时间 |
+| frame_id | 数据实际坐标系 |
+| origin | SIM、REAL或显式回放来源 |
+| calibration_ref | 外参、手部或触觉标定身份 |
+| valid / reason | 缺失、过期、字段或匹配错误 |
+| feedback_epoch | 本体重置后区分历史批次 |
 
-对外ROS能力遵循[统一契约](interfaces.html)。时间、坐标、来源不能由调用者省略。
+SensorSnapshot 的 UNVERIFIED 表示集合未证明同步。
+SOURCE_ASSOCIATED 表示按源时刻关联，不等于所有传感器同刻。
 
-## C 执行边界
+## D 格式与算法文件
 
-不实现目标识别或任务决策。
-输入不足时明确返回原因，不构造假观测或假成功。
+| 文件 | 处理内容 |
+| --- | --- |
+| point_cloud.py | 点云字段、逐点时间单位与基准 |
+| rgbd.py / camera_info.py | RGB/深度编码、尺寸、内参和配对 |
+| imu.py | IMU字段与有效性 |
+| time_mapping.py | 时间类型与接收时间校验 |
+| ros_input.py | 可选话题配置、缓存与新鲜度 |
+| runtime.py | 合并本体与ROS传感接口 |
+| backends/unitree_g1/sensor_backend.py | SDK历史查询及手部关联 |
 
-## D 算法与实现
+[源码目录](https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/sensor_adapters)
 
-[sensing](algo-sensing.html)
+## E SIM与REAL的共用边界
 
-[本模块文件和符号索引](files-robot-sensor_adapters.html)
+仿真基线为物理250Hz、SDK控制50Hz、RGB-D与激光10Hz。
+消息源频率和实际接收频率分别记录。
+REVO2触觉由SDK适配提供；不通过RGB-D推断接触力。
 
-## E 开发检查
+SIM桥适配消息、单位、关节名字和时钟。
+物体真值只供独立评价，不写入生产感知结果。
+REAL设备话题未配置时保持禁用，不猜测设备接口。
 
-先查调用者、provider注册与配置，再改最小实现。
-运行 `tests/unit` 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。
+## F 开发方法
 
-## F 扩展与阅读
+新传感器先实现消息转换和profile。
+核对源stamp、frame、单位及标定，再接到算法消费者。
 
-不把下游模块的感知、状态或SDK逻辑复制进来。
-[开发指南](development.html) · [实验口径](experiments.html)
+[源时间细节](algo-sensing.html) · [本体状态](module-robot-state_estimation.html) · [文件索引](files-robot-sensor_adapters.html)
 </textarea>
 <script>
 (() => {

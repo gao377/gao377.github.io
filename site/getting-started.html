@@ -698,156 +698,183 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>快速开始</h1><p class="am-sub">先验证软件通信，再选择设备和算法环境</p><div class="am-head-meta"><span><b>doc_id</b>getting-started</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>快速开始</h1><p class="am-sub">先选场景，再用稳定命令打开对应效果</p><div class="am-head-meta"><span><b>doc_id</b>getting-started</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="algorithms.html">算法</a> · <a href="scenarios.html">场景</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 前提与结果</a><a href="#panel-B">B · 克隆并启动</a><a href="#panel-C">C · 提交两种入口</a><a href="#panel-D">D · 查看与停止</a><a href="#panel-E">E · 选择下一步</a><a href="#panel-F">F · 常见入口错误</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 想看什么，就启动什么</a><a href="#panel-B">B · 获取源码并选择入口</a><a href="#panel-C">C · 理解结果</a><a href="#panel-D">D · 启动GUI前检查</a><a href="#panel-E">E · 同时看传感和感知</a><a href="#panel-F">F · 查看与停止</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>前提与结果</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>需要 Linux、Docker Engine、Compose v2 和私有仓库访问权。
-首次镜像构建需要网络。以下例程不连接物理设备。
-预期结果为 <code>SUCCEEDED</code>、<code>outcome=met</code>、<code>origin=MOCK</code>。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>克隆并启动</h2></header>
-<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">git clone git@github.com:gao377/agentic-embodied-system.git</span><span class="am-ln">cd agentic-embodied-system</span><span class="am-ln">python3 scripts/verify_sources.py</span><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml up -d --build</span></code></pre></figure>
-<div class="am-md"><p>系统端地址 172.30.50.10，机器人端 172.30.50.20，domain 42。
-若本机已有相同子网，修改 compose 中的地址。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>提交两种入口</h2></header>
-<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml exec -T system \</span><span class="am-ln">  /entrypoint.sh ros2 run system_app probe --tour a</span><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml exec -T system \</span><span class="am-ln">  /entrypoint.sh ros2 run system_app probe --tour b --via-interaction</span></code></pre></figure>
-<div class="am-md"><p>第一个直接发任务，第二个经交互事件触发。
-这验证编排和通信，不代表导航或抓握物理成功。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>查看与停止</h2></header>
-<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml logs --tail=60</span><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml exec -T system \</span><span class="am-ln">  /entrypoint.sh ros2 node list</span><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml down</span></code></pre></figure>
-<div class="am-md"><p>停止容器保留数据卷。不要在仍执行设备运动时直接套用 mock 停止步骤。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>选择下一步</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>想看什么，就启动什么</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
-<th>工作</th>
-<th>阅读</th>
-<th>首个检查</th>
+<th>目标</th>
+<th>仓库根目录中的命令</th>
+<th>出现什么</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>修改契约或路由</td>
-<td><a href="interfaces.html">接口</a></td>
-<td>构建 ROS 消息并跑对应测试</td>
+<td>验证ROS任务通信</td>
+<td><code>python3 scripts/run_scenario.py mock-tour-b</code></td>
+<td>终端结果，无仿真窗口</td>
 </tr>
 <tr>
-<td>修改操作算法</td>
-<td><a href="algo-cartesian.html">笛卡尔规划</a></td>
-<td>原生库、URDF与局部场景身份一致</td>
+<td>看轻量工位</td>
+<td><code>python3 scripts/run_scenario.py workbench-observe</code></td>
+<td>Isaac桌面GUI</td>
 </tr>
 <tr>
-<td>修改导航</td>
-<td><a href="algo-neupan.html">NeuPAN</a></td>
-<td>点云、定位、模型和命令时间一致</td>
+<td>看接近、抓取、展示、放回</td>
+<td><code>python3 scripts/run_scenario.py workbench-left</code></td>
+<td>同一GUI内的操作过程</td>
 </tr>
 <tr>
-<td>启动仿真</td>
-<td><a href="dependencies.html">环境说明</a></td>
-<td>外部资产完整，启动器 check 通过</td>
+<td>调试warehouse整链</td>
+<td><code>python3 scripts/run_scenario.py warehouse-full-chain</code></td>
+<td>warehouse GUI，按实际能力结果推进</td>
 </tr>
 <tr>
-<td>接设备</td>
-<td><a href="algo-amo.html">G1适配</a></td>
-<td>只读反馈、标定与设备配置</td>
+<td>查所有场景</td>
+<td><code>python3 scripts/run_scenario.py --list</code></td>
+<td>稳定ID、场景和窗口列表</td>
 </tr>
 </tbody></table></div>
+<p><strong><code>probe --tour b --via-interaction</code>不是仿真启动器。</strong> 它向已有服务提交文本事件；tour a/b是固定模板。
+完整命令及尚未接通的场景见<a href="scenarios.html">场景目录</a>。GUI入口存在不等于整任务验收成功。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>获取源码并选择入口</h2></header>
+<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">git clone git@github.com:gao377/agentic-embodied-system.git</span><span class="am-ln">cd agentic-embodied-system</span><span class="am-ln">python3 scripts/verify_sources.py</span><span class="am-ln">python3 scripts/run_scenario.py mock-tour-b</span></code></pre></figure>
+<div class="am-md"><p>需要私有GitHub访问权、Linux、Docker Engine和Compose v2。mock命令从源码构建两个ROS服务，然后提交任务；需要构建网络，不需要Isaac/GPU或Docker Hub凭据。
+系统端172.30.50.10、机器人端172.30.50.20，domain42。若子网冲突，先调整部署配置。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-C">
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>理解结果</h2></header>
+<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">text</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="text"><span class="am-ln">任务结果：成功（SUCCEEDED）</span><span class="am-ln">目标结果：met    数据来源：MOCK</span><span class="am-ln">末态持物：否</span><span class="am-ln">本次为 mock 通信与任务编排结果，不是物理抓取或实机验收。</span></code></pre></figure>
+<div class="am-md"><p>该示例验证消息、任务路由和能力契约。想看物理动作，选择工位GUI场景。
+脚本需要原始JSON时在原 <code>ros2 run system_app probe</code> 命令末尾添加 <code>--json</code>。
+旧镜像不会自动拥有新的终端格式；源码构建的入口使用更新后的包。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-D">
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>启动GUI前检查</h2></header>
+<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/run_scenario.py workbench-left --describe</span><span class="am-ln">python3 scripts/run_scenario.py workbench-left --dry-run</span><span class="am-ln">python3 scripts/run_scenario.py workbench-left --check</span><span class="am-ln">python3 scripts/run_scenario.py workbench-left</span></code></pre></figure>
+<div class="am-md"><p>前三条分别说明、展示命令和检查，最后一条才执行。预检可能启动短时无GPU检查容器，不运行物理运动。
+需要已有Isaac Sim/Isaac Lab镜像、匹配算法镜像、G1/REVO2模型、低工台资产、GPU/X11；warehouse额外需要大场景资产。
+依赖见<a href="dependencies.html">环境说明</a>，镜像获取条件见<a href="images.html">镜像说明</a>。不跳过安装身份校验。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>同时看传感和感知</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>工位运行后，在另外两个终端分别执行：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/run_scenario.py viewer-workbench-sensors</span><span class="am-ln">python3 scripts/run_scenario.py viewer-workbench-perception</span></code></pre></figure>
+<div class="am-md"><p>打开 <code>http://127.0.0.1:8094</code> 与 <code>http://127.0.0.1:8095</code>。这些只读网页不会启动仿真。
+数据依赖对应模块的实时发布；工位与warehouse采用不同网络和ROS domain，不能直接混用查看器命令。
+首次使用需先构建工具镜像，命令见场景目录。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>常见入口错误</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>容器 <code>exec</code> 不自动执行镜像 entrypoint，需显式调用 <code>/entrypoint.sh</code>。
-不要在未加载 ROS 工作区的 shell 中直接运行 ros2。
-同一个 Python 环境必须匹配其原生扩展 ABI。
-本机路径与个人镜像名不属于可移植配置。</p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>查看与停止</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>mock运行后服务保持启动，可查看或停止：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml logs --tail=60</span><span class="am-ln">docker compose -p aes-dev -f deploy/compose.yaml down</span></code></pre></figure>
+<div class="am-md"><p>物理启动器支持中断后由原有清理流程退出；先取消运动并确认停止。不要用mock的down停止另一套物理部署。
+结果默认保存在自动生成的实验目录。历史成功结论和对应多窗口录像见<a href="experiments.html">实验摘要</a>与<a href="experiment-recordings.html">录像页</a>。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:24</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 快速开始
-subtitle: 先验证软件通信，再选择设备和算法环境
+subtitle: 先选场景，再用稳定命令打开对应效果
 lang: zh
 doc_id: getting-started
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
-[首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
+[首页](index.html) · [架构](architecture.html) · [算法](algorithms.html) · [场景](scenarios.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 前提与结果
+## A 想看什么，就启动什么
 
-需要 Linux、Docker Engine、Compose v2 和私有仓库访问权。
-首次镜像构建需要网络。以下例程不连接物理设备。
-预期结果为 `SUCCEEDED`、`outcome=met`、`origin=MOCK`。
+| 目标 | 仓库根目录中的命令 | 出现什么 |
+| --- | --- | --- |
+| 验证ROS任务通信 | `python3 scripts/run_scenario.py mock-tour-b` | 终端结果，无仿真窗口 |
+| 看轻量工位 | `python3 scripts/run_scenario.py workbench-observe` | Isaac桌面GUI |
+| 看接近、抓取、展示、放回 | `python3 scripts/run_scenario.py workbench-left` | 同一GUI内的操作过程 |
+| 调试warehouse整链 | `python3 scripts/run_scenario.py warehouse-full-chain` | warehouse GUI，按实际能力结果推进 |
+| 查所有场景 | `python3 scripts/run_scenario.py --list` | 稳定ID、场景和窗口列表 |
 
-## B 克隆并启动
+**`probe --tour b --via-interaction`不是仿真启动器。** 它向已有服务提交文本事件；tour a/b是固定模板。
+完整命令及尚未接通的场景见[场景目录](scenarios.html)。GUI入口存在不等于整任务验收成功。
+
+## B 获取源码并选择入口
 
 ```bash
 git clone git@github.com:gao377/agentic-embodied-system.git
 cd agentic-embodied-system
 python3 scripts/verify_sources.py
-docker compose -p aes-dev -f deploy/compose.yaml up -d --build
+python3 scripts/run_scenario.py mock-tour-b
 ```
 
-系统端地址 172.30.50.10，机器人端 172.30.50.20，domain 42。
-若本机已有相同子网，修改 compose 中的地址。
+需要私有GitHub访问权、Linux、Docker Engine和Compose v2。mock命令从源码构建两个ROS服务，然后提交任务；需要构建网络，不需要Isaac/GPU或Docker Hub凭据。
+系统端172.30.50.10、机器人端172.30.50.20，domain42。若子网冲突，先调整部署配置。
 
-## C 提交两种入口
+## C 理解结果
+
+```text
+任务结果：成功（SUCCEEDED）
+目标结果：met    数据来源：MOCK
+末态持物：否
+本次为 mock 通信与任务编排结果，不是物理抓取或实机验收。
+```
+
+该示例验证消息、任务路由和能力契约。想看物理动作，选择工位GUI场景。
+脚本需要原始JSON时在原 `ros2 run system_app probe` 命令末尾添加 `--json`。
+旧镜像不会自动拥有新的终端格式；源码构建的入口使用更新后的包。
+
+## D 启动GUI前检查
 
 ```bash
-docker compose -p aes-dev -f deploy/compose.yaml exec -T system \
-  /entrypoint.sh ros2 run system_app probe --tour a
-docker compose -p aes-dev -f deploy/compose.yaml exec -T system \
-  /entrypoint.sh ros2 run system_app probe --tour b --via-interaction
+python3 scripts/run_scenario.py workbench-left --describe
+python3 scripts/run_scenario.py workbench-left --dry-run
+python3 scripts/run_scenario.py workbench-left --check
+python3 scripts/run_scenario.py workbench-left
 ```
 
-第一个直接发任务，第二个经交互事件触发。
-这验证编排和通信，不代表导航或抓握物理成功。
+前三条分别说明、展示命令和检查，最后一条才执行。预检可能启动短时无GPU检查容器，不运行物理运动。
+需要已有Isaac Sim/Isaac Lab镜像、匹配算法镜像、G1/REVO2模型、低工台资产、GPU/X11；warehouse额外需要大场景资产。
+依赖见[环境说明](dependencies.html)，镜像获取条件见[镜像说明](images.html)。不跳过安装身份校验。
 
-## D 查看与停止
+## E 同时看传感和感知
+
+工位运行后，在另外两个终端分别执行：
+
+```bash
+python3 scripts/run_scenario.py viewer-workbench-sensors
+python3 scripts/run_scenario.py viewer-workbench-perception
+```
+
+打开 `http://127.0.0.1:8094` 与 `http://127.0.0.1:8095`。这些只读网页不会启动仿真。
+数据依赖对应模块的实时发布；工位与warehouse采用不同网络和ROS domain，不能直接混用查看器命令。
+首次使用需先构建工具镜像，命令见场景目录。
+
+## F 查看与停止
+
+mock运行后服务保持启动，可查看或停止：
 
 ```bash
 docker compose -p aes-dev -f deploy/compose.yaml logs --tail=60
-docker compose -p aes-dev -f deploy/compose.yaml exec -T system \
-  /entrypoint.sh ros2 node list
 docker compose -p aes-dev -f deploy/compose.yaml down
 ```
 
-停止容器保留数据卷。不要在仍执行设备运动时直接套用 mock 停止步骤。
-
-## E 选择下一步
-
-| 工作 | 阅读 | 首个检查 |
-| --- | --- | --- |
-| 修改契约或路由 | [接口](interfaces.html) | 构建 ROS 消息并跑对应测试 |
-| 修改操作算法 | [笛卡尔规划](algo-cartesian.html) | 原生库、URDF与局部场景身份一致 |
-| 修改导航 | [NeuPAN](algo-neupan.html) | 点云、定位、模型和命令时间一致 |
-| 启动仿真 | [环境说明](dependencies.html) | 外部资产完整，启动器 check 通过 |
-| 接设备 | [G1适配](algo-amo.html) | 只读反馈、标定与设备配置 |
-
-## F 常见入口错误
-
-容器 `exec` 不自动执行镜像 entrypoint，需显式调用 `/entrypoint.sh`。
-不要在未加载 ROS 工作区的 shell 中直接运行 ros2。
-同一个 Python 环境必须匹配其原生扩展 ABI。
-本机路径与个人镜像名不属于可移植配置。
+物理启动器支持中断后由原有清理流程退出；先取消运动并确认停止。不要用mock的down停止另一套物理部署。
+结果默认保存在自动生成的实验目录。历史成功结论和对应多窗口录像见[实验摘要](experiments.html)与[录像页](experiment-recordings.html)。
 </textarea>
 <script>
 (() => {

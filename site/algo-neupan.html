@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>NeuPAN局部路径与终端制动</h1><p class="am-sub">原生优化产生轨迹，执行端使用第一步速度</p><div class="am-head-meta"><span><b>doc_id</b>algo-neupan</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>NeuPAN局部路径与终端制动</h1><p class="am-sub">原生优化产生轨迹，执行端使用第一步速度</p><div class="am-head-meta"><span><b>doc_id</b>algo-neupan</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -709,7 +709,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-B">
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>NeuPAN使用滚动时域优化，更新障碍约束和局部参考。基础G1路径采用圆形解析距离替代学习型DUNE的形状距离部分，仍复用NeuPAN求解结构。
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 1537 205" width="1537" height="205" role="img" aria-label="流程图：实际位姿与已发速度、NeuPAN原生MPC、当前XY障碍、圆柱解析距离、目标与制动标志、LocalReference、BasicController、共同执行器" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M383.7,31.5 L429.5,31.5 Q475.4,31.5 534.9,58.3 L594.5,85" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="441.6" y="22.5" width="67.5" height="18" rx="3"/><text x="475.4" y="31.5" text-anchor="middle" dominant-baseline="central">首输入边界</text></g></g><g data-step="1"><path class="am-edge" d="M111.7,102.5 L143.4,102.5 Q175.2,102.5 216.7,102.5 L258.2,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="135.7" y="93.5" width="79" height="18" rx="3"/><text x="175.2" y="102.5" text-anchor="middle" dominant-baseline="central">更新几何约束</text></g></g><g data-step="2"><path class="am-edge" d="M364.2,102.5 L419.8,102.5 Q475.4,102.5 521.2,102.5 L567,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="407.7" y="93.5" width="135.4" height="18" rx="3"/><text x="475.4" y="102.5" text-anchor="middle" dominant-baseline="central">替换DUNE形状距离部分</text></g></g><g data-step="3"><path class="am-edge" d="M370.7,173.5 L423,173.5 Q475.4,173.5 534.9,146.8 L594.5,120" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="435.9" y="164.5" width="79" height="18" rx="3"/><text x="475.4" y="173.5" text-anchor="middle" dominant-baseline="central">有界终端参考</text></g></g><g data-step="4"><path class="am-edge" d="M699.8,102.5 L743.1,102.5 Q786.3,102.5 829.6,102.5 L872.8,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="723.8" y="93.5" width="125" height="18" rx="3"/><text x="786.3" y="102.5" text-anchor="middle" dominant-baseline="central">对齐的状态与控制序列</text></g></g><g data-step="5"><path class="am-edge" d="M996.5,102.5 L1039.7,102.5 Q1083,102.5 1126.2,102.5 L1169.5,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1020.5" y="93.5" width="125" height="18" rx="3"/><text x="1083" y="102.5" text-anchor="middle" dominant-baseline="central">检查观测域与圆柱间隙</text></g></g><g data-step="6"><path class="am-edge" d="M1291.1,102.5 L1325.7,102.5 Q1360.3,102.5 1395,102.5 L1429.6,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1315.1" y="93.5" width="90.5" height="18" rx="3"/><text x="1360.3" y="102.5" text-anchor="middle" dominant-baseline="central">第一条实际控制</text></g></g></g><g><g class="am-node am-node--rect" data-key="实际位姿与已发速度" data-step="0"><rect class="am-node-shape" x="238.7" y="14" width="145" height="35" rx="3"/><text x="311.2" y="31.5" text-anchor="middle" dominant-baseline="central">实际位姿与已发速度</text></g><g class="am-node am-node--rect" data-key="NeuPAN原生MPC" data-step="0"><rect class="am-node-shape" x="567" y="85" width="132.8" height="35" rx="3"/><text x="633.4" y="102.5" text-anchor="middle" dominant-baseline="central">NeuPAN原生MPC</text></g><g class="am-node am-node--rect" data-key="当前XY障碍" data-step="1"><rect class="am-node-shape" x="14" y="85" width="97.7" height="35" rx="3"/><text x="62.8" y="102.5" text-anchor="middle" dominant-baseline="central">当前XY障碍</text></g><g class="am-node am-node--rect" data-key="圆柱解析距离" data-step="1"><rect class="am-node-shape" x="258.2" y="85" width="106" height="35" rx="3"/><text x="311.2" y="102.5" text-anchor="middle" dominant-baseline="central">圆柱解析距离</text></g><g class="am-node am-node--rect" data-key="目标与制动标志" data-step="3"><rect class="am-node-shape" x="251.7" y="156" width="119" height="35" rx="3"/><text x="311.2" y="173.5" text-anchor="middle" dominant-baseline="central">目标与制动标志</text></g><g class="am-node am-node--rect" data-key="LocalReference" data-step="4"><rect class="am-node-shape" x="872.8" y="85" width="123.7" height="35" rx="3"/><text x="934.7" y="102.5" text-anchor="middle" dominant-baseline="central">LocalReference</text></g><g class="am-node am-node--rect" data-key="BasicController" data-step="5"><rect class="am-node-shape" x="1169.5" y="85" width="121.6" height="35" rx="3"/><text x="1230.3" y="102.5" text-anchor="middle" dominant-baseline="central">BasicController</text></g><g class="am-node am-node--rect" data-key="共同执行器" data-step="6"><rect class="am-node-shape" x="1429.6" y="85" width="93" height="35" rx="3"/><text x="1476.1" y="102.5" text-anchor="middle" dominant-baseline="central">共同执行器</text></g></g></svg></figure>
+<div class="am-md"><p>NeuPAN使用滚动时域优化，更新障碍约束和局部参考。基础G1路径采用圆形解析距离替代学习型DUNE的形状距离部分，仍复用NeuPAN求解结构。
 其目标包含参考状态偏差与控制代价，约束速度、加速度和障碍间距。
 BasicNavigationController校验原生路径，使用第一步原生命令，不另加自创绕行策略。</p>
 <p>进入粗到位区域后锁存制动阶段。路径索引走完但机器人未到位时，可重建目标参考。不能仅凭路径索引宣告到达。</p>
@@ -782,7 +783,9 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>动态障碍处理依赖更新点云重规划，不要求障碍速度输入。预测模型是原生差速运动学，不能据此推断已补偿AMO全部跟踪误差。求解超时、未观测路径或碰撞仍需明确失败或零速重试。</p>
+<div class="am-panel-body"><div class="am-md"><p>动态障碍处理依赖更新点云重规划，不要求障碍速度输入。预测模型是原生差速运动学，不能据此推断已补偿AMO全部跟踪误差。</p>
+<p>当前cube profile给域/间隙检查失败配置2s零速重试。原生BLOCKED、无效参考或求解超时则进入失败停止，两者并非同一恢复路径。</p>
+<p>该基础链输出vx与wz，vy为零。视觉精调的ViSP路径另支持平面vx、vy、wz。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -794,7 +797,22 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -802,7 +820,7 @@ title: NeuPAN局部路径与终端制动
 subtitle: 原生优化产生轨迹，执行端使用第一步速度
 lang: zh
 doc_id: algo-neupan
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
@@ -812,6 +830,17 @@ implementation: 1349c6f04c8c4cc4
 输入当前map位姿、参考路径/目标、更新点云和上一实际命令。输出局部预测位姿与速度序列。
 
 ## B 原理和调用链
+
+```flow LR
+实际位姿与已发速度 -&gt; NeuPAN原生MPC: 首输入边界
+当前XY障碍 -&gt; 圆柱解析距离: 更新几何约束
+圆柱解析距离 -&gt; NeuPAN原生MPC: 替换DUNE形状距离部分
+目标与制动标志 -&gt; NeuPAN原生MPC: 有界终端参考
+NeuPAN原生MPC -&gt; LocalReference: 对齐的状态与控制序列
+LocalReference -&gt; BasicController: 检查观测域与圆柱间隙
+BasicController -&gt; 共同执行器: 第一条实际控制
+```
+
 
 NeuPAN使用滚动时域优化，更新障碍约束和局部参考。基础G1路径采用圆形解析距离替代学习型DUNE的形状距离部分，仍复用NeuPAN求解结构。
 其目标包含参考状态偏差与控制代价，约束速度、加速度和障碍间距。
@@ -850,7 +879,11 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 
 ## E 适用条件与失败处理
 
-动态障碍处理依赖更新点云重规划，不要求障碍速度输入。预测模型是原生差速运动学，不能据此推断已补偿AMO全部跟踪误差。求解超时、未观测路径或碰撞仍需明确失败或零速重试。
+动态障碍处理依赖更新点云重规划，不要求障碍速度输入。预测模型是原生差速运动学，不能据此推断已补偿AMO全部跟踪误差。
+
+当前cube profile给域/间隙检查失败配置2s零速重试。原生BLOCKED、无效参考或求解超时则进入失败停止，两者并非同一恢复路径。
+
+该基础链输出vx与wz，vy为零。视觉精调的ViSP路径另支持平面vx、vy、wz。
 
 ## F 验证与替换
 

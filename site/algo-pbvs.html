@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>视觉工位精调</h1><p class="am-sub">用目标相对本体的误差控制，不用SLAM目标差直接做精调</p><div class="am-head-meta"><span><b>doc_id</b>algo-pbvs</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>视觉工位精调</h1><p class="am-sub">用目标相对本体的误差控制，不用SLAM目标差直接做精调</p><div class="am-head-meta"><span><b>doc_id</b>algo-pbvs</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -710,15 +710,17 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <section class="am-panel" id="panel-B">
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>ViSP原生PBVS根据SE(3)相对目标构造误差。基本形式为 <code>v = −λ L⁺ e</code>，e是视觉特征误差，L是对应交互矩阵。
-项目将平移与偏航分段，限制平面速度，再向AMO发送统一运动指令。
+项目把相对目标按平移与偏航上界分段，限制平面速度，再向AMO发送统一运动指令。
 目标误差来自重力对齐本体局部frame；地图输入仍用于局部障碍检查，不作为视觉伺服目标误差。
 收敛后归零，再由本体相对稳定反馈确认交接。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>观测最大年龄200ms。任务示例精调容差5cm、10°。精调限制读取visual docking profile；approach下肢模式另限0.02m/s与0.05rad/s。</p>
-</div></div>
+<div class="am-panel-body"><div class="am-md"><p>观测最大年龄200ms。任务示例验收容差5cm、10°。方块profile的PBVS增益为2.0，位置控制预留1cm，内部控制位置圈为4cm。</p>
+<p>一次目标段最多平移15cm、偏航20°。段结束后仍检查最终目标，可继续下一段。当前SIM方块精调限速0.10m/s；manipulation.approach下肢模式另限0.02m/s与0.05rad/s。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1404 134" width="1404" height="134" role="img" aria-label="流程图：P局部目标关系、ViSP平面PBVS、速度变化限制、短时几何rollout、观测域与间隙检查、AMO参考、SDK本体稳定、到位判定" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M128.8,31.5 L171.9,31.5 Q214.9,31.5 257.9,31.5 L300.9,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="152.8" y="22.5" width="124.1" height="18" rx="3"/><text x="214.9" y="31.5" text-anchor="middle" dominant-baseline="central">Tx、Ty、theta_z特征</text></g></g><g data-step="1"><path class="am-edge" d="M421,31.5 L451.7,31.5 Q482.5,31.5 513.3,31.5 L544.1,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="445" y="22.5" width="75.1" height="18" rx="3"/><text x="482.5" y="31.5" text-anchor="middle" dominant-baseline="central">vx、vy、wz</text></g></g><g data-step="2"><path class="am-edge" d="M650.1,31.5 L690.4,31.5 Q730.8,31.5 771.2,31.5 L811.6,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="674.1" y="22.5" width="113.5" height="18" rx="3"/><text x="730.8" y="31.5" text-anchor="middle" dominant-baseline="central">同一反馈律逐步重算</text></g></g><g data-step="3"><path class="am-edge" d="M930,31.5 L961.8,31.5 Q993.5,31.5 1025.3,31.5 L1057,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="954" y="22.5" width="79" height="18" rx="3"/><text x="993.5" y="31.5" text-anchor="middle" dominant-baseline="central">使用地图空间</text></g></g><g data-step="4"><path class="am-edge" d="M1189,31.5 L1217.9,31.5 Q1246.8,31.5 1275.7,31.5 L1304.5,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1213" y="22.5" width="67.5" height="18" rx="3"/><text x="1246.8" y="31.5" text-anchor="middle" dominant-baseline="central">同一执行器</text></g></g><g data-step="5"><path class="am-edge" d="M125.9,102.5 L170.4,102.5 Q214.9,102.5 267.9,102.5 L320.9,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="181.1" y="93.5" width="67.5" height="18" rx="3"/><text x="214.9" y="102.5" text-anchor="middle" dominant-baseline="central">零速后验收</text></g></g></g><g><g class="am-node am-node--rect" data-key="P局部目标关系" data-step="0"><rect class="am-node-shape" x="14" y="14" width="114.8" height="35" rx="3"/><text x="71.4" y="31.5" text-anchor="middle" dominant-baseline="central">P局部目标关系</text></g><g class="am-node am-node--rect" data-key="ViSP平面PBVS" data-step="0"><rect class="am-node-shape" x="300.9" y="14" width="120" height="35" rx="3"/><text x="360.9" y="31.5" text-anchor="middle" dominant-baseline="central">ViSP平面PBVS</text></g><g class="am-node am-node--rect" data-key="速度变化限制" data-step="1"><rect class="am-node-shape" x="544.1" y="14" width="106" height="35" rx="3"/><text x="597.1" y="31.5" text-anchor="middle" dominant-baseline="central">速度变化限制</text></g><g class="am-node am-node--rect" data-key="短时几何rollout" data-step="2"><rect class="am-node-shape" x="811.6" y="14" width="118.5" height="35" rx="3"/><text x="870.8" y="31.5" text-anchor="middle" dominant-baseline="central">短时几何rollout</text></g><g class="am-node am-node--rect" data-key="观测域与间隙检查" data-step="3"><rect class="am-node-shape" x="1057" y="14" width="132" height="35" rx="3"/><text x="1123" y="31.5" text-anchor="middle" dominant-baseline="central">观测域与间隙检查</text></g><g class="am-node am-node--rect" data-key="AMO参考" data-step="4"><rect class="am-node-shape" x="1304.5" y="14" width="85.2" height="35" rx="3"/><text x="1347.1" y="31.5" text-anchor="middle" dominant-baseline="central">AMO参考</text></g><g class="am-node am-node--rect" data-key="SDK本体稳定" data-step="5"><rect class="am-node-shape" x="17" y="85" width="108.9" height="35" rx="3"/><text x="71.4" y="102.5" text-anchor="middle" dominant-baseline="central">SDK本体稳定</text></g><g class="am-node am-node--rect" data-key="到位判定" data-step="5"><rect class="am-node-shape" x="320.9" y="85" width="80" height="35" rx="3"/><text x="360.9" y="102.5" text-anchor="middle" dominant-baseline="central">到位判定</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-D">
 <header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与复用来源</h2></header>
@@ -747,7 +749,22 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -755,7 +772,7 @@ title: 视觉工位精调
 subtitle: 用目标相对本体的误差控制，不用SLAM目标差直接做精调
 lang: zh
 doc_id: algo-pbvs
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
@@ -767,13 +784,25 @@ implementation: 1349c6f04c8c4cc4
 ## B 原理和调用链
 
 ViSP原生PBVS根据SE(3)相对目标构造误差。基本形式为 `v = −λ L⁺ e`，e是视觉特征误差，L是对应交互矩阵。
-项目将平移与偏航分段，限制平面速度，再向AMO发送统一运动指令。
+项目把相对目标按平移与偏航上界分段，限制平面速度，再向AMO发送统一运动指令。
 目标误差来自重力对齐本体局部frame；地图输入仍用于局部障碍检查，不作为视觉伺服目标误差。
 收敛后归零，再由本体相对稳定反馈确认交接。
 
 ## C 参数与运行特性
 
-观测最大年龄200ms。任务示例精调容差5cm、10°。精调限制读取visual docking profile；approach下肢模式另限0.02m/s与0.05rad/s。
+观测最大年龄200ms。任务示例验收容差5cm、10°。方块profile的PBVS增益为2.0，位置控制预留1cm，内部控制位置圈为4cm。
+
+一次目标段最多平移15cm、偏航20°。段结束后仍检查最终目标，可继续下一段。当前SIM方块精调限速0.10m/s；manipulation.approach下肢模式另限0.02m/s与0.05rad/s。
+
+```flow LR
+P局部目标关系 -&gt; ViSP平面PBVS: Tx、Ty、theta_z特征
+ViSP平面PBVS -&gt; 速度变化限制: vx、vy、wz
+速度变化限制 -&gt; 短时几何rollout: 同一反馈律逐步重算
+短时几何rollout -&gt; 观测域与间隙检查: 使用地图空间
+观测域与间隙检查 -&gt; AMO参考: 同一执行器
+SDK本体稳定 -&gt; 到位判定: 零速后验收
+```
+
 
 ## D 实现与复用来源
 

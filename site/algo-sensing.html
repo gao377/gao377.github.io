@@ -698,89 +698,222 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>传感观测与源时间</h1><p class="am-sub">传感器数据先对齐，再交给算法</p><div class="am-head-meta"><span><b>doc_id</b>algo-sensing</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>传感观测与源时间</h1><p class="am-sub">将采样时间、到达时间及状态有效性分别保留</p><div class="am-head-meta"><span><b>doc_id</b>algo-sensing</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 数据类型</a><a href="#panel-B">B · 当前接入结构</a><a href="#panel-C">C · 各种时间不能混用</a><a href="#panel-D">D · 点云与RGB-D参数</a><a href="#panel-E">E · 代码与成熟依赖</a><a href="#panel-F">F · SIM与REAL迁移检查</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>作用与输入输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>输入相机RGB-D、点云、IMU、关节和触觉。输出携带frame、源stamp、来源及epoch的观测。</p>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>数据类型</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>业务模块使用有来源的观测，不只读取裸数组。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>观测</th>
+<th>内容</th>
+<th>消费者</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关节与IMU</td>
+<td>q、dq、effort、四元数、角速度</td>
+<td>AMO、StateEstimation</td>
+</tr>
+<tr>
+<td>REVO2</td>
+<td>电机位置与速度、触觉、标定身份</td>
+<td>操作与状态服务</td>
+</tr>
+<tr>
+<td>RGB-D</td>
+<td>RGB、深度、K、frame、stamp</td>
+<td>Perception</td>
+</tr>
+<tr>
+<td>点云与逐点时间</td>
+<td>xyz、强度、扫描内时间</td>
+<td>Spatial</td>
+</tr>
+<tr>
+<td>Snapshot</td>
+<td>样本集合、缺失流、同步标记</td>
+<td>状态与诊断</td>
+</tr>
+</tbody></table></div>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>ROS传感数据与SDK本体数据经适配进入缓存。局部几何在采样时刻读取本体变换，不使用一个任意最新姿态。历史插值服务于视觉与运动学对齐。缺失或过期数据返回原因。</p>
-</div></div>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>当前接入结构</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>SDK只有一个LowState订阅，由多个只读消费者共享。
+ROS通用适配提供样本规范化。
+感知专用接入负责图像配对和源时刻TF。
+空间专用接入负责所用SLAM的点时间契约。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 463 360" width="463" height="360" role="img" aria-label="流程图：LowState与手部SDK、共享历史缓存、状态查询、实测运动学、RGB深度内参、图像配对、源时刻变换、目标与支撑几何" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M91.4,49 L91.4,65 Q91.4,81 91.4,97 L91.4,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="35.5" y="72" width="111.9" height="18" rx="3"/><text x="91.4" y="81" text-anchor="middle" dominant-baseline="central">源stamp和接收时间</text></g></g><g data-step="1"><path class="am-edge" d="M91.4,148 L91.4,164 Q91.4,180 91.4,196 L91.4,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="51.9" y="171" width="79" height="18" rx="3"/><text x="91.4" y="180" text-anchor="middle" dominant-baseline="central">因果历史选择</text></g></g><g data-step="2"><path class="am-edge" d="M91.4,247 L91.4,263 Q91.4,279 91.4,295 L91.4,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="61.1" y="270" width="60.6" height="18" rx="3"/><text x="91.4" y="279" text-anchor="middle" dominant-baseline="central">FK与TCP</text></g></g><g data-step="3"><path class="am-edge" d="M259.3,49 L259.3,65 Q259.3,81 259.3,97 L259.3,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="210.5" y="72" width="97.6" height="18" rx="3"/><text x="259.3" y="81" text-anchor="middle" dominant-baseline="central">同frame及时间差</text></g></g><g data-step="4"><path class="am-edge" d="M259.3,148 L259.3,164 Q259.3,180 259.3,196 L259.3,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="230" y="171" width="58.5" height="18" rx="3"/><text x="259.3" y="180" text-anchor="middle" dominant-baseline="central">TF与IMU</text></g></g><g data-step="5"><path class="am-edge" d="M259.3,247 L259.3,263 Q259.3,279 259.3,295 L259.3,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="226.3" y="270" width="66.1" height="18" rx="3"/><text x="259.3" y="279" text-anchor="middle" dominant-baseline="central">pelvis结果</text></g></g><g data-step="6"><path class="am-edge" d="M395.3,49 L395.3,65 Q395.3,81 395.3,97 L395.3,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="349.7" y="72" width="91.2" height="18" rx="3"/><text x="395.3" y="81" text-anchor="middle" dominant-baseline="central">time字段及单位</text></g></g><g data-step="7"><path class="am-edge" d="M395.3,148 L395.3,164 Q395.3,180 395.3,196 L395.3,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="350.1" y="171" width="90.5" height="18" rx="3"/><text x="395.3" y="180" text-anchor="middle" dominant-baseline="central">扫描与惯导观测</text></g></g></g><g><g class="am-node am-node--rect" data-key="LowState与手部SDK" data-step="0"><rect class="am-node-shape" x="14" y="14" width="154.9" height="35" rx="3"/><text x="91.4" y="31.5" text-anchor="middle" dominant-baseline="central">LowState与手部SDK</text></g><g class="am-node am-node--rect" data-key="共享历史缓存" data-step="0"><rect class="am-node-shape" x="38.4" y="113" width="106" height="35" rx="3"/><text x="91.4" y="130.5" text-anchor="middle" dominant-baseline="central">共享历史缓存</text></g><g class="am-node am-node--rect" data-key="状态查询" data-step="1"><rect class="am-node-shape" x="51.4" y="212" width="80" height="35" rx="3"/><text x="91.4" y="229.5" text-anchor="middle" dominant-baseline="central">状态查询</text></g><g class="am-node am-node--rect" data-key="实测运动学" data-step="2"><rect class="am-node-shape" x="44.9" y="311" width="93" height="35" rx="3"/><text x="91.4" y="328.5" text-anchor="middle" dominant-baseline="central">实测运动学</text></g><g class="am-node am-node--rect" data-key="RGB深度内参" data-step="3"><rect class="am-node-shape" x="204.9" y="14" width="108.9" height="35" rx="3"/><text x="259.3" y="31.5" text-anchor="middle" dominant-baseline="central">RGB深度内参</text></g><g class="am-node am-node--rect" data-key="图像配对" data-step="3"><rect class="am-node-shape" x="219.3" y="113" width="80" height="35" rx="3"/><text x="259.3" y="130.5" text-anchor="middle" dominant-baseline="central">图像配对</text></g><g class="am-node am-node--rect" data-key="源时刻变换" data-step="4"><rect class="am-node-shape" x="212.8" y="212" width="93" height="35" rx="3"/><text x="259.3" y="229.5" text-anchor="middle" dominant-baseline="central">源时刻变换</text></g><g class="am-node am-node--rect" data-key="目标与支撑几何" data-step="5"><rect class="am-node-shape" x="199.8" y="311" width="119" height="35" rx="3"/><text x="259.3" y="328.5" text-anchor="middle" dominant-baseline="central">目标与支撑几何</text></g><g class="am-node am-node--rect" data-key="点云和IMU" data-step="6"><rect class="am-node-shape" x="349.7" y="14" width="91.2" height="35" rx="3"/><text x="395.3" y="31.5" text-anchor="middle" dominant-baseline="central">点云和IMU</text></g><g class="am-node am-node--rect" data-key="激光时间适配" data-step="6"><rect class="am-node-shape" x="342.3" y="113" width="106" height="35" rx="3"/><text x="395.3" y="130.5" text-anchor="middle" dominant-baseline="central">激光时间适配</text></g><g class="am-node am-node--rect" data-key="SLAM" data-step="7"><rect class="am-node-shape" x="362.5" y="212" width="65.7" height="35" rx="3"/><text x="395.3" y="229.5" text-anchor="middle" dominant-baseline="central">SLAM</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>仿真基线物理250Hz、控制50Hz、相机与激光10Hz；具体以运行profile为准。采样频率不是到达频率，需记录源stamp和接收时间。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>各种时间不能混用</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>源stamp描述数据采样时刻。
+received_at描述本机接收时刻。
+SDK超时检查依宿主时钟；仿真动作周期依SIM源时钟。</p>
+<p>本体查询选取不晚于请求时刻的最近有效样本。
+图像IMU重力使用相邻样本的SciPy Slerp插值。
+图像与深度、CameraInfo的时间差不得超过20ms。</p>
+<p>时钟回绕会重置epoch及相应历史。
+缓存命中保留原stamp。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与复用来源</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>ROS 2 sensor_msgs、tf2及Unitree DDS；仿真以同一业务接口提供数据。</p>
-<ul>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/sensor_adapters/runtime.py">modules/sensor_adapters/runtime.py</a></li>
-<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/state_estimation/runtime.py">modules/state_estimation/runtime.py</a></li>
-</ul>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>点云与RGB-D参数</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>数据</th>
+<th>必需配置</th>
+<th>缺失处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>点云</td>
+<td>逐点time字段、s/ms/us/ns单位、unix或relative基准</td>
+<td>拒绝不完整profile</td>
+</tr>
+<tr>
+<td>RGB-D</td>
+<td>编码、同尺寸、内参、对齐声明、最大时差</td>
+<td>输出无效及原因</td>
+</tr>
+<tr>
+<td>TF</td>
+<td>目标/源frame与源时间</td>
+<td>不使用单位变换兜底</td>
+</tr>
+<tr>
+<td>手部</td>
+<td>实际型号、关节映射、触觉标定</td>
+<td>不凭闭合角推断接触</td>
+</tr>
+</tbody></table></div>
+<p>基线频率为物理250Hz、AMO/SDK50Hz、RGB-D与LiDAR10Hz。
+频率应由部署profile读取，不能由消息到达次数猜测。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>仿真ROS桥只改变来源，不能把物体真值注入感知契约。时钟重置必须清历史。用于评价的真值与运行算法观测分开。</p>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>代码与成熟依赖</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>使用ROS 2 sensor_msgs、message_filters、tf2和Unitree SDK2。
+时间类型与无效结果由embodied_core统一表达。</p>
+<p><a href="https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/sensor_adapters">SensorAdapters源码</a> · <a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/backends/unitree_g1/sdk_context.py">SDK接入</a> · <a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/backends/unitree_g1/sensor_backend.py">源帧查询</a></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>验证与替换</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>使用时间对齐、源年龄和epoch回归检查。SDK数据持续到达不证明frame或外参正确。</p>
-<p><a href="algorithms.html">算法目录</a> · <a href="modules.html">模块目录</a> · <a href="experiments.html">实验口径</a></p>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>SIM与REAL迁移检查</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>两种部署保持消息语义、坐标、单位与失败原因一致。
+独立评价读取仿真真值；生产感知不读取物体真值。</p>
+<p>先检查实际设备源时间、外参和手部映射。
+再分别验证算法输出和真实任务效果。
+<a href="module-robot-sensor_adapters.html">传感模块</a> · <a href="experiments.html">实验口径</a></p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 传感观测与源时间
-subtitle: 传感器数据先对齐，再交给算法
+subtitle: 将采样时间、到达时间及状态有效性分别保留
 lang: zh
 doc_id: algo-sensing
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 作用与输入输出
+## A 数据类型
 
-输入相机RGB-D、点云、IMU、关节和触觉。输出携带frame、源stamp、来源及epoch的观测。
+业务模块使用有来源的观测，不只读取裸数组。
 
-## B 原理和调用链
+| 观测 | 内容 | 消费者 |
+| --- | --- | --- |
+| 关节与IMU | q、dq、effort、四元数、角速度 | AMO、StateEstimation |
+| REVO2 | 电机位置与速度、触觉、标定身份 | 操作与状态服务 |
+| RGB-D | RGB、深度、K、frame、stamp | Perception |
+| 点云与逐点时间 | xyz、强度、扫描内时间 | Spatial |
+| Snapshot | 样本集合、缺失流、同步标记 | 状态与诊断 |
 
-ROS传感数据与SDK本体数据经适配进入缓存。局部几何在采样时刻读取本体变换，不使用一个任意最新姿态。历史插值服务于视觉与运动学对齐。缺失或过期数据返回原因。
+## B 当前接入结构
 
-## C 参数与运行特性
+SDK只有一个LowState订阅，由多个只读消费者共享。
+ROS通用适配提供样本规范化。
+感知专用接入负责图像配对和源时刻TF。
+空间专用接入负责所用SLAM的点时间契约。
 
-仿真基线物理250Hz、控制50Hz、相机与激光10Hz；具体以运行profile为准。采样频率不是到达频率，需记录源stamp和接收时间。
+```flow
+LowState与手部SDK -&gt; 共享历史缓存: 源stamp和接收时间
+共享历史缓存 -&gt; 状态查询: 因果历史选择
+状态查询 -&gt; 实测运动学: FK与TCP
+RGB深度内参 -&gt; 图像配对: 同frame及时间差
+图像配对 -&gt; 源时刻变换: TF与IMU
+源时刻变换 -&gt; 目标与支撑几何: pelvis结果
+点云和IMU -&gt; 激光时间适配: time字段及单位
+激光时间适配 -&gt; SLAM: 扫描与惯导观测
+```
 
-## D 实现与复用来源
+## C 各种时间不能混用
 
-ROS 2 sensor_msgs、tf2及Unitree DDS；仿真以同一业务接口提供数据。
+源stamp描述数据采样时刻。
+received_at描述本机接收时刻。
+SDK超时检查依宿主时钟；仿真动作周期依SIM源时钟。
 
-- [modules/sensor_adapters/runtime.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/sensor_adapters/runtime.py)
-- [modules/state_estimation/runtime.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/state_estimation/runtime.py)
+本体查询选取不晚于请求时刻的最近有效样本。
+图像IMU重力使用相邻样本的SciPy Slerp插值。
+图像与深度、CameraInfo的时间差不得超过20ms。
 
-## E 适用条件与失败处理
+时钟回绕会重置epoch及相应历史。
+缓存命中保留原stamp。
 
-仿真ROS桥只改变来源，不能把物体真值注入感知契约。时钟重置必须清历史。用于评价的真值与运行算法观测分开。
+## D 点云与RGB-D参数
 
-## F 验证与替换
+| 数据 | 必需配置 | 缺失处理 |
+| --- | --- | --- |
+| 点云 | 逐点time字段、s/ms/us/ns单位、unix或relative基准 | 拒绝不完整profile |
+| RGB-D | 编码、同尺寸、内参、对齐声明、最大时差 | 输出无效及原因 |
+| TF | 目标/源frame与源时间 | 不使用单位变换兜底 |
+| 手部 | 实际型号、关节映射、触觉标定 | 不凭闭合角推断接触 |
 
-使用时间对齐、源年龄和epoch回归检查。SDK数据持续到达不证明frame或外参正确。
+基线频率为物理250Hz、AMO/SDK50Hz、RGB-D与LiDAR10Hz。
+频率应由部署profile读取，不能由消息到达次数猜测。
 
-[算法目录](algorithms.html) · [模块目录](modules.html) · [实验口径](experiments.html)
+## E 代码与成熟依赖
+
+使用ROS 2 sensor_msgs、message_filters、tf2和Unitree SDK2。
+时间类型与无效结果由embodied_core统一表达。
+
+[SensorAdapters源码](https://github.com/gao377/agentic-embodied-system/tree/main/src/robot_app/robot_app/modules/sensor_adapters) · [SDK接入](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/backends/unitree_g1/sdk_context.py) · [源帧查询](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/backends/unitree_g1/sensor_backend.py)
+
+## F SIM与REAL迁移检查
+
+两种部署保持消息语义、坐标、单位与失败原因一致。
+独立评价读取仿真真值；生产感知不读取物体真值。
+
+先检查实际设备源时间、外参和手部映射。
+再分别验证算法输出和真实任务效果。
+[传感模块](module-robot-sensor_adapters.html) · [实验口径](experiments.html)
 </textarea>
 <script>
 (() => {

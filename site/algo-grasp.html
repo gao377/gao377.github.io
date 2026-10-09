@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>抓取候选、选臂与能力编排</h1><p class="am-sub">抓握模式、手掌位姿与轨迹规划分开</p><div class="am-head-meta"><span><b>doc_id</b>algo-grasp</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>抓取候选、选臂与能力编排</h1><p class="am-sub">抓握模式、手掌位姿与轨迹规划分开</p><div class="am-head-meta"><span><b>doc_id</b>algo-grasp</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -709,15 +709,22 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-B">
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>物体模板指定单臂或双臂需求。单臂auto候选比较左右臂；目标在左侧只是候选偏好，仍须验证IK、关节裕量、非奇异性和完整路径。
-构型代价以重力力矩按关节effort归一化，优先抑制最大负担，再考虑肘部外展和关节行程。
+<div class="am-panel-body"><div class="am-md"><p>当前pick模板生成左右臂候选，<code>auto</code>最终选择一只手。
+目标在左侧只是初始偏好，仍须检查IK、关节裕量、非奇异性及参考路径。
+双臂reach已有联合求解；自动判断双臂抓取需求与接触分配尚未接入pick。</p>
+<p>构型代价以重力力矩按关节effort归一化，优先抑制最大负担，再考虑肘部外展和关节行程。
 非操作臂采用自然收臂参考。静态重力代价不代表接触力或全动态力矩最优。</p>
-<p>pick执行预成形→预抓取→接近→触觉闭合→抬升→持物确认。display与place是独立能力。</p>
-</div></div>
+<p>pick执行张手→预抓取到位→手部预成形→分段下降→触觉闭合→抬升→持物确认。
+display与place是独立能力，不放进approach。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1568 63" width="1568" height="63" role="img" aria-label="流程图：局部物体与当前关节、左右臂交错候选、选一臂、预抓取到位、预成形和短段下降、触觉闭合、抬升与持物" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M159,31.5 L185,31.5 Q211,31.5 237,31.5 L263,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="183" y="22.5" width="56" height="18" rx="3"/><text x="211" y="31.5" text-anchor="middle" dominant-baseline="central">有界筛选</text></g></g><g data-step="1"><path class="am-edge" d="M382,31.5 L416.6,31.5 Q451.3,31.5 485.9,31.5 L520.5,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="406" y="22.5" width="90.5" height="18" rx="3"/><text x="451.3" y="31.5" text-anchor="middle" dominant-baseline="central">力矩与构型偏好</text></g></g><g data-step="2"><path class="am-edge" d="M587.5,31.5 L622.8,31.5 Q658.1,31.5 693.4,31.5 L728.8,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="611.5" y="22.5" width="93.3" height="18" rx="3"/><text x="658.1" y="31.5" text-anchor="middle" dominant-baseline="central">当前关节作seed</text></g></g><g data-step="3"><path class="am-edge" d="M821.8,31.5 L859.3,31.5 Q896.8,31.5 934.3,31.5 L971.8,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="845.8" y="22.5" width="102" height="18" rx="3"/><text x="896.8" y="31.5" text-anchor="middle" dominant-baseline="central">逐段真实端点反馈</text></g></g><g data-step="4"><path class="am-edge" d="M1103.8,31.5 L1135.5,31.5 Q1167.3,31.5 1199,31.5 L1230.8,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1127.8" y="22.5" width="79" height="18" rx="3"/><text x="1167.3" y="31.5" text-anchor="middle" dominant-baseline="central">所需手指接触</text></g></g><g data-step="5"><path class="am-edge" d="M1310.8,31.5 L1348.3,31.5 Q1385.8,31.5 1423.3,31.5 L1460.8,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1334.8" y="22.5" width="102" height="18" rx="3"/><text x="1385.8" y="31.5" text-anchor="middle" dominant-baseline="central">不是只看关节到位</text></g></g></g><g><g class="am-node am-node--rect" data-key="局部物体与当前关节" data-step="0"><rect class="am-node-shape" x="14" y="14" width="145" height="35" rx="3"/><text x="86.5" y="31.5" text-anchor="middle" dominant-baseline="central">局部物体与当前关节</text></g><g class="am-node am-node--rect" data-key="左右臂交错候选" data-step="0"><rect class="am-node-shape" x="263" y="14" width="119" height="35" rx="3"/><text x="322.5" y="31.5" text-anchor="middle" dominant-baseline="central">左右臂交错候选</text></g><g class="am-node am-node--rect" data-key="选一臂" data-step="1"><rect class="am-node-shape" x="520.5" y="14" width="67" height="35" rx="3"/><text x="554" y="31.5" text-anchor="middle" dominant-baseline="central">选一臂</text></g><g class="am-node am-node--rect" data-key="预抓取到位" data-step="2"><rect class="am-node-shape" x="728.8" y="14" width="93" height="35" rx="3"/><text x="775.3" y="31.5" text-anchor="middle" dominant-baseline="central">预抓取到位</text></g><g class="am-node am-node--rect" data-key="预成形和短段下降" data-step="3"><rect class="am-node-shape" x="971.8" y="14" width="132" height="35" rx="3"/><text x="1037.8" y="31.5" text-anchor="middle" dominant-baseline="central">预成形和短段下降</text></g><g class="am-node am-node--rect" data-key="触觉闭合" data-step="4"><rect class="am-node-shape" x="1230.8" y="14" width="80" height="35" rx="3"/><text x="1270.8" y="31.5" text-anchor="middle" dominant-baseline="central">触觉闭合</text></g><g class="am-node am-node--rect" data-key="抬升与持物" data-step="5"><rect class="am-node-shape" x="1460.8" y="14" width="93" height="35" rx="3"/><text x="1507.3" y="31.5" text-anchor="middle" dominant-baseline="central">抬升与持物</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>方块profile使用5cm边长、26g模型，三个触觉指参与。示例预抓取距离6cm，名义抬升7cm。TCP偏置与朝向候选取决于手部安装，不可复制为通用实机标定。</p>
+<p>下降每段最多2cm或5°，最多16段。
+每段基于实际关节继续求解；可信候选可保留，不等于每段重新搜索所有候选。
+候选筛查、端点修正和抓空重试各自有界；后者只在接触执行失败后触发。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
@@ -752,7 +759,22 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -760,7 +782,7 @@ title: 抓取候选、选臂与能力编排
 subtitle: 抓握模式、手掌位姿与轨迹规划分开
 lang: zh
 doc_id: algo-grasp
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
@@ -771,15 +793,32 @@ implementation: 1349c6f04c8c4cc4
 
 ## B 原理和调用链
 
-物体模板指定单臂或双臂需求。单臂auto候选比较左右臂；目标在左侧只是候选偏好，仍须验证IK、关节裕量、非奇异性和完整路径。
+当前pick模板生成左右臂候选，`auto`最终选择一只手。
+目标在左侧只是初始偏好，仍须检查IK、关节裕量、非奇异性及参考路径。
+双臂reach已有联合求解；自动判断双臂抓取需求与接触分配尚未接入pick。
+
 构型代价以重力力矩按关节effort归一化，优先抑制最大负担，再考虑肘部外展和关节行程。
 非操作臂采用自然收臂参考。静态重力代价不代表接触力或全动态力矩最优。
 
-pick执行预成形→预抓取→接近→触觉闭合→抬升→持物确认。display与place是独立能力。
+pick执行张手→预抓取到位→手部预成形→分段下降→触觉闭合→抬升→持物确认。
+display与place是独立能力，不放进approach。
+
+```flow LR
+局部物体与当前关节 -&gt; 左右臂交错候选: 有界筛选
+左右臂交错候选 -&gt; 选一臂: 力矩与构型偏好
+选一臂 -&gt; 预抓取到位: 当前关节作seed
+预抓取到位 -&gt; 预成形和短段下降: 逐段真实端点反馈
+预成形和短段下降 -&gt; 触觉闭合: 所需手指接触
+触觉闭合 -&gt; 抬升与持物: 不是只看关节到位
+```
 
 ## C 参数与运行特性
 
 方块profile使用5cm边长、26g模型，三个触觉指参与。示例预抓取距离6cm，名义抬升7cm。TCP偏置与朝向候选取决于手部安装，不可复制为通用实机标定。
+
+下降每段最多2cm或5°，最多16段。
+每段基于实际关节继续求解；可信候选可保留，不等于每段重新搜索所有候选。
+候选筛查、端点修正和抓空重试各自有界；后者只在接触执行失败后触发。
 
 ## D 实现与复用来源
 

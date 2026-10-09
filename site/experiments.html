@@ -698,12 +698,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>实验摘要与复现口径</h1><p class="am-sub">只报告有来源的结果，并说明结论适用范围</p><div class="am-head-meta"><span><b>doc_id</b>experiments</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>实验摘要与复现口径</h1><p class="am-sub">只报告有来源的结果，并说明结论适用范围</p><div class="am-head-meta"><span><b>doc_id</b>experiments</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<p><a href="experiment-recordings.html">查看6组成功实验的完整录像</a> · <a href="scenarios.html">对应场景启动命令</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 三种证据不能互相替代</a><a href="#panel-B">B · 工位前四能力实验</a><a href="#panel-C">C · 从起点出发的对照实验</a><a href="#panel-D">D · 版本和环境身份</a><a href="#panel-E">E · 复现实验的记录要求</a><a href="#panel-F">F · 软件检查与适用限制</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与实验范围</a><a href="#panel-B">B · Warehouse工位前四能力：SIM-MANIP-01</a><a href="#panel-C">C · 轻量工位的左右抓放与本体接近</a><a href="#panel-D">D · 臂手动作与取消恢复</a><a href="#panel-E">E · 对照实验与适用限制</a><a href="#panel-F">F · 版本和环境身份</a><a href="#panel-G">G · 复现实验的记录要求</a><a href="#panel-H">H · 软件检查与适用限制</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>三种证据不能互相替代</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>证据与实验范围</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -727,14 +728,35 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>从起点出发的同类场景</td>
 <td>导航与操作前段通过，display失败，整任务不成立</td>
 </tr>
+<tr>
+<td>SIM-MANIP-L / R</td>
+<td>轻量工位，分别采用左、右三指抓握</td>
+<td>各自的四能力序列与独立物理评价通过</td>
+</tr>
+<tr>
+<td>SIM-APPROACH-BASE</td>
+<td>轻量工位，实际低速本体接近</td>
+<td>接近后右三指抓取、展示、放回通过</td>
+</tr>
+<tr>
+<td>SIM-ARM-HAND</td>
+<td>公开单臂、双臂及手部命令</td>
+<td>22项动作与实际反馈通过，不代表22次抓取</td>
+</tr>
+<tr>
+<td>SIM-CANCEL</td>
+<td>预抓取已发生实际运动</td>
+<td>取消、停稳、空手确认及新任务接纳通过</td>
+</tr>
 </tbody></table></div>
 <p>软件检查检验代码，物理评价检验指定运行。一个成功样本不构成成功率统计。
 本页不包含实机成功结论，也不声称探索、六点或异构协作已完成。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>工位前四能力实验</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>对象为官方小方块，机器人采用G1-29与REVO2触觉手。
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>Warehouse工位前四能力：SIM-MANIP-01</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="experiment-recordings.html#panel-B">观看本组录像</a></p>
+<p>对象为官方小方块，机器人采用G1-29与REVO2触觉手。
 物理仿真250Hz，控制50Hz。操作使用本体反馈、ROS视觉与SDK触觉接口。
 工位前初始化减少导航变量；操作期间下肢参考维持零速。</p>
 <div class="am-table-wrap"><table>
@@ -781,15 +803,86 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>从起点出发的对照实验</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>同类运行完成收臂、导航、观察对齐、adjust_base、approach与pick。
-display阶段因触觉未确认而中止，不能作为完整链路成功样本。
-这说明工位前成功不足以证明导航后的构型与接触状态同样可靠。
-对照用于限定结论，不以失败录屏或私有运行日志公开项目过程。</p>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>轻量工位的左右抓放与本体接近</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="experiment-recordings.html#panel-C">观看本组录像</a></p>
+<p>机器人采用G1-29、REVO2触觉手与AMO，操作件为5cm方块，使用低工台。
+物理250Hz、控制50Hz。目标来自RGB-D结构化观测，当前关节和触觉来自设备接口。
+接近、抓取、展示、放回分别经公共能力入口调用，共享持物上下文。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>实验</th>
+<th>实际流程</th>
+<th>最低离台距离</th>
+<th>放置水平误差</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIM-MANIP-L</td>
+<td>左三指approach→pick→display→place</td>
+<td>83.75mm</td>
+<td>8.00mm</td>
+</tr>
+<tr>
+<td>SIM-MANIP-R</td>
+<td>右三指approach→pick→display→place</td>
+<td>74.34mm</td>
+<td>10.22mm</td>
+</tr>
+<tr>
+<td>SIM-APPROACH-BASE</td>
+<td>本体低速接近后，右三指完成同一四能力序列</td>
+<td>72.20mm</td>
+<td>8.95mm</td>
+</tr>
+</tbody></table></div>
+<p>三例均通过公开能力结果、独立物理评价与GUI覆盖检查。
+本体微动只发生在approach阶段，后续抓取、展示与放回保持零下肢速度参考。
+各例保留Isaac、传感视图和感知视图的独立录像，按同一批次关联。</p>
+<p>SIM-APPROACH-BASE中出现11次目标顶面不可见事件，执行复用此前有效观测并完成抓放。
+这支持该固定任务中的遮挡容忍；不代表任意遮挡、任意目标运动或抓空恢复均已验证。
+这些工位例分别属于各自固定版本，不能合并为同版本成功率，也不能替代从起点出发的整任务验收。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>版本和环境身份</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>臂手动作与取消恢复</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="experiment-recordings.html#panel-F">观看本组录像</a></p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>实验</th>
+<th>输入与实际观察</th>
+<th>结论边界</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIM-ARM-HAND</td>
+<td>22项单臂/双臂末端运动、双臂相对保持，以及左右手两指/三指预成形、闭合、释放；实际关节与TCP反馈符合各项目标</td>
+<td>手指命令可执行，不等于两指已完成有效夹持</td>
+</tr>
+<tr>
+<td>SIM-CANCEL</td>
+<td>实际预抓取运动开始后取消；身体停稳且空手状态持续确认1s；随后接纳全新pick，返回RUNNING后再次取消，控制租约和交接上下文释放</td>
+<td>验证任务接纳与取消；第二次pick未完成抓取</td>
+</tr>
+</tbody></table></div>
+<p>取消验证同时核对实际运动反馈与公共状态，不能只用CANCELED返回码证明停稳。
+抓空后退回、重新观测并抓取成功属于另一项行为，以上实验不提供该结论。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>对照实验与适用限制</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>SIM-TRANSFER-01从起点出发，完成收臂、导航、观察对齐、adjust_base、approach与pick。
+display阶段因触觉未确认而中止，不能作为完整链路成功样本。
+这说明工位前成功不足以证明导航后的构型与接触状态同样可靠。
+对照用于限定结论，不以失败录屏或私有运行日志公开项目过程。</p>
+<p>另一个两指方块案例曾建立接触，但物体始终受台面支撑，中心最高仅上移3.78mm，随后失去接触。
+它不满足有效抬升条件。HOLDING接触状态、关节闭合和规划成功均不能单独证明抓住物体。
+身体参考与上肢姿态也存在耦合，响应标定必须覆盖实际执行的活动范围。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-F">
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>版本和环境身份</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -806,6 +899,14 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 <td>SHA256前缀 3ffdc3d6e680</td>
 </tr>
 <tr>
+<td>轻量工位系列基础机器人镜像</td>
+<td>SHA256前缀 9294910bdf91；另有各例冻结源码覆盖</td>
+</tr>
+<tr>
+<td>轻量工位系列仿真镜像</td>
+<td>SHA256前缀 3ffdc3d6e680</td>
+</tr>
+<tr>
 <td>证据链</td>
 <td>公开能力结果、SDK触觉、本体/物体评价、GUI覆盖</td>
 </tr>
@@ -814,20 +915,51 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 <td>本文档配套仓库发布的软件版本；基础Dockerfile重新构建</td>
 </tr>
 </tbody></table></div>
+<p>轻量工位各例的源码覆盖清单摘要如下。该摘要标识冻结清单。
+实验版本由基础镜像、安装身份、模型及profile共同确定。
+清单摘要不等于完整发布镜像的哈希。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>实验</th>
+<th>冻结源码清单SHA256前缀</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIM-MANIP-L</td>
+<td>e2ad5157534fa2e2</td>
+</tr>
+<tr>
+<td>SIM-MANIP-R</td>
+<td>beaf7b82859b3339</td>
+</tr>
+<tr>
+<td>SIM-APPROACH-BASE</td>
+<td>a62ebb6e36afe113</td>
+</tr>
+<tr>
+<td>SIM-ARM-HAND</td>
+<td>864d08681942d807</td>
+</tr>
+<tr>
+<td>SIM-CANCEL</td>
+<td>765a5dd13376ec03</td>
+</tr>
+</tbody></table></div>
 <p>物理实验属于其固定运行版本。发布整理后的代码尚未因此获得新的物理验收。
 内部保留完整哈希与原始证据，公开页只给摘要，不附原始日志或本机路径。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>复现实验的记录要求</h2></header>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>复现实验的记录要求</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>记录代码提交、模型哈希、权重、profile、传感器频率和输入来源。
 区分规划壁钟耗时、轨迹仿真时长及RTF。
 固定目标与初始状态，按公共能力接口调用并保留每阶段终态。
 物理成功同时需要动作结果和独立评价，不能只看返回码。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>软件检查与适用限制</h2></header>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>软件检查与适用限制</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>数值测试覆盖坐标、时间、运动租约、轨迹、接触状态与失败路径。
 原生计算需匹配其二进制环境。缺依赖跳过的用例不计成功。
 <a href="development.html">开发指南</a> 提供检查入口；<a href="getting-started.html">快速开始</a> 可复现通信实验。</p>
@@ -836,7 +968,7 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -844,23 +976,32 @@ title: 实验摘要与复现口径
 subtitle: 只报告有来源的结果，并说明结论适用范围
 lang: zh
 doc_id: experiments
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
 
-## A 三种证据不能互相替代
+[查看6组成功实验的完整录像](experiment-recordings.html) · [对应场景启动命令](scenarios.html)
+
+## A 证据与实验范围
 
 | 编号 | 条件 | 结论 |
 | --- | --- | --- |
 | SW-CONTRACT-01 | 两个独立IP的ROS2容器、mock后端 | 任务直达和交互入口均返回SUCCEEDED / met / MOCK |
 | SIM-MANIP-01 | G1、REVO2、AMO、warehouse工位前初始化 | approach、pick、display、place四能力序列和物理评价通过 |
 | SIM-TRANSFER-01 | 从起点出发的同类场景 | 导航与操作前段通过，display失败，整任务不成立 |
+| SIM-MANIP-L / R | 轻量工位，分别采用左、右三指抓握 | 各自的四能力序列与独立物理评价通过 |
+| SIM-APPROACH-BASE | 轻量工位，实际低速本体接近 | 接近后右三指抓取、展示、放回通过 |
+| SIM-ARM-HAND | 公开单臂、双臂及手部命令 | 22项动作与实际反馈通过，不代表22次抓取 |
+| SIM-CANCEL | 预抓取已发生实际运动 | 取消、停稳、空手确认及新任务接纳通过 |
 
 软件检查检验代码，物理评价检验指定运行。一个成功样本不构成成功率统计。
 本页不包含实机成功结论，也不声称探索、六点或异构协作已完成。
 
-## B 工位前四能力实验
+## B Warehouse工位前四能力：SIM-MANIP-01
+
+[观看本组录像](experiment-recordings.html#panel-B)
+
 
 对象为官方小方块，机器人采用G1-29与REVO2触觉手。
 物理仿真250Hz，控制50Hz。操作使用本体反馈、ROS视觉与SDK触觉接口。
@@ -878,33 +1019,87 @@ implementation: 1349c6f04c8c4cc4
 物体绝对位置等指标来自仿真评价器，用于验收；业务算法不能读取这些特权量。
 该实验没有从起点导航和返回的验收范围。
 
-## C 从起点出发的对照实验
+## C 轻量工位的左右抓放与本体接近
 
-同类运行完成收臂、导航、观察对齐、adjust_base、approach与pick。
+[观看本组录像](experiment-recordings.html#panel-C)
+
+
+机器人采用G1-29、REVO2触觉手与AMO，操作件为5cm方块，使用低工台。
+物理250Hz、控制50Hz。目标来自RGB-D结构化观测，当前关节和触觉来自设备接口。
+接近、抓取、展示、放回分别经公共能力入口调用，共享持物上下文。
+
+| 实验 | 实际流程 | 最低离台距离 | 放置水平误差 |
+| --- | --- | --- | --- |
+| SIM-MANIP-L | 左三指approach→pick→display→place | 83.75mm | 8.00mm |
+| SIM-MANIP-R | 右三指approach→pick→display→place | 74.34mm | 10.22mm |
+| SIM-APPROACH-BASE | 本体低速接近后，右三指完成同一四能力序列 | 72.20mm | 8.95mm |
+
+三例均通过公开能力结果、独立物理评价与GUI覆盖检查。
+本体微动只发生在approach阶段，后续抓取、展示与放回保持零下肢速度参考。
+各例保留Isaac、传感视图和感知视图的独立录像，按同一批次关联。
+
+SIM-APPROACH-BASE中出现11次目标顶面不可见事件，执行复用此前有效观测并完成抓放。
+这支持该固定任务中的遮挡容忍；不代表任意遮挡、任意目标运动或抓空恢复均已验证。
+这些工位例分别属于各自固定版本，不能合并为同版本成功率，也不能替代从起点出发的整任务验收。
+
+## D 臂手动作与取消恢复
+
+[观看本组录像](experiment-recordings.html#panel-F)
+
+
+| 实验 | 输入与实际观察 | 结论边界 |
+| --- | --- | --- |
+| SIM-ARM-HAND | 22项单臂/双臂末端运动、双臂相对保持，以及左右手两指/三指预成形、闭合、释放；实际关节与TCP反馈符合各项目标 | 手指命令可执行，不等于两指已完成有效夹持 |
+| SIM-CANCEL | 实际预抓取运动开始后取消；身体停稳且空手状态持续确认1s；随后接纳全新pick，返回RUNNING后再次取消，控制租约和交接上下文释放 | 验证任务接纳与取消；第二次pick未完成抓取 |
+
+取消验证同时核对实际运动反馈与公共状态，不能只用CANCELED返回码证明停稳。
+抓空后退回、重新观测并抓取成功属于另一项行为，以上实验不提供该结论。
+
+## E 对照实验与适用限制
+
+SIM-TRANSFER-01从起点出发，完成收臂、导航、观察对齐、adjust_base、approach与pick。
 display阶段因触觉未确认而中止，不能作为完整链路成功样本。
 这说明工位前成功不足以证明导航后的构型与接触状态同样可靠。
 对照用于限定结论，不以失败录屏或私有运行日志公开项目过程。
 
-## D 版本和环境身份
+另一个两指方块案例曾建立接触，但物体始终受台面支撑，中心最高仅上移3.78mm，随后失去接触。
+它不满足有效抬升条件。HOLDING接触状态、关节闭合和规划成功均不能单独证明抓住物体。
+身体参考与上肢姿态也存在耦合，响应标定必须覆盖实际执行的活动范围。
+
+## F 版本和环境身份
 
 | 项目 | 可核对身份 |
 | --- | --- |
 | SIM-MANIP-01机器人镜像 | SHA256前缀 0bea2dfe4d7f |
 | 对应仿真镜像 | SHA256前缀 3ffdc3d6e680 |
+| 轻量工位系列基础机器人镜像 | SHA256前缀 9294910bdf91；另有各例冻结源码覆盖 |
+| 轻量工位系列仿真镜像 | SHA256前缀 3ffdc3d6e680 |
 | 证据链 | 公开能力结果、SDK触觉、本体/物体评价、GUI覆盖 |
 | SW-CONTRACT-01 | 本文档配套仓库发布的软件版本；基础Dockerfile重新构建 |
+
+轻量工位各例的源码覆盖清单摘要如下。该摘要标识冻结清单。
+实验版本由基础镜像、安装身份、模型及profile共同确定。
+清单摘要不等于完整发布镜像的哈希。
+
+| 实验 | 冻结源码清单SHA256前缀 |
+| --- | --- |
+| SIM-MANIP-L | e2ad5157534fa2e2 |
+| SIM-MANIP-R | beaf7b82859b3339 |
+| SIM-APPROACH-BASE | a62ebb6e36afe113 |
+| SIM-ARM-HAND | 864d08681942d807 |
+| SIM-CANCEL | 765a5dd13376ec03 |
 
 物理实验属于其固定运行版本。发布整理后的代码尚未因此获得新的物理验收。
 内部保留完整哈希与原始证据，公开页只给摘要，不附原始日志或本机路径。
 
-## E 复现实验的记录要求
+## G 复现实验的记录要求
 
 记录代码提交、模型哈希、权重、profile、传感器频率和输入来源。
 区分规划壁钟耗时、轨迹仿真时长及RTF。
 固定目标与初始状态，按公共能力接口调用并保留每阶段终态。
 物理成功同时需要动作结果和独立评价，不能只看返回码。
 
-## F 软件检查与适用限制
+## H 软件检查与适用限制
 
 数值测试覆盖坐标、时间、运动租约、轨迹、接触状态与失败路径。
 原生计算需匹配其二进制环境。缺依赖跳过的用例不计成功。

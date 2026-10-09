@@ -1,22 +1,22 @@
 {
-  "implementation_sha256": "1349c6f04c8c4cc45aaa8485f642d61eebda48184a88afbeeed1b86632bda6d3",
+  "implementation_sha256": "ec030fd7714cb86df18cfd60bdd1648a623be307e4bc9d3318282e99ad7fcaab",
   "renderer": "answer-me-with-html@0.4.14",
   "pages": [
     {
       "file": "algo-amo.html",
-      "source_sha256": "bf585e07a88bb03ac100a069889dac314f9b0b6b8630072f858542211f8759ff"
+      "source_sha256": "7b0a081afe4b2660b9da10e24ad17ecb34dc342f5a7370db50455c3cf35b25ac"
     },
     {
       "file": "algo-approach.html",
-      "source_sha256": "86ac1a3a908880426580710429e6707e119512ddf7a9ddee8a24e6e8f5ac1e5d"
+      "source_sha256": "0a2222d1cae49b3231779833756689b48663f53d2506dd1436ab02e9f5654b7e"
     },
     {
       "file": "algo-body-state.html",
-      "source_sha256": "c1bcb9ded6747d73b873c5313a73f7cda7eb5eacfc3eca7c287832c33bbb8ef9"
+      "source_sha256": "791532f5c832b924ca4c9a5aad8c61247027ce4b6b88a5cc4baa803b0a719776"
     },
     {
       "file": "algo-cartesian.html",
-      "source_sha256": "5bc7cd3ee7382315b03efa4536826e77c8c8cee17ef6537a4b8724575283cc44"
+      "source_sha256": "88826b76e4cd55c3378a2b7b0c1404cb453a6fab9ce1eb551c185820293a3c0d"
     },
     {
       "file": "algo-collision.html",
@@ -28,51 +28,51 @@
     },
     {
       "file": "algo-exploration.html",
-      "source_sha256": "9553081e61d4adb65de84d09c4e42f112cdd3152e9f42e751816235953ea158f"
+      "source_sha256": "955a4b0f6ab5b956f9b0a8cfe4cc7d0b1938aa34ad5166f04d331a87a9017c1c"
     },
     {
       "file": "algo-fdm.html",
-      "source_sha256": "e6004ae380d9fe7e86a7cd7eead84265dceec4b65648d5c858a7a7a7f6027284"
+      "source_sha256": "f891c805e1af1a62f1a02b4956b50747d76b32b6d964942455aab4f5f9bb6c3c"
     },
     {
       "file": "algo-grasp.html",
-      "source_sha256": "586dd9b8a384ed06d7560989d0edd6834635159f56e59c63411bf0683ef9f775"
+      "source_sha256": "2cd06d4446e3070a546eb3b9cdb0978a90c56f81a95cdb8d918e1ec916893058"
     },
     {
       "file": "algo-maps.html",
-      "source_sha256": "d2f76ec22811ed9f5542c170af363c132f82d8476a8f74d8e0d8af051b37dc8f"
+      "source_sha256": "80ff358f9d46269df96bbbddd9e5c18f2d2dc1234a24a09e5fc389fc07791a62"
     },
     {
       "file": "algo-neupan.html",
-      "source_sha256": "c1faee8c939eab0a37838bce17510d19286e0300a1c779149ed686e0e14d9c39"
+      "source_sha256": "7f2089048d1f817f3e2003a049bafbc8918618139ed54fa7b05761f3a2aa7f94"
     },
     {
       "file": "algo-pbvs.html",
-      "source_sha256": "a4c9640697ec4651d189825561920c818fb1e1655f81443198a2c7eb1d59142f"
+      "source_sha256": "fe9f06537d400a9aec88cf76f4de194a0e02e40497c1640b5d0e3dc378e091fd"
     },
     {
       "file": "algo-pct.html",
-      "source_sha256": "19f4a3a673b757a94d299ac580ca904772995050f9077a1d993772b3635c489d"
+      "source_sha256": "0a79a5cee2261de9e6bc32e679151b78db53550d3a54e43a72f3e42138e09d56"
     },
     {
       "file": "algo-perception.html",
-      "source_sha256": "dc6cd60ad3c10b664d6934f6f94e364e3197eaac6f5d2674c38163156f62171b"
+      "source_sha256": "95a6bdaa96214f35ea667dff1ec6eb08d30e1ffb291be311c6542701e9bfd9ee"
     },
     {
       "file": "algo-sensing.html",
-      "source_sha256": "ca16425b2c3846e5e7eceb7a05757ef39dc50ed08d38432f5bec1e30930e765f"
+      "source_sha256": "59cb92773f80d55f5a8c0b8b208ec6e94f978b0861ede11796ae279e6ad53575"
     },
     {
       "file": "algo-slam.html",
-      "source_sha256": "cb5fbb3216c33c27229331e63fc23d9738e864d5fc454d06f05771cb5351b71f"
+      "source_sha256": "efe4f83f9a581046190386ad57a6eb989b68b99e67d5a6152141f1e128235290"
     },
     {
       "file": "algo-support.html",
-      "source_sha256": "d4293db7dcdf550eefa0894a42ffc02dd7e8383961b84b489861e56fd1c24574"
+      "source_sha256": "a130b9ae408549b65eea31006a01385fe42e129c323468baa643e804faebe0c5"
     },
     {
       "file": "algo-tactile.html",
-      "source_sha256": "d942e33e6fc745d23f53ef9880be463936e43eb1168aec2abfcbc94dd179548a"
+      "source_sha256": "b7fd8d458b03d8a2cc0727f9515e90e0df3eefdbe190c2a9ea7e176a48a1440e"
     },
     {
       "file": "algo-task.html",
@@ -80,23 +80,23 @@
     },
     {
       "file": "algo-trajectory.html",
-      "source_sha256": "f25489e84199bc7e89560c1594b44ecb47b3ebecdfc1f4315bfeea9a3e15a7ed"
+      "source_sha256": "440f1b07ea1599ca0916250a9eeae4a7760bdafbacf492b07a834a78105b20a9"
     },
     {
       "file": "algorithms.html",
-      "source_sha256": "5cd9f4a48ac25ea0d81ca08b9f6f80b368ecddead99d9fbdeaf9d9847d1b0729"
+      "source_sha256": "648c4246e4c40ed42e171c90f27db14355fcf63adec20dd5ccea5b1fb2c48bc9"
     },
     {
       "file": "architecture-map.html",
-      "source_sha256": "a9afb2f925570addd724cec9349f9e38c426e94a77ae26056f9fc9e84bb957e8"
+      "source_sha256": "06854da2c94da77dba9e46de4e03a847efb2ed40bb46b2ff53d3e3775bb74ca0"
     },
     {
       "file": "architecture.html",
-      "source_sha256": "b1aee29605723ed3e681aef7141b729d02f2ae22bf173c067130836870740483"
+      "source_sha256": "62aac4710c30e260cb201825322e9704bdca042b8e76069e5e5c85b5c9525cad"
     },
     {
       "file": "authoring.html",
-      "source_sha256": "e6b62d37653bbd7aebeb4d383fd48b0b5f1717689062f16807ebf6ec279f9978"
+      "source_sha256": "4fa73af05bba8c9674848cbb47e362187ebe0c7055399643816d52535e793dd1"
     },
     {
       "file": "dependencies.html",
@@ -107,8 +107,12 @@
       "source_sha256": "0870e702731e1fa8b264f433804a024c00869b5270cbef4413bd6a7ec5929ddf"
     },
     {
+      "file": "experiment-recordings.html",
+      "source_sha256": "beb744f6a6cebb8dd0c13784811e5c3e3bd1d1cfe0231bbd685a9a5f7a4acf82"
+    },
+    {
       "file": "experiments.html",
-      "source_sha256": "ffff2b05ea69bfda2b78998651582a8475e9bb99a1a5d56b54ede7474afffb10"
+      "source_sha256": "0d002c446928cf52e9a41803472a89146abf39f7a11ab66736b28c509c97d8e9"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -136,7 +140,7 @@
     },
     {
       "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "d70a3c0eaf56f8a0e026e2a33b5a809218d7c297b9b074f28bed351fac78f597"
+      "source_sha256": "e203ec06db7ecf3d54ae5a5c89622ea25b5112ce1ef12f4c39784da4c4085f05"
     },
     {
       "file": "files-robot-motion_coordinator.html",
@@ -148,7 +152,7 @@
     },
     {
       "file": "files-robot-perception_runtime.html",
-      "source_sha256": "1ceb2b95b513cbacfb683b440d8cebc2d999ffe52e325a253480b5dcafd95497"
+      "source_sha256": "4cbbdf3eb0261a88710ef649cbddebba811dccea3e30ef5fb09f72ebd9a4a94a"
     },
     {
       "file": "files-robot-protection_runtime.html",
@@ -164,7 +168,7 @@
     },
     {
       "file": "files-robot-state_estimation.html",
-      "source_sha256": "8a2ee0f0c602b6bbd4cf084835c9d3c38033ce4fba13a170ebad1ecbf55c26fe"
+      "source_sha256": "4073e81f6771387a789834109b53577498d8de1060399e00753e1e313b4c37b1"
     },
     {
       "file": "files-system-candidate_builder.html",
@@ -212,11 +216,15 @@
     },
     {
       "file": "getting-started.html",
-      "source_sha256": "59058dedd24f6e47f7a39bd64fe1b32b26fa0b665ee33638eddcd44b5624ad59"
+      "source_sha256": "364f785faee814198975077cedfc3967860aa95cbcb22e1d5030f794b8e9e4a2"
+    },
+    {
+      "file": "images.html",
+      "source_sha256": "7570e866faceef2c6874fee94c9b8ae553c9cc963d7953dd854218776bdda779"
     },
     {
       "file": "index.html",
-      "source_sha256": "ad8785d4eaff6b59594ea8c1706c1d0377a54d94224611f74625ca53246aad62"
+      "source_sha256": "d7473ee63cc23cf480282ed4e0069a4c877b8493872744edd38d68637705b893"
     },
     {
       "file": "interface-catalog.html",
@@ -236,7 +244,7 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "891218afa31edadb4caaafd1009f15006173306f7aa8c573e5c76990507ada4e"
+      "source_sha256": "097cfa407ed28eb43e5e1603ca17e18324ddcefed010a607a22dc0b0ad8bcc38"
     },
     {
       "file": "module-robot-config_client.html",
@@ -256,7 +264,7 @@
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "66659b34490b3fae59cfc29744a74c370729f38ba1ba546ff736596eba36b16c"
+      "source_sha256": "e874e4d330ac1f8db670d028121f554fcd3dc84efa60c8c2e6451aa4042b9a61"
     },
     {
       "file": "module-robot-motion_coordinator.html",
@@ -264,11 +272,11 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "33143cb660bb65d4cf0319451caf40c0f51dd39d88c4b87b57695df12e652325"
+      "source_sha256": "295f6c7e6fca1349605656e80cf500f1ff64f15335ac707587e93197cd781723"
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "4b912c709227bb5706f75b3bf783cb1f1521aba63c165f2c7e5c4272c78f2dc1"
+      "source_sha256": "97fe1a8b2e3c273524cea317324726cdf36aa4c90d77f75e14f8477c57ec2a9f"
     },
     {
       "file": "module-robot-protection_runtime.html",
@@ -276,15 +284,15 @@
     },
     {
       "file": "module-robot-sensor_adapters.html",
-      "source_sha256": "964c9cad2e47014a5e96b4dadec1a79610f8c55091e547ad190b684b2ccd0028"
+      "source_sha256": "0f7685716a9de2f78db4934db8882988c5a849e506b95aa5110aca91f77519a7"
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "84faad3c69052f21ae8e22d9d42efdacd1c6f618bd4e94c38894bd043149df01"
+      "source_sha256": "b682bb6fcf71c9b540f47707d0545a0b887ab1ed3d3108a795c08f1e25654ce2"
     },
     {
       "file": "module-robot-state_estimation.html",
-      "source_sha256": "7e3a33cf64ab2ed9d62a5a761beb8d7c75d13be9625f29a85cd493f282f5a18c"
+      "source_sha256": "af8357ca431549ef83a2c4ad56dd412e1a5543b915f54a05c78f97e124c4fb30"
     },
     {
       "file": "module-system-candidate_builder.html",
@@ -333,12 +341,80 @@
     {
       "file": "modules.html",
       "source_sha256": "a556d51a14d3339e69af51b06bc0d67a01ac10886195d5770d91883a4208bde9"
+    },
+    {
+      "file": "runtime-internals.html",
+      "source_sha256": "0b4364292caeff23f702311501229ea6d3130540d71379973612d7abc26b40ee"
+    },
+    {
+      "file": "scenarios.html",
+      "source_sha256": "f0c800ee9f88576bc82e542e96007780008a751c405d57dfeed29aec93eb714d"
     }
   ],
   "assets": [
     {
       "file": "diagrams/README.md",
-      "sha256": "2375b9b97fad5f4b73c93e0995be005ad2b49379db000b29ddd5a982a9f6480e"
+      "sha256": "506f6b6a917d566d4754c7408a594a6d01a27f2bf9a5729bc76b27b72d7d196b"
+    },
+    {
+      "file": "diagrams/algorithm-map.drawio",
+      "sha256": "a6751aaf417786f2d57dbfdee2387b01780fae7b02642da3edd8721291d7fb09"
+    },
+    {
+      "file": "diagrams/algorithm-map.html",
+      "sha256": "8beb6993bbcebe4e81747bd47c9c044295898369515a0ac7e9711e391c27fa78"
+    },
+    {
+      "file": "diagrams/algorithm-map.svg",
+      "sha256": "09b36ece7b911318528e34b2d71d8e446ee0131cdf4834c37afc706d6a414a79"
+    },
+    {
+      "file": "diagrams/body-adapter.drawio",
+      "sha256": "c3800133fede0d0bf5fe4675543202418ac539feace6a07102f996d59ba85211"
+    },
+    {
+      "file": "diagrams/body-adapter.html",
+      "sha256": "4ac27c3adc4b6f3150c8e3210bab1d996db0802a3034f9180e74830db760adec"
+    },
+    {
+      "file": "diagrams/body-adapter.svg",
+      "sha256": "054ab10f366ba560058b2492616cc660a5c057f744eaed7a82fda969e64f998b"
+    },
+    {
+      "file": "diagrams/manipulation-runtime.drawio",
+      "sha256": "6594921cfc577a1a3af568a2f1d0ec18ec129456ef1d48b1778ca4f371aa85c0"
+    },
+    {
+      "file": "diagrams/manipulation-runtime.html",
+      "sha256": "d9d98c553ab1d3bc6f515eadab29119ae09ee32e2419b0058168d6be271fedd7"
+    },
+    {
+      "file": "diagrams/manipulation-runtime.svg",
+      "sha256": "1ecc796b37ccc907365846919ab1e5969a738cc5ce35719b0110ca517ec19072"
+    },
+    {
+      "file": "diagrams/navigation-runtime.drawio",
+      "sha256": "da2e66001fedbf63aa41b64e1dbb847440ae1e158b599547fd3ecfd48d1cee16"
+    },
+    {
+      "file": "diagrams/navigation-runtime.html",
+      "sha256": "887ce2786f1eed91cae2eaee414a664350de18e76b9b117b765aef6141ff446d"
+    },
+    {
+      "file": "diagrams/navigation-runtime.svg",
+      "sha256": "a5058cf0390ea6c723aab63eee82cb4d7f602c68d62f14a79e6b0c026b91c4c9"
+    },
+    {
+      "file": "diagrams/perception-runtime.drawio",
+      "sha256": "92606d51770b62303e27b7a73aa0b7d890a9efbe47456164e517524a4cf183b4"
+    },
+    {
+      "file": "diagrams/perception-runtime.html",
+      "sha256": "b4d8478b64558245835c7eef4ffdf32f1447c893726464af9d80248650f2cc26"
+    },
+    {
+      "file": "diagrams/perception-runtime.svg",
+      "sha256": "e42170ddcc73ba91ea6adec2f0b806c6b5d7276111a85d496255500162d59170"
     },
     {
       "file": "diagrams/runtime-sequences.drawio",
@@ -354,15 +430,27 @@
     },
     {
       "file": "diagrams/software-architecture.drawio",
-      "sha256": "cdabbbf06cd20ca147267c95ecb33b7d85c898b8eadc324db7234803057e910d"
+      "sha256": "682b344cb5c8fbed24ebee8d536e6a52eb98843b3acbe5ddf6719139f3abc9cc"
     },
     {
       "file": "diagrams/software-architecture.html",
-      "sha256": "32fa9e5c1138649699ac9f651134086b2ac3c80cd9b8964744b3865b43d7c910"
+      "sha256": "86ff6280cf3e89d6535c49f797fbcad524ef159974f3372eb86ba607f9e8f44f"
     },
     {
       "file": "diagrams/software-architecture.svg",
-      "sha256": "1043320b4b4bfd02d91bb04ee5d393b335d7e29eb282362bd089a63f92b54476"
+      "sha256": "f66e2b6e04d8c5e2a15791cf47574e63182b809ea8e4203f3ecf5aeb8ba295d3"
+    },
+    {
+      "file": "diagrams/spatial-runtime.drawio",
+      "sha256": "37f3f0b7c81af8058e5216b75bcec485c03f44879cd3bd775e96403624a8dffe"
+    },
+    {
+      "file": "diagrams/spatial-runtime.html",
+      "sha256": "0d7d07a822662ef6f1bfe4e0a24269c88ed14ab6bb6c3ba97ed2a24b3adc820a"
+    },
+    {
+      "file": "diagrams/spatial-runtime.svg",
+      "sha256": "e09ddb1a491b88fdc14e0c30dab4b0528c097727dd35710b954647c3ae4f32e7"
     },
     {
       "file": "diagrams/system-architecture.drawio",
@@ -375,6 +463,70 @@
     {
       "file": "diagrams/system-architecture.svg",
       "sha256": "423d8a46ba7bdb1a62c3759e3ab7c9a0d2d5bfa34ffa30bb9ed8ad3d25b01c3e"
+    },
+    {
+      "file": "media/approach-base-isaac.mp4",
+      "sha256": "e17cc73f300eca653fbc2be7bbc5779b088f99a0f8ae3fe96862f555417e6714"
+    },
+    {
+      "file": "media/approach-base-perception.mp4",
+      "sha256": "38e9cd49ec4ae92a243d19833587eea655dd7cf32bd08cb6344ef33f115c3d1a"
+    },
+    {
+      "file": "media/approach-base-sensors.mp4",
+      "sha256": "7be94e1d376d2ad0c7a70fa11d733b611a87a2c7a0cb5fd65560e11a0ddb06a6"
+    },
+    {
+      "file": "media/arm-hand-isaac.mp4",
+      "sha256": "a5e9e78a1fce90bea2da4320a8c0edae01cdd62895c60acba9915683e4a31a71"
+    },
+    {
+      "file": "media/arm-hand-perception.mp4",
+      "sha256": "25e41a18e746b12d817e8db44f894adbe31c6542e5c25eeb08aaf71c6d68747e"
+    },
+    {
+      "file": "media/arm-hand-sensors.mp4",
+      "sha256": "571779947ae06b7acf77edcdb55351ea18cefea4d7a62ebf540a44a3dff0ef68"
+    },
+    {
+      "file": "media/cancel-isaac.mp4",
+      "sha256": "4226dfe52f1c66e0440d357f969dab910118a6b27aa1d2fe28819f4abea26e87"
+    },
+    {
+      "file": "media/cancel-perception.mp4",
+      "sha256": "e5cacafcce810b57c66696ef5c503384bceb52304f5fbd74a0c7c8990454356e"
+    },
+    {
+      "file": "media/cancel-sensors.mp4",
+      "sha256": "4bb3b91756edcf1059e94c50f6ddb5448f3ac01836799df7aab68d05932c6295"
+    },
+    {
+      "file": "media/manip-left-isaac.mp4",
+      "sha256": "154b7eba1dd7409d2030c1390932bdab5fe3a32439e49dc13b98e4e3072f97cf"
+    },
+    {
+      "file": "media/manip-left-perception.mp4",
+      "sha256": "1c8acbefb30816f07045deba7698062f1345bb5752ae8c44f65b9d100012a63a"
+    },
+    {
+      "file": "media/manip-left-sensors.mp4",
+      "sha256": "d09fdbcc46e23c5f9765b9464db82d1c34dfcae68953e1d363badb543b6aab77"
+    },
+    {
+      "file": "media/manip-right-isaac.mp4",
+      "sha256": "f93cee3bd835db767b38c85597c4e0ff35f7f26e06b247f136a6e99447104f0c"
+    },
+    {
+      "file": "media/manip-right-perception.mp4",
+      "sha256": "5871b6f4311de7dbf81da0001f829080477d63336986390ae0922233f9e65144"
+    },
+    {
+      "file": "media/manip-right-sensors.mp4",
+      "sha256": "cffd5f420f38d0734ebd89d0e2068aec8d5729e44b8452864c21cef46c8ed028"
+    },
+    {
+      "file": "media/warehouse-station-isaac.mp4",
+      "sha256": "b4ba815ec80aee4e324a71dadb06e408220ef361c8603f0a77897a8dbe48c432"
     }
   ]
 }

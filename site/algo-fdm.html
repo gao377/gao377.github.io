@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>可选AMO运动预测与MPPI</h1><p class="am-sub">模型身份和训练域是启用条件</p><div class="am-head-meta"><span><b>doc_id</b>algo-fdm</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>可选AMO运动预测与MPPI</h1><p class="am-sub">模型身份和训练域是启用条件</p><div class="am-head-meta"><span><b>doc_id</b>algo-fdm</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -729,7 +729,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>这是可选实现路径。基础导航使用basic_controller；没有合格权重及辨识证据时，不得用可导入的类替代模型ready条件。</p>
+<div class="am-panel-body"><div class="am-md"><p>这是可选实现路径。当前基础与方块profile使用basic_controller，不调用FDM-MPPI。没有合格权重及辨识证据时，不得用可导入的类替代模型ready条件。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 934 241" width="934" height="241" role="img" aria-label="流程图：同戳SDK与定位历史、G1FdmModel、NeuPAN局部路径、FdmMppi、速度采样、观测域与障碍、共同执行器" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M161.9,102.5 L208,102.5 Q254.1,102.5 305,91 L355.9,79.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="185.9" y="93.5" width="136.5" height="18" rx="3"/><text x="254.1" y="102.5" text-anchor="middle" dominant-baseline="central">经过身份校验的模型输入</text></g></g><g data-step="1"><path class="am-edge" d="M476.3,138 L508,138 Q539.8,138 571.5,138 L603.3,138" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="511.8" y="129" width="56" height="18" rx="3"/><text x="539.8" y="138" text-anchor="middle" dominant-baseline="central">跟踪目标</text></g></g><g data-step="2"><path class="am-edge" d="M127.9,31.5 L191,31.5 Q254.1,31.5 305,43 L355.9,54.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="214.6" y="22.5" width="79" height="18" rx="3"/><text x="254.1" y="31.5" text-anchor="middle" dominant-baseline="central">候选控制序列</text></g></g><g data-step="3"><path class="am-edge" d="M466.8,67 L503.3,67 Q539.8,67 579.8,93.8 L619.7,120.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="500.3" y="58" width="79" height="18" rx="3"/><text x="539.8" y="67" text-anchor="middle" dominant-baseline="central">预测本体轨迹</text></g></g><g data-step="4"><path class="am-edge" d="M464.3,209 L502.1,209 Q539.8,209 579.8,182.3 L619.7,155.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="500.3" y="200" width="79" height="18" rx="3"/><text x="539.8" y="209" text-anchor="middle" dominant-baseline="central">域与间隙约束</text></g></g><g data-step="5"><path class="am-edge" d="M688.5,138 L723.1,138 Q757.7,138 792.4,138 L827,138" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="712.5" y="129" width="90.5" height="18" rx="3"/><text x="757.7" y="138" text-anchor="middle" dominant-baseline="central">第一条优化速度</text></g></g></g><g><g class="am-node am-node--rect" data-key="同戳SDK与定位历史" data-step="0"><rect class="am-node-shape" x="14" y="85" width="147.9" height="35" rx="3"/><text x="87.9" y="102.5" text-anchor="middle" dominant-baseline="central">同戳SDK与定位历史</text></g><g class="am-node am-node--rect" data-key="G1FdmModel" data-step="0"><rect class="am-node-shape" x="355.9" y="49.5" width="110.9" height="35" rx="3"/><text x="411.3" y="67" text-anchor="middle" dominant-baseline="central">G1FdmModel</text></g><g class="am-node am-node--rect" data-key="NeuPAN局部路径" data-step="1"><rect class="am-node-shape" x="346.4" y="120.5" width="129.9" height="35" rx="3"/><text x="411.3" y="138" text-anchor="middle" dominant-baseline="central">NeuPAN局部路径</text></g><g class="am-node am-node--rect" data-key="FdmMppi" data-step="1"><rect class="am-node-shape" x="603.3" y="120.5" width="85.2" height="35" rx="3"/><text x="645.9" y="138" text-anchor="middle" dominant-baseline="central">FdmMppi</text></g><g class="am-node am-node--rect" data-key="速度采样" data-step="2"><rect class="am-node-shape" x="47.9" y="14" width="80" height="35" rx="3"/><text x="87.9" y="31.5" text-anchor="middle" dominant-baseline="central">速度采样</text></g><g class="am-node am-node--rect" data-key="观测域与障碍" data-step="4"><rect class="am-node-shape" x="358.3" y="191.5" width="106" height="35" rx="3"/><text x="411.3" y="209" text-anchor="middle" dominant-baseline="central">观测域与障碍</text></g><g class="am-node am-node--rect" data-key="共同执行器" data-step="5"><rect class="am-node-shape" x="827" y="120.5" width="93" height="35" rx="3"/><text x="873.5" y="138" text-anchor="middle" dominant-baseline="central">共同执行器</text></g></g></svg></figure>
+<div class="am-md"><p>FDM分支由fdm_manifest显式启用，和basic_geometry互斥。它保留NeuPAN作为局部路径来源，不承接图像识别或SLAM。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -741,7 +744,22 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -749,7 +767,7 @@ title: 可选AMO运动预测与MPPI
 subtitle: 模型身份和训练域是启用条件
 lang: zh
 doc_id: algo-fdm
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
@@ -776,7 +794,18 @@ G1FdmModel要求模型元数据、命令范围、本体/AMO身份与圆柱几何
 
 ## E 适用条件与失败处理
 
-这是可选实现路径。基础导航使用basic_controller；没有合格权重及辨识证据时，不得用可导入的类替代模型ready条件。
+这是可选实现路径。当前基础与方块profile使用basic_controller，不调用FDM-MPPI。没有合格权重及辨识证据时，不得用可导入的类替代模型ready条件。
+
+```flow LR
+同戳SDK与定位历史 -&gt; G1FdmModel: 经过身份校验的模型输入
+NeuPAN局部路径 -&gt; FdmMppi: 跟踪目标
+速度采样 -&gt; G1FdmModel: 候选控制序列
+G1FdmModel -&gt; FdmMppi: 预测本体轨迹
+观测域与障碍 -&gt; FdmMppi: 域与间隙约束
+FdmMppi -&gt; 共同执行器: 第一条优化速度
+```
+
+FDM分支由fdm_manifest显式启用，和basic_geometry互斥。它保留NeuPAN作为局部路径来源，不承接图像识别或SLAM。
 
 ## F 验证与替换
 

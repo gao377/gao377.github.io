@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>渐进式笛卡尔规划与双臂IK</h1><p class="am-sub">当前关节作seed，沿末端参考逐步求解</p><div class="am-head-meta"><span><b>doc_id</b>algo-cartesian</span><span><b>implementation</b>1349c6f04c8c4cc4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
+<header class="am-head"><h1>渐进式笛卡尔规划与双臂IK</h1><p class="am-sub">当前关节作seed，沿末端参考逐步求解</p><div class="am-head-meta"><span><b>doc_id</b>algo-cartesian</span><span><b>implementation</b>ec030fd7714cb86d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">架构</a> · <a href="modules.html">模块</a> · <a href="algorithms.html">算法</a> · <a href="interfaces.html">接口</a> · <a href="experiments.html">实验</a> · <a href="authoring.html">规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -711,14 +711,19 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>位置沿最小jerk时间律插值：<code>b(s)=10s³−15s⁴+6s⁵</code>，<code>p(s)=p₀+b(s)(p₁−p₀)</code>。
 姿态使用SO(3)：<code>R(s)=R₀ exp(b(s) log(R₀ᵀR₁))</code>。
-Pink差分IK在各小段求关节速度，最小化末端误差、姿态偏好和可操作度项，并约束关节位置/速度/加速度。
-关节更新使用模型流形上的integrate，不把旋转自由度当任意欧氏向量。
-单臂锁定其余关节；双臂同时建立两TCP任务，按请求检查相对关系。</p>
-</div></div>
+Pink差分IK在各小段求关节速度，最小化末端误差、姿态偏好和可操作度项，并约束关节位置/速度/加速度。</p>
+<p>关节更新使用模型流形上的integrate，不把旋转自由度当任意欧氏向量。
+单臂约束非操作臂；双臂同时建立两TCP任务，按请求检查相对关系。
+中间参考可由关节可行seed的FK修正，起终点保留。
+因此执行轨迹不保证始终落在最初的笛卡尔直线上。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1289 151" width="1289" height="151" role="img" aria-label="流程图：当前SDK状态、SE3最小jerk参考、Pink差分IK、约束关节轨迹、原生路径检查、RNEA与执行、成熟规划库修复" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M122.9,73 L147.7,73 Q172.6,73 197.4,73 L222.3,73" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="146.9" y="64" width="51.4" height="18" rx="3"/><text x="172.6" y="73" text-anchor="middle" dominant-baseline="central">q和TCP</text></g></g><g data-step="1"><path class="am-edge" d="M350.1,73 L381.9,73 Q413.6,73 445.4,73 L477.1,73" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="374.1" y="64" width="79" height="18" rx="3"/><text x="413.6" y="73" text-anchor="middle" dominant-baseline="central">逐步流形积分</text></g></g><g data-step="2"><path class="am-edge" d="M571.7,73 L598.4,73 Q625,73 651.7,73 L678.4,73" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="595.7" y="64" width="58.8" height="18" rx="3"/><text x="625" y="73" text-anchor="middle" dominant-baseline="central">几何seed</text></g></g><g data-step="3"><path class="am-edge" d="M784.4,85.4 L816.2,92.8 Q847.9,100.3 879.7,100.3 L911.4,100.3" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="808.4" y="91.3" width="79" height="18" rx="3"/><text x="847.9" y="100.3" text-anchor="middle" dominant-baseline="central">连续运动候选</text></g></g><g data-step="4"><path class="am-edge" d="M1017.4,108.5 L1052,113.9 Q1086.7,119.3 1125.5,119.3 L1164.2,119.3" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1041.4" y="110.3" width="90.5" height="18" rx="3"/><text x="1086.7" y="119.3" text-anchor="middle" dominant-baseline="central">通过后生成前馈</text></g></g><g data-step="5"><path class="am-edge am-edge--dashed" d="M1017.4,84.9 L1052,74.8 Q1086.7,64.8 1121.3,57.4 L1155.9,50.1" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1058.7" y="55.8" width="56" height="18" rx="3"/><text x="1086.7" y="64.8" text-anchor="middle" dominant-baseline="central">条件分支</text></g></g><g data-step="6"><path class="am-edge" d="M1155.9,30.8 L1121.3,26.9 Q1086.7,23 1025.5,23 Q964.4,23 906.2,23 Q847.9,23 810.1,39.3 L772.2,55.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="919.2" y="14" width="90.5" height="18" rx="3"/><text x="964.4" y="23" text-anchor="middle" dominant-baseline="central">修复后重新检查</text></g></g></g><g><g class="am-node am-node--rect" data-key="当前SDK状态" data-step="0"><rect class="am-node-shape" x="14" y="55.5" width="108.9" height="35" rx="3"/><text x="68.4" y="73" text-anchor="middle" dominant-baseline="central">当前SDK状态</text></g><g class="am-node am-node--rect" data-key="SE3最小jerk参考" data-step="0"><rect class="am-node-shape" x="222.3" y="55.5" width="127.8" height="35" rx="3"/><text x="286.2" y="73" text-anchor="middle" dominant-baseline="central">SE3最小jerk参考</text></g><g class="am-node am-node--rect" data-key="Pink差分IK" data-step="1"><rect class="am-node-shape" x="477.1" y="55.5" width="94.6" height="35" rx="3"/><text x="524.4" y="73" text-anchor="middle" dominant-baseline="central">Pink差分IK</text></g><g class="am-node am-node--rect" data-key="约束关节轨迹" data-step="2"><rect class="am-node-shape" x="678.4" y="55.5" width="106" height="35" rx="3"/><text x="731.4" y="73" text-anchor="middle" dominant-baseline="central">约束关节轨迹</text></g><g class="am-node am-node--rect" data-key="原生路径检查" data-step="3"><rect class="am-node-shape" x="911.4" y="82.8" width="106" height="35" rx="3"/><text x="964.4" y="100.3" text-anchor="middle" dominant-baseline="central">原生路径检查</text></g><g class="am-node am-node--rect" data-key="RNEA与执行" data-step="4"><rect class="am-node-shape" x="1164.2" y="101.8" width="102.4" height="35" rx="3"/><text x="1215.4" y="119.3" text-anchor="middle" dominant-baseline="central">RNEA与执行</text></g><g class="am-node am-node--rect" data-key="成熟规划库修复" data-step="5"><rect class="am-node-shape" x="1155.9" y="20" width="119" height="35" rx="3"/><text x="1215.4" y="37.5" text-anchor="middle" dominant-baseline="central">成熟规划库修复</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>参考持续时间至少2秒；平移参考0.06m/s、转动0.3rad/s。样本8至80。Pink末端位置cost200、姿态100、posture0.1、manipulability0.001；Clarabel最多200迭代。构型/场景影响实际耗时。</p>
+<div class="am-panel-body"><div class="am-md"><p>参考持续时间至少2秒；自由段平移参考0.06m/s，参考管段为0.048m/s。
+转动参考0.3rad/s；8至80段对应9至81个位姿样本。</p>
+<p>Pink末端位置cost200、姿态100、posture0.1、manipulability0.001；Clarabel最多200迭代。构型/场景影响实际耗时。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
@@ -738,7 +743,9 @@ Pink差分IK在各小段求关节速度，最小化末端误差、姿态偏好�
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>差分IK seed不是可执行轨迹。必须继续轨迹优化和碰撞检查。局部线性化不能保证绕过所有奇异点；求解无解返回原因，不用远端IK的无界搜索掩盖失败。</p>
+<div class="am-panel-body"><div class="am-md"><p>差分IK seed不是可执行轨迹。必须继续轨迹优化和碰撞检查。自由路径修复走MoveIt走廊，受参考管约束的修复走TrajOpt。
+QP不可行时可先用TOTG重定时再求解，不能把它描述成每次都执行的并联算法。
+局部线性化不能保证绕过所有奇异点；求解无解返回原因，不用远端IK的无界搜索掩盖失败。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -750,7 +757,22 @@ Pink差分IK在各小段求关节速度，最小化末端误差、姿态偏好�
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-08 09:22</footer>
+<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
+<div class="am-lightbox-backdrop"></div>
+<div class="am-lightbox-header">
+<div class="am-lightbox-title">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+<span class="am-lightbox-title-text"></span>
+</div>
+<div class="am-lightbox-actions">
+<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
+</div>
+</div>
+<div class="am-lightbox-stage">
+<div class="am-lightbox-canvas am-diagram"></div>
+</div>
+</div>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:18</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -758,7 +780,7 @@ title: 渐进式笛卡尔规划与双臂IK
 subtitle: 当前关节作seed，沿末端参考逐步求解
 lang: zh
 doc_id: algo-cartesian
-implementation: 1349c6f04c8c4cc4
+implementation: ec030fd7714cb86d
 ---
 
 [首页](index.html) · [架构](architecture.html) · [模块](modules.html) · [算法](algorithms.html) · [接口](interfaces.html) · [实验](experiments.html) · [规范](authoring.html)
@@ -772,12 +794,28 @@ implementation: 1349c6f04c8c4cc4
 位置沿最小jerk时间律插值：`b(s)=10s³−15s⁴+6s⁵`，`p(s)=p₀+b(s)(p₁−p₀)`。
 姿态使用SO(3)：`R(s)=R₀ exp(b(s) log(R₀ᵀR₁))`。
 Pink差分IK在各小段求关节速度，最小化末端误差、姿态偏好和可操作度项，并约束关节位置/速度/加速度。
+
 关节更新使用模型流形上的integrate，不把旋转自由度当任意欧氏向量。
-单臂锁定其余关节；双臂同时建立两TCP任务，按请求检查相对关系。
+单臂约束非操作臂；双臂同时建立两TCP任务，按请求检查相对关系。
+中间参考可由关节可行seed的FK修正，起终点保留。
+因此执行轨迹不保证始终落在最初的笛卡尔直线上。
+
+```flow LR
+当前SDK状态 -&gt; SE3最小jerk参考: q和TCP
+SE3最小jerk参考 -&gt; Pink差分IK: 逐步流形积分
+Pink差分IK -&gt; 约束关节轨迹: 几何seed
+约束关节轨迹 -&gt; 原生路径检查: 连续运动候选
+原生路径检查 -&gt; RNEA与执行: 通过后生成前馈
+原生路径检查 --&gt; 成熟规划库修复: 条件分支
+成熟规划库修复 -&gt; 约束关节轨迹: 修复后重新检查
+```
 
 ## C 参数与运行特性
 
-参考持续时间至少2秒；平移参考0.06m/s、转动0.3rad/s。样本8至80。Pink末端位置cost200、姿态100、posture0.1、manipulability0.001；Clarabel最多200迭代。构型/场景影响实际耗时。
+参考持续时间至少2秒；自由段平移参考0.06m/s，参考管段为0.048m/s。
+转动参考0.3rad/s；8至80段对应9至81个位姿样本。
+
+Pink末端位置cost200、姿态100、posture0.1、manipulability0.001；Clarabel最多200迭代。构型/场景影响实际耗时。
 
 ## D 实现与复用来源
 
@@ -795,7 +833,9 @@ Pink差分IK在各小段求关节速度，最小化末端误差、姿态偏好�
 
 ## E 适用条件与失败处理
 
-差分IK seed不是可执行轨迹。必须继续轨迹优化和碰撞检查。局部线性化不能保证绕过所有奇异点；求解无解返回原因，不用远端IK的无界搜索掩盖失败。
+差分IK seed不是可执行轨迹。必须继续轨迹优化和碰撞检查。自由路径修复走MoveIt走廊，受参考管约束的修复走TrajOpt。
+QP不可行时可先用TOTG重定时再求解，不能把它描述成每次都执行的并联算法。
+局部线性化不能保证绕过所有奇异点；求解无解返回原因，不用远端IK的无界搜索掩盖失败。
 
 ## F 验证与替换
 
