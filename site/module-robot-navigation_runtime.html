@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>导航运行架构 · navigation_runtime</h1><p class="am-sub">SW-06 的公共能力、规划选路、视觉精调与执行反馈</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-navigation_runtime</span><span><b>implementation</b>1946659a6daa1cbe</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>导航运行架构 · navigation_runtime</h1><p class="am-sub">SW-06 的公共能力、规划选路、视觉精调与执行反馈</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-navigation_runtime</span><span><b>implementation</b>6428291c520ded54</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="diagrams/navigation-runtime.html">内部可编辑多页图</a> · <a href="diagrams/navigation-runtime.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
@@ -791,6 +791,9 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tbody></table></div>
 <p>视觉精调不使用SLAM误差作为目标误差。地图仍用于已观测空间和障碍检查。感知暂不可用时保持零速；恢复后继续原任务截止内的伺服。</p>
 <p>地图绝对目标超出单段15cm时，中间点只触发制动交接。确认本体停稳后，从当前实测位姿重新绑定下一段。最后一段仍按最终位置与朝向验收，不沿用中间点的触发豁免。</p>
+<p>工位精调采用5cm／10°。返航步骤<code>adjust_home</code>采用30cm位置容差，朝向不限；进入home范围后制动归零，并保留SDK本体相对判稳和连续零速交接。
+协议以π rad表示任意包裹偏航误差均可接受，仍要求有限数值。返航伺服不主动追踪home朝向。
+分段控制的到位圈与最终home范围分别判定，避免30cm容差让15cm中间段在起点就制动。</p>
 </div>
 <figure class="am-diagram am-seq"><svg viewBox="0 0 831 430" width="831" height="430" role="img" aria-label="时序图：本机任务层、导航、感知、ViSP、共同执行器、本体适配" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am3-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><line class="am-lifeline" x1="58.5" y1="42" x2="58.5" y2="426"/><g data-key="本机任务层"><rect class="am-actor" x="12" y="8" width="93" height="34" rx="2"/><text x="58.5" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">本机任务层</text></g><line class="am-lifeline" x1="253.1" y1="42" x2="253.1" y2="426"/><g data-key="导航"><rect class="am-actor" x="211.1" y="8" width="84" height="34" rx="2"/><text x="253.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">导航</text></g><line class="am-lifeline" x1="431.1" y1="42" x2="431.1" y2="426"/><g data-key="感知"><rect class="am-actor" x="389.1" y="8" width="84" height="34" rx="2"/><text x="431.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">感知</text></g><line class="am-lifeline" x1="543.1" y1="42" x2="543.1" y2="426"/><g data-key="ViSP"><rect class="am-actor" x="501.1" y="8" width="84" height="34" rx="2"/><text x="543.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">ViSP</text></g><line class="am-lifeline" x1="659.6" y1="42" x2="659.6" y2="426"/><g data-key="共同执行器"><rect class="am-actor" x="613.1" y="8" width="93" height="34" rx="2"/><text x="659.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">共同执行器</text></g><line class="am-lifeline" x1="776.1" y1="42" x2="776.1" y2="426"/><g data-key="本体适配"><rect class="am-actor" x="734.1" y="8" width="84" height="34" rx="2"/><text x="776.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">本体适配</text></g><g data-step="0"><text x="155.8" y="70" text-anchor="middle">adjust_base(object_relation)</text><path class="am-edge" d="M58.5,80 L251.1,80" marker-end="url(#am3-arrow)"/></g><g data-step="1"><text x="342.1" y="110" text-anchor="middle">读取当前与期望局部关系</text><path class="am-edge" d="M253.1,120 L429.1,120" marker-end="url(#am3-arrow)"/></g><g data-step="2"><text x="342.1" y="150" text-anchor="middle">关系、时间戳、质量与来源</text><path class="am-edge am-edge--dashed" d="M431.1,160 L255.1,160" marker-end="url(#am3-arrow)"/></g><g data-step="3"><text x="398.1" y="190" text-anchor="middle">构造平面 PBVS 误差</text><path class="am-edge" d="M253.1,200 L541.1,200" marker-end="url(#am3-arrow)"/></g><g data-step="4"><text x="398.1" y="230" text-anchor="middle">vx、vy、wz</text><path class="am-edge am-edge--dashed" d="M543.1,240 L255.1,240" marker-end="url(#am3-arrow)"/></g><g data-step="5"><text x="456.4" y="270" text-anchor="middle">限速并检查后的本体参考</text><path class="am-edge" d="M253.1,280 L657.6,280" marker-end="url(#am3-arrow)"/></g><g data-step="6"><text x="717.9" y="310" text-anchor="middle">AMO参考</text><path class="am-edge" d="M659.6,320 L774.1,320" marker-end="url(#am3-arrow)"/></g><g data-step="7"><text x="514.6" y="350" text-anchor="middle">实际已发命令与稳定反馈</text><path class="am-edge am-edge--dashed" d="M776.1,360 L255.1,360" marker-end="url(#am3-arrow)"/></g><g data-step="8"><text x="155.8" y="390" text-anchor="middle">精确到位或明确失败原因</text><path class="am-edge am-edge--dashed" d="M253.1,400 L60.5,400" marker-end="url(#am3-arrow)"/></g></svg></figure></div>
 </section>
@@ -840,7 +843,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 路点来自实际TARE路径；1.2m是路径累计阈值，不能当作目标距离上限。
 装配沿用同一NeuPAN与公共执行器，普通导航和返航参数保持原配置。</p>
 <p>精调参数来自profile。方块工位示例目标关系为前0.40m、左0.10m、偏航0。PBVS增益2.0，速度上限0.10m/s。位置控制预留1cm，因此5cm验收容差对应4cm内部控制圈。</p>
-<p>方块SIM配置的地图平面精调采用平移增益2.0，并保留0.10m/s上限及原加减速限制。地图精调与视觉PBVS分别计算误差；增益调整不会改变最终5cm／10°、SDK判稳或连续零速交接条件。</p>
+<p>方块SIM配置的地图平面精调采用平移增益2.0，并保留0.10m/s上限及原加减速限制。地图精调与视觉PBVS分别计算误差；增益调整不会改变工位5cm／10°、SDK判稳或连续零速交接条件。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -929,7 +932,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 22:54</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 00:30</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -937,7 +940,7 @@ title: 导航运行架构 · navigation_runtime
 subtitle: SW-06 的公共能力、规划选路、视觉精调与执行反馈
 lang: zh
 doc_id: module-robot-navigation_runtime
-implementation: 1946659a6daa1cbe
+implementation: 6428291c520ded54
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1018,6 +1021,10 @@ SDK判稳使用1秒窗口内的质心与姿态相对变化。导航交接还需�
 
 地图绝对目标超出单段15cm时，中间点只触发制动交接。确认本体停稳后，从当前实测位姿重新绑定下一段。最后一段仍按最终位置与朝向验收，不沿用中间点的触发豁免。
 
+工位精调采用5cm／10°。返航步骤`adjust_home`采用30cm位置容差，朝向不限；进入home范围后制动归零，并保留SDK本体相对判稳和连续零速交接。
+协议以π rad表示任意包裹偏航误差均可接受，仍要求有限数值。返航伺服不主动追踪home朝向。
+分段控制的到位圈与最终home范围分别判定，避免30cm容差让15cm中间段在起点就制动。
+
 ```sequence
 本机任务层 -&gt; 导航: adjust_base(object_relation)
 导航 -&gt; 感知: 读取当前与期望局部关系
@@ -1049,7 +1056,7 @@ ViSP --&gt; 导航: vx、vy、wz
 
 精调参数来自profile。方块工位示例目标关系为前0.40m、左0.10m、偏航0。PBVS增益2.0，速度上限0.10m/s。位置控制预留1cm，因此5cm验收容差对应4cm内部控制圈。
 
-方块SIM配置的地图平面精调采用平移增益2.0，并保留0.10m/s上限及原加减速限制。地图精调与视觉PBVS分别计算误差；增益调整不会改变最终5cm／10°、SDK判稳或连续零速交接条件。
+方块SIM配置的地图平面精调采用平移增益2.0，并保留0.10m/s上限及原加减速限制。地图精调与视觉PBVS分别计算误差；增益调整不会改变工位5cm／10°、SDK判稳或连续零速交接条件。
 
 ## F 执行与失败边界
 
