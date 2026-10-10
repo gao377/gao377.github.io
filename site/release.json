@@ -76,7 +76,8 @@
     },
     {
       "file": "algo-exploration.html",
-      "source_sha256": "dde7cc01716b0964e31eee7afe29e0b537896355ec9e1c29efda710e4f463d7f"
+      "source_sha256": "8a6ba5f4280b9022d8ddde25d1b8020b49acc9d4cb88b53092e82f08e4b9dacd",
+      "implementation_sha256": "298a565580943b3babb11574453b74d7d090c58195d572f485673b9102d737c6"
     },
     {
       "file": "algo-fdm.html",
@@ -325,12 +326,13 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "3bd38f638b9371a2fa089c73580791175437678152a449ce6baefa3e5e43f9bb",
-      "implementation_sha256": "c939bb69b3e73565653b4be59724fdf6fef1d58f104e6327589e83c3b2008f03"
+      "source_sha256": "8f9023115bd4a610c0f7b0c3950767726f27b6fe3e8c998a1838b1aab8ca74d0",
+      "implementation_sha256": "298a565580943b3babb11574453b74d7d090c58195d572f485673b9102d737c6"
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "ff09e7c23289f106482ed664ec8f92abffce9bc3023d479352ad896967cb29f1"
+      "source_sha256": "5129fa61b9b6a2af9b3195a890f35feb1994a1001801b39b7c20ae22926a6f1c",
+      "implementation_sha256": "298a565580943b3babb11574453b74d7d090c58195d572f485673b9102d737c6"
     },
     {
       "file": "module-robot-protection_runtime.html",
@@ -342,8 +344,8 @@
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "756e1d075aad8cb48ca3ce6a9eb1d165724845909508b558aa3ccf58576f00d7",
-      "implementation_sha256": "c939bb69b3e73565653b4be59724fdf6fef1d58f104e6327589e83c3b2008f03"
+      "source_sha256": "d394193b063cb77d11b44e62e6b6d7e8626527d215306db86d069f0a787917be",
+      "implementation_sha256": "298a565580943b3babb11574453b74d7d090c58195d572f485673b9102d737c6"
     },
     {
       "file": "module-robot-state_estimation.html",
