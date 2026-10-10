@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "3047a28d6bb72f5879796e3440eb852420108fe05ffc74766d5d5de66e764bf2",
+  "implementation_sha256": "b5f3b74facbeeacbba490aba121b985cb7a46724cfa5d5e362605b3b4dd415ed",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -395,7 +395,7 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "7fcd36c32a987206a360546e67d28f2fdd97927c1a3294cb2482d50c67072e5b"
+      "source_sha256": "043f7003b79d0beac0e8624cf62ec13e7751849917dba423bbf42d76092085e4"
     }
   ],
   "assets": [
