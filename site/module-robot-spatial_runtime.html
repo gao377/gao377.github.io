@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>空间运行架构 · spatial_runtime</h1><p class="am-sub">SW-12 的建图会话、定位坐标、重定位与地图版本</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-spatial_runtime</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>空间运行架构 · spatial_runtime</h1><p class="am-sub">SW-12 的建图会话、定位坐标、重定位与地图版本</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-spatial_runtime</span><span><b>implementation</b>cab74ad6f3079d18</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="diagrams/spatial-runtime.html">内部可编辑多页图</a> · <a href="diagrams/spatial-runtime.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
@@ -731,7 +731,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>ScanContext→ICP→重启定位→新反馈确认</td>
 </tr>
 </tbody></table></div>
-<p>G1装配注册这些provider；运行就绪仍取决于传感、原生程序和地图。离线建图工具与在线公共能力不是同一入口。</p>
+<p>G1装配注册这些provider。就绪查询只校验原生程序、配置及输出路径，不启动进程。
+运行仍需真实传感、有效地图和新鲜质量反馈。离线建图工具与在线公共能力不是同一入口。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -743,7 +744,9 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>在线建图状态视图</h2></header>
 <div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 1869 151" width="1869" height="151" role="img" aria-label="流程图：接收建图请求、等待IMU、建图中、mapping_ready、保存中、校验地图、建立检索索引、返回MapRef" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M120,73 L164.5,73 Q208.9,73 253.4,73 L297.8,73" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="144" y="64" width="129.8" height="18" rx="3"/><text x="208.9" y="73" text-anchor="middle" dominant-baseline="central">唯一map_id与原生进程</text></g></g><g data-step="1"><path class="am-edge" d="M376,82.8 L410.6,91.5 Q445.3,100.3 479.9,100.3 L514.5,100.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="400" y="91.3" width="90.5" height="18" rx="3"/><text x="445.3" y="100.3" text-anchor="middle" dominant-baseline="central">静止初始化通过</text></g></g><g data-step="2"><path class="am-edge" d="M581.5,100.3 L629.6,100.3 Q677.7,100.3 727.4,100.3 L777.2,100.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="605.5" y="91.3" width="144.3" height="18" rx="3"/><text x="677.7" y="100.3" text-anchor="middle" dominant-baseline="central">新鲜LIO_TRACKING质量</text></g></g><g data-step="3"><path class="am-edge" d="M897.5,100.3 L929.5,100.3 Q961.6,100.3 991.9,100.3 L1022.3,100.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="924.8" y="91.3" width="73.5" height="18" rx="3"/><text x="961.6" y="100.3" text-anchor="middle" dominant-baseline="central">显式finalize</text></g></g><g data-step="4"><path class="am-edge" d="M1089.3,105.4 L1134.1,112.3 Q1178.9,119.3 1223.7,119.3 L1268.5,119.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1113.3" y="110.3" width="131.2" height="18" rx="3"/><text x="1178.9" y="119.3" text-anchor="middle" dominant-baseline="central">SIGINT后等待原生落盘</text></g></g><g data-step="5"><path class="am-edge" d="M1348.5,119.3 L1391.8,119.3 Q1435,119.3 1478.3,119.3 L1521.5,119.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1372.5" y="110.3" width="125" height="18" rx="3"/><text x="1435" y="119.3" text-anchor="middle" dominant-baseline="central">优化关键帧与局部点云</text></g></g><g data-step="6"><path class="am-edge" d="M1627.5,119.3 L1659.3,119.3 Q1691,119.3 1722.8,119.3 L1754.5,119.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1651.5" y="110.3" width="79" height="18" rx="3"/><text x="1691" y="119.3" text-anchor="middle" dominant-baseline="central">计算内容版本</text></g></g><g data-step="7"><path class="am-edge am-edge--dashed" d="M374.8,55.5 L410,39.3 Q445.3,23 496.6,23 Q548,23 612.8,23 Q677.7,23 757.5,23 Q837.3,23 899.5,23 Q961.6,23 1008.7,23 Q1055.8,23 1117.4,23 Q1178.9,23 1223.7,28 L1268.5,33" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="774.8" y="14" width="125" height="18" rx="3"/><text x="837.3" y="23" text-anchor="middle" dominant-baseline="central">初始化超时或进程失败</text></g></g><g data-step="8"><path class="am-edge am-edge--dashed" d="M1089.3,90.6 L1134.1,77.7 Q1178.9,64.8 1223.7,55.3 L1268.5,45.9" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1122.2" y="55.8" width="113.5" height="18" rx="3"/><text x="1178.9" y="64.8" text-anchor="middle" dominant-baseline="central">保存超时或产物缺失</text></g></g></g><g><g class="am-node am-node--rect" data-key="接收建图请求" data-step="0"><rect class="am-node-shape" x="14" y="55.5" width="106" height="35" rx="3"/><text x="67" y="73" text-anchor="middle" dominant-baseline="central">接收建图请求</text></g><g class="am-node am-node--rect" data-key="等待IMU" data-step="0"><rect class="am-node-shape" x="297.8" y="55.5" width="78.2" height="35" rx="3"/><text x="336.9" y="73" text-anchor="middle" dominant-baseline="central">等待IMU</text></g><g class="am-node am-node--rect" data-key="建图中" data-step="1"><rect class="am-node-shape" x="514.5" y="82.8" width="67" height="35" rx="3"/><text x="548" y="100.3" text-anchor="middle" dominant-baseline="central">建图中</text></g><g class="am-node am-node--rect" data-key="mapping_ready" data-step="2"><rect class="am-node-shape" x="777.2" y="82.8" width="120.3" height="35" rx="3"/><text x="837.3" y="100.3" text-anchor="middle" dominant-baseline="central">mapping_ready</text></g><g class="am-node am-node--rect" data-key="保存中" data-step="3"><rect class="am-node-shape" x="1022.3" y="82.8" width="67" height="35" rx="3"/><text x="1055.8" y="100.3" text-anchor="middle" dominant-baseline="central">保存中</text></g><g class="am-node am-node--rect" data-key="校验地图" data-step="4"><rect class="am-node-shape" x="1268.5" y="101.8" width="80" height="35" rx="3"/><text x="1308.5" y="119.3" text-anchor="middle" dominant-baseline="central">校验地图</text></g><g class="am-node am-node--rect" data-key="建立检索索引" data-step="5"><rect class="am-node-shape" x="1521.5" y="101.8" width="106" height="35" rx="3"/><text x="1574.5" y="119.3" text-anchor="middle" dominant-baseline="central">建立检索索引</text></g><g class="am-node am-node--rect" data-key="返回MapRef" data-step="6"><rect class="am-node-shape" x="1754.5" y="101.8" width="100" height="35" rx="3"/><text x="1804.5" y="119.3" text-anchor="middle" dominant-baseline="central">返回MapRef</text></g><g class="am-node am-node--rect" data-key="失败结束" data-step="7"><rect class="am-node-shape" x="1268.5" y="20" width="80" height="35" rx="3"/><text x="1308.5" y="37.5" text-anchor="middle" dominant-baseline="central">失败结束</text></g></g></svg></figure>
-<div class="am-md"><p><code>mapping_ready</code>表示可消费建图定位。<code>map_saved</code>只在产物、索引和版本生成后成立。启动进程或收到第一条odom均不能代替这两个条件。</p>
+<div class="am-md"><p><code>close()</code>先阻止新请求，等待保存或原生重启结束，再停止捕获的会话。
+保存中取消不会注册MapRef。Robot关闭时先收尾空间模块，最后关闭本体SDK。</p>
+<p><code>mapping_ready</code>表示可消费建图定位。<code>map_saved</code>只在产物、索引和版本生成后成立。启动进程或收到第一条odom均不能代替这两个条件。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
@@ -788,7 +791,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>MapRef身份与内容一致</td>
 </tr>
 </tbody></table></div>
-<p>SpatialPoseTracker的默认位姿年龄为0.5s，质量年龄为1s。导航还可对自身输入施加更短年龄要求。地图保存等待上限60s；离线工具默认执行上限600s。</p>
+<p>SpatialPoseTracker的默认位姿年龄为0.5s，质量年龄为1s。导航还可对自身输入施加更短年龄要求。地图保存等待上限60s。超时后TERM等待5s，仍未退出则KILL并回收。
+离线工具默认执行上限600s。</p>
 <p>SIM初始化profile用50Hz IMU、2s窗口、100帧。外参、重力参数和静止统计阈值保留在profile，不复制为其他本体的默认值。</p>
 </div></div>
 </section>
@@ -865,7 +869,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 15:39</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -873,7 +877,7 @@ title: 空间运行架构 · spatial_runtime
 subtitle: SW-12 的建图会话、定位坐标、重定位与地图版本
 lang: zh
 doc_id: module-robot-spatial_runtime
-implementation: 370e694d928b04e3
+implementation: cab74ad6f3079d18
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -891,7 +895,8 @@ implementation: 370e694d928b04e3
 | spatial.localize | 加载已校验地图，持续报告定位质量 | LocalizationNode→SpatialPoseTracker |
 | spatial.relocalize | 现有定位会话内重新检索与注册 | ScanContext→ICP→重启定位→新反馈确认 |
 
-G1装配注册这些provider；运行就绪仍取决于传感、原生程序和地图。离线建图工具与在线公共能力不是同一入口。
+G1装配注册这些provider。就绪查询只校验原生程序、配置及输出路径，不启动进程。
+运行仍需真实传感、有效地图和新鲜质量反馈。离线建图工具与在线公共能力不是同一入口。
 
 ## B 组件和坐标数据流
 
@@ -924,6 +929,9 @@ mapping_ready -&gt; 保存中: 显式finalize
 保存中 --&gt; 失败结束: 保存超时或产物缺失
 ```
 
+`close()`先阻止新请求，等待保存或原生重启结束，再停止捕获的会话。
+保存中取消不会注册MapRef。Robot关闭时先收尾空间模块，最后关闭本体SDK。
+
 `mapping_ready`表示可消费建图定位。`map_saved`只在产物、索引和版本生成后成立。启动进程或收到第一条odom均不能代替这两个条件。
 
 ## D 重定位时序
@@ -953,7 +961,8 @@ LocalizationNode --&gt; 空间provider: 新鲜原生匹配反馈
 | 本体位姿转换 | 既有FrameStore与TF组合 | map→IMU→pelvis→base |
 | 版本与产物 | hashlib、PCL读写、关键帧检查 | MapRef身份与内容一致 |
 
-SpatialPoseTracker的默认位姿年龄为0.5s，质量年龄为1s。导航还可对自身输入施加更短年龄要求。地图保存等待上限60s；离线工具默认执行上限600s。
+SpatialPoseTracker的默认位姿年龄为0.5s，质量年龄为1s。导航还可对自身输入施加更短年龄要求。地图保存等待上限60s。超时后TERM等待5s，仍未退出则KILL并回收。
+离线工具默认执行上限600s。
 
 SIM初始化profile用50Hz IMU、2s窗口、100帧。外参、重力参数和静止统计阈值保留在profile，不复制为其他本体的默认值。
 
