@@ -698,14 +698,14 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>渐进式笛卡尔规划与双臂IK</h1><p class="am-sub">当前全身状态作起点，Pink沿末端参考逐步求解</p><div class="am-head-meta"><span><b>doc_id</b>algo-cartesian</span><span><b>implementation</b>46ce1e165166b9ba</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>渐进式笛卡尔规划与双臂IK</h1><p class="am-sub">当前全身状态作起点，Pink沿末端参考逐步求解</p><div class="am-head-meta"><span><b>doc_id</b>algo-cartesian</span><span><b>implementation</b>86863612c66ba6b5</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证边界</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>作用与输入输出</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>输入实测全身关节、一个或两个本体局部TCP目标及原运动限制。
-输出统一JointTrajectory和限定球体范围的诊断。
+输出统一JointTrajectory和限定椭球范围的诊断。
 非操作臂保持；本体状态由STATE提供，SDK写入归EXEC/BODY。</p>
 </div></div>
 </section>
@@ -713,16 +713,16 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原理和调用链</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>位置沿最小jerk时间律插值：<code>b(s)=10s³−15s⁴+6s⁵</code>，<code>p(s)=p₀+b(s)(p₁−p₀)</code>。
 姿态使用SO(3)：<code>R(s)=R₀ exp(b(s) log(R₀ᵀR₁))</code>。
-Pink每步优化末端误差、构型偏好和可操作度，加入关节限位、速度、加速度与BodySphericalBarrier。
+Pink每步优化末端误差、构型偏好和可操作度，加入关节限位、速度、加速度与SelfCollisionBarrier。
 关节更新使用Pinocchio流形积分。</p>
 </div>
-<figure class="am-diagram am-flow"><svg viewBox="0 0 1360 134" width="1360" height="134" role="img" aria-label="流程图：STATE全身快照、最小jerk末端参考、Pink约束差分IK、共用轨迹、限位与球体采样、RNEA与EXEC、失败返回" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M138.2,67 L172.9,67 Q207.7,67 242.4,67 L277.2,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="162.2" y="58" width="91" height="18" rx="3"/><text x="207.7" y="67" text-anchor="middle" dominant-baseline="central">当前TCP与目标</text></g></g><g data-step="1"><path class="am-edge" d="M406,67 L434.9,67 Q463.8,67 492.7,67 L521.5,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="430" y="58" width="67.5" height="18" rx="3"/><text x="463.8" y="67" text-anchor="middle" dominant-baseline="central">单臂或双臂</text></g></g><g data-step="2"><path class="am-edge" d="M642.1,67 L673.8,67 Q705.6,67 737.3,67 L769.1,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="666.1" y="58" width="79" height="18" rx="3"/><text x="705.6" y="67" text-anchor="middle" dominant-baseline="central">渐进关节参考</text></g></g><g data-step="3"><path class="am-edge" d="M849.1,67 L880.9,67 Q912.6,67 944.4,67 L976.1,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="873.1" y="58" width="79" height="18" rx="3"/><text x="912.6" y="67" text-anchor="middle" dominant-baseline="central">实际执行插值</text></g></g><g data-step="4"><path class="am-edge" d="M1095.1,83.4 L1129.7,93 Q1164.4,102.5 1199,102.5 L1233.6,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1130.6" y="93.5" width="67.5" height="18" rx="3"/><text x="1164.4" y="102.5" text-anchor="middle" dominant-baseline="central">通过后发送</text></g></g><g data-step="5"><path class="am-edge am-edge--dashed" d="M1095.1,50.6 L1129.7,41 Q1164.4,31.5 1206.9,31.5 L1249.5,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1119.1" y="22.5" width="90.5" height="18" rx="3"/><text x="1164.4" y="31.5" text-anchor="middle" dominant-baseline="central">无隐式算法回退</text></g></g></g><g><g class="am-node am-node--rect" data-key="STATE全身快照" data-step="0"><rect class="am-node-shape" x="14" y="49.5" width="124.2" height="35" rx="3"/><text x="76.1" y="67" text-anchor="middle" dominant-baseline="central">STATE全身快照</text></g><g class="am-node am-node--rect" data-key="最小jerk末端参考" data-step="0"><rect class="am-node-shape" x="277.2" y="49.5" width="128.9" height="35" rx="3"/><text x="341.6" y="67" text-anchor="middle" dominant-baseline="central">最小jerk末端参考</text></g><g class="am-node am-node--rect" data-key="Pink约束差分IK" data-step="1"><rect class="am-node-shape" x="521.5" y="49.5" width="120.6" height="35" rx="3"/><text x="581.8" y="67" text-anchor="middle" dominant-baseline="central">Pink约束差分IK</text></g><g class="am-node am-node--rect" data-key="共用轨迹" data-step="2"><rect class="am-node-shape" x="769.1" y="49.5" width="80" height="35" rx="3"/><text x="809.1" y="67" text-anchor="middle" dominant-baseline="central">共用轨迹</text></g><g class="am-node am-node--rect" data-key="限位与球体采样" data-step="3"><rect class="am-node-shape" x="976.1" y="49.5" width="119" height="35" rx="3"/><text x="1035.6" y="67" text-anchor="middle" dominant-baseline="central">限位与球体采样</text></g><g class="am-node am-node--rect" data-key="RNEA与EXEC" data-step="4"><rect class="am-node-shape" x="1233.6" y="85" width="111.7" height="35" rx="3"/><text x="1289.5" y="102.5" text-anchor="middle" dominant-baseline="central">RNEA与EXEC</text></g><g class="am-node am-node--rect" data-key="失败返回" data-step="5"><rect class="am-node-shape" x="1249.5" y="14" width="80" height="35" rx="3"/><text x="1289.5" y="31.5" text-anchor="middle" dominant-baseline="central">失败返回</text></g></g></svg></figure></div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1153 170" width="1153" height="170" role="img" aria-label="流程图：STATE全身快照、最小jerk末端参考、Pink约束差分IK、共用轨迹、限位与离散结果、RNEA与EXEC、失败返回" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M138.2,102.5 L172.9,102.5 Q207.7,102.5 242.4,102.5 L277.2,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="162.2" y="93.5" width="91" height="18" rx="3"/><text x="207.7" y="102.5" text-anchor="middle" dominant-baseline="central">当前TCP与目标</text></g></g><g data-step="1"><path class="am-edge" d="M406,102.5 L434.9,102.5 Q463.8,102.5 492.7,102.5 L521.5,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="430" y="93.5" width="67.5" height="18" rx="3"/><text x="463.8" y="102.5" text-anchor="middle" dominant-baseline="central">单臂或双臂</text></g></g><g data-step="2"><path class="am-edge" d="M642.1,119.8 L673.8,128.9 Q705.6,138 747.1,138 L788.6,138" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="666.1" y="129" width="79" height="18" rx="3"/><text x="705.6" y="138" text-anchor="middle" dominant-baseline="central">渐进关节参考</text></g></g><g data-step="3"><path class="am-edge" d="M642.1,85.2 L673.8,76.1 Q705.6,67 737.3,67 L769.1,67" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="677.6" y="58" width="56" height="18" rx="3"/><text x="705.6" y="67" text-anchor="middle" dominant-baseline="central">每步积分</text></g></g><g data-step="4"><path class="am-edge" d="M888.1,83.4 L922.7,93 Q957.4,102.5 992,102.5 L1026.6,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="923.6" y="93.5" width="67.5" height="18" rx="3"/><text x="957.4" y="102.5" text-anchor="middle" dominant-baseline="central">通过后发送</text></g></g><g data-step="5"><path class="am-edge am-edge--dashed" d="M888.1,50.6 L922.7,41 Q957.4,31.5 999.9,31.5 L1042.5,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="912.1" y="22.5" width="90.5" height="18" rx="3"/><text x="957.4" y="31.5" text-anchor="middle" dominant-baseline="central">无隐式算法回退</text></g></g></g><g><g class="am-node am-node--rect" data-key="STATE全身快照" data-step="0"><rect class="am-node-shape" x="14" y="85" width="124.2" height="35" rx="3"/><text x="76.1" y="102.5" text-anchor="middle" dominant-baseline="central">STATE全身快照</text></g><g class="am-node am-node--rect" data-key="最小jerk末端参考" data-step="0"><rect class="am-node-shape" x="277.2" y="85" width="128.9" height="35" rx="3"/><text x="341.6" y="102.5" text-anchor="middle" dominant-baseline="central">最小jerk末端参考</text></g><g class="am-node am-node--rect" data-key="Pink约束差分IK" data-step="1"><rect class="am-node-shape" x="521.5" y="85" width="120.6" height="35" rx="3"/><text x="581.8" y="102.5" text-anchor="middle" dominant-baseline="central">Pink约束差分IK</text></g><g class="am-node am-node--rect" data-key="共用轨迹" data-step="2"><rect class="am-node-shape" x="788.6" y="120.5" width="80" height="35" rx="3"/><text x="828.6" y="138" text-anchor="middle" dominant-baseline="central">共用轨迹</text></g><g class="am-node am-node--rect" data-key="限位与离散结果" data-step="3"><rect class="am-node-shape" x="769.1" y="49.5" width="119" height="35" rx="3"/><text x="828.6" y="67" text-anchor="middle" dominant-baseline="central">限位与离散结果</text></g><g class="am-node am-node--rect" data-key="RNEA与EXEC" data-step="4"><rect class="am-node-shape" x="1026.6" y="85" width="111.7" height="35" rx="3"/><text x="1082.5" y="102.5" text-anchor="middle" dominant-baseline="central">RNEA与EXEC</text></g><g class="am-node am-node--rect" data-key="失败返回" data-step="5"><rect class="am-node-shape" x="1042.5" y="14" width="80" height="35" rx="3"/><text x="1082.5" y="31.5" text-anchor="middle" dominant-baseline="central">失败返回</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>参数与运行特性</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>末端参考至少2秒；自由段0.06m/s，参考管段0.048m/s，转动参考0.3rad/s。
 Pink位置cost200、姿态100、posture默认0.1、manipulability0.001；Clarabel最多200迭代。
-共用执行器对Pink结点使用线性插值，并检查导数与球体余量。
+共用执行器对Pink结点使用线性插值，并保留导数检查；椭球约束在真实积分步求解。
 末端minimum-jerk参考不意味着关节轨迹已具备C2连续性。</p>
 </div></div>
 </section>
@@ -731,22 +731,22 @@ Pink位置cost200、姿态100、posture默认0.1、manipulability0.001；Clarabe
 <div class="am-panel-body"><div class="am-md"><p>复用<a href="https://github.com/stephane-caron/pink">Pink</a>、Pinocchio、qpsolvers/Clarabel。
 共用入口为<code>cartesian_worker.solve_cartesian</code>；<code>pink_barrier_trial.plan_trial</code>同时服务公开能力和独立实验。
 <code>differential_ik.py</code>求解，<code>pink_trajectory.py</code>生成轨迹，<code>pink_collision.py</code>复核。
-关节准备使用同一Pink限制与球体模型的PostureTask。</p>
+关节准备使用同一Pink限制与椭球模型的PostureTask。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用条件与失败处理</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>单臂保持另一臂；双臂同时建立两TCP目标。
 相对关系要求由公共约束检查实际执行插值，不等同于双臂抓取接触规划。
-无解、限位、球体重叠或超时返回原原因，不启动MoveIt/FCL、TOTG或TrajOpt备用路径。</p>
+无解、限位、代理相交或超时返回原原因，不启动MoveIt/FCL、TOTG或TrajOpt备用路径。</p>
 <p>Pink积分间隔不超过40ms，长旋转不会因固定结点上限而拉长单步。
-实际执行插值仍按4ms采样复核所选球对；离散QP可行不代表整条插值已经通过。
+在线不重扫4ms整轨迹碰撞距离；离散QP可行不代表连续插值防碰证明。
 只读取本体局部几何，不读取SLAM或仿真真值。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
 <header class="am-panel-head"><span class="am-panel-id">F</span><h2>验证边界</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>球体不覆盖肩、指尖、世界障碍或持物，详见<a href="algo-collision.html">Pink球体约束</a>。
+<div class="am-panel-body"><div class="am-md"><p>椭球不覆盖外壳细节、指尖、世界障碍或持物，详见<a href="algo-collision.html">Pink椭球约束</a>。
 实际末端仍须通过STATE反馈确认；关节到位不证明TCP到位。
 计算墙钟、轨迹时长和RTF分别报告。</p>
 <p><a href="algorithms.html">算法目录</a> · <a href="modules.html">模块目录</a> · <a href="experiments.html">实验口径</a></p>
@@ -770,7 +770,7 @@ Pink位置cost200、姿态100、posture默认0.1、manipulability0.001；Clarabe
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 03:02</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 09:31</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -778,7 +778,7 @@ title: 渐进式笛卡尔规划与双臂IK
 subtitle: 当前全身状态作起点，Pink沿末端参考逐步求解
 lang: zh
 doc_id: algo-cartesian
-implementation: 46ce1e165166b9ba
+implementation: 86863612c66ba6b5
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -786,30 +786,30 @@ implementation: 46ce1e165166b9ba
 ## A 作用与输入输出
 
 输入实测全身关节、一个或两个本体局部TCP目标及原运动限制。
-输出统一JointTrajectory和限定球体范围的诊断。
+输出统一JointTrajectory和限定椭球范围的诊断。
 非操作臂保持；本体状态由STATE提供，SDK写入归EXEC/BODY。
 
 ## B 原理和调用链
 
 位置沿最小jerk时间律插值：`b(s)=10s³−15s⁴+6s⁵`，`p(s)=p₀+b(s)(p₁−p₀)`。
 姿态使用SO(3)：`R(s)=R₀ exp(b(s) log(R₀ᵀR₁))`。
-Pink每步优化末端误差、构型偏好和可操作度，加入关节限位、速度、加速度与BodySphericalBarrier。
+Pink每步优化末端误差、构型偏好和可操作度，加入关节限位、速度、加速度与SelfCollisionBarrier。
 关节更新使用Pinocchio流形积分。
 
 ```flow LR
 STATE全身快照 -&gt; 最小jerk末端参考: 当前TCP与目标
 最小jerk末端参考 -&gt; Pink约束差分IK: 单臂或双臂
 Pink约束差分IK -&gt; 共用轨迹: 渐进关节参考
-共用轨迹 -&gt; 限位与球体采样: 实际执行插值
-限位与球体采样 -&gt; RNEA与EXEC: 通过后发送
-限位与球体采样 --&gt; 失败返回: 无隐式算法回退
+Pink约束差分IK -&gt; 限位与离散结果: 每步积分
+限位与离散结果 -&gt; RNEA与EXEC: 通过后发送
+限位与离散结果 --&gt; 失败返回: 无隐式算法回退
 ```
 
 ## C 参数与运行特性
 
 末端参考至少2秒；自由段0.06m/s，参考管段0.048m/s，转动参考0.3rad/s。
 Pink位置cost200、姿态100、posture默认0.1、manipulability0.001；Clarabel最多200迭代。
-共用执行器对Pink结点使用线性插值，并检查导数与球体余量。
+共用执行器对Pink结点使用线性插值，并保留导数检查；椭球约束在真实积分步求解。
 末端minimum-jerk参考不意味着关节轨迹已具备C2连续性。
 
 ## D 实现与复用来源
@@ -817,21 +817,21 @@ Pink位置cost200、姿态100、posture默认0.1、manipulability0.001；Clarabe
 复用[Pink](https://github.com/stephane-caron/pink)、Pinocchio、qpsolvers/Clarabel。
 共用入口为`cartesian_worker.solve_cartesian`；`pink_barrier_trial.plan_trial`同时服务公开能力和独立实验。
 `differential_ik.py`求解，`pink_trajectory.py`生成轨迹，`pink_collision.py`复核。
-关节准备使用同一Pink限制与球体模型的PostureTask。
+关节准备使用同一Pink限制与椭球模型的PostureTask。
 
 ## E 适用条件与失败处理
 
 单臂保持另一臂；双臂同时建立两TCP目标。
 相对关系要求由公共约束检查实际执行插值，不等同于双臂抓取接触规划。
-无解、限位、球体重叠或超时返回原原因，不启动MoveIt/FCL、TOTG或TrajOpt备用路径。
+无解、限位、代理相交或超时返回原原因，不启动MoveIt/FCL、TOTG或TrajOpt备用路径。
 
 Pink积分间隔不超过40ms，长旋转不会因固定结点上限而拉长单步。
-实际执行插值仍按4ms采样复核所选球对；离散QP可行不代表整条插值已经通过。
+在线不重扫4ms整轨迹碰撞距离；离散QP可行不代表连续插值防碰证明。
 只读取本体局部几何，不读取SLAM或仿真真值。
 
 ## F 验证边界
 
-球体不覆盖肩、指尖、世界障碍或持物，详见[Pink球体约束](algo-collision.html)。
+椭球不覆盖外壳细节、指尖、世界障碍或持物，详见[Pink椭球约束](algo-collision.html)。
 实际末端仍须通过STATE反馈确认；关节到位不证明TCP到位。
 计算墙钟、轨迹时长和RTF分别报告。
 

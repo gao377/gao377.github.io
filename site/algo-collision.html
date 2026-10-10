@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>Pink球体距离约束</title>
+<title>Pink椭球表面距离约束</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,49 +698,55 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>Pink球体距离约束</h1><p class="am-sub">原生BodySphericalBarrier，明确覆盖范围</p><div class="am-head-meta"><span><b>doc_id</b>algo-collision</span><span><b>implementation</b>4c9444883fc6b81e</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>Pink椭球表面距离约束</h1><p class="am-sub">内部代表性椭球与原生SelfCollisionBarrier，明确离散覆盖范围</p><div class="am-head-meta"><span><b>doc_id</b>algo-collision</span><span><b>implementation</b>86863612c66ba6b5</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 输入与输出</a><a href="#panel-B">B · 模型与原理</a><a href="#panel-C">C · 保留的限制</a><a href="#panel-D">D · 实现与来源</a><a href="#panel-E">E · 适用边界</a><a href="#panel-F">F · 独立实验入口</a><a href="#panel-G">G · 解析椭球与全身预览工具</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>输入与输出</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>输入G1/REVO2模型、实测全身关节、活动臂和关节参考。
-输出球体距离余量、限制球对和采样数量。
-该结果不提供世界障碍或指尖碰撞证书。</p>
+<div class="am-panel-body"><div class="am-md"><p>输入实测全身关节、活动臂及绑定同一URDF的椭球配置。
+输出真实Pink积分步的最小表面距离、限制几何对、步数与配置指纹。
+结果绑定本次轨迹和完整起点，不能用于另一条轨迹。
+未覆盖的外部距离保持为空。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>模型与原理</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>复用Pink原生<code>BodySphericalBarrier</code>，将<code>h=||c₁−c₂||²−d_min²</code>加入差分IK约束。
-七个球体覆盖躯干，以及左右肘、腕和掌根。
-球心与半径来自URDF碰撞几何的原生局部包围盒。
-活动臂与躯干、左右臂之间的球对参与约束。</p>
+<div class="am-panel-body"><div class="am-md"><p>17个内部代表椭球覆盖躯干和完整双臂链至掌根。
+左右单臂各92对，双臂120对；只排除URDF直接邻接和固定同体。
+原生<code>SelfCollisionBarrier</code>将解析表面距离约束加入差分IK。
+额外净距为0m，不用球心距离代替椭球表面距离。
+全身运动学和几何同步约化，固定关节使用实际状态。</p>
 </div>
-<figure class="am-diagram am-flow"><svg viewBox="0 0 1316 134" width="1316" height="134" role="img" aria-label="流程图：URDF几何、原生局部包围球、实测全身q、Pink配置、BodySphericalBarrier、Pink差分IK、实际插值采样、明确范围的结果" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M105.7,31.5 L146.1,31.5 Q186.5,31.5 226.8,31.5 L267.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="147" y="22.5" width="79" height="18" rx="3"/><text x="186.5" y="31.5" text-anchor="middle" dominant-baseline="central">七个身体部位</text></g></g><g data-step="1"><path class="am-edge" d="M103.5,102.5 L145,102.5 Q186.5,102.5 236.2,102.5 L285.9,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="129.7" y="93.5" width="113.5" height="18" rx="3"/><text x="186.5" y="102.5" text-anchor="middle" dominant-baseline="central">固定身体、求活动臂</text></g></g><g data-step="2"><path class="am-edge" d="M386.2,31.5 L412.2,31.5 Q438.2,31.5 464.2,31.5 L490.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="410.2" y="22.5" width="56" height="18" rx="3"/><text x="438.2" y="31.5" text-anchor="middle" dominant-baseline="central">球心距离</text></g></g><g data-step="3"><path class="am-edge" d="M646.6,31.5 L672.6,31.5 Q698.6,31.5 724.6,31.5 L750.6,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="670.6" y="22.5" width="56" height="18" rx="3"/><text x="698.6" y="31.5" text-anchor="middle" dominant-baseline="central">每步约束</text></g></g><g data-step="4"><path class="am-edge" d="M845.2,31.5 L874.1,31.5 Q903,31.5 931.8,31.5 L960.7,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="869.2" y="22.5" width="67.5" height="18" rx="3"/><text x="903" y="31.5" text-anchor="middle" dominant-baseline="central">共用执行器</text></g></g><g data-step="5"><path class="am-edge" d="M1066.7,31.5 L1095.6,31.5 Q1124.5,31.5 1153.3,31.5 L1182.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1090.7" y="22.5" width="67.5" height="18" rx="3"/><text x="1124.5" y="31.5" text-anchor="middle" dominant-baseline="central">余量与球对</text></g></g></g><g><g class="am-node am-node--rect" data-key="URDF几何" data-step="0"><rect class="am-node-shape" x="14" y="14" width="91.7" height="35" rx="3"/><text x="59.9" y="31.5" text-anchor="middle" dominant-baseline="central">URDF几何</text></g><g class="am-node am-node--rect" data-key="原生局部包围球" data-step="0"><rect class="am-node-shape" x="267.2" y="14" width="119" height="35" rx="3"/><text x="326.7" y="31.5" text-anchor="middle" dominant-baseline="central">原生局部包围球</text></g><g class="am-node am-node--rect" data-key="实测全身q" data-step="1"><rect class="am-node-shape" x="16.2" y="85" width="87.3" height="35" rx="3"/><text x="59.9" y="102.5" text-anchor="middle" dominant-baseline="central">实测全身q</text></g><g class="am-node am-node--rect" data-key="Pink配置" data-step="1"><rect class="am-node-shape" x="285.9" y="85" width="81.6" height="35" rx="3"/><text x="326.7" y="102.5" text-anchor="middle" dominant-baseline="central">Pink配置</text></g><g class="am-node am-node--rect" data-key="BodySphericalBarrier" data-step="2"><rect class="am-node-shape" x="490.2" y="14" width="156.4" height="35" rx="3"/><text x="568.4" y="31.5" text-anchor="middle" dominant-baseline="central">BodySphericalBarrier</text></g><g class="am-node am-node--rect" data-key="Pink差分IK" data-step="3"><rect class="am-node-shape" x="750.6" y="14" width="94.6" height="35" rx="3"/><text x="797.9" y="31.5" text-anchor="middle" dominant-baseline="central">Pink差分IK</text></g><g class="am-node am-node--rect" data-key="实际插值采样" data-step="4"><rect class="am-node-shape" x="960.7" y="14" width="106" height="35" rx="3"/><text x="1013.7" y="31.5" text-anchor="middle" dominant-baseline="central">实际插值采样</text></g><g class="am-node am-node--rect" data-key="明确范围的结果" data-step="5"><rect class="am-node-shape" x="1182.2" y="14" width="119" height="35" rx="3"/><text x="1241.7" y="31.5" text-anchor="middle" dominant-baseline="central">明确范围的结果</text></g></g></svg></figure></div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1429 134" width="1429" height="134" role="img" aria-label="流程图：URDF与配置指纹、内部解析椭球、STATE全身q、同步约化配置、SelfCollisionBarrier、Pink差分IK、离散步结果、轨迹与起点绑定" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M144.7,31.5 L185.1,31.5 Q225.5,31.5 265.8,31.5 L306.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="196.8" y="22.5" width="57.4" height="18" rx="3"/><text x="225.5" y="31.5" text-anchor="middle" dominant-baseline="central">17个连杆</text></g></g><g data-step="1"><path class="am-edge" d="M132.1,102.5 L178.8,102.5 Q225.5,102.5 265.8,102.5 L306.2,102.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="168.7" y="93.5" width="113.5" height="18" rx="3"/><text x="225.5" y="102.5" text-anchor="middle" dominant-baseline="central">固定身体、求活动臂</text></g></g><g data-step="2"><path class="am-edge" d="M412.2,31.5 L444,31.5 Q475.7,31.5 507.5,31.5 L539.2,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="436.2" y="22.5" width="79" height="18" rx="3"/><text x="475.7" y="31.5" text-anchor="middle" dominant-baseline="central">原生表面距离</text></g></g><g data-step="3"><path class="am-edge" d="M686.3,31.5 L716.7,31.5 Q747.1,31.5 777.6,31.5 L808,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="710.3" y="22.5" width="73.7" height="18" rx="3"/><text x="747.1" y="31.5" text-anchor="middle" dominant-baseline="central">每步QP约束</text></g></g><g data-step="4"><path class="am-edge" d="M902.6,31.5 L945.8,31.5 Q989.1,31.5 1032.3,31.5 L1075.6,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="926.6" y="22.5" width="125" height="18" rx="3"/><text x="989.1" y="31.5" text-anchor="middle" dominant-baseline="central">读取更新后的距离缓存</text></g></g><g data-step="5"><path class="am-edge" d="M1168.6,31.5 L1200.3,31.5 Q1232.1,31.5 1263.8,31.5 L1295.6,31.5" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="1192.6" y="22.5" width="79" height="18" rx="3"/><text x="1232.1" y="31.5" text-anchor="middle" dominant-baseline="central">保留限定范围</text></g></g></g><g><g class="am-node am-node--rect" data-key="URDF与配置指纹" data-step="0"><rect class="am-node-shape" x="14" y="14" width="130.7" height="35" rx="3"/><text x="79.4" y="31.5" text-anchor="middle" dominant-baseline="central">URDF与配置指纹</text></g><g class="am-node am-node--rect" data-key="内部解析椭球" data-step="0"><rect class="am-node-shape" x="306.2" y="14" width="106" height="35" rx="3"/><text x="359.2" y="31.5" text-anchor="middle" dominant-baseline="central">内部解析椭球</text></g><g class="am-node am-node--rect" data-key="STATE全身q" data-step="1"><rect class="am-node-shape" x="26.6" y="85" width="105.5" height="35" rx="3"/><text x="79.4" y="102.5" text-anchor="middle" dominant-baseline="central">STATE全身q</text></g><g class="am-node am-node--rect" data-key="同步约化配置" data-step="1"><rect class="am-node-shape" x="306.2" y="85" width="106" height="35" rx="3"/><text x="359.2" y="102.5" text-anchor="middle" dominant-baseline="central">同步约化配置</text></g><g class="am-node am-node--rect" data-key="SelfCollisionBarrier" data-step="2"><rect class="am-node-shape" x="539.2" y="14" width="147.1" height="35" rx="3"/><text x="612.7" y="31.5" text-anchor="middle" dominant-baseline="central">SelfCollisionBarrier</text></g><g class="am-node am-node--rect" data-key="Pink差分IK" data-step="3"><rect class="am-node-shape" x="808" y="14" width="94.6" height="35" rx="3"/><text x="855.3" y="31.5" text-anchor="middle" dominant-baseline="central">Pink差分IK</text></g><g class="am-node am-node--rect" data-key="离散步结果" data-step="4"><rect class="am-node-shape" x="1075.6" y="14" width="93" height="35" rx="3"/><text x="1122.1" y="31.5" text-anchor="middle" dominant-baseline="central">离散步结果</text></g><g class="am-node am-node--rect" data-key="轨迹与起点绑定" data-step="5"><rect class="am-node-shape" x="1295.6" y="14" width="119" height="35" rx="3"/><text x="1355.1" y="31.5" text-anchor="middle" dominant-baseline="central">轨迹与起点绑定</text></g></g></svg></figure></div>
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>保留的限制</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>原关节限位、前方TCP工作区、速度、加速度、力矩、实测起点、触觉和执行租约保持。
-手预成形验证REVO2官方映射和关节限位，不输出指尖碰撞通过结论。
-刚性本体平移不改变自体球距；BASE检查不据此宣称外部路径无障碍。</p>
+<div class="am-panel-body"><div class="am-md"><p>保留关节限位、前方TCP工作区、速度、加速度、力矩和实际起点验证。
+触觉、执行期限、取消和租约沿用共同执行器。
+关节准备与选臂使用同一模型；不恢复独立MoveIt/FCL最终校核。
+在线不再以4ms间隔重扫整条轨迹的碰撞距离。
+离散步结果不构成连续插值或完整实体防碰证明。
+手预成形只验证官方映射和限位，不输出指尖防碰结论。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
 <header class="am-panel-head"><span class="am-panel-id">D</span><h2>实现与来源</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>复用<a href="https://github.com/stephane-caron/pink">Pink</a>与Pinocchio原生API。
-<code>spherical_barriers.py</code>构造球对，<code>pink_collision.py</code>检查状态与共用插值。
-<code>hand_preform.py</code>只验证官方手部映射与限位。
-MoveIt的Get/ApplyPlanningScene服务暂用于局部场景数据与附着关系。
-当前REVO2操作不调用其路径规划、FCL校核或自动修复。
-历史相关源码保留，不能视为默认备用路径。</p>
+<div class="am-panel-body"><div class="am-md"><p>复用<a href="https://github.com/stephane-caron/pink">Pink</a>、Pinocchio和原生HPP-FCL解析几何。
+<code>ellipsoid_calibration.py</code>读取唯一安装配置并验证来源URDF指纹。
+<code>ellipsoid_geometry.py</code>构造解析几何、同步约化并恢复碰撞对。
+<code>differential_ik.py</code>把约束送入QP，读取每个积分步的缓存距离。
+<code>pink_path_result.py</code>绑定结果、轨迹和完整起点。
+<code>pink_collision.py</code>检查指定状态或消费同次规划结果，保留非碰撞检查。
+MoveIt场景服务暂提供局部数据和附着关系，不能作为默认路径规划备用。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>适用边界</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>包围球较保守；球体重叠可能拒绝实际不接触的构型。
-该模型不覆盖肩、指尖、台面、其他世界障碍和附着物。
-未覆盖距离报告为空，不填无限大或PASS。
-RGB-D与触觉仍分别负责观测和接触反馈。</p>
+<div class="am-panel-body"><div class="am-md"><p>内部代表体不覆盖全部外壳边角，也不保证贴合原网格凹槽。
+它不覆盖手指、头、下肢、台面、其他世界障碍和附着物。
+代理分离不意味着完整机器人没有实体接触。
+RGB-D与触觉继续分别提供几何和接触反馈。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -773,7 +779,7 @@ Pink内部使用HPP-FCL求解析几何距离，不调用独立MoveIt最终路径
 彩色椭球表示内部约束范围，灰色完整本体用于空间对照。
 该近似不保护全部外壳边角，也不保证贴合原网格凹槽；代理分离不等于完整实体绝无接触。
 该工具不发送运动指令，静态包络不构成轨迹验收。
-公共运动入口当前仍使用前述球体实现；椭球组件尚未切换为默认规划后端。</p>
+公共操作入口共用这份内部代表椭球配置和原生约束。</p>
 <p>拟合采用<a href="https://web.cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/max_vol_ellip_in_polyhedra.html">CVX官方最大体积内接椭球公式</a>，不改变在线Pink求解器。</p>
 </div></div>
 </section>
@@ -795,62 +801,68 @@ Pink内部使用HPP-FCL求解析几何距离，不调用独立MoveIt最终路径
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 09:17</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 09:31</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: Pink球体距离约束
-subtitle: 原生BodySphericalBarrier，明确覆盖范围
+title: Pink椭球表面距离约束
+subtitle: 内部代表性椭球与原生SelfCollisionBarrier，明确离散覆盖范围
 lang: zh
 doc_id: algo-collision
-implementation: 4c9444883fc6b81e
+implementation: 86863612c66ba6b5
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
 ## A 输入与输出
 
-输入G1/REVO2模型、实测全身关节、活动臂和关节参考。
-输出球体距离余量、限制球对和采样数量。
-该结果不提供世界障碍或指尖碰撞证书。
+输入实测全身关节、活动臂及绑定同一URDF的椭球配置。
+输出真实Pink积分步的最小表面距离、限制几何对、步数与配置指纹。
+结果绑定本次轨迹和完整起点，不能用于另一条轨迹。
+未覆盖的外部距离保持为空。
 
 ## B 模型与原理
 
-复用Pink原生`BodySphericalBarrier`，将`h=||c₁−c₂||²−d_min²`加入差分IK约束。
-七个球体覆盖躯干，以及左右肘、腕和掌根。
-球心与半径来自URDF碰撞几何的原生局部包围盒。
-活动臂与躯干、左右臂之间的球对参与约束。
+17个内部代表椭球覆盖躯干和完整双臂链至掌根。
+左右单臂各92对，双臂120对；只排除URDF直接邻接和固定同体。
+原生`SelfCollisionBarrier`将解析表面距离约束加入差分IK。
+额外净距为0m，不用球心距离代替椭球表面距离。
+全身运动学和几何同步约化，固定关节使用实际状态。
 
 ```flow LR
-URDF几何 -&gt; 原生局部包围球: 七个身体部位
-实测全身q -&gt; Pink配置: 固定身体、求活动臂
-原生局部包围球 -&gt; BodySphericalBarrier: 球心距离
-BodySphericalBarrier -&gt; Pink差分IK: 每步约束
-Pink差分IK -&gt; 实际插值采样: 共用执行器
-实际插值采样 -&gt; 明确范围的结果: 余量与球对
+URDF与配置指纹 -&gt; 内部解析椭球: 17个连杆
+STATE全身q -&gt; 同步约化配置: 固定身体、求活动臂
+内部解析椭球 -&gt; SelfCollisionBarrier: 原生表面距离
+SelfCollisionBarrier -&gt; Pink差分IK: 每步QP约束
+Pink差分IK -&gt; 离散步结果: 读取更新后的距离缓存
+离散步结果 -&gt; 轨迹与起点绑定: 保留限定范围
 ```
 
 ## C 保留的限制
 
-原关节限位、前方TCP工作区、速度、加速度、力矩、实测起点、触觉和执行租约保持。
-手预成形验证REVO2官方映射和关节限位，不输出指尖碰撞通过结论。
-刚性本体平移不改变自体球距；BASE检查不据此宣称外部路径无障碍。
+保留关节限位、前方TCP工作区、速度、加速度、力矩和实际起点验证。
+触觉、执行期限、取消和租约沿用共同执行器。
+关节准备与选臂使用同一模型；不恢复独立MoveIt/FCL最终校核。
+在线不再以4ms间隔重扫整条轨迹的碰撞距离。
+离散步结果不构成连续插值或完整实体防碰证明。
+手预成形只验证官方映射和限位，不输出指尖防碰结论。
 
 ## D 实现与来源
 
-复用[Pink](https://github.com/stephane-caron/pink)与Pinocchio原生API。
-`spherical_barriers.py`构造球对，`pink_collision.py`检查状态与共用插值。
-`hand_preform.py`只验证官方手部映射与限位。
-MoveIt的Get/ApplyPlanningScene服务暂用于局部场景数据与附着关系。
-当前REVO2操作不调用其路径规划、FCL校核或自动修复。
-历史相关源码保留，不能视为默认备用路径。
+复用[Pink](https://github.com/stephane-caron/pink)、Pinocchio和原生HPP-FCL解析几何。
+`ellipsoid_calibration.py`读取唯一安装配置并验证来源URDF指纹。
+`ellipsoid_geometry.py`构造解析几何、同步约化并恢复碰撞对。
+`differential_ik.py`把约束送入QP，读取每个积分步的缓存距离。
+`pink_path_result.py`绑定结果、轨迹和完整起点。
+`pink_collision.py`检查指定状态或消费同次规划结果，保留非碰撞检查。
+MoveIt场景服务暂提供局部数据和附着关系，不能作为默认路径规划备用。
 
 ## E 适用边界
 
-包围球较保守；球体重叠可能拒绝实际不接触的构型。
-该模型不覆盖肩、指尖、台面、其他世界障碍和附着物。
-未覆盖距离报告为空，不填无限大或PASS。
-RGB-D与触觉仍分别负责观测和接触反馈。
+内部代表体不覆盖全部外壳边角，也不保证贴合原网格凹槽。
+它不覆盖手指、头、下肢、台面、其他世界障碍和附着物。
+代理分离不意味着完整机器人没有实体接触。
+RGB-D与触觉继续分别提供几何和接触反馈。
 
 ## F 独立实验入口
 
@@ -890,7 +902,7 @@ bash tools/manipulation_visualization/launch.sh artifacts/ellipsoid-preview
 彩色椭球表示内部约束范围，灰色完整本体用于空间对照。
 该近似不保护全部外壳边角，也不保证贴合原网格凹槽；代理分离不等于完整实体绝无接触。
 该工具不发送运动指令，静态包络不构成轨迹验收。
-公共运动入口当前仍使用前述球体实现；椭球组件尚未切换为默认规划后端。
+公共操作入口共用这份内部代表椭球配置和原生约束。
 
 拟合采用[CVX官方最大体积内接椭球公式](https://web.cvxr.com/cvx/examples/cvxbook/Ch08_geometric_probs/html/max_vol_ellip_in_polyhedra.html)，不改变在线Pink求解器。
 </textarea>

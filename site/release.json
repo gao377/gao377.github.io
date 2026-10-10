@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "4c9444883fc6b81eebc7ced48bc5a16dbbefad54cfcc9b03fca94fa38deb6aa0",
+  "implementation_sha256": "86863612c66ba6b5f281b29a21f2d388518fc22e20b9783b5b05220e7b003864",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -63,11 +63,11 @@
     },
     {
       "file": "algo-cartesian.html",
-      "source_sha256": "e544951e02b4ed7c70f8855462c611f08d432472b24a7401bc259fd1d009a2ab"
+      "source_sha256": "fb53c15d25bc5113a98e6920ed06cc094cf1d564844001e54bdbd52e80359172"
     },
     {
       "file": "algo-collision.html",
-      "source_sha256": "502901a53ea5a99e96d3f7f47c0531009d69df2b53add35480accb78932e879a"
+      "source_sha256": "00e6125fca37ea39febb445a6bee4260961afc5ac1a1754ebc031aa10fd07945"
     },
     {
       "file": "algo-execution.html",
@@ -127,11 +127,11 @@
     },
     {
       "file": "algo-trajectory.html",
-      "source_sha256": "35d5af258d4f9365e687e085d88d8f05de46d385b2ece5133905628e2832eba3"
+      "source_sha256": "6e079b21e13177f63890d333cbf0312dc737c7e1031d50e29db6e762a4ce6dbc"
     },
     {
       "file": "algorithms.html",
-      "source_sha256": "90d8074ce2433bdccd21ee65bf6d11ced5fa012a24614ed3b9a2275f9dddbb93"
+      "source_sha256": "77e779e87cded1de03fa38f11d310da4d57035fe108bb92a5bd1177f30d32f7d"
     },
     {
       "file": "architecture-map.html",
@@ -187,7 +187,7 @@
     },
     {
       "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "6c821af084de4acb14575855592a08b1e8ba95182a232a1fbe03fb885e1f1f81"
+      "source_sha256": "446b82ae8851ef93165cf9290933ee80e8dcab23343f0aa0b94a2de3733e4e04"
     },
     {
       "file": "files-robot-motion_coordinator.html",
@@ -391,11 +391,11 @@
     },
     {
       "file": "runtime-internals.html",
-      "source_sha256": "eb1929066eaf0e16d5909deaf436dc612a086581aad7d099ecd0d5deb05075d0"
+      "source_sha256": "b7954552e39824475f9aca6d503dc720f3b341cfc5d594810b4dd54815f2d6bc"
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "73fd8998c8b5bb19f372ace9f033f122185696e30c153401d9236b7cbc94095b"
+      "source_sha256": "9881dbebabcfa68397bf43c30597ec765d5a93f963595f6eb2288c01e3bb50db"
     }
   ],
   "assets": [
@@ -429,11 +429,11 @@
     },
     {
       "file": "diagrams/manipulation-runtime.drawio",
-      "sha256": "9e0d13efdff1f32ffa796412f3e1ef6954e49bc663114125db738a22a7cfc5dc"
+      "sha256": "3c5c25ae5359ed01eddec8558138464dffdeb4918372493575cae0f91cbeb91b"
     },
     {
       "file": "diagrams/manipulation-runtime.html",
-      "sha256": "8d165827f01c55c26b6d4d32a52a31080497ff38f0ec73edada557573105559d"
+      "sha256": "7e97644816a7509594b6bcb1418c2a72884b7eb7f2bec6d2c6d914e7272b727e"
     },
     {
       "file": "diagrams/manipulation-runtime.svg",

@@ -126,7 +126,7 @@
         <mxCell id="QP" value="&lt;b&gt;关节参考与导数限制&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;Pink结点 → 共用线性插值&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
           <mxGeometry x="540" y="460" width="380" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="CHECK" value="&lt;b&gt;球体与轨迹复核&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;Pink sphere + 实际插值；非全碰撞&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+        <mxCell id="CHECK" value="&lt;b&gt;椭球约束与限位复核&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;Pink SelfCollisionBarrier；离散代理约束&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
           <mxGeometry x="50" y="460" width="380" height="105" as="geometry" />
         </mxCell>
         <mxCell id="SEND" value="&lt;b&gt;RNEA与执行&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:16px&quot;&gt;前馈力矩 + SDK端点反馈&lt;/font&gt;" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
