@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "f32e735bb3e56783c342328d30a775e0fb5cb7e7e1fe519f2a5a8f2268dd5d8a",
+  "implementation_sha256": "276c4e54a8b3daa8f685062397ffa1db12a951ad72f2beb9915650e004ba9276",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -71,7 +71,7 @@
     },
     {
       "file": "algo-execution.html",
-      "source_sha256": "f8a4460d74b6aa58b3f05aa3cfa15dc776cdd9de9643a705badbd805093d7966"
+      "source_sha256": "2242ae754bfc067a25d8e190692d54a9359110355c1df232722b0afd862a17f5"
     },
     {
       "file": "algo-exploration.html",
@@ -183,11 +183,11 @@
     },
     {
       "file": "files-robot-local_task_runtime.html",
-      "source_sha256": "5cd80caa8b13f7cbaa35934728ffa2578f2bff1e196453a41112145f01e6ea23"
+      "source_sha256": "836dd0a485359794f4689405227452d7ee2d904ff47870f44c0b4bd7bc16f89d"
     },
     {
       "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "446b82ae8851ef93165cf9290933ee80e8dcab23343f0aa0b94a2de3733e4e04"
+      "source_sha256": "ce0f089d05222cc938fa742edd254fc96b699042298a2d8876353c4bdf31679c"
     },
     {
       "file": "files-robot-motion_coordinator.html",
@@ -307,11 +307,11 @@
     },
     {
       "file": "module-robot-local_task_runtime.html",
-      "source_sha256": "91d2da92770ca2d32cf897e11190d21d06b1dd575edd20b11333d6a016b552fc"
+      "source_sha256": "74921fec716d25344d321035ddbe495bd5c2d56dc3444b5d32f53825a3b22b9a"
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "971b8979d5b9ca0102c6ad6ac5a1128728016d2d389bdd872d7334efe74a7b01"
+      "source_sha256": "5419bd15d6ae188366b95d20b467dfb71e9122200127aa0f7be4250c8e20dfce"
     },
     {
       "file": "module-robot-motion_coordinator.html",
@@ -395,7 +395,7 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "ac10162f5474f7db9c7fe6c7789c29d9ff3a738758912a10d2288291a6e76836"
+      "source_sha256": "d9945f3a56d6dd909c67c7c91b95239593f477a7883f763c0f985cfcf91dde9d"
     }
   ],
   "assets": [
