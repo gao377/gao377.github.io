@@ -698,13 +698,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>navigation_runtime · 文件与符号</h1><p class="am-sub">按当前源码 AST 提取，不嵌入函数正文</p><div class="am-head-meta"><span><b>doc_id</b>files-robot-navigation_runtime</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>navigation_runtime · 文件与符号</h1><p class="am-sub">按当前源码 AST 提取，不嵌入函数正文</p><div class="am-head-meta"><span><b>doc_id</b>files-robot-navigation_runtime</span><span><b>implementation</b>70cc9f1ef7afbaaa</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 所属模块</a><a href="#panel-B">B · 源码导航</a><a href="#panel-C">C · 使用方式</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>所属模块</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="module-robot-navigation_runtime.html">本机导航与探索</a> · 本目录 40 个 Python 文件。</p>
+<div class="am-panel-body"><div class="am-md"><p><a href="module-robot-navigation_runtime.html">本机导航与探索</a> · 本目录 44 个 Python 文件。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -757,6 +757,14 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td><code>CircleDistance</code></td>
 </tr>
 <tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/exploration_assembly.py">exploration_assembly.py</a></td>
+<td><code>region_polygon</code>, <code>attach_exploration</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/explore.py">explore.py</a></td>
+<td><code>Explore</code></td>
+</tr>
+<tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/fdm_collection_batches.py">fdm_collection_batches.py</a></td>
 <td><code>complete_families</code>, <code>build_collection_batches</code></td>
 </tr>
@@ -801,6 +809,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td><code>build_g1_planner</code>, <code>build_basic_g1_planner</code></td>
 </tr>
 <tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/local_docking.py">local_docking.py</a></td>
+<td><code>docking_input</code>, <code>current_docking_pose</code>, <code>start_docking</code></td>
+</tr>
+<tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/local_map.py">local_map.py</a></td>
 <td><code>LocalMap</code></td>
 </tr>
@@ -818,7 +830,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/navigation_state.py">navigation_state.py</a></td>
-<td><code>NavigationState</code></td>
+<td>导出或模块初始化</td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/neupan_provider.py">neupan_provider.py</a></td>
@@ -857,6 +869,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td><code>TareProvider</code></td>
 </tr>
 <tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/tare_references.py">tare_references.py</a></td>
+<td><code>TareReferences</code>, <code>attach_tare_references</code></td>
+</tr>
+<tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/tare_scan_adapter.py">tare_scan_adapter.py</a></td>
 <td><code>_stamp_ns</code>, <code>_validate_transform</code>, <code>prepare_scan</code>, <code>prepare_scan_pair</code></td>
 </tr>
@@ -888,7 +904,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 16:24</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -896,14 +912,14 @@ title: navigation_runtime · 文件与符号
 subtitle: 按当前源码 AST 提取，不嵌入函数正文
 lang: zh
 doc_id: files-robot-navigation_runtime
-implementation: 370e694d928b04e3
+implementation: 70cc9f1ef7afbaaa
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
 ## A 所属模块
 
-[本机导航与探索](module-robot-navigation_runtime.html) · 本目录 40 个 Python 文件。
+[本机导航与探索](module-robot-navigation_runtime.html) · 本目录 44 个 Python 文件。
 
 ## B 源码导航
 
@@ -919,6 +935,8 @@ implementation: 370e694d928b04e3
 | [body_footprint.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/body_footprint.py) | `BodyFootprint` |
 | [capability_provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/capability_provider.py) | `G1NavigationCapabilityProvider` |
 | [circle_distance.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/circle_distance.py) | `CircleDistance` |
+| [exploration_assembly.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/exploration_assembly.py) | `region_polygon`, `attach_exploration` |
+| [explore.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/explore.py) | `Explore` |
 | [fdm_collection_batches.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/fdm_collection_batches.py) | `complete_families`, `build_collection_batches` |
 | [fdm_dataset.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/fdm_dataset.py) | `_jsonlines`, `_validate_episode`, `_nearest`, `_label_states`, `_contact_labels`, `_windows`, `build_pilot_dataset`, `build_collection_dataset`, `_check_collection`, `_build_dataset`, `_extract_dataset` |
 | [fdm_identity.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/fdm_identity.py) | `prediction_identity`, `body_prediction_identity` |
@@ -930,11 +948,12 @@ implementation: 370e694d928b04e3
 | [g1_assembly.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/g1_assembly.py) | `attach_g1_navigation` |
 | [g1_inputs.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/g1_inputs.py) | `G1NavigationInputs` |
 | [g1_planner.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/g1_planner.py) | `build_g1_planner`, `build_basic_g1_planner` |
+| [local_docking.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/local_docking.py) | `docking_input`, `current_docking_pose`, `start_docking` |
 | [local_map.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/local_map.py) | `LocalMap` |
 | [local_reference.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/local_reference.py) | `LocalReference` |
 | [navigate_to.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/navigate_to.py) | `_reference_path`, `NavigateTo` |
 | [navigation_cylinder.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/navigation_cylinder.py) | `NavigationCylinder` |
-| [navigation_state.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/navigation_state.py) | `NavigationState` |
+| [navigation_state.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/navigation_state.py) | 导出或模块初始化 |
 | [neupan_provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/neupan_provider.py) | `NeupanProvider` |
 | [pct_provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/pct_provider.py) | `PctProvider` |
 | [pct_tomogram_builder.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/pct_tomogram_builder.py) | `PctTomogramBuildConfig`, `PctTomogramOutputPaths`, `validate_pcd_input`, `resolve_tomogram_output_paths`, `build_tomogram_manifest`, `write_tomogram_manifest`, `build_pct_tomogram`, `load_pcd_points`, `_run_pct_tomogram_core`, `_make_scene_config`, `parse_args`, `main` |
@@ -944,6 +963,7 @@ implementation: 370e694d928b04e3
 | [stop_verification.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/stop_verification.py) | `predicted_stop_admissible` |
 | [tare_online_inputs.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/tare_online_inputs.py) | `scan_in_current_epoch`, `sensor_profile`, `main` |
 | [tare_provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/tare_provider.py) | `TareProvider` |
+| [tare_references.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/tare_references.py) | `TareReferences`, `attach_tare_references` |
 | [tare_scan_adapter.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/tare_scan_adapter.py) | `_stamp_ns`, `_validate_transform`, `prepare_scan`, `prepare_scan_pair` |
 | [terminal_control.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/terminal_control.py) | `terminal_reference` |
 | [terrain_ground.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/navigation_runtime/terrain_ground.py) | `GroundPlane`, `fit_ground_plane` |

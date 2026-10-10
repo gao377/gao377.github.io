@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "cab74ad6f3079d18cc514651283c06612fd33f82295b70aa05b68ab768749595",
+  "implementation_sha256": "70cc9f1ef7afbaaa78737beac6cf780a5d9645961199641e759b2a9a7e399d4b",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -75,7 +75,7 @@
     },
     {
       "file": "algo-exploration.html",
-      "source_sha256": "5d59538035b56617cbe61f5f603a23aa7947950f801cf3e31fec396379424b5f"
+      "source_sha256": "23a090332f1b726e80bf263364820f534cee4b3553207fed7244d0ea58b55caf"
     },
     {
       "file": "algo-fdm.html",
@@ -111,7 +111,7 @@
     },
     {
       "file": "algo-slam.html",
-      "source_sha256": "3c73f8a53b3be24646be3ca942c0858fb91dde5e57cf81ffb2d252129a72d0d1"
+      "source_sha256": "5ff80b81e1e7c4852a385961115c156b620bb1dace2e8ef7da3c957ee20746a1"
     },
     {
       "file": "algo-support.html",
@@ -123,7 +123,7 @@
     },
     {
       "file": "algo-task.html",
-      "source_sha256": "575dd1b09fa2bfbb6428114d2f337cad9e6d7bb93fe426d3e54aa9e41011a08f"
+      "source_sha256": "cb037ceb4ef405bf653c437348dfc6da4017e8ef8bccec67f0ff48c151ecefbc"
     },
     {
       "file": "algo-trajectory.html",
@@ -131,7 +131,7 @@
     },
     {
       "file": "algorithms.html",
-      "source_sha256": "77e779e87cded1de03fa38f11d310da4d57035fe108bb92a5bd1177f30d32f7d"
+      "source_sha256": "84b649da69ba12654181eac6d9d857e8b87e10a970490a4127844ab7d2f12a4e"
     },
     {
       "file": "architecture-map.html",
@@ -183,7 +183,7 @@
     },
     {
       "file": "files-robot-local_task_runtime.html",
-      "source_sha256": "836dd0a485359794f4689405227452d7ee2d904ff47870f44c0b4bd7bc16f89d"
+      "source_sha256": "b9e60f30ee417153f65ec3b30239bb227735ba5ad596d35e175925843f6d6561"
     },
     {
       "file": "files-robot-manipulation_runtime.html",
@@ -195,7 +195,7 @@
     },
     {
       "file": "files-robot-navigation_runtime.html",
-      "source_sha256": "0afb954ff1de542dd1684f635d4ceb38726cd63da324a6763985f6f5d017ce03"
+      "source_sha256": "1df7aefc57d7b55d6c5d87cdcf84da6a0c2f82ed058d10030d0673e58e5a3079"
     },
     {
       "file": "files-robot-perception_runtime.html",
@@ -211,7 +211,7 @@
     },
     {
       "file": "files-robot-spatial_runtime.html",
-      "source_sha256": "b6bc715ad206f7d9b73ec00970d070bedb462cef5a3ab3ded4d356a48a38bd97"
+      "source_sha256": "76dba5f20fff5010ee755c11bf66c6224804573f6bf927850c30aeaef5f07f0b"
     },
     {
       "file": "files-robot-state_estimation.html",
@@ -251,7 +251,7 @@
     },
     {
       "file": "files-system-team_planner.html",
-      "source_sha256": "b1b1c44a9b47ba594e8a8e6f4fbf127e9c1f61eb84ceb86a899898beec1c839c"
+      "source_sha256": "85cdca42849168b2a3f978987dbba95c15cd4da443a13d63a47fcb4e404243eb"
     },
     {
       "file": "files-system-team_runtime.html",
@@ -307,7 +307,7 @@
     },
     {
       "file": "module-robot-local_task_runtime.html",
-      "source_sha256": "74921fec716d25344d321035ddbe495bd5c2d56dc3444b5d32f53825a3b22b9a"
+      "source_sha256": "68b703dd2bded86ca1dffb0de43ad5bc3510d82cf5b1279dda36abd92488b6cc"
     },
     {
       "file": "module-robot-manipulation_runtime.html",
@@ -319,7 +319,7 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "1511cf63b6f26e13a5bec9b2fcbe612a2e8a798cfb15a92589779d31e47cb68a"
+      "source_sha256": "b2226afc9ca71ae9ba1f232e632bf9d18c416b06d03816de96f6575c4560c70d"
     },
     {
       "file": "module-robot-perception_runtime.html",
@@ -335,7 +335,7 @@
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "bfb92b153b4d56ec4872989891f6091b792ae5f2797416ebbc3b20e70dbb18e7"
+      "source_sha256": "7b669d8b177b31a1e4eaaba4381f7e12a0983b21fc690502e44241d69d3b3208"
     },
     {
       "file": "module-robot-state_estimation.html",
@@ -375,7 +375,7 @@
     },
     {
       "file": "module-system-team_planner.html",
-      "source_sha256": "3ee97230ad696cdbef5fdcb3f72c3c1431c6f2abc32e9c50b27b4595e4ce86d8"
+      "source_sha256": "ac4ebd6f44c40b30ffd9e9f340d1a44ca79a81d78431e0d8c9305d4745621596"
     },
     {
       "file": "module-system-team_runtime.html",
@@ -391,11 +391,11 @@
     },
     {
       "file": "runtime-internals.html",
-      "source_sha256": "b7954552e39824475f9aca6d503dc720f3b341cfc5d594810b4dd54815f2d6bc"
+      "source_sha256": "ff7574ac7dea653b7172c067c6b183d5772b47830c3d4b246d95f678ad15f868"
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "cf4dc9478fc5b00632596cc39500895c1a794f61483ba4d62ea933ad6360b2f6"
+      "source_sha256": "0ef1ffc080beec8b43e953af369f7a607d2d5b608142ec7b1f5dbe3803703b07"
     }
   ],
   "assets": [
@@ -441,15 +441,15 @@
     },
     {
       "file": "diagrams/navigation-runtime.drawio",
-      "sha256": "da2e66001fedbf63aa41b64e1dbb847440ae1e158b599547fd3ecfd48d1cee16"
+      "sha256": "cf9e3ae4d269a8224ceb5cc591ea228464b9a80f828fe9eaf9c682d400245fb7"
     },
     {
       "file": "diagrams/navigation-runtime.html",
-      "sha256": "887ce2786f1eed91cae2eaee414a664350de18e76b9b117b765aef6141ff446d"
+      "sha256": "922498bd432f8340b8c779c472028d7d89100f0ff6f59d74c66c96b011b3f588"
     },
     {
       "file": "diagrams/navigation-runtime.svg",
-      "sha256": "a5058cf0390ea6c723aab63eee82cb4d7f602c68d62f14a79e6b0c026b91c4c9"
+      "sha256": "192848cdeef45e0e444fb49466c0cfbf95836d938303cc5719146e5808c55205"
     },
     {
       "file": "diagrams/perception-runtime.drawio",
