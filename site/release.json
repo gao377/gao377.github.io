@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "aecfa90648196f56a7b9aec4e8dee6987641249e7f412f0686825599debef000",
+  "implementation_sha256": "056d71b2e5c0bc658a1039d7c0d77686b17d81c79fc1d94720385dc747762478",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -291,7 +291,7 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "cb915ba1ed738827fe2c6a5f7d30c0dd644e287b6158c8041225be37b7806b0e"
+      "source_sha256": "dfde8d287ab8f5a5becb394c32ce58370c9146131551b492f59010b0ccc420c8"
     },
     {
       "file": "module-robot-config_client.html",
