@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "f951410c37afb0c23ffee03296092774bbca64f9cc450ecdc1a82e7331dcdcde",
+  "implementation_sha256": "b28a474a64e35fc7adb9dd0186f11075305227cd870fe90cd3b7eab8eafbcf1d",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -91,11 +91,11 @@
     },
     {
       "file": "algo-neupan.html",
-      "source_sha256": "939743a58ce4cc11fca73b8a547e1ae15b610b3f35a40ecb5caeb9c7e04ff14f"
+      "source_sha256": "c324e1cd7c0455083e9e425b10cc8461a3f3ff35c187495bba1860619c41fcab"
     },
     {
       "file": "algo-pbvs.html",
-      "source_sha256": "76f85f796fc369cc26280d90a5422b06c136a89be61721f305df576dce7f4c56"
+      "source_sha256": "88fa9d20f3ac79a1a8b1daf2edb90e23c046758f4430747165944d0b7c223438"
     },
     {
       "file": "algo-pct.html",
@@ -319,7 +319,7 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "7f63a1b6c2b146d9c01143f03289801072dd4c22f5bd8f28f96b421ed9407fe6"
+      "source_sha256": "c0f41a8080d8193a9f7d137d8457b22b0b0db0f48ef7b88b8ad81a5345eb59da"
     },
     {
       "file": "module-robot-perception_runtime.html",
@@ -395,7 +395,7 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "d9945f3a56d6dd909c67c7c91b95239593f477a7883f763c0f985cfcf91dde9d"
+      "source_sha256": "cf4dc9478fc5b00632596cc39500895c1a794f61483ba4d62ea933ad6360b2f6"
     }
   ],
   "assets": [
