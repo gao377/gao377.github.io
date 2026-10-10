@@ -51,7 +51,8 @@
   "pages": [
     {
       "file": "algo-amo.html",
-      "source_sha256": "387c4cd4a4655ae56dbfda58f0e3bac09aa7b8c9b69512d1e9dff446bbdf046f"
+      "source_sha256": "33a0275df74bd3c38d22232a7e377feccf2f6d7ece55ec04e163aafab4ed4b69",
+      "implementation_sha256": "8b4fd0251e5ecd4ceb64dcf0bb90a2710eaac25aa77e149b0cb671a552885e2b"
     },
     {
       "file": "algo-approach.html",
@@ -295,7 +296,8 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "dfde8d287ab8f5a5becb394c32ce58370c9146131551b492f59010b0ccc420c8"
+      "source_sha256": "1b0308cefef388a0fdcace8d15c5d60b4e0a85b3407eb20b75459f2113f9f6c1",
+      "implementation_sha256": "8b4fd0251e5ecd4ceb64dcf0bb90a2710eaac25aa77e149b0cb671a552885e2b"
     },
     {
       "file": "module-robot-config_client.html",

@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>本体适配与网关 · body_gateway</h1><p class="am-sub">SW-11 / RB-05：统一控制权、AMO与臂手SDK出口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-body_gateway</span><span><b>implementation</b>056d71b2e5c0bc65</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>本体适配与网关 · body_gateway</h1><p class="am-sub">SW-11 / RB-05：统一控制权、AMO与臂手SDK出口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-body_gateway</span><span><b>implementation</b>8b4fd0251e5ecd4c</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="diagrams/body-adapter.html">内部可编辑多页图</a> · <a href="diagrams/body-adapter.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
@@ -791,6 +791,8 @@ AMO读取实测上肢状态；策略输出只占腿腰 15 个关节。
 <header class="am-panel-head"><span class="am-panel-id">D</span><h2>一次控制周期</h2></header>
 <div class="am-panel-body"><figure class="am-diagram am-seq"><svg viewBox="0 0 956 390" width="956" height="390" role="img" aria-label="时序图：SDK反馈、AMO后端、时序调度、AMO策略、执行器、SDK会话、G1本体、判稳器" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><line class="am-lifeline" x1="54" y1="42" x2="54" y2="386"/><g data-key="SDK反馈"><rect class="am-actor" x="12" y="8" width="84" height="34" rx="2"/><text x="54" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">SDK反馈</text></g><line class="am-lifeline" x1="179.7" y1="42" x2="179.7" y2="386"/><g data-key="AMO后端"><rect class="am-actor" x="137.1" y="8" width="85.2" height="34" rx="2"/><text x="179.7" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">AMO后端</text></g><line class="am-lifeline" x1="336.4" y1="42" x2="336.4" y2="386"/><g data-key="时序调度"><rect class="am-actor" x="294.4" y="8" width="84" height="34" rx="2"/><text x="336.4" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">时序调度</text></g><line class="am-lifeline" x1="449" y1="42" x2="449" y2="386"/><g data-key="AMO策略"><rect class="am-actor" x="406.4" y="8" width="85.2" height="34" rx="2"/><text x="449" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">AMO策略</text></g><line class="am-lifeline" x1="561.6" y1="42" x2="561.6" y2="386"/><g data-key="执行器"><rect class="am-actor" x="519.6" y="8" width="84" height="34" rx="2"/><text x="561.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">执行器</text></g><line class="am-lifeline" x1="673.6" y1="42" x2="673.6" y2="386"/><g data-key="SDK会话"><rect class="am-actor" x="631.6" y="8" width="84" height="34" rx="2"/><text x="673.6" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">SDK会话</text></g><line class="am-lifeline" x1="789.7" y1="42" x2="789.7" y2="386"/><g data-key="G1本体"><rect class="am-actor" x="747.7" y="8" width="84" height="34" rx="2"/><text x="789.7" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">G1本体</text></g><line class="am-lifeline" x1="901.7" y1="42" x2="901.7" y2="386"/><g data-key="判稳器"><rect class="am-actor" x="859.7" y="8" width="84" height="34" rx="2"/><text x="901.7" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">判稳器</text></g><g data-step="0"><text x="116.9" y="70" text-anchor="middle">29关节与IMU源帧</text><path class="am-edge" d="M54,80 L177.7,80" marker-end="url(#am2-arrow)"/></g><g data-step="1"><text x="258.1" y="110" text-anchor="middle">检查源时间与50Hz周期</text><path class="am-edge" d="M179.7,120 L334.4,120" marker-end="url(#am2-arrow)"/></g><g data-step="2"><text x="314.4" y="150" text-anchor="middle">实测状态和有效参考</text><path class="am-edge" d="M179.7,160 L447,160" marker-end="url(#am2-arrow)"/></g><g data-step="3"><text x="314.4" y="190" text-anchor="middle">腿腰15维目标</text><path class="am-edge am-edge--dashed" d="M449,200 L181.7,200" marker-end="url(#am2-arrow)"/></g><g data-step="4"><text x="370.7" y="230" text-anchor="middle">当前14维双臂轨迹样本</text><path class="am-edge" d="M561.6,240 L181.7,240" marker-end="url(#am2-arrow)"/></g><g data-step="5"><text x="426.7" y="270" text-anchor="middle">合成29关节绝对目标</text><path class="am-edge" d="M179.7,280 L671.6,280" marker-end="url(#am2-arrow)"/></g><g data-step="6"><text x="731.7" y="310" text-anchor="middle">LowCmd和CRC</text><path class="am-edge" d="M673.6,320 L787.7,320" marker-end="url(#am2-arrow)"/></g><g data-step="7"><text x="540.7" y="350" text-anchor="middle">本帧反馈和实际发出速度</text><path class="am-edge" d="M179.7,360 L899.7,360" marker-end="url(#am2-arrow)"/></g></svg></figure>
 <div class="am-md"><p>默认策略、身体命令为 50Hz；物理仿真基线为 250Hz。
+策略与适配网络在订阅控制反馈、启动控制线程之前完成JIT/CUDA预热。
+预热使用独立临时观测，不发SDK命令，也不填入正式控制历史。
 SDK到达时间和源时间均保留。
 旧帧或时钟回绕不能作为新的控制周期。</p>
 <p>SIM源时间未前进时，后台轮询等待下一帧。
@@ -878,7 +880,7 @@ SIM/REAL共用业务接口；权重、标定及退出配置按部署校验。</p
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 14:49</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 03:57</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -886,7 +888,7 @@ title: 本体适配与网关 · body_gateway
 subtitle: SW-11 / RB-05：统一控制权、AMO与臂手SDK出口
 lang: zh
 doc_id: module-robot-body_gateway
-implementation: 056d71b2e5c0bc65
+implementation: 8b4fd0251e5ecd4c
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -961,6 +963,8 @@ AMO后端 -&gt; 判稳器: 本帧反馈和实际发出速度
 ```
 
 默认策略、身体命令为 50Hz；物理仿真基线为 250Hz。
+策略与适配网络在订阅控制反馈、启动控制线程之前完成JIT/CUDA预热。
+预热使用独立临时观测，不发SDK命令，也不填入正式控制历史。
 SDK到达时间和源时间均保留。
 旧帧或时钟回绕不能作为新的控制周期。
 
