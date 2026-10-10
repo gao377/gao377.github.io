@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "80cae5d75cc9517c219150013a7237b3eff31ac6380721534adff2a7f75fbc8e",
+  "implementation_sha256": "f951410c37afb0c23ffee03296092774bbca64f9cc450ecdc1a82e7331dcdcde",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -71,7 +71,7 @@
     },
     {
       "file": "algo-execution.html",
-      "source_sha256": "428dd1bf1e5aefa40a3d524b30f2b205fa917e9c9bb11d67c658f40f5113dfc1"
+      "source_sha256": "657bbc5ab9af0179a6148d0a01d7f78c959265c9e12c3f9095d84585a98b4e44"
     },
     {
       "file": "algo-exploration.html",
@@ -311,7 +311,7 @@
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "691a799cc5d096a96971dc1f3c70c9a239a4b825343114daefb1cdc878a0cd96"
+      "source_sha256": "1f0aaa67bfe180049fa7e675606f9a230d088a6fc3445389be94661de34666ff"
     },
     {
       "file": "module-robot-motion_coordinator.html",
