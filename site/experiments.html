@@ -698,11 +698,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>实验摘要与复现口径</h1><p class="am-sub">只报告有来源的结果，并说明结论适用范围</p><div class="am-head-meta"><span><b>doc_id</b>experiments</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
-<p><a href="experiment-recordings.html">查看6组成功实验的20倍速录像</a> · <a href="scenarios.html">对应场景启动命令</a></p>
+<header class="am-head"><h1>实验摘要与复现口径</h1><p class="am-sub">只报告有来源的结果，并说明结论适用范围</p><div class="am-head-meta"><span><b>doc_id</b>experiments</span><span><b>implementation</b>2ef03d53d895c7c7</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<p><a href="experiment-recordings.html">查看7组成功实验的20倍速录像</a> · <a href="scenarios.html">对应场景启动命令</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与实验范围</a><a href="#panel-B">B · Warehouse工位前四能力：SIM-MANIP-01</a><a href="#panel-C">C · 轻量工位的左右抓放与本体接近</a><a href="#panel-D">D · 臂手动作与取消恢复</a><a href="#panel-E">E · 对照实验与适用限制</a><a href="#panel-F">F · 版本和环境身份</a><a href="#panel-G">G · 复现实验的记录要求</a><a href="#panel-H">H · 软件检查与适用限制</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与实验范围</a><a href="#panel-B">B · Warehouse工位前四能力：SIM-MANIP-01</a><a href="#panel-C">C · 轻量工位的左右抓放与本体接近</a><a href="#panel-D">D · 臂手动作与取消恢复</a><a href="#panel-E">E · 对照实验与适用限制</a><a href="#panel-F">F · Warehouse导航往返：SIM-NAV-ROUNDTRIP</a><a href="#panel-G">G · 版本和环境身份</a><a href="#panel-H">H · 软件检查与适用限制</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>证据与实验范围</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
@@ -722,6 +722,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>SIM-MANIP-01</td>
 <td>G1、REVO2、AMO、warehouse工位前初始化</td>
 <td>approach、pick、display、place四能力序列和物理评价通过</td>
+</tr>
+<tr>
+<td>SIM-NAV-ROUNDTRIP</td>
+<td>G1、REVO2、AMO、warehouse原起点往返</td>
+<td>工位精调与返航精调的独立物理评价通过；操作尝试失败后安全空手返航</td>
 </tr>
 <tr>
 <td>SIM-TRANSFER-01</td>
@@ -882,7 +887,52 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>版本和环境身份</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>Warehouse导航往返：SIM-NAV-ROUNDTRIP</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="experiment-recordings.html#panel-H">Isaac与VISER同批完整录像</a></p>
+<p>机器人从原起点出发，粗导航后采用工位视觉精调。
+实际操作尝试失败后，机器人执行获批的抓握前撤回、确认空手，再返回起点精调。
+该运行证明导航往返，不证明完整抓取、展示和放置。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>实际评价</th>
+<th>工位精调</th>
+<th>起点精调</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>平面位置误差</td>
+<td>28.76mm</td>
+<td>18.81mm</td>
+</tr>
+<tr>
+<td>朝向误差</td>
+<td>2.22°</td>
+<td>6.86°</td>
+</tr>
+<tr>
+<td>最后2s实际位置漂移</td>
+<td>5.08mm</td>
+<td>4.09mm</td>
+</tr>
+<tr>
+<td>最后2s实发零速与SDK相对判稳</td>
+<td>PASS</td>
+<td>PASS</td>
+</tr>
+</tbody></table></div>
+<p>两处最终位置均满足5cm、朝向满足10°。
+仿真真值仅供独立评价，控制仍消费真实传感、SDK、本体状态及空间观测。
+最终任务返回“操作失败、已回到起点”；操作与完整链路均为FAIL。
+机器人安装镜像SHA256前缀5d6c5135890d，仿真镜像前缀72ef27750513。</p>
+<p>物理250Hz、控制50Hz，雷达与前部RGB-D为10Hz。
+返航精调耗时78.80s仿真时间；一个通过样本不能证明精调效率或鲁棒性。</p>
+<p>稳定入口：<code>python3 scripts/run_scenario.py warehouse-navigation-return</code>。
+严格完整操作入口仍为<code>warehouse-full-chain</code>，两者验收范围不同。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>版本和环境身份</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -948,11 +998,8 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 </tbody></table></div>
 <p>物理实验属于其固定运行版本。发布整理后的代码尚未因此获得新的物理验收。
 内部保留完整哈希与原始证据，公开页只给摘要，不附原始日志或本机路径。</p>
-</div></div>
-</section>
-<section class="am-panel" id="panel-G">
-<header class="am-panel-head"><span class="am-panel-id">G</span><h2>复现实验的记录要求</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>记录代码提交、模型哈希、权重、profile、传感器频率和输入来源。
+<p><strong>复现实验的记录要求</strong></p>
+<p>记录代码提交、模型哈希、权重、profile、传感器频率和输入来源。
 区分规划壁钟耗时、轨迹仿真时长及RTF。
 固定目标与初始状态，按公共能力接口调用并保留每阶段终态。
 物理成功同时需要动作结果和独立评价，不能只看返回码。</p>
@@ -968,7 +1015,7 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 15:35</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -976,12 +1023,12 @@ title: 实验摘要与复现口径
 subtitle: 只报告有来源的结果，并说明结论适用范围
 lang: zh
 doc_id: experiments
-implementation: 370e694d928b04e3
+implementation: 2ef03d53d895c7c7
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-[查看6组成功实验的20倍速录像](experiment-recordings.html) · [对应场景启动命令](scenarios.html)
+[查看7组成功实验的20倍速录像](experiment-recordings.html) · [对应场景启动命令](scenarios.html)
 
 ## A 证据与实验范围
 
@@ -989,6 +1036,7 @@ implementation: 370e694d928b04e3
 | --- | --- | --- |
 | SW-CONTRACT-01 | 两个独立IP的ROS2容器、mock后端 | 任务直达和交互入口均返回SUCCEEDED / met / MOCK |
 | SIM-MANIP-01 | G1、REVO2、AMO、warehouse工位前初始化 | approach、pick、display、place四能力序列和物理评价通过 |
+| SIM-NAV-ROUNDTRIP | G1、REVO2、AMO、warehouse原起点往返 | 工位精调与返航精调的独立物理评价通过；操作尝试失败后安全空手返航 |
 | SIM-TRANSFER-01 | 从起点出发的同类场景 | 导航与操作前段通过，display失败，整任务不成立 |
 | SIM-MANIP-L / R | 轻量工位，分别采用左、右三指抓握 | 各自的四能力序列与独立物理评价通过 |
 | SIM-APPROACH-BASE | 轻量工位，实际低速本体接近 | 接近后右三指抓取、展示、放回通过 |
@@ -1066,7 +1114,33 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 它不满足有效抬升条件。HOLDING接触状态、关节闭合和规划成功均不能单独证明抓住物体。
 身体参考与上肢姿态也存在耦合，响应标定必须覆盖实际执行的活动范围。
 
-## F 版本和环境身份
+## F Warehouse导航往返：SIM-NAV-ROUNDTRIP
+
+[Isaac与VISER同批完整录像](experiment-recordings.html#panel-H)
+
+机器人从原起点出发，粗导航后采用工位视觉精调。
+实际操作尝试失败后，机器人执行获批的抓握前撤回、确认空手，再返回起点精调。
+该运行证明导航往返，不证明完整抓取、展示和放置。
+
+| 实际评价 | 工位精调 | 起点精调 |
+| --- | --- | --- |
+| 平面位置误差 | 28.76mm | 18.81mm |
+| 朝向误差 | 2.22° | 6.86° |
+| 最后2s实际位置漂移 | 5.08mm | 4.09mm |
+| 最后2s实发零速与SDK相对判稳 | PASS | PASS |
+
+两处最终位置均满足5cm、朝向满足10°。
+仿真真值仅供独立评价，控制仍消费真实传感、SDK、本体状态及空间观测。
+最终任务返回“操作失败、已回到起点”；操作与完整链路均为FAIL。
+机器人安装镜像SHA256前缀5d6c5135890d，仿真镜像前缀72ef27750513。
+
+物理250Hz、控制50Hz，雷达与前部RGB-D为10Hz。
+返航精调耗时78.80s仿真时间；一个通过样本不能证明精调效率或鲁棒性。
+
+稳定入口：`python3 scripts/run_scenario.py warehouse-navigation-return`。
+严格完整操作入口仍为`warehouse-full-chain`，两者验收范围不同。
+
+## G 版本和环境身份
 
 | 项目 | 可核对身份 |
 | --- | --- |
@@ -1092,7 +1166,7 @@ display阶段因触觉未确认而中止，不能作为完整链路成功样本�
 物理实验属于其固定运行版本。发布整理后的代码尚未因此获得新的物理验收。
 内部保留完整哈希与原始证据，公开页只给摘要，不附原始日志或本机路径。
 
-## G 复现实验的记录要求
+**复现实验的记录要求**
 
 记录代码提交、模型哈希、权重、profile、传感器频率和输入来源。
 区分规划壁钟耗时、轨迹仿真时长及RTF。

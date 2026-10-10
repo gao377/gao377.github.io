@@ -698,10 +698,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>成功实验完整录像</h1><p class="am-sub">6组实验 · 16条20倍速录像 · 覆盖每次录制的完整过程</p><div class="am-head-meta"><span><b>doc_id</b>experiment-recordings</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>成功实验完整录像</h1><p class="am-sub">7组实验 · 18条20倍速录像 · 覆盖每次录制的完整过程</p><div class="am-head-meta"><span><b>doc_id</b>experiment-recordings</span><span><b>implementation</b>2ef03d53d895c7c7</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 观看与证据说明</a><a href="#panel-B">B · Warehouse工位前四能力</a><a href="#panel-C">C · 左侧方块三指抓放</a><a href="#panel-D">D · 右侧方块三指抓放</a><a href="#panel-E">E · 实际本体接近后抓放</a><a href="#panel-F">F · 单臂、双臂和手部动作</a><a href="#panel-G">G · 取消、空手恢复与新任务受理</a><a href="#panel-H">H · 如何关联新实验</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 观看与证据说明</a><a href="#panel-B">B · Warehouse工位前四能力</a><a href="#panel-C">C · 左侧方块三指抓放</a><a href="#panel-D">D · 右侧方块三指抓放</a><a href="#panel-E">E · 实际本体接近后抓放</a><a href="#panel-F">F · 单臂、双臂和手部动作</a><a href="#panel-G">G · 取消、空手恢复与新任务受理</a><a href="#panel-H">H · Warehouse导航往返</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>观看与证据说明</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>网页视频统一以20倍速播放，覆盖每次录制从初始化到结束的时间范围，没有截取片段。加速时按10fps采样，适合快速浏览；需要逐帧核对时使用保留的原速记录。原始录屏及验收记录保留，文件对应关系见<a href="experiment-media.json">媒体清单</a>。</p>
@@ -815,27 +815,43 @@ VISER初始化阶段可能短暂显示此前缓存状态，应从本批实时数
 </div></div>
 </section>
 <section class="am-panel" id="panel-H">
-<header class="am-panel-head"><span class="am-panel-id">H</span><h2>如何关联新实验</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>一个实验编号关联一组独立窗口，而不是跨实验拼出一条成功链。
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>Warehouse导航往返</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><strong>SIM-NAV-ROUNDTRIP</strong>。工位精调误差28.76mm、返航误差18.81mm。
+操作尝试失败后实际撤回、空手返航；两处最后2s均零速且本体稳定。
+该范围不包含成功抓取、展示、放回，也不属于实机验收。</p>
+<p><strong>Isaac物理过程</strong> · 20倍速，覆盖原速38分25秒完整录制。</p>
+</div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:540px;background:#15191d" aria-label="SIM-NAV-ROUNDTRIP Isaac导航往返" src="media/warehouse-navigation-return-isaac-20x.mp4"></video>
+<div class="am-md"><p><a href="media/warehouse-navigation-return-isaac-20x.mp4">打开Isaac完整视频</a></p>
+<p><strong>VISER导航对照</strong> · 20倍速，覆盖原速38分50秒完整录制。
+图层显示雷达、SLAM、导航参考、NeuPAN输出与精调。
+探索算法未在本实验中启动，不以可见图层声称探索通过。</p>
+</div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:540px;background:#15191d" aria-label="SIM-NAV-ROUNDTRIP VISER导航对照" src="media/warehouse-navigation-return-viser-20x.mp4"></video>
+<div class="am-md"><p><a href="media/warehouse-navigation-return-viser-20x.mp4">打开VISER完整视频</a></p>
+<p>同类场景入口：<code>python3 scripts/run_scenario.py warehouse-navigation-return</code>。
+<a href="experiments.html#panel-F">验收范围与指标</a> · <a href="scenarios.html">场景目录</a></p>
+<p><strong>如何关联新实验</strong></p>
+<p>一个实验编号关联一组独立窗口，而不是跨实验拼出一条成功链。
 新增材料同时提供版本身份、能力终态、评价结论、录像覆盖范围和每个文件SHA256。
 媒体清单区分原片哈希与网页副本哈希；压缩副本不是原片的逐字节副本。</p>
-<p>本页16条网页录像均为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；为实现快览，每20帧原速网页副本约取1帧，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算。
-左右操作、本体接近、臂手动作和取消实验各有3个窗口；warehouse早期工位实验只有1条GUI录像，不补造缺失视图。
-完整移动抓放返回、探索和六点任务没有本页可声明成功的完整录像；不得用上述工位片替代。</p>
+<p>本页18条网页录像均为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；为实现快览，每20帧原速网页副本约取1帧，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算。</p>
+<p>左右操作、本体接近、臂手动作和取消实验各有3个窗口；warehouse早期工位实验只有1条GUI录像，不补造缺失视图。
+完整移动抓放返回、探索和六点任务没有本页可声明成功的完整录像；导航往返成功也不能替代这些范围；不得用上述工位片替代。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-10 15:35</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 成功实验完整录像
-subtitle: 6组实验 · 16条20倍速录像 · 覆盖每次录制的完整过程
+subtitle: 7组实验 · 18条20倍速录像 · 覆盖每次录制的完整过程
 lang: zh
 doc_id: experiment-recordings
-implementation: 370e694d928b04e3
+implementation: 2ef03d53d895c7c7
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1018,15 +1034,45 @@ VISER初始化阶段可能短暂显示此前缓存状态，应从本批实时数
 
 同类场景入口：`python3 scripts/run_scenario.py workbench-cancel`。环境和运行范围见[场景目录](scenarios.html)。
 
-## H 如何关联新实验
+## H Warehouse导航往返
+
+**SIM-NAV-ROUNDTRIP**。工位精调误差28.76mm、返航误差18.81mm。
+操作尝试失败后实际撤回、空手返航；两处最后2s均零速且本体稳定。
+该范围不包含成功抓取、展示、放回，也不属于实机验收。
+
+**Isaac物理过程** · 20倍速，覆盖原速38分25秒完整录制。
+
+```html
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:540px;background:#15191d&quot; aria-label=&quot;SIM-NAV-ROUNDTRIP Isaac导航往返&quot; src=&quot;media/warehouse-navigation-return-isaac-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+[打开Isaac完整视频](media/warehouse-navigation-return-isaac-20x.mp4)
+
+**VISER导航对照** · 20倍速，覆盖原速38分50秒完整录制。
+图层显示雷达、SLAM、导航参考、NeuPAN输出与精调。
+探索算法未在本实验中启动，不以可见图层声称探索通过。
+
+```html
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:540px;background:#15191d&quot; aria-label=&quot;SIM-NAV-ROUNDTRIP VISER导航对照&quot; src=&quot;media/warehouse-navigation-return-viser-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+[打开VISER完整视频](media/warehouse-navigation-return-viser-20x.mp4)
+
+同类场景入口：`python3 scripts/run_scenario.py warehouse-navigation-return`。
+[验收范围与指标](experiments.html#panel-F) · [场景目录](scenarios.html)
+
+**如何关联新实验**
+
 
 一个实验编号关联一组独立窗口，而不是跨实验拼出一条成功链。
 新增材料同时提供版本身份、能力终态、评价结论、录像覆盖范围和每个文件SHA256。
 媒体清单区分原片哈希与网页副本哈希；压缩副本不是原片的逐字节副本。
 
-本页16条网页录像均为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；为实现快览，每20帧原速网页副本约取1帧，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算。
+
+本页18条网页录像均为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；为实现快览，每20帧原速网页副本约取1帧，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算。
+
 左右操作、本体接近、臂手动作和取消实验各有3个窗口；warehouse早期工位实验只有1条GUI录像，不补造缺失视图。
-完整移动抓放返回、探索和六点任务没有本页可声明成功的完整录像；不得用上述工位片替代。
+完整移动抓放返回、探索和六点任务没有本页可声明成功的完整录像；导航往返成功也不能替代这些范围；不得用上述工位片替代。
 </textarea>
 <script>
 (() => {

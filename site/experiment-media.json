@@ -1,5 +1,5 @@
 {
-  "derivative": "Complete start-to-end experiment coverage at 20x playback speed; H.264, 10fps, max width 1440, no audio. Frames are sampled from the archived original-speed web copies; original recordings remain private.",
+  "derivative": "Complete start-to-end archived experiment coverage at 20x playback speed; H.264, 10fps, max width 1440, no audio. Original recordings remain private; each record identifies its actual source.",
   "clips": [
     {
       "experiment": "SIM-MANIP-L",
@@ -293,6 +293,36 @@
       "original_speed_web_duration_s": 1415.5,
       "original_speed_web_size_bytes": 20323941,
       "playback_speed": 20
+    },
+    {
+      "experiment": "SIM-NAV-ROUNDTRIP",
+      "role": "isaac",
+      "source_sha256": "ceed56f4ce1d910e2d0a30eaeb1459c90e7dd9ed159885f7b3264fabb35be47b",
+      "source_kind": "ORIGINAL_SUCCESSFUL_GUI_RECORDING",
+      "file": "warehouse-navigation-return-isaac-20x.mp4",
+      "sha256": "775a66541f260b023082e8667953b7d92ff04203e82c501a64e2090256d973c1",
+      "duration_s": 115.3,
+      "size_bytes": 8906308,
+      "width": 1440,
+      "height": 900,
+      "fps": "10/1",
+      "playback_speed": 20,
+      "original_duration_s": 2305.1
+    },
+    {
+      "experiment": "SIM-NAV-ROUNDTRIP",
+      "role": "viser",
+      "source_sha256": "cfaef3331f38fd1b3a8cdefa295139f406669879944f0088589bb0a565841441",
+      "source_kind": "ORIGINAL_SUCCESSFUL_GUI_RECORDING",
+      "file": "warehouse-navigation-return-viser-20x.mp4",
+      "sha256": "3115c1d6d449ef649e88c79eea122f7635ae4cdc44c5cb3ec5d14d94bef4ffa1",
+      "duration_s": 116.5,
+      "size_bytes": 381643,
+      "width": 910,
+      "height": 1136,
+      "fps": "10/1",
+      "playback_speed": 20,
+      "original_duration_s": 2330.1
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "056d71b2e5c0bc658a1039d7c0d77686b17d81c79fc1d94720385dc747762478",
+  "implementation_sha256": "2ef03d53d895c7c794e341115d1e8a199e006c30985687857ff662e6ccf7f8b7",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -155,11 +155,11 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "8fccf222d14cd62148b907d8797a4ecb5888833f6d43d5bd11b9287e480a4f0f"
+      "source_sha256": "e14ae66865a70825798362b3f3991f10dccf1e27c83c769b96104fba3d1c58df"
     },
     {
       "file": "experiments.html",
-      "source_sha256": "f7587a9890255a4399331074cddf683f56f2951f69fb62a9112cf454e4e18760"
+      "source_sha256": "b41dee0e006665c8950afba55f9a289ff2a96e35110e4cf6ec82c3ca08cb560a"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -570,6 +570,14 @@
     {
       "file": "media/manip-right-sensors-20x.mp4",
       "sha256": "b624ad13557c6e8d6e9d19e63416ecb716bb6b874be3f43d2e095993c084ac0a"
+    },
+    {
+      "file": "media/warehouse-navigation-return-isaac-20x.mp4",
+      "sha256": "775a66541f260b023082e8667953b7d92ff04203e82c501a64e2090256d973c1"
+    },
+    {
+      "file": "media/warehouse-navigation-return-viser-20x.mp4",
+      "sha256": "3115c1d6d449ef649e88c79eea122f7635ae4cdc44c5cb3ec5d14d94bef4ffa1"
     },
     {
       "file": "media/warehouse-station-isaac-20x.mp4",
