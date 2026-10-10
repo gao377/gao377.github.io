@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "ca5948e10db550fc17635fb733fd1df5e803e33fe5d3c29776e502bd75e85aa8",
+  "implementation_sha256": "6376e52d53b4802e949f2c348c2cfa7c4a8153df339e7e3f0bed84b7e80daf4e",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -71,7 +71,7 @@
     },
     {
       "file": "algo-execution.html",
-      "source_sha256": "ff99f3f6624ae886f21cf4d38dce01c25f04564615099cf61198976357eae20f"
+      "source_sha256": "f8a4460d74b6aa58b3f05aa3cfa15dc776cdd9de9643a705badbd805093d7966"
     },
     {
       "file": "algo-exploration.html",
