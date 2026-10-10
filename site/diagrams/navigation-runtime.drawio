@@ -440,4 +440,63 @@
       </root>
     </mxGraphModel>
   </diagram>
+  <diagram name="N平滑参考：原生求解与单一执行器" id="navigation-runtime-stabilized">
+    <mxGraphModel page="1" pageWidth="1800" pageHeight="1000" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="N平滑参考：原生求解与单一执行器" vertex="1" parent="1" style="text;html=1;fontSize=32;fontFamily=Noto Sans CJK SC;align=left;">
+          <mxGeometry as="geometry" x="50" y="30" width="1650" height="65" />
+        </mxCell>
+        <mxCell id="snapshot" value="&lt;b&gt;G1NavigationInputs&lt;/b&gt;&lt;br&gt;实际T_WB／平滑T_WS分字段&lt;br&gt;同戳云、目标、BODY实发与质量" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="50" y="180" width="440" height="140" />
+        </mxCell>
+        <mxCell id="solver" value="&lt;b&gt;原生NeuPAN／ViSP&lt;/b&gt;&lt;br&gt;NeuPAN固定W路径、目标与障碍&lt;br&gt;PBVS当前关系S；期望常量" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="670" y="180" width="440" height="140" />
+        </mxCell>
+        <mxCell id="guard" value="&lt;b&gt;BasicController&lt;/b&gt;&lt;br&gt;冻结T_SB将规划路径投回实际机体&lt;br&gt;原观测域／圆柱检查／速度边界" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="1280" y="180" width="440" height="140" />
+        </mxCell>
+        <mxCell id="command" value="&lt;b&gt;command_frame.py&lt;/b&gt;&lt;br&gt;v_B = Rz(yawS−yawB) v_S；wz不变&lt;br&gt;上次实发B→本次规划S；零保持零" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="1280" y="485" width="440" height="145" />
+        </mxCell>
+        <mxCell id="execute" value="&lt;b&gt;公共EXEC → BODY → AMO&lt;/b&gt;&lt;br&gt;单一写入者／SDK实发反馈&lt;br&gt;不由可视化或spatial发运动" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="670" y="485" width="440" height="145" />
+        </mxCell>
+        <mxCell id="arrival" value="&lt;b&gt;到位与停稳分工&lt;/b&gt;&lt;br&gt;navigate_to／adjust_base／adjust_home用统一参考&lt;br&gt;停稳仍由真实BODY与实际零速确认" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="50" y="485" width="440" height="145" />
+        </mxCell>
+        <mxCell id="viewer" value="&lt;b&gt;VISER 8092：只读同戳对照&lt;/b&gt;&lt;br&gt;橙 raw／青 smooth／红 SDK IMU；时间、残差、断流&lt;br&gt;IMU位置锚定原SLAM；原始／转换云回投同一W&lt;br&gt;离线shadow推导明确标注；不当新仿真结果" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="365" y="785" width="1120" height="145" />
+        </mxCell>
+        <mxCell id="edge0" value="同一快照" edge="1" parent="1" source="snapshot" target="solver" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge1" value="原生轨迹＋第一步速度" edge="1" parent="1" source="solver" target="guard" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge2" value="已通过原检查" edge="1" parent="1" source="guard" target="command" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge3" value="仅一次换轴" edge="1" parent="1" source="command" target="execute" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge4" value="真实已发B系边界" edge="1" parent="1" source="execute" target="snapshot" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge5" value="一致目标误差" edge="1" parent="1" source="snapshot" target="arrival" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge6" value="BODY稳定与零速" edge="1" parent="1" source="execute" target="arrival" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge7" value="只读观测" edge="1" parent="1" source="snapshot" target="viewer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge8" value="原生路径与命令" edge="1" parent="1" source="solver" target="viewer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>

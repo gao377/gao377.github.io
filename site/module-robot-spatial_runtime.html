@@ -698,12 +698,12 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>空间运行架构 · spatial_runtime</h1><p class="am-sub">SW-12 的建图会话、定位坐标、重定位与地图版本</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-spatial_runtime</span><span><b>implementation</b>e9c42ac30c513891</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>空间运行架构 · spatial_runtime</h1><p class="am-sub">SW-12 的建图会话、定位坐标、重定位与地图版本</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-spatial_runtime</span><span><b>implementation</b>9923c1ae002091de</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p>导航局部关系的换轴由 <code>navigation_reference.py</code> 完成。视觉模块和局部云配准分别提供原始关系、观测轴到实际 base 的变换及源时间；空间模块读取同时间的原始／平滑历史，再将当前关系转到选定的平滑规划帧。期望关系保持常量，图像年龄与质量不被更新。图像时刻只有在已有真实定位样本夹住它时才可插值，无配对或暖机期间沿导航原有零速等待。</p>
 <p><a href="diagrams/spatial-runtime.html">内部可编辑多页图</a> · <a href="diagrams/spatial-runtime.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与公共能力</a><a href="#panel-B">B · 组件和坐标数据流</a><a href="#panel-C">C · 在线建图状态视图</a><a href="#panel-D">D · 重定位时序</a><a href="#panel-E">E · 算法与参数入口</a><a href="#panel-F">F · 地图内容与用途边界</a><a href="#panel-G">G · 文件与开发边界</a><a href="#panel-H">H · 验证方法</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与公共能力</a><a href="#panel-B">B · 组件和坐标数据流</a><a href="#panel-I">I · 导航对照与回放</a><a href="#panel-C">C · 在线建图状态视图</a><a href="#panel-D">D · 重定位时序</a><a href="#panel-E">E · 算法与参数入口</a><a href="#panel-F">F · 地图内容与用途边界</a><a href="#panel-G">G · 文件与开发边界</a><a href="#panel-H">H · 验证方法</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责与公共能力</h2></header>
 <div class="am-panel-body"><div class="am-md"><p><strong>SW-12 → RB-01。空间模块拥有度量定位、地图产物及其版本。</strong>
@@ -745,8 +745,15 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>导航专用参考由<code>GaitPoseFilter</code>生成。SIM profile采用10Hz源、单节1.3Hz/Q=3因果SciPy陷波，对x/y/z和展开yaw递推。当前模式为<code>shadow</code>：输出可观测，导航控制仍用原输入。<code>map→nav_stabilized</code>是虚拟叶子，roll/pitch置零表示重力对齐投影，不能解释为IMU估计精度提升。</p>
 <p><code>NavigationFrame</code>保留原/平滑位姿、同戳<code>T_SB</code>、epoch、地图版本、质量与滤波身份。<code>spatial.navigation_frame(stamp_ns=None)</code>读取当前快照或历史关联。重复stamp不重滤；缺帧、质量恢复、地图版本变化或时钟回退重新预热2s。WARMING/INVALID均不代表控制就绪。断帧不补样，源年龄保持原含义。</p>
 <p>短历史最多10s/200样本。平移和SciPy Slerp只在相邻已观测、有效且同epoch的样本间插值；不使用最新位姿配旧图像，也不外推。<code>transform_cloud</code>和<code>transform_goal</code>把固定map几何转到同一S系；反变换后世界点和目标仍固定。<code>raw_to_smooth</code>只是几何残差，不是运动预测。</p>
-<p>新增ROS出口为<code>/robots/&lt;robot_id&gt;/spatial/navigation/{pose,odom,debug}</code>。pose/odom的父系是map，odom子系为nav_stabilized；twist来自平滑源位姿有限差分并表达在S，不复制SDK速度。首样本或断帧的twist标为无效。原TF出口拥有新叶子，没有另一个节点改写base_link。</p>
+<p>新增ROS出口为<code>/robots/&lt;robot_id&gt;/spatial/navigation/{pose,odom,debug,cloud}</code>。pose/odom的父系是map，odom子系为nav_stabilized；twist来自平滑源位姿有限差分并表达在S，不复制SDK速度。首样本或断帧的twist标为无效。原TF出口拥有新叶子，没有另一个节点改写base_link。</p>
+<p>cloud使用接受的同戳快照转换到S，保留扫描源stamp。VISER通过同戳map→S叶子回投世界，原云和转换云在map中重合。没有有效快照时不补发点云。</p>
 <p>参数位于<code>configs/spatial/g1_navigation_frame_sim.yaml</code>。当前资格来自SIM离线源时间回放，不是新导航或REAL控制验收。本体停稳和操作仍使用STATE/BODY的实际关节、IMU与本体局部坐标。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-I">
+<header class="am-panel-head"><span class="am-panel-id">I</span><h2>导航对照与回放</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>VISER 8092 在原TARE／NeuPAN图层上增加橙色原始定位、青色平滑参考和红色SDK IMU姿态。IMU使用观测时间的安装TF转换到本体，位置仅锚定同戳SLAM，SDK heading由首个有效观测对齐map。页面显示源时间、残差、WARMING／READY／INVALID与滤波身份；断流隐藏当前轴，历史曲线保留并标记状态。</p>
+<p>旧录包可显式通过 <code>--navigation-profile</code> 生成仅供显示的离线shadow曲线；使用ROS原生压缩解码器，原录包只读，不能把推导曲线当新实验。模式变化不覆盖原本体状态或操作坐标。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
@@ -896,7 +903,7 @@ Open3D原生point-to-plane ICP使用Tukey核，计算当前本体与锚点的局
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 03:26</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 03:39</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -904,7 +911,7 @@ title: 空间运行架构 · spatial_runtime
 subtitle: SW-12 的建图会话、定位坐标、重定位与地图版本
 lang: zh
 doc_id: module-robot-spatial_runtime
-implementation: e9c42ac30c513891
+implementation: 9923c1ae002091de
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -959,9 +966,17 @@ MapCatalog -&gt; 定位会话: 已确认MapRef
 
 短历史最多10s/200样本。平移和SciPy Slerp只在相邻已观测、有效且同epoch的样本间插值；不使用最新位姿配旧图像，也不外推。`transform_cloud`和`transform_goal`把固定map几何转到同一S系；反变换后世界点和目标仍固定。`raw_to_smooth`只是几何残差，不是运动预测。
 
-新增ROS出口为`/robots/&lt;robot_id&gt;/spatial/navigation/{pose,odom,debug}`。pose/odom的父系是map，odom子系为nav_stabilized；twist来自平滑源位姿有限差分并表达在S，不复制SDK速度。首样本或断帧的twist标为无效。原TF出口拥有新叶子，没有另一个节点改写base_link。
+新增ROS出口为`/robots/&lt;robot_id&gt;/spatial/navigation/{pose,odom,debug,cloud}`。pose/odom的父系是map，odom子系为nav_stabilized；twist来自平滑源位姿有限差分并表达在S，不复制SDK速度。首样本或断帧的twist标为无效。原TF出口拥有新叶子，没有另一个节点改写base_link。
+
+cloud使用接受的同戳快照转换到S，保留扫描源stamp。VISER通过同戳map→S叶子回投世界，原云和转换云在map中重合。没有有效快照时不补发点云。
 
 参数位于`configs/spatial/g1_navigation_frame_sim.yaml`。当前资格来自SIM离线源时间回放，不是新导航或REAL控制验收。本体停稳和操作仍使用STATE/BODY的实际关节、IMU与本体局部坐标。
+
+## 导航对照与回放
+
+VISER 8092 在原TARE／NeuPAN图层上增加橙色原始定位、青色平滑参考和红色SDK IMU姿态。IMU使用观测时间的安装TF转换到本体，位置仅锚定同戳SLAM，SDK heading由首个有效观测对齐map。页面显示源时间、残差、WARMING／READY／INVALID与滤波身份；断流隐藏当前轴，历史曲线保留并标记状态。
+
+旧录包可显式通过 `--navigation-profile` 生成仅供显示的离线shadow曲线；使用ROS原生压缩解码器，原录包只读，不能把推导曲线当新实验。模式变化不覆盖原本体状态或操作坐标。
 
 ## C 在线建图状态视图
 

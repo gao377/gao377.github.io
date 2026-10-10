@@ -91,8 +91,8 @@
     },
     {
       "file": "algo-neupan.html",
-      "source_sha256": "180a0c1645090bbc7db381d900a4f0af7403f95e2942d5f91c7e64745103c9bd",
-      "implementation_sha256": "36a7b5275548505112a5e3ccb161ac3c2846a46cce661766e5a2bafca38c5afd"
+      "source_sha256": "b8921ef34f828415ee38c3eeb9509f17616779267e205b71fba05a97f506babe",
+      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
     },
     {
       "file": "algo-pbvs.html",
@@ -196,7 +196,8 @@
     },
     {
       "file": "files-robot-navigation_runtime.html",
-      "source_sha256": "1df7aefc57d7b55d6c5d87cdcf84da6a0c2f82ed058d10030d0673e58e5a3079"
+      "source_sha256": "f4ac33e510a19e4ba0e4cb620d90660f90e6fac048faa6a9565b57420eaae4fa",
+      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
     },
     {
       "file": "files-robot-perception_runtime.html",
@@ -212,7 +213,8 @@
     },
     {
       "file": "files-robot-spatial_runtime.html",
-      "source_sha256": "44fc53821d2e765fe454d03c04524c4cef5942e2574cc36efb01a4102c6e90db"
+      "source_sha256": "f439e28b9c51d7abe26e978ce2ec5227a6b9a896207c181460af950b713f0b65",
+      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
     },
     {
       "file": "files-robot-state_estimation.html",
@@ -268,7 +270,8 @@
     },
     {
       "file": "images.html",
-      "source_sha256": "da46c03898044f04c9d7774ded853c3bac476e3b4cadca8ecd8c98d63502d5f2"
+      "source_sha256": "f8402a820029f8a317bdaf77585b7cd015bbb178710b0a9d4986779223a8571c",
+      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
     },
     {
       "file": "index.html",
@@ -320,8 +323,8 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "db15ef1da2b19001b5a9ce88ef2a2e85516e4f01e6c81075c1065dba8b8121b1",
-      "implementation_sha256": "e9c42ac30c5138919f46103f27ea9bac0bf54720124f26b8198ab7f32f26898f"
+      "source_sha256": "afaddefd8667e585338c30bd11d641edf3174addb29f9c192ee04737be618e01",
+      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
     },
     {
       "file": "module-robot-perception_runtime.html",
@@ -337,8 +340,8 @@
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "bd6bd752686d456cad11fbf7f1490566890212e116cc81cb2a9c7e90f1864317",
-      "implementation_sha256": "e9c42ac30c5138919f46103f27ea9bac0bf54720124f26b8198ab7f32f26898f"
+      "source_sha256": "134d7b5ec535650b0408ae08b703cc9c85dc19757ba29fef00ec77201f2e3a26",
+      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
     },
     {
       "file": "module-robot-state_estimation.html",
@@ -398,7 +401,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "849b42e373c4b936c6a90e2fb3b37c1081d8069f32e22676b40f27d0c42bc9f3"
+      "source_sha256": "5640fcd40e859bb993a9d25f1dacdc19f4da021a0f2235b99f12cd050370278c",
+      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
     }
   ],
   "assets": [
@@ -444,11 +448,11 @@
     },
     {
       "file": "diagrams/navigation-runtime.drawio",
-      "sha256": "cf9e3ae4d269a8224ceb5cc591ea228464b9a80f828fe9eaf9c682d400245fb7"
+      "sha256": "dccf3ed0d391cdc31ac22af1342e584eed65d7222919f2fdcd2e117fe1523dfb"
     },
     {
       "file": "diagrams/navigation-runtime.html",
-      "sha256": "922498bd432f8340b8c779c472028d7d89100f0ff6f59d74c66c96b011b3f588"
+      "sha256": "c38b8d6056ccc668818206d04e6f2b4d6a5aa9ce7e1567c32c5bafb097989090"
     },
     {
       "file": "diagrams/navigation-runtime.svg",
@@ -492,15 +496,15 @@
     },
     {
       "file": "diagrams/spatial-runtime.drawio",
-      "sha256": "37f3f0b7c81af8058e5216b75bcec485c03f44879cd3bd775e96403624a8dffe"
+      "sha256": "935d69f5924aea54a8655df927b699bc2f2688fac2c26a386e1b522b0f591df2"
     },
     {
       "file": "diagrams/spatial-runtime.html",
-      "sha256": "0d7d07a822662ef6f1bfe4e0a24269c88ed14ab6bb6c3ba97ed2a24b3adc820a"
+      "sha256": "3dc811c4f953e3800d77608af24bc0e53033fe3f3599e2f4ee8e4679803e68c2"
     },
     {
       "file": "diagrams/spatial-runtime.svg",
-      "sha256": "e09ddb1a491b88fdc14e0c30dab4b0528c097727dd35710b954647c3ae4f32e7"
+      "sha256": "8ee891bad43bf84f3f958077ed1060a5665aab59338a87e72a4d237ac4decde9"
     },
     {
       "file": "diagrams/system-architecture.drawio",

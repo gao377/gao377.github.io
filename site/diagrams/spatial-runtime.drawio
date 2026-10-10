@@ -442,4 +442,66 @@
       </root>
     </mxGraphModel>
   </diagram>
+  <diagram name="S导航参考：同戳观测与虚拟坐标" id="spatial-runtime-stabilized">
+    <mxGraphModel page="1" pageWidth="1800" pageHeight="1000" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="S导航参考：同戳观测与虚拟坐标" vertex="1" parent="1" style="text;html=1;fontSize=32;fontFamily=Noto Sans CJK SC;align=left;">
+          <mxGeometry as="geometry" x="50" y="30" width="1650" height="65" />
+        </mxCell>
+        <mxCell id="raw" value="&lt;b&gt;原始定位 T_WB&lt;/b&gt;&lt;br&gt;Lightning＋STATE同戳TF&lt;br&gt;源stamp／epoch／map revision" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="50" y="180" width="410" height="140" />
+        </mxCell>
+        <mxCell id="filter" value="&lt;b&gt;GaitPoseFilter&lt;/b&gt;&lt;br&gt;SciPy单SOS陷波；x/y/z／展开yaw&lt;br&gt;10Hz、1.3Hz／Q3；因果递推" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="655" y="180" width="490" height="140" />
+        </mxCell>
+        <mxCell id="store" value="&lt;b&gt;NavigationFrameStore&lt;/b&gt;&lt;br&gt;T_WS／T_SB；10s、200样本历史&lt;br&gt;仅已观测相邻帧插值" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="1325" y="180" width="410" height="140" />
+        </mxCell>
+        <mxCell id="geom" value="&lt;b&gt;原固定W系几何／目标&lt;/b&gt;&lt;br&gt;transform_cloud／transform_goal&lt;br&gt;p_S = inverse(T_WS) p_W" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="50" y="470" width="410" height="140" />
+        </mxCell>
+        <mxCell id="relation" value="&lt;b&gt;navigation_reference.py&lt;/b&gt;&lt;br&gt;P视觉／S云锚点提供原关系与轴&lt;br&gt;当前关系转S，期望关系保持常量" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="655" y="470" width="490" height="140" />
+        </mxCell>
+        <mxCell id="consumer" value="&lt;b&gt;N：统一快照&lt;/b&gt;&lt;br&gt;NeuPAN状态 T_WS；W路径不重置&lt;br&gt;ViSP消费S局部关系；实际几何保留" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="1325" y="470" width="410" height="140" />
+        </mxCell>
+        <mxCell id="validity" value="&lt;b&gt;源时间与质量&lt;/b&gt;&lt;br&gt;缺帧／地图／epoch／clock变化→2s WARMING&lt;br&gt;零速等待沿原截止；不补样、不改源时间" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="50" y="760" width="600" height="145" />
+        </mxCell>
+        <mxCell id="outlet" value="&lt;b&gt;FrameOutput／ROS只读出口&lt;/b&gt;&lt;br&gt;map→nav_stabilized叶子；pose／odom／debug／cloud&lt;br&gt;原定位、IMU、BODY判稳、M本体局部系保持" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E5F3ED;strokeColor=#277A5B;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;">
+          <mxGeometry as="geometry" x="910" y="760" width="825" height="145" />
+        </mxCell>
+        <mxCell id="edge0" value="原观测" edge="1" parent="1" source="raw" target="filter" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge1" value="原／平滑同戳快照" edge="1" parent="1" source="filter" target="store" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge2" value="导航专用参考" edge="1" parent="1" source="store" target="consumer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge3" value="已观测历史" edge="1" parent="1" source="store" target="relation" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge4" value="原目标／局部轴" edge="1" parent="1" source="geom" target="relation" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge5" value="当前关系与原质量" edge="1" parent="1" source="relation" target="consumer" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge6" value="状态与复位" edge="1" parent="1" source="filter" target="validity" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge7" value="可观测状态" edge="1" parent="1" source="validity" target="outlet" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="edge8" value="同戳输出" edge="1" parent="1" source="store" target="outlet" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#42698D;strokeWidth=2;fontSize=16;labelBackgroundColor=#FFFFFF;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
