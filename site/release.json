@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "46ce1e165166b9ba8792943209a9004b0bdcf7dfa25c3fa056e99714378f2a4a",
+  "implementation_sha256": "4c9444883fc6b81eebc7ced48bc5a16dbbefad54cfcc9b03fca94fa38deb6aa0",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
   "navigation": [
@@ -67,7 +67,7 @@
     },
     {
       "file": "algo-collision.html",
-      "source_sha256": "d81fa400f3c6b7f75c7104dc13e746ad1119c2a85c28c99f4e530e52d479e734"
+      "source_sha256": "502901a53ea5a99e96d3f7f47c0531009d69df2b53add35480accb78932e879a"
     },
     {
       "file": "algo-execution.html",
@@ -395,7 +395,7 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "72fc273981fffde73931c6f06ad1abdadddbc999d4d74596b8bc6594c127ee22"
+      "source_sha256": "73fd8998c8b5bb19f372ace9f033f122185696e30c153401d9236b7cbc94095b"
     }
   ],
   "assets": [
