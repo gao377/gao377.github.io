@@ -403,8 +403,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "5640fcd40e859bb993a9d25f1dacdc19f4da021a0f2235b99f12cd050370278c",
-      "implementation_sha256": "e90ec821a568c60643803a835406d8a7503f600d21d2519165d932a3d68a1bb4"
+      "source_sha256": "b9d7cb1621796b5439f943e80b91d1040874a32ce6b45264c33e3c846016a62c",
+      "implementation_sha256": "831a6bfcff3a7162420add86f98de310bb5bdc172089724d3e3214c2a0718b73"
     }
   ],
   "assets": [
