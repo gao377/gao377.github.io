@@ -1,5 +1,5 @@
 {
-  "implementation_sha256": "bd2bf170fbc041b247c98e77834bd458e067761ee749544ec3484fe3754e8b05",
+  "implementation_sha256": "12ea77e5d0bc6781c08246821e90901c126f3bcbd0dd7f72689b0481cb03e9fa",
   "renderer": "answer-me-with-html@0.4.14",
   "navigation_sha256": "43c32df836ca8d27c330f9f8ced13fa62e3efddc1d124ce9390aa257646c14a9",
   "navigation": [
@@ -55,8 +55,7 @@
   "pages": [
     {
       "file": "algo-amo.html",
-      "source_sha256": "33a0275df74bd3c38d22232a7e377feccf2f6d7ece55ec04e163aafab4ed4b69",
-      "implementation_sha256": "8b4fd0251e5ecd4ceb64dcf0bb90a2710eaac25aa77e149b0cb671a552885e2b"
+      "source_sha256": "33a0275df74bd3c38d22232a7e377feccf2f6d7ece55ec04e163aafab4ed4b69"
     },
     {
       "file": "algo-approach.html",
@@ -64,13 +63,11 @@
     },
     {
       "file": "algo-body-state.html",
-      "source_sha256": "70c8b7127647d47107949fc972c52027a5dc2a96a9a19b7fb727577718a6ea30",
-      "implementation_sha256": "dfbebae2a3f69d108d8cc4d733565a38f579ce1a48329f0235b530f971a531b8"
+      "source_sha256": "70c8b7127647d47107949fc972c52027a5dc2a96a9a19b7fb727577718a6ea30"
     },
     {
       "file": "algo-cartesian.html",
-      "source_sha256": "dc2e2b8149570a47aad03c7b85149c16262558a8e82f0bb3d58afbd66608bc21",
-      "implementation_sha256": "d402c3bcd7aa8fc7cbe0eff91b5dd164faa8792dd0c3117e43ccbd0ca77e5f2b"
+      "source_sha256": "dc2e2b8149570a47aad03c7b85149c16262558a8e82f0bb3d58afbd66608bc21"
     },
     {
       "file": "algo-collision.html",
@@ -78,12 +75,11 @@
     },
     {
       "file": "algo-execution.html",
-      "source_sha256": "657bbc5ab9af0179a6148d0a01d7f78c959265c9e12c3f9095d84585a98b4e44"
+      "source_sha256": "2384b33932f62e835447a41730ea3fad0812663ca5090c7f68b086ec04ce4c08"
     },
     {
       "file": "algo-exploration.html",
-      "source_sha256": "8a6ba5f4280b9022d8ddde25d1b8020b49acc9d4cb88b53092e82f08e4b9dacd",
-      "implementation_sha256": "298a565580943b3babb11574453b74d7d090c58195d572f485673b9102d737c6"
+      "source_sha256": "8a6ba5f4280b9022d8ddde25d1b8020b49acc9d4cb88b53092e82f08e4b9dacd"
     },
     {
       "file": "algo-fdm.html",
@@ -99,8 +95,7 @@
     },
     {
       "file": "algo-neupan.html",
-      "source_sha256": "b8921ef34f828415ee38c3eeb9509f17616779267e205b71fba05a97f506babe",
-      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
+      "source_sha256": "b8921ef34f828415ee38c3eeb9509f17616779267e205b71fba05a97f506babe"
     },
     {
       "file": "algo-pbvs.html",
@@ -132,7 +127,7 @@
     },
     {
       "file": "algo-task.html",
-      "source_sha256": "cb037ceb4ef405bf653c437348dfc6da4017e8ef8bccec67f0ff48c151ecefbc"
+      "source_sha256": "49d6d31a4884abf0d288a18bf47e427a8743f04e1c568b916623abf8d9952bbc"
     },
     {
       "file": "algo-trajectory.html",
@@ -140,7 +135,7 @@
     },
     {
       "file": "algorithms.html",
-      "source_sha256": "84b649da69ba12654181eac6d9d857e8b87e10a970490a4127844ab7d2f12a4e"
+      "source_sha256": "966570b6e7935b0f98c3c176589bb6a898b1b768b40920a9ebc09b4acd95c889"
     },
     {
       "file": "architecture-map.html",
@@ -168,7 +163,8 @@
     },
     {
       "file": "experiments.html",
-      "source_sha256": "5894e615b706795386bfeb7dd330393136c8182842468e7b76834c3fa350f4f9"
+      "source_sha256": "6498e5f2f0c25cc69d6c914ad0d889c94f7fc3a4109f639805af7b9e7208749d",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -206,8 +202,7 @@
     },
     {
       "file": "files-robot-navigation_runtime.html",
-      "source_sha256": "f4ac33e510a19e4ba0e4cb620d90660f90e6fac048faa6a9565b57420eaae4fa",
-      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
+      "source_sha256": "f4ac33e510a19e4ba0e4cb620d90660f90e6fac048faa6a9565b57420eaae4fa"
     },
     {
       "file": "files-robot-perception_runtime.html",
@@ -281,8 +276,7 @@
     },
     {
       "file": "images.html",
-      "source_sha256": "f8402a820029f8a317bdaf77585b7cd015bbb178710b0a9d4986779223a8571c",
-      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
+      "source_sha256": "f8402a820029f8a317bdaf77585b7cd015bbb178710b0a9d4986779223a8571c"
     },
     {
       "file": "index.html",
@@ -328,8 +322,7 @@
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "6f9f2920abd02377d6e42559cd91e2525339d925a2ece7b40a0f3bd42f130e5e",
-      "implementation_sha256": "306ed57afaf060e8a5ca77f82edaf19f06a07ae0721e74ecf2e5dd4aa22cf9aa"
+      "source_sha256": "6f9f2920abd02377d6e42559cd91e2525339d925a2ece7b40a0f3bd42f130e5e"
     },
     {
       "file": "module-robot-motion_coordinator.html",
@@ -342,8 +335,7 @@
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "5129fa61b9b6a2af9b3195a890f35feb1994a1001801b39b7c20ae22926a6f1c",
-      "implementation_sha256": "298a565580943b3babb11574453b74d7d090c58195d572f485673b9102d737c6"
+      "source_sha256": "5129fa61b9b6a2af9b3195a890f35feb1994a1001801b39b7c20ae22926a6f1c"
     },
     {
       "file": "module-robot-protection_runtime.html",
@@ -361,8 +353,7 @@
     },
     {
       "file": "module-robot-state_estimation.html",
-      "source_sha256": "90b620e7226b74eb3c43dba5db964443e420d3c0e1eae97b91f5e7fe1a1c1812",
-      "implementation_sha256": "dfbebae2a3f69d108d8cc4d733565a38f579ce1a48329f0235b530f971a531b8"
+      "source_sha256": "90b620e7226b74eb3c43dba5db964443e420d3c0e1eae97b91f5e7fe1a1c1812"
     },
     {
       "file": "module-system-candidate_builder.html",
@@ -423,13 +414,18 @@
     },
     {
       "file": "simulation-usage.html",
-      "source_sha256": "0de8fff76e8054e74982099d772655249b1d430d98cda90ec99aaed1912ff741",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+      "source_sha256": "42a5cc7f08edcfe89298adb9cc2a88c48bca81f2972f01423ab07a169c89c91f",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
     },
     {
       "file": "simulation.html",
-      "source_sha256": "80b425d9abd2962827cbd6959c5ae08c4b93d2f32988f0e53acaa71f00716273",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+      "source_sha256": "faa561ee85cca11a8aa663099aecc5faaa0a19b5b8e51464eb45118529d33508",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
+    },
+    {
+      "file": "simulation-performance.html",
+      "source_sha256": "bb6c0bee2372c2a187ea389f2277bc8e6df91dce1e948a791049f579e44a7527",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
     }
   ],
   "assets": [
@@ -475,11 +471,11 @@
     },
     {
       "file": "diagrams/navigation-runtime.drawio",
-      "sha256": "dccf3ed0d391cdc31ac22af1342e584eed65d7222919f2fdcd2e117fe1523dfb"
+      "sha256": "fc6cbfb9ad44186fcd877ab0bc9a6b45fe818fc85cb79f97c8ff53a5b74cd0ad"
     },
     {
       "file": "diagrams/navigation-runtime.html",
-      "sha256": "c38b8d6056ccc668818206d04e6f2b4d6a5aa9ce7e1567c32c5bafb097989090"
+      "sha256": "76a4af486815683b3faccfc059ca813358db9dd9e80c4bd22f15d0165252a7a8"
     },
     {
       "file": "diagrams/navigation-runtime.svg",
@@ -508,6 +504,10 @@
     {
       "file": "diagrams/runtime-sequences.svg",
       "sha256": "89f94fdf6d4e62d1cce9a1a9e101268876f2ea04d14d5fcdc63cefc9a5eed2c0"
+    },
+    {
+      "file": "diagrams/simulation-rtf-20261012.svg",
+      "sha256": "31cca6ce984e6f18d890964b5a66cbbe66087b22ad89424283b86a69486342ff"
     },
     {
       "file": "diagrams/software-architecture.drawio",
