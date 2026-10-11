@@ -410,8 +410,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "e0d02d4c854d14350929084702fda7fcf47d91ad9c442849d16d2bb5fb742864",
-      "implementation_sha256": "d402c3bcd7aa8fc7cbe0eff91b5dd164faa8792dd0c3117e43ccbd0ca77e5f2b"
+      "source_sha256": "9859b14c5c267926260d17fb7eaed5d9de451412fb60a7f0bd78d2e3199808c7",
+      "implementation_sha256": "29e9932532101ac0702c049072e6cdb5efd2697f1e03780bb0b3cba79f66ead2"
     }
   ],
   "assets": [
