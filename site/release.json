@@ -330,8 +330,8 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "8f9023115bd4a610c0f7b0c3950767726f27b6fe3e8c998a1838b1aab8ca74d0",
-      "implementation_sha256": "298a565580943b3babb11574453b74d7d090c58195d572f485673b9102d737c6"
+      "source_sha256": "84dcc1419258d60b3692cf96f71d7768d9611d2d47700c07e5cff01e3c628945",
+      "implementation_sha256": "f4d9d54013a2a53d4e05acf7f718df84f9421bebae16cdf53d0079c57430dd13"
     },
     {
       "file": "module-robot-perception_runtime.html",
@@ -348,8 +348,8 @@
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "e58127f54dbb90e19d373b46e59fc3322661ab03048a48e24ebf6531036caba5",
-      "implementation_sha256": "26618cc5415ebce4dd556297b8e48fb2b713482ca08bad446ebf0f2de7b0423c"
+      "source_sha256": "852591cce4e5b53d5a2b5339376833923eb0d7cff28f5371fe43fff2545b7854",
+      "implementation_sha256": "f4d9d54013a2a53d4e05acf7f718df84f9421bebae16cdf53d0079c57430dd13"
     },
     {
       "file": "module-robot-state_estimation.html",
