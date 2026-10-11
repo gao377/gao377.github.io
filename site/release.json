@@ -405,8 +405,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "8ecd265bff8b4af1d3615c5fa5a1f71395e64e1cc74c075cc77c1b6c5c5bf7fc",
-      "implementation_sha256": "e82e6c123abc947a126936b161a04978cf28d629b37881106f6743310ae2576d"
+      "source_sha256": "d9e45419782360528dbeb1f604e31d6492a7974165abd72f2dce43c2f1d8566d",
+      "implementation_sha256": "26618cc5415ebce4dd556297b8e48fb2b713482ca08bad446ebf0f2de7b0423c"
     }
   ],
   "assets": [
