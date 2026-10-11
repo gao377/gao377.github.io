@@ -163,7 +163,8 @@
     },
     {
       "file": "experiments.html",
-      "source_sha256": "5894e615b706795386bfeb7dd330393136c8182842468e7b76834c3fa350f4f9"
+      "source_sha256": "6498e5f2f0c25cc69d6c914ad0d889c94f7fc3a4109f639805af7b9e7208749d",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -403,11 +404,18 @@
     },
     {
       "file": "simulation-usage.html",
-      "source_sha256": "0de8fff76e8054e74982099d772655249b1d430d98cda90ec99aaed1912ff741"
+      "source_sha256": "42a5cc7f08edcfe89298adb9cc2a88c48bca81f2972f01423ab07a169c89c91f",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
     },
     {
       "file": "simulation.html",
-      "source_sha256": "80b425d9abd2962827cbd6959c5ae08c4b93d2f32988f0e53acaa71f00716273"
+      "source_sha256": "faa561ee85cca11a8aa663099aecc5faaa0a19b5b8e51464eb45118529d33508",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
+    },
+    {
+      "file": "simulation-performance.html",
+      "source_sha256": "bb6c0bee2372c2a187ea389f2277bc8e6df91dce1e948a791049f579e44a7527",
+      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
     }
   ],
   "assets": [
@@ -486,6 +494,10 @@
     {
       "file": "diagrams/runtime-sequences.svg",
       "sha256": "89f94fdf6d4e62d1cce9a1a9e101268876f2ea04d14d5fcdc63cefc9a5eed2c0"
+    },
+    {
+      "file": "diagrams/simulation-rtf-20261012.svg",
+      "sha256": "31cca6ce984e6f18d890964b5a66cbbe66087b22ad89424283b86a69486342ff"
     },
     {
       "file": "diagrams/software-architecture.drawio",
