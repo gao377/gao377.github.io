@@ -60,7 +60,8 @@
     },
     {
       "file": "algo-body-state.html",
-      "source_sha256": "c06abc1016aea71760f48fd792b085fe02a85821b42b146bd78848dccce70520"
+      "source_sha256": "70c8b7127647d47107949fc972c52027a5dc2a96a9a19b7fb727577718a6ea30",
+      "implementation_sha256": "dfbebae2a3f69d108d8cc4d733565a38f579ce1a48329f0235b530f971a531b8"
     },
     {
       "file": "algo-cartesian.html",
@@ -349,7 +350,8 @@
     },
     {
       "file": "module-robot-state_estimation.html",
-      "source_sha256": "0b5f6913dd7d8ae4478f6f9c2c63c720d8418d4ee942ff58aa0831d891d87286"
+      "source_sha256": "90b620e7226b74eb3c43dba5db964443e420d3c0e1eae97b91f5e7fe1a1c1812",
+      "implementation_sha256": "dfbebae2a3f69d108d8cc4d733565a38f579ce1a48329f0235b530f971a531b8"
     },
     {
       "file": "module-system-candidate_builder.html",

@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>本体运动学与相对判稳</h1><p class="am-sub">使用完整模型、实测关节和IMU判断局部相对稳定</p><div class="am-head-meta"><span><b>doc_id</b>algo-body-state</span><span><b>implementation</b>370e694d928b04e3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>本体运动学与相对判稳</h1><p class="am-sub">使用完整模型、实测关节和IMU判断局部相对稳定</p><div class="am-head-meta"><span><b>doc_id</b>algo-body-state</span><span><b>implementation</b>dfbebae2a3f69d10</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 判稳信息与职责</a><a href="#panel-B">B · 质心与旋转变化</a><a href="#panel-C">C · 稳定状态生成</a><a href="#panel-D">D · 配置与语义边界</a><a href="#panel-E">E · 实测FK与站立参考</a><a href="#panel-F">F · 实现与阅读</a></nav><div class="am-doc-body">
@@ -757,6 +757,9 @@ Pinocchio计算完整G1及REVO2模型的质心。
 <div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 503 459" width="503" height="459" role="img" aria-label="流程图：关节手与IMU、模型质心、一秒窗口、IMU姿态、已发速度、输入条件、源时间与epoch、稳定结果" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M66.1,49 L66.1,65 Q66.1,81 66.1,97 L66.1,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="32.9" y="72" width="66.4" height="18" rx="3"/><text x="66.1" y="81" text-anchor="middle" dominant-baseline="central">完整URDF</text></g></g><g data-step="1"><path class="am-edge" d="M66.1,148 L66.1,164 Q66.1,180 84.7,196 L103.3,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="26.6" y="171" width="79" height="18" rx="3"/><text x="66.1" y="180" text-anchor="middle" dominant-baseline="central">局部相对变化</text></g></g><g data-step="2"><path class="am-edge" d="M181.2,148 L181.2,164 Q181.2,180 162.6,196 L144,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="158.9" y="171" width="44.5" height="18" rx="3"/><text x="181.2" y="180" text-anchor="middle" dominant-baseline="central">旋转差</text></g></g><g data-step="3"><path class="am-edge" d="M296.3,148 L296.3,164 Q296.3,180 318,196 L339.6,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="268.3" y="171" width="56" height="18" rx="3"/><text x="296.3" y="180" text-anchor="middle" dominant-baseline="central">必须为零</text></g></g><g data-step="4"><path class="am-edge" d="M430.5,148 L430.5,164 Q430.5,180 408.8,196 L387.1,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="396.7" y="171" width="67.5" height="18" rx="3"/><text x="430.5" y="180" text-anchor="middle" dominant-baseline="central">新鲜且连续</text></g></g><g data-step="5"><path class="am-edge" d="M363.4,247 L363.4,263 Q363.4,279 325.8,295.1 L288.3,311.3" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="318.1" y="270" width="90.5" height="18" rx="3"/><text x="363.4" y="279" text-anchor="middle" dominant-baseline="central">条件成立才累积</text></g></g><g data-step="6"><path class="am-edge" d="M123.6,247 L123.6,263 Q123.6,279 166,295.8 L208.3,312.6" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="78.4" y="270" width="90.5" height="18" rx="3"/><text x="123.6" y="279" text-anchor="middle" dominant-baseline="central">位置与角度范围</text></g></g><g data-step="7"><path class="am-edge" d="M273.4,346 L296.3,362 Q319.3,378 319.3,394 L319.3,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="291.3" y="369" width="56" height="18" rx="3"/><text x="319.3" y="378" text-anchor="middle" dominant-baseline="central">停稳确认</text></g></g><g data-step="8"><path class="am-edge" d="M223.2,346 L200.2,362 Q177.3,378 177.3,394 L177.3,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="102.4" y="369" width="149.8" height="18" rx="3"/><text x="177.3" y="378" text-anchor="middle" dominant-baseline="central">generation与source stamp</text></g></g></g><g><g class="am-node am-node--rect" data-key="关节手与IMU" data-step="0"><rect class="am-node-shape" x="14" y="14" width="104.2" height="35" rx="3"/><text x="66.1" y="31.5" text-anchor="middle" dominant-baseline="central">关节手与IMU</text></g><g class="am-node am-node--rect" data-key="模型质心" data-step="0"><rect class="am-node-shape" x="26.1" y="113" width="80" height="35" rx="3"/><text x="66.1" y="130.5" text-anchor="middle" dominant-baseline="central">模型质心</text></g><g class="am-node am-node--rect" data-key="一秒窗口" data-step="1"><rect class="am-node-shape" x="83.6" y="212" width="80" height="35" rx="3"/><text x="123.6" y="229.5" text-anchor="middle" dominant-baseline="central">一秒窗口</text></g><g class="am-node am-node--rect" data-key="IMU姿态" data-step="2"><rect class="am-node-shape" x="142.1" y="113" width="78.2" height="35" rx="3"/><text x="181.2" y="130.5" text-anchor="middle" dominant-baseline="central">IMU姿态</text></g><g class="am-node am-node--rect" data-key="已发速度" data-step="3"><rect class="am-node-shape" x="256.3" y="113" width="80" height="35" rx="3"/><text x="296.3" y="130.5" text-anchor="middle" dominant-baseline="central">已发速度</text></g><g class="am-node am-node--rect" data-key="输入条件" data-step="3"><rect class="am-node-shape" x="323.4" y="212" width="80" height="35" rx="3"/><text x="363.4" y="229.5" text-anchor="middle" dominant-baseline="central">输入条件</text></g><g class="am-node am-node--rect" data-key="源时间与epoch" data-step="4"><rect class="am-node-shape" x="372.3" y="113" width="116.4" height="35" rx="3"/><text x="430.5" y="130.5" text-anchor="middle" dominant-baseline="central">源时间与epoch</text></g><g class="am-node am-node--rect" data-key="稳定结果" data-step="5"><rect class="am-node-shape" x="208.3" y="311" width="80" height="35" rx="3"/><text x="248.3" y="328.5" text-anchor="middle" dominant-baseline="central">稳定结果</text></g><g class="am-node am-node--rect" data-key="导航阶段交接" data-step="7"><rect class="am-node-shape" x="266.3" y="410" width="106" height="35" rx="3"/><text x="319.3" y="427.5" text-anchor="middle" dominant-baseline="central">导航阶段交接</text></g><g class="am-node am-node--rect" data-key="操作站立参考" data-step="8"><rect class="am-node-shape" x="124.3" y="410" width="106" height="35" rx="3"/><text x="177.3" y="427.5" text-anchor="middle" dominant-baseline="central">操作站立参考</text></g></g></svg></figure>
 <div class="am-md"><p>反馈过期、反序、间断或非零已发速度使结果无效。
 已发零速度只是必要条件；还需要测得的相对变化通过。</p>
+<p>读取时间落后于最新SDK样本时，该次查询返回无效。
+查询不会清空更新后的观察窗口或站立区间。
+真实反馈超过40ms仍按原规则失效。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
@@ -839,7 +842,7 @@ REAL须使用其标定profile。</p>
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-09 21:58</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 12:58</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -847,7 +850,7 @@ title: 本体运动学与相对判稳
 subtitle: 使用完整模型、实测关节和IMU判断局部相对稳定
 lang: zh
 doc_id: algo-body-state
-implementation: 370e694d928b04e3
+implementation: dfbebae2a3f69d10
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -900,6 +903,10 @@ IMU姿态 -&gt; 一秒窗口: 旋转差
 
 反馈过期、反序、间断或非零已发速度使结果无效。
 已发零速度只是必要条件；还需要测得的相对变化通过。
+
+读取时间落后于最新SDK样本时，该次查询返回无效。
+查询不会清空更新后的观察窗口或站立区间。
+真实反馈超过40ms仍按原规则失效。
 
 ## D 配置与语义边界
 
