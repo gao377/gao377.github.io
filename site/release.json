@@ -321,8 +321,8 @@
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "65e21826d88cfac0864867e776620657fe628e05202c30ef8b1ad62a72d57df2",
-      "implementation_sha256": "d402c3bcd7aa8fc7cbe0eff91b5dd164faa8792dd0c3117e43ccbd0ca77e5f2b"
+      "source_sha256": "6f9f2920abd02377d6e42559cd91e2525339d925a2ece7b40a0f3bd42f130e5e",
+      "implementation_sha256": "306ed57afaf060e8a5ca77f82edaf19f06a07ae0721e74ecf2e5dd4aa22cf9aa"
     },
     {
       "file": "module-robot-motion_coordinator.html",
