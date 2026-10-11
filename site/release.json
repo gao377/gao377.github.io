@@ -1,7 +1,7 @@
 {
   "implementation_sha256": "bd2bf170fbc041b247c98e77834bd458e067761ee749544ec3484fe3754e8b05",
   "renderer": "answer-me-with-html@0.4.14",
-  "navigation_sha256": "58512a1bcf9fbe2eba3776bc462d80dd39e6e0cc1b8c4b541dcfba30985540d5",
+  "navigation_sha256": "43c32df836ca8d27c330f9f8ced13fa62e3efddc1d124ce9390aa257646c14a9",
   "navigation": [
     {
       "label": "首页",
@@ -30,6 +30,10 @@
     {
       "label": "能力接口",
       "href": "interfaces.html"
+    },
+    {
+      "label": "仿真系统",
+      "href": "simulation.html"
     },
     {
       "label": "场景启动",
@@ -188,12 +192,13 @@
     },
     {
       "file": "files-robot-local_task_runtime.html",
-      "source_sha256": "b9e60f30ee417153f65ec3b30239bb227735ba5ad596d35e175925843f6d6561"
+      "source_sha256": "5f8a630a4b50e32a4f597b3772745313f4378730d5cac9075335b7ea617136f5",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "0f42faa1b80f0895c2cc22c0c1d9b9c1357b645136083cceba282a2ac7ac3a28",
-      "implementation_sha256": "d402c3bcd7aa8fc7cbe0eff91b5dd164faa8792dd0c3117e43ccbd0ca77e5f2b"
+      "source_sha256": "6c9deaaeeb361e8ddd6e7b420dee88e3d43894be0b4a0e5ebc05047c649f80ea",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "files-robot-motion_coordinator.html",
@@ -214,12 +219,13 @@
     },
     {
       "file": "files-robot-sensor_adapters.html",
-      "source_sha256": "eb3c5e3dc8c653d2391a99855b0dfb27b1c29f4edc316636a2a559eb567f7f21"
+      "source_sha256": "4bb9014906a1bc7beec09094e1e3737ed9c2b1d5daa805a46f77472170db90fb",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "files-robot-spatial_runtime.html",
-      "source_sha256": "f439e28b9c51d7abe26e978ce2ec5227a6b9a896207c181460af950b713f0b65",
-      "implementation_sha256": "9923c1ae002091de8bc149d36564a58067e436c942254add6f95bc0e7a66cf29"
+      "source_sha256": "bbf8597969f52b5179689cb3e5047500a79ce0cfc7fa226c178f36fe5b3cfa5e",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "files-robot-state_estimation.html",
@@ -300,8 +306,8 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "1b0308cefef388a0fdcace8d15c5d60b4e0a85b3407eb20b75459f2113f9f6c1",
-      "implementation_sha256": "8b4fd0251e5ecd4ceb64dcf0bb90a2710eaac25aa77e149b0cb671a552885e2b"
+      "source_sha256": "0c7f1bdbcbe7d585175ed29bc238766cd73439c154df488c994e6ae8c4a77985",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "module-robot-config_client.html",
@@ -317,7 +323,8 @@
     },
     {
       "file": "module-robot-local_task_runtime.html",
-      "source_sha256": "68b703dd2bded86ca1dffb0de43ad5bc3510d82cf5b1279dda36abd92488b6cc"
+      "source_sha256": "0b1a08603c9a5ac88e9b3453ebd060c1e05b4db7879ca8bbed5b99eb106f4629",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "module-robot-manipulation_runtime.html",
@@ -330,8 +337,8 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "84dcc1419258d60b3692cf96f71d7768d9611d2d47700c07e5cff01e3c628945",
-      "implementation_sha256": "f4d9d54013a2a53d4e05acf7f718df84f9421bebae16cdf53d0079c57430dd13"
+      "source_sha256": "863cccea199e1497b92da283fb76f96851fa8e86f3c3bc7808d488338df7e9eb",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "module-robot-perception_runtime.html",
@@ -344,12 +351,13 @@
     },
     {
       "file": "module-robot-sensor_adapters.html",
-      "source_sha256": "6bb522ad5875feec032710b5804856bc3d0f35696f8d66a8aa34fc919adf9b61"
+      "source_sha256": "47c56e41a4f583c7893bb11eaa8f45224128be8b12c96877373bbb6be215c49d",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "852591cce4e5b53d5a2b5339376833923eb0d7cff28f5371fe43fff2545b7854",
-      "implementation_sha256": "f4d9d54013a2a53d4e05acf7f718df84f9421bebae16cdf53d0079c57430dd13"
+      "source_sha256": "158a7b41bcae430a6462bd32a4113afefb12ed451faf265db7d622d322db25d4",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     },
     {
       "file": "module-robot-state_estimation.html",
@@ -410,8 +418,18 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "e75a77fd56289964096586b1c7edec482dc31e8a6d20a0977f6edb1e726bdd09",
-      "implementation_sha256": "c7417c47fed00e38953ecaac83e465f6a880c027039cfd35b5ab4cda555620fe"
+      "source_sha256": "1cb56fc66f1a2bb5344deb67a57464057f44319832efd32fceb27d7845b8858b",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+    },
+    {
+      "file": "simulation-usage.html",
+      "source_sha256": "0de8fff76e8054e74982099d772655249b1d430d98cda90ec99aaed1912ff741",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+    },
+    {
+      "file": "simulation.html",
+      "source_sha256": "80b425d9abd2962827cbd6959c5ae08c4b93d2f32988f0e53acaa71f00716273",
+      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
     }
   ],
   "assets": [

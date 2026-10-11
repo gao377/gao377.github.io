@@ -698,13 +698,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>spatial_runtime · 文件与符号</h1><p class="am-sub">按当前源码 AST 提取，不嵌入函数正文</p><div class="am-head-meta"><span><b>doc_id</b>files-robot-spatial_runtime</span><span><b>implementation</b>9923c1ae002091de</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>spatial_runtime · 文件与符号</h1><p class="am-sub">按当前源码 AST 提取，不嵌入函数正文</p><div class="am-head-meta"><span><b>doc_id</b>files-robot-spatial_runtime</span><span><b>implementation</b>847dc079c509c92d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout am-doc-layout--notoc">
 <div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>所属模块</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><a href="module-robot-spatial_runtime.html">定位、建图与地图</a> · 本目录 27 个 Python 文件。</p>
+<div class="am-panel-body"><div class="am-md"><p><a href="module-robot-spatial_runtime.html">定位、建图与地图</a> · 本目录 35 个 Python 文件。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -729,6 +729,22 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td><code>SpatialCapabilityProvider</code></td>
 </tr>
 <tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_assembly.py">cartographer2d_assembly.py</a></td>
+<td><code>attach_cartographer2d</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_mapping.py">cartographer2d_mapping.py</a></td>
+<td><code>Cartographer2DMapping</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_save.py">cartographer2d_save.py</a></td>
+<td><code>call</code>, <code>save_map</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_session.py">cartographer2d_session.py</a></td>
+<td><code>Cartographer2DSession</code></td>
+</tr>
+<tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/frame_output.py">frame_output.py</a></td>
 <td><code>FrameOutput</code></td>
 </tr>
@@ -747,6 +763,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/gait_filter.py">gait_filter.py</a></td>
 <td><code>GaitPoseFilter</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/input_routing.py">input_routing.py</a></td>
+<td><code>input_dimension</code>, <code>InputDimensionAssembly</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/lightning_provider.py">lightning_provider.py</a></td>
@@ -801,8 +821,20 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td><code>stabilize_reference</code></td>
 </tr>
 <tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/occupancy_export.py">occupancy_export.py</a></td>
+<td><code>observed_ground_height</code>, <code>write_scans</code>, <code>export_occupancy</code></td>
+</tr>
+<tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/online_mapping.py">online_mapping.py</a></td>
 <td><code>OnlineMapping</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/planar_navigation_output.py">planar_navigation_output.py</a></td>
+<td><code>PlanarNavigationOutput</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/planar_pose.py">planar_pose.py</a></td>
+<td><code>PlanarPoseTracker</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/point_velocity.py">point_velocity.py</a></td>
@@ -814,7 +846,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/runtime.py">runtime.py</a></td>
-<td><code>SpatialRuntime</code></td>
+<td><code>reference_identity</code>, <code>SpatialRuntime</code></td>
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/scan_source.py">scan_source.py</a></td>
@@ -822,7 +854,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/spatial_feedback.py">spatial_feedback.py</a></td>
-<td><code>update_mapping</code>, <code>finish_feedback</code>, <code>complete_mapping_save</code>, <code>tick_recovery</code></td>
+<td><code>update_mapping</code>, <code>finish_feedback</code>, <code>complete_mapping_save</code>, <code>tick_recovery</code>, <code>start_recovery</code>, <code>complete_localization_close</code></td>
 </tr>
 </tbody></table></div>
 </div></div>
@@ -830,7 +862,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 03:39</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-12 00:21</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -838,14 +870,14 @@ title: spatial_runtime · 文件与符号
 subtitle: 按当前源码 AST 提取，不嵌入函数正文
 lang: zh
 doc_id: files-robot-spatial_runtime
-implementation: 9923c1ae002091de
+implementation: 847dc079c509c92d
 ---
 
-[首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
+[首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
 ## A 所属模块
 
-[定位、建图与地图](module-robot-spatial_runtime.html) · 本目录 27 个 Python 文件。
+[定位、建图与地图](module-robot-spatial_runtime.html) · 本目录 35 个 Python 文件。
 
 ## B 源码导航
 
@@ -854,11 +886,16 @@ implementation: 9923c1ae002091de
 | [__init__.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/__init__.py) | 导出或模块初始化 |
 | [body_frame.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/body_frame.py) | `sensor_from_imu`, `base_from_imu` |
 | [capability_provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/capability_provider.py) | `SpatialCapabilityProvider` |
+| [cartographer2d_assembly.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_assembly.py) | `attach_cartographer2d` |
+| [cartographer2d_mapping.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_mapping.py) | `Cartographer2DMapping` |
+| [cartographer2d_save.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_save.py) | `call`, `save_map` |
+| [cartographer2d_session.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/cartographer2d_session.py) | `Cartographer2DSession` |
 | [frame_output.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/frame_output.py) | `FrameOutput` |
 | [g1_assembly.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/g1_assembly.py) | `attach_g1_spatial` |
 | [g1_lightning_bridge.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/g1_lightning_bridge.py) | `_stamp`, `_pose`, `attach_g1_lightning_bridge`, `main` |
 | [g1_lightning_start.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/g1_lightning_start.py) | `stable_imu_window`, `StationaryImuWindow`, `startup_arguments`, `main` |
 | [gait_filter.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/gait_filter.py) | `GaitPoseFilter` |
+| [input_routing.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/input_routing.py) | `input_dimension`, `InputDimensionAssembly` |
 | [lightning_provider.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/lightning_provider.py) | `run_offline_build` |
 | [livox_bridge.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/livox_bridge.py) | `to_custom_msg`, `main` |
 | [local_anchor_observation.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/local_anchor_observation.py) | `_matrix`, `_planar`, `LocalScan`, `LocalAnchors` |
@@ -872,12 +909,15 @@ implementation: 9923c1ae002091de
 | [navigation_frame.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/navigation_frame.py) | `make_navigation_frame`, `transform_cloud`, `transform_goal`, `interpolate_pose`, `NavigationFrameStore` |
 | [navigation_frame_ros.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/navigation_frame_ros.py) | `attach_navigation_frames` |
 | [navigation_reference.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/navigation_reference.py) | `stabilize_reference` |
+| [occupancy_export.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/occupancy_export.py) | `observed_ground_height`, `write_scans`, `export_occupancy` |
 | [online_mapping.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/online_mapping.py) | `OnlineMapping` |
+| [planar_navigation_output.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/planar_navigation_output.py) | `PlanarNavigationOutput` |
+| [planar_pose.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/planar_pose.py) | `PlanarPoseTracker` |
 | [point_velocity.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/point_velocity.py) | `angular_velocity_at`, `base_twist` |
 | [relocalize.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/relocalize.py) | `build_index`, `relocalize`, `native_query_cloud`, `_keyframe_xyz`, `_ascii_xyz`, `build_native_index` |
-| [runtime.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/runtime.py) | `SpatialRuntime` |
+| [runtime.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/runtime.py) | `reference_identity`, `SpatialRuntime` |
 | [scan_source.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/scan_source.py) | `latest_lidar_scan` |
-| [spatial_feedback.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/spatial_feedback.py) | `update_mapping`, `finish_feedback`, `complete_mapping_save`, `tick_recovery` |
+| [spatial_feedback.py](https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/spatial_runtime/spatial_feedback.py) | `update_mapping`, `finish_feedback`, `complete_mapping_save`, `tick_recovery`, `start_recovery`, `complete_localization_close` |
 </textarea>
 <script>
 (() => {
