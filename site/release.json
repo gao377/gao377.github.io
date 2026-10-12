@@ -116,7 +116,8 @@
     },
     {
       "file": "algo-slam.html",
-      "source_sha256": "5ff80b81e1e7c4852a385961115c156b620bb1dace2e8ef7da3c957ee20746a1"
+      "source_sha256": "ab37f0f5de2dcb8d48323974362aa6be7b7f03ff80432f9613ead96309901a38",
+      "implementation_sha256": "ae667725c3e764783945b0d566b38a481bc2c60f93a681229d6543cdb935518a"
     },
     {
       "file": "algo-support.html",
@@ -349,8 +350,8 @@
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "158a7b41bcae430a6462bd32a4113afefb12ed451faf265db7d622d322db25d4",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+      "source_sha256": "259ff14365e4748fce571aa5025b1e93f5691f308b26476972adcadfa46021f5",
+      "implementation_sha256": "ae667725c3e764783945b0d566b38a481bc2c60f93a681229d6543cdb935518a"
     },
     {
       "file": "module-robot-state_estimation.html",
