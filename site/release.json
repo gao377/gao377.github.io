@@ -92,7 +92,8 @@
     },
     {
       "file": "algo-maps.html",
-      "source_sha256": "7426af78c292c51a93c14f13b85170dca48ffa19e94cc13dfe466bf8a5d9a0ff"
+      "source_sha256": "ed06e60ca8007d846e3f4960497c444849db16ca6e4788c0aa2bd2e7b46a8647",
+      "implementation_sha256": "c1b646bf06cca55028ff4cf1b8043acb95972b5c26dc4c7ed21e10b65740ffbb"
     },
     {
       "file": "algo-neupan.html",
