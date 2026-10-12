@@ -79,7 +79,8 @@
     },
     {
       "file": "algo-exploration.html",
-      "source_sha256": "8a6ba5f4280b9022d8ddde25d1b8020b49acc9d4cb88b53092e82f08e4b9dacd"
+      "source_sha256": "daf9179dab46e915455810f16f5c66ad41fb671af2aeb2e61397a55bf1c4a447",
+      "implementation_sha256": "e34dfadf9b3ede4715822ec88966a029d57a49bea711aa5c891c9b2894864b28"
     },
     {
       "file": "algo-fdm.html",
@@ -409,8 +410,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "1cb56fc66f1a2bb5344deb67a57464057f44319832efd32fceb27d7845b8858b",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+      "source_sha256": "cf84be771d15994103aa933ebbb33776a31d1eb4b6281ff2f7a1ec3522e82118",
+      "implementation_sha256": "e34dfadf9b3ede4715822ec88966a029d57a49bea711aa5c891c9b2894864b28"
     },
     {
       "file": "simulation-usage.html",
