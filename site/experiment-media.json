@@ -323,6 +323,37 @@
       "fps": "10/1",
       "playback_speed": 20,
       "original_duration_s": 2330.1
+    },
+    {
+      "experiment": "SIM-MAP-NAVIGATION",
+      "role": "isaac",
+      "source_kind": "ORIGINAL_SUCCESSFUL_GUI_RECORDING",
+      "source_sha256": "84c743934f6d4ef02b637cfe987415789e65abdf6c635f654a1fff6302761d49",
+      "file": "warehouse-map-navigation-isaac-20x.mp4",
+      "sha256": "a2c2e53b203a691ae0e09a290a9cadfec12e503f83279d921405e1df19baaa49",
+      "duration_s": 35.7,
+      "size_bytes": 1539173,
+      "width": 1440,
+      "height": 900,
+      "fps": "10/1",
+      "playback_speed": 20,
+      "original_duration_s": 713.5,
+      "action_start_s": 17.456
+    },
+    {
+      "experiment": "SIM-MAP-NAVIGATION",
+      "role": "viser",
+      "source_kind": "ORIGINAL_SUCCESSFUL_GUI_RECORDING",
+      "source_sha256": "5bea1c7ae2f825af0ce95a03d752080eae719d9e3ac3e3db019166ae077f25b5",
+      "file": "warehouse-map-navigation-viser-20x.mp4",
+      "sha256": "a2f4e7d64cc45f3ae903039857928a81ed4cda287c27ba5b201ee3e45c2905cf",
+      "duration_s": 36.8,
+      "size_bytes": 3478677,
+      "width": 1440,
+      "height": 1200,
+      "fps": "10/1",
+      "playback_speed": 20,
+      "original_duration_s": 735.3
     }
   ]
 }

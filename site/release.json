@@ -163,12 +163,13 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "53f252b124162610cd974cdceca19d222f0e93b2184836a0969e65dd6654ae1e",
-      "implementation_sha256": "a0b303870a9d137dd28e7fbd6fed8304af50de54c4c43e4e97a8c4c66d13c5b2"
+      "source_sha256": "46822ee24aa20434d8d5b500efd905a88c21d3a83f6bb52d68b2cc22536ab6e8",
+      "implementation_sha256": "28ef1404f8d386dbfa57f59e8e5c701d6b0149d489514093a34ddeddde6298e6"
     },
     {
       "file": "experiments.html",
-      "source_sha256": "3dbeeeb995ba4a06013a9c68d2b5f72a4dd9c9b351759c1d139830b853d3d7ef"
+      "source_sha256": "2e1fd50958747dbfdb25061c1208a8c18347e6196f24c118666859d41ee6e2b1",
+      "implementation_sha256": "28ef1404f8d386dbfa57f59e8e5c701d6b0149d489514093a34ddeddde6298e6"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -609,6 +610,14 @@
     {
       "file": "media/manip-right-sensors-20x.mp4",
       "sha256": "b624ad13557c6e8d6e9d19e63416ecb716bb6b874be3f43d2e095993c084ac0a"
+    },
+    {
+      "file": "media/warehouse-map-navigation-isaac-20x.mp4",
+      "sha256": "a2c2e53b203a691ae0e09a290a9cadfec12e503f83279d921405e1df19baaa49"
+    },
+    {
+      "file": "media/warehouse-map-navigation-viser-20x.mp4",
+      "sha256": "a2f4e7d64cc45f3ae903039857928a81ed4cda287c27ba5b201ee3e45c2905cf"
     },
     {
       "file": "media/warehouse-navigation-return-isaac-20x.mp4",
