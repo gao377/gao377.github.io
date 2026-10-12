@@ -117,8 +117,8 @@
     },
     {
       "file": "algo-slam.html",
-      "source_sha256": "e6f2b0e532ce0f6720cfeb44bb1c556263446db170923e265d3f706dd48113b2",
-      "implementation_sha256": "cdb76c2b5a1588a18eb8df85a60fd37ab0b4596726a382c2e4c7abf67f93a5dd"
+      "source_sha256": "5e999fa30cfb2bec7115bd595563c18e96ad94001a6657e959c66889e81e040c",
+      "implementation_sha256": "28ef1404f8d386dbfa57f59e8e5c701d6b0149d489514093a34ddeddde6298e6"
     },
     {
       "file": "algo-support.html",
