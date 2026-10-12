@@ -338,7 +338,8 @@
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "5129fa61b9b6a2af9b3195a890f35feb1994a1001801b39b7c20ae22926a6f1c"
+      "source_sha256": "22d5ccf8d5cd4edd05d1514edeac3137cb3cf96278f58c671549426e7343a7a2",
+      "implementation_sha256": "640ab019de9a85f1ac5f4afd5242d34a5362a3deb536b73bba763fb3f1b25a0b"
     },
     {
       "file": "module-robot-protection_runtime.html",
