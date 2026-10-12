@@ -350,8 +350,8 @@
     },
     {
       "file": "module-robot-sensor_adapters.html",
-      "source_sha256": "47c56e41a4f583c7893bb11eaa8f45224128be8b12c96877373bbb6be215c49d",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+      "source_sha256": "7596a5809085e1198d42c492d5eb95fd15bf5642c5a3496950cdd1907cdb0c25",
+      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
     },
     {
       "file": "module-robot-spatial_runtime.html",
