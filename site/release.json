@@ -96,8 +96,8 @@
     },
     {
       "file": "algo-neupan.html",
-      "source_sha256": "3d7f1f6e4343f790c02d87594685c346b6dae3e0eff2141780aa6e4e48f1a672",
-      "implementation_sha256": "4966dbcff6d83063aaac917bcc22712e6c5689c7944dc69d352a7e0a992f572f"
+      "source_sha256": "6775732db1c10b6555f5876d7d9e01db9c059cba7262c7208f5ed3c8a74792d2",
+      "implementation_sha256": "0dd9e2ea0faf488d9a57cf4e13fadad1fb45a54577bc5c5a90f3287de844f1f3"
     },
     {
       "file": "algo-pbvs.html",
