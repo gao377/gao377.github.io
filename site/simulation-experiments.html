@@ -698,11 +698,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>联合仿真实验 · 导航、双机器人行为与携物</h1><p class="am-sub">到位、接触、性能分项判读；关联完整批次档案与现存录像</p><div class="am-head-meta"><span><b>doc_id</b>simulation-experiments</span><span><b>implementation</b>31cae10ff65dd2d4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
-<p><a href="simulation.html">仿真原理</a> · <a href="simulation-usage.html">运行命令</a> · <a href="simulation-performance.html">历史RTF分析</a> · <a href="simulation-experiment-catalog.html">123批次档案</a> · <a href="simulation-recordings.html">全部现存录像</a></p>
+<header class="am-head"><h1>联合仿真实验 · 导航、双机器人行为与携物</h1><p class="am-sub">到位、接触、性能分项判读；关联完整批次档案与现存录像</p><div class="am-head-meta"><span><b>doc_id</b>simulation-experiments</span><span><b>implementation</b>155e1488ea6ea0fa</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<p><a href="simulation.html">仿真原理</a> · <a href="simulation-usage.html">运行命令</a> · <a href="simulation-performance.html">历史RTF分析</a> · <a href="simulation-experiment-catalog.html">全部批次档案</a> · <a href="simulation-recordings.html">全部现存录像</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与验收范围</a><a href="#panel-G">G · 双机器人行为实验</a><a href="#panel-B">B · 成功导航：同批三窗口完整录像</a><a href="#panel-C">C · 失败反例：工装从双手脱落</a><a href="#panel-D">D · 代码归属和运行机制</a><a href="#panel-E">E · 可复制的成功场景命令</a><a href="#panel-F">F · 版本与媒体来源</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与验收范围</a><a href="#panel-G">G · 双机器人行为实验</a><a href="#panel-H">H · 规划包络与携物对照（2026-10-13）</a><a href="#panel-I">I · 当前边界：10cm软间隙、5cm硬停止</a><a href="#panel-B">B · 成功导航：同批三窗口完整录像</a><a href="#panel-C">C · 失败反例：工装从双手脱落</a><a href="#panel-D">D · 代码归属和运行机制</a><a href="#panel-E">E · 可复制的成功场景命令</a><a href="#panel-F">F · 版本与媒体来源</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>证据与验收范围</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
@@ -798,6 +798,61 @@ AMO采用明确的锁步实验模式，不代表异步真机资格。</p>
 <p>表中6位数字对应完整批次ID的UTC时分秒。<a href="simulation-experiment-catalog.html">全批次档案</a>保留完整身份及原始记录哈希，<a href="simulation-recordings.html">录像库</a>关联三个观察窗口。接触“条数”是物理采样中的接触记录，不能解释为独立事故次数。失败短段RTF不代表整段或600秒性能。</p>
 <p>平滑开启的三批均确认导航实际消费<code>nav_stabilized</code>，合计683帧（60帧预热、623帧READY），数据年龄0—20ms；平滑接线有效，避障任务仍失败，不能混为同一结论。原始定位和扫描保留其几何意义，仅规划参考坐标经过既有滤波链处理。</p>
 <p><strong>相关录像与短段失败证据已经分别归档；未重新运行实验补造成功结果。</strong></p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>规划包络与携物对照（2026-10-13）</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>“接触复核”是运行后使用MuJoCo原生碰撞数据检查擦碰，不是新增的在线停止条件。空手中途停车批次已同时通过到位与接触检查；携物是独立实验，不能沿用空手结论。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>批次</th>
+<th>设置与结果</th>
+<th align="right">RTF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>20261013T065706Z-f96b0d14</code></td>
+<td>空手：0.35m包络，中途停车：30.82s停止，原生间隙8.46cm；已记录部分无外部接触。短段RTF 0.4994，未到位。</td>
+<td align="right">见结果说明</td>
+</tr>
+<tr>
+<td><code>20261013T065948Z-1dffbb13</code></td>
+<td>空手：0.35m包络，暂停后继续：23.84s停止，原生间隙5.03cm；已记录部分无外部接触。短段RTF 0.4428，未到位。</td>
+<td align="right">见结果说明</td>
+</tr>
+<tr>
+<td><code>20261013T070218Z-8078e5e8</code></td>
+<td>空手：0.35m包络，临时折向：17.82s预测路径观测域检查失败；已记录部分无外部接触。短段RTF 0.4976，未到位。</td>
+<td align="right">见结果说明</td>
+</tr>
+<tr>
+<td><code>20261013T070429Z-2e10c431</code></td>
+<td>空手：0.35m包络与0.4m期望间距，中途停车：到位PASS，固定B点独立误差2.34cm；45000帧无外部接触。180s核心RTF 0.4732，性能未达标。</td>
+<td align="right">见结果说明</td>
+</tr>
+<tr>
+<td><code>20261013T071552Z-8f9e9203</code></td>
+<td>携物：0.65m载荷包络与0.4m期望间距：21.06s因原生间隙8.39cm停止；未掉落，手掌相对位移3.58cm，持物保持评价FAIL；未到机架。短段RTF 0.4088。</td>
+<td align="right">见结果说明</td>
+</tr>
+<tr>
+<td><code>20261013T071832Z-862626e0</code></td>
+<td>携物：0.6m期望间距单参数对照：21.68s预测路径包络检查失败，手掌相对位移3.38cm，持物保持评价FAIL；未到机架。短段RTF 0.4009；该参数未取代空手已验证的0.4m默认值。</td>
+<td align="right">见结果说明</td>
+</tr>
+</tbody></table></div>
+<p>0.35m规划包络与0.20m本体未知区清除、0.30m激光自滤分开配置；携物任务提交0.65m占用半径。原生MPC保持4秒时域、0.5m/s速度上限及0.1m停止间隙，未辨识AMO动力学，也未给规划器输入障碍物未来轨迹。</p>
+<p>携物使用完整CAD接触模型、0.5kg载荷、现有高摩擦及REVO2闭合。第8秒解除初始化约束，其后只有物理接触承载。首批是当前间隙不足；0.6m对照批中，一处预测中心到扫描点仅0.6436m，小于0.65m载荷包络，且占据域校核失败。该点原始网格为已知空闲，并非简单的未知格误拒；膨胀后的包络仍不能通行。</p>
+<p>两批未掉落，但相对手掌位移超过原2cm保持评价，因此不计稳定携物成功。不能通过删掉检查将其改为成功。下一项应分别检查大包络下MPC几何约束与AMO响应，以及手掌支撑位置的漂移。0.6m只保留为失败对照，发布默认值回到已验证空手的0.4m。</p>
+<p>本轮七批各有三个原始窗口录像；网页提供20倍速。失败短段RTF与180秒完整批次分开，均不代替600秒性能验收。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-I">
+<header class="am-panel-head"><span class="am-panel-id">I</span><h2>当前边界：10cm软间隙、5cm硬停止</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>用户批准将10cm改为软间隙、5cm改为硬边界。MPC原生距离项对不足软间隙的部分保留二次代价；原生停止与执行前轨迹校核共用profile中的5cm。载荷0.65m包络、本体与未知区处理、触觉时效和受力判据不变。</p>
+<p>批次<code>20261013T072345Z-2024e6fa</code>已实测新边界。进入5—10cm后继续规划；21.40s记录的原生间隙为4.57cm，21.46s任务停止。工装未到机架，手掌相对位移3.49cm。该批证明边界修改已接通，不证明携物避障成功。空手成功录像属于此前10cm硬边界版本，不能冒充当前携物结果。</p>
+<p>检查覆盖实际原生停止逻辑与执行校核：8cm可继续重规划，4cm拒绝执行。完整持物导航仍需解决动态障碍下的控制响应，以及手掌支撑漂移；不再将10cm门限作为当前首因。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -1004,7 +1059,7 @@ IR-SIM按场景边界显示，动态代理只镜像动力学世界。</p>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 14:42</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 15:26</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1012,12 +1067,12 @@ title: 联合仿真实验 · 导航、双机器人行为与携物
 subtitle: 到位、接触、性能分项判读；关联完整批次档案与现存录像
 lang: zh
 doc_id: simulation-experiments
-implementation: 31cae10ff65dd2d4
+implementation: 155e1488ea6ea0fa
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-[仿真原理](simulation.html) · [运行命令](simulation-usage.html) · [历史RTF分析](simulation-performance.html) · [123批次档案](simulation-experiment-catalog.html) · [全部现存录像](simulation-recordings.html)
+[仿真原理](simulation.html) · [运行命令](simulation-usage.html) · [历史RTF分析](simulation-performance.html) · [全部批次档案](simulation-experiment-catalog.html) · [全部现存录像](simulation-recordings.html)
 
 ## A 证据与验收范围
 
@@ -1053,6 +1108,35 @@ AMO采用明确的锁步实验模式，不代表异步真机资格。
 平滑开启的三批均确认导航实际消费`nav_stabilized`，合计683帧（60帧预热、623帧READY），数据年龄0—20ms；平滑接线有效，避障任务仍失败，不能混为同一结论。原始定位和扫描保留其几何意义，仅规划参考坐标经过既有滤波链处理。
 
 **相关录像与短段失败证据已经分别归档；未重新运行实验补造成功结果。**
+
+## 规划包络与携物对照（2026-10-13）
+
+“接触复核”是运行后使用MuJoCo原生碰撞数据检查擦碰，不是新增的在线停止条件。空手中途停车批次已同时通过到位与接触检查；携物是独立实验，不能沿用空手结论。
+
+| 批次 | 设置与结果 | RTF |
+| --- | --- | ---: |
+| `20261013T065706Z-f96b0d14` | 空手：0.35m包络，中途停车：30.82s停止，原生间隙8.46cm；已记录部分无外部接触。短段RTF 0.4994，未到位。 | 见结果说明 |
+| `20261013T065948Z-1dffbb13` | 空手：0.35m包络，暂停后继续：23.84s停止，原生间隙5.03cm；已记录部分无外部接触。短段RTF 0.4428，未到位。 | 见结果说明 |
+| `20261013T070218Z-8078e5e8` | 空手：0.35m包络，临时折向：17.82s预测路径观测域检查失败；已记录部分无外部接触。短段RTF 0.4976，未到位。 | 见结果说明 |
+| `20261013T070429Z-2e10c431` | 空手：0.35m包络与0.4m期望间距，中途停车：到位PASS，固定B点独立误差2.34cm；45000帧无外部接触。180s核心RTF 0.4732，性能未达标。 | 见结果说明 |
+| `20261013T071552Z-8f9e9203` | 携物：0.65m载荷包络与0.4m期望间距：21.06s因原生间隙8.39cm停止；未掉落，手掌相对位移3.58cm，持物保持评价FAIL；未到机架。短段RTF 0.4088。 | 见结果说明 |
+| `20261013T071832Z-862626e0` | 携物：0.6m期望间距单参数对照：21.68s预测路径包络检查失败，手掌相对位移3.38cm，持物保持评价FAIL；未到机架。短段RTF 0.4009；该参数未取代空手已验证的0.4m默认值。 | 见结果说明 |
+
+0.35m规划包络与0.20m本体未知区清除、0.30m激光自滤分开配置；携物任务提交0.65m占用半径。原生MPC保持4秒时域、0.5m/s速度上限及0.1m停止间隙，未辨识AMO动力学，也未给规划器输入障碍物未来轨迹。
+
+携物使用完整CAD接触模型、0.5kg载荷、现有高摩擦及REVO2闭合。第8秒解除初始化约束，其后只有物理接触承载。首批是当前间隙不足；0.6m对照批中，一处预测中心到扫描点仅0.6436m，小于0.65m载荷包络，且占据域校核失败。该点原始网格为已知空闲，并非简单的未知格误拒；膨胀后的包络仍不能通行。
+
+两批未掉落，但相对手掌位移超过原2cm保持评价，因此不计稳定携物成功。不能通过删掉检查将其改为成功。下一项应分别检查大包络下MPC几何约束与AMO响应，以及手掌支撑位置的漂移。0.6m只保留为失败对照，发布默认值回到已验证空手的0.4m。
+
+本轮七批各有三个原始窗口录像；网页提供20倍速。失败短段RTF与180秒完整批次分开，均不代替600秒性能验收。
+
+## 当前边界：10cm软间隙、5cm硬停止
+
+用户批准将10cm改为软间隙、5cm改为硬边界。MPC原生距离项对不足软间隙的部分保留二次代价；原生停止与执行前轨迹校核共用profile中的5cm。载荷0.65m包络、本体与未知区处理、触觉时效和受力判据不变。
+
+批次`20261013T072345Z-2024e6fa`已实测新边界。进入5—10cm后继续规划；21.40s记录的原生间隙为4.57cm，21.46s任务停止。工装未到机架，手掌相对位移3.49cm。该批证明边界修改已接通，不证明携物避障成功。空手成功录像属于此前10cm硬边界版本，不能冒充当前携物结果。
+
+检查覆盖实际原生停止逻辑与执行校核：8cm可继续重规划，4cm拒绝执行。完整持物导航仍需解决动态障碍下的控制响应，以及手掌支撑漂移；不再将10cm门限作为当前首因。
 
 ## B 成功导航：同批三窗口完整录像
 

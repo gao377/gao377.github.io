@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "captured_on": "2026-10-13",
-  "scope": "All 123 local co-simulation run directories; previous Isaac results remain in the experiment handbook.",
+  "scope": "All 130 local co-simulation run directories; previous Isaac results remain in the experiment handbook.",
   "interpretation": "Execution FINISHED, task PASS, contact PASS and performance qualification are separate. Missing evidence is NOT_EVALUATED, not a pass.",
   "runs": [
     {
@@ -1337,6 +1337,218 @@
       },
       "scene_sha256": "6b4489c5c75f925d42507f53ef4eda1fbe31c7c69b9daa3fbaf4d6f155e10391",
       "source_manifest_sha256": "82b8300f27acff20c7e8ece10755079bd671904ba3bf489138fa66a0fcb158ec"
+    },
+    {
+      "run_id": "20261013T065706Z-f96b0d14",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1-stop",
+      "motion": "empty-5m",
+      "sim_s": 31.100000000003725,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.4994327767393982,
+      "navigation_status": "FAIL",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "9335ef9d08a80b5a69e5c999cd16929322c4e740d0a0fbbd828a33122997693b",
+        "navigation-contact-result.json": "cdb4646516e2c6f4e0fe309b0e60560a4722824d7359509b47609f96b96fa505",
+        "manifest.json": "33c804136d2bea00441bda1732c88d32747713a7793e9b5ea988c85b3a6af18d"
+      },
+      "scene_sha256": "ad7b77f33cbdf4f1c210ce7cf7e1ec977ba34dc57dca76acdf3f03f1c46682b4",
+      "source_manifest_sha256": "524f3e5f25608862cdb8123c7a4370ee9d69865d6d794e2432c1e0c6647b8290"
+    },
+    {
+      "run_id": "20261013T065948Z-1dffbb13",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1-pause-resume",
+      "motion": "empty-5m",
+      "sim_s": 24.120000000001394,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.44284825465582367,
+      "navigation_status": "FAIL",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "faef4222e25ec5f9f5fe3f56f139d76f71215b5eab812680074cdebe28de7872",
+        "navigation-contact-result.json": "f043a62a0ce3c14b850827bf549549236dfd7c6198ee188c6a182a2ce8fa8f6c",
+        "manifest.json": "6aa9c93bfbfdaf72a8107114a0c6f8b7aced897898fab4b23969f5b951d2e770"
+      },
+      "scene_sha256": "e8cf0a294459f82fa4101dcd261330acef1b35991b0e536b593d29fab6aa3e23",
+      "source_manifest_sha256": "524f3e5f25608862cdb8123c7a4370ee9d69865d6d794e2432c1e0c6647b8290"
+    },
+    {
+      "run_id": "20261013T070218Z-8078e5e8",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1-detour",
+      "motion": "empty-5m",
+      "sim_s": 18.11999999999939,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.4976152511892129,
+      "navigation_status": "FAIL",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "53b0c2f31275f027220dc5b160deb932dbc0784ce9c1da50fa992527a91e56bc",
+        "navigation-contact-result.json": "813fc088b7690233f65421a187e363bade3ce366fa3f8d8ae7917ccf4854e52a",
+        "manifest.json": "5f06674a59c86977df76b3753364e3cc477c0732c9bdbed64f852d6154a0c60d"
+      },
+      "scene_sha256": "6b4489c5c75f925d42507f53ef4eda1fbe31c7c69b9daa3fbaf4d6f155e10391",
+      "source_manifest_sha256": "524f3e5f25608862cdb8123c7a4370ee9d69865d6d794e2432c1e0c6647b8290"
+    },
+    {
+      "run_id": "20261013T070429Z-2e10c431",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty-dual-g1-stop",
+      "motion": "empty-5m",
+      "sim_s": 179.9999999999433,
+      "core_rtf": 0.4731900538941744,
+      "observed_failure_rtf": 0.4733404248630182,
+      "navigation_status": "PASS",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "PASS",
+        "spatial-result": "SUCCEEDED",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "2e99c97fdc50fb89f49ec01368473f0595634f2d1768a4a44f9c852105fdbc1b",
+        "spatial-result.json": "fce5f0fa8eb2811301bf45c817080ac5826ac84770f32e189415630e035a52d5",
+        "navigation-contact-result.json": "a39352027c6338ac8080328101c32a0e8848e944d2314d18441381978241be99",
+        "manifest.json": "07dbae28f5327f8d2f903227f8906b425f0ed88274ac07e2515d5ce5b22f4bb7"
+      },
+      "scene_sha256": "ad7b77f33cbdf4f1c210ce7cf7e1ec977ba34dc57dca76acdf3f03f1c46682b4",
+      "source_manifest_sha256": "524f3e5f25608862cdb8123c7a4370ee9d69865d6d794e2432c1e0c6647b8290"
+    },
+    {
+      "run_id": "20261013T071552Z-8f9e9203",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt-dual-g1-stop",
+      "motion": "carry-5m",
+      "sim_s": 21.280000000000445,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.40877774631666336,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "hand-closure-result.json": "e0c7608c6e8c8d913bbb420fbd432caee2ab8226712f379bf9a4da1cefea2b1c",
+        "navigation-result.json": "a368e3bb6273c1dcd7d25e5877546d306b9ab580686168d2134427a70e5c72d9",
+        "manifest.json": "46abaaeb0a7413ceb6b81cc170cc2eda8315126296dd24a8aeb9cfbfe9d47a36"
+      },
+      "scene_sha256": "a9fb3337be94a82a6f657f3a5437b035fd9a2a0721692537a8773490671e8fd8",
+      "source_manifest_sha256": "524f3e5f25608862cdb8123c7a4370ee9d69865d6d794e2432c1e0c6647b8290"
+    },
+    {
+      "run_id": "20261013T071832Z-862626e0",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt-dual-g1-stop",
+      "motion": "carry-5m",
+      "sim_s": 21.880000000000646,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.40088263678631203,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "hand-closure-result.json": "ab3a049f192dcefbe8021e6d431f30b1f0930ba108217524cfa2739e33c1214d",
+        "navigation-result.json": "197e9c1e29af280607e09a0e19a38a4d78ced0ca5d95a3db51ae6a6491bfbbd0",
+        "manifest.json": "e758a8871dd0d605e78042654d38cf6e72e10f82295e6663f772a3166ec39163"
+      },
+      "scene_sha256": "a9fb3337be94a82a6f657f3a5437b035fd9a2a0721692537a8773490671e8fd8",
+      "source_manifest_sha256": "524f3e5f25608862cdb8123c7a4370ee9d69865d6d794e2432c1e0c6647b8290"
+    },
+    {
+      "run_id": "20261013T072345Z-2024e6fa",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt-dual-g1-stop",
+      "motion": "carry-5m",
+      "sim_s": 21.68000000000058,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.40682614835825776,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "hand-closure-result.json": "ce6c2dbeda23848acb63f1575bc94a8ffe9f872ba226e201698dd0a91fd9cd4b",
+        "navigation-result.json": "84ddb785a799fd7063b67673c45799713c3e7dfc2189e48dfb65dde43af23927",
+        "manifest.json": "11c617e0d97d336a1ec263e117976304cab03dfd3ae1003f8aedabc2269c1a80"
+      },
+      "scene_sha256": "a9fb3337be94a82a6f657f3a5437b035fd9a2a0721692537a8773490671e8fd8",
+      "source_manifest_sha256": "524f3e5f25608862cdb8123c7a4370ee9d69865d6d794e2432c1e0c6647b8290"
     },
     {
       "run_id": "il01-isaaclab-native-rigid-v3",

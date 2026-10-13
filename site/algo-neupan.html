@@ -698,8 +698,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>NeuPAN局部路径与终端制动</h1><p class="am-sub">原生优化产生轨迹，执行端使用第一步速度</p><div class="am-head-meta"><span><b>doc_id</b>algo-neupan</span><span><b>implementation</b>d2b4fa77907de8c4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
-<p>导航可消费空间模块的 <code>nav_stabilized</code> 参考。NeuPAN 保持固定 map 坐标中的目标、路径和障碍，只替换同戳规划状态；真实本体位置保留给几何检查。速度经 <code>command_frame.py</code> 换轴后沿原公共执行器发送，SDK 已发速度在下次求解时换回当前规划轴。该接线不改变原生优化器或路径缓存，目前部署仍为 shadow。</p>
+<header class="am-head"><h1>NeuPAN局部路径与终端制动</h1><p class="am-sub">原生优化产生轨迹，执行端使用第一步速度</p><div class="am-head-meta"><span><b>doc_id</b>algo-neupan</span><span><b>implementation</b>155e1488ea6ea0fa</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<p>导航可消费空间模块的 <code>nav_stabilized</code> 参考。NeuPAN 保持固定 map 坐标中的目标、路径和障碍，只替换同戳规划状态；真实本体位置保留给几何检查。速度经 <code>command_frame.py</code> 换轴后沿原公共执行器发送，SDK 已发速度在下次求解时换回当前规划轴。该接线不改变原生优化器或路径缓存，二维联合仿真profile已使用active平滑；三维部署状态由各自profile决定。</p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 作用与输入输出</a><a href="#panel-B">B · 原理和调用链</a><a href="#panel-C">C · 参数与运行特性</a><a href="#panel-D">D · 实现与复用来源</a><a href="#panel-E">E · 适用条件与失败处理</a><a href="#panel-F">F · 验证与替换</a></nav><div class="am-doc-body">
@@ -729,8 +729,8 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 </thead>
 <tbody><tr>
 <td>预测步数 / 步长</td>
-<td>10 / 0.1s</td>
-<td>预测约1秒</td>
+<td>20 / 0.2s</td>
+<td>预测4秒；不等同于控制发布周期</td>
 </tr>
 <tr>
 <td>最大平移速度</td>
@@ -748,14 +748,24 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 <td>正常前进目标</td>
 </tr>
 <tr>
-<td>q_s / p_u / d_max</td>
-<td>10 / 2.5 / 0.2</td>
-<td>状态跟踪、速度跟踪与距离参数</td>
+<td>q_s / p_u</td>
+<td>1 / 1</td>
+<td>状态参考与速度参考的残差权重</td>
 </tr>
 <tr>
-<td>碰撞圆柱</td>
+<td>d_max</td>
+<td>通用默认0.2m；二维实验0.4m</td>
+<td>原生距离奖励饱和值；d_min仍为0.1m软距离下界；不是硬停止值</td>
+</tr>
+<tr>
+<td>本体圆柱</td>
 <td>半径0.2m、高1.6m</td>
-<td>导航本体外形</td>
+<td>本体范围内的未知格处理</td>
+</tr>
+<tr>
+<td>规划圆形包络</td>
+<td>二维空手0.35m；当前携物0.65m</td>
+<td>携物尺寸由任务提供，不能小于配置的基础包络</td>
 </tr>
 <tr>
 <td>自体点云滤除</td>
@@ -764,8 +774,9 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 </tr>
 </tbody></table></div>
 <p>粗到位30cm是任务profile的制动触发值。底层通用ArrivalRule默认值不应混为任务配置。</p>
-<p>原生目标函数对加权状态和速度残差分别求平方和。基础G1装配提高状态跟踪权重。短距离且朝向不一致时，优化器能够降低平移速度并转向。这样可避免速度参考压过路径跟踪。没有增加导航旁路；预测步长、速度和加速度限制、粗制动及BODY交接保持原值。<code>native_mpc</code>同时报告实际状态与速度权重，便于核对部署参数。</p>
-<p>该参数有原生CPU收敛检查，物理适用范围需由对应实验确认。</p>
+<p>原生目标函数对加权状态与速度参考残差求平方和。p_u不是相邻控制量变化的惩罚；本轮未新增AMO动力学模型。预测时域为4秒，速度与加速度上限保持。d_max通过profile配置，d_min保留0.1m，借助原生二次违约代价偏好更大间隙。</p>
+<p>经用户批准，二维profile的原生停止和执行前校核统一为0.05m；5—10cm不单独触发失败。通用默认仍为0.1m，由profile显式改变。</p>
+<p>二维0.35m包络加0.4m距离奖励的中途停车场景已完成一次空手到位，独立物理误差2.34cm，未记录到外部接触。这批使用调整前的10cm硬边界。该批RTF为0.473，未达到大于0.5的性能标准；不能扩张为所有动态行为或携物通过。见<a href="simulation-experiments.html">实验记录</a>。</p>
 <p>绝对位置精调使用有界SE(2)分段。中间点触发制动后保持归零，停稳后向最终目标续接；最终5cm/10°条件保持严格。SDK判稳的1秒观测窗口与导航交接的连续2秒确认是两个阶段。</p>
 <p>内部精调可配置位置余量。cube SIM profile预留3cm，以2cm为内部停止半径。该半径只用于提前制动。归零后，只要位姿仍在公开验收半径内，就保持零速等待本体稳定和连续确认；超出公开半径才继续修正。最终验收仍为5cm，home仍为30cm，不要求带噪定位连续保持在2cm内。</p>
 <p>平面精调采用已有比例控制及速度、加速度限制。cube SIM profile的平移增益为0.5/s，最大速度仍为0.1m/s。距目标5cm时，未触发制动的比例参考为0.025m/s；这为近目标减速留出余量。SDK反馈继续确认归零与本体稳定。</p>
@@ -783,6 +794,7 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 </ul>
 <p>配置入口：</p>
 <ul>
+<li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/configs/navigation/g1_planar_sim.yaml">configs/navigation/g1_planar_sim.yaml</a></li>
 <li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/configs/navigation/g1_runtime_basic_sim.yaml">configs/navigation/g1_runtime_basic_sim.yaml</a></li>
 <li><a href="https://github.com/gao377/agentic-embodied-system/blob/main/configs/navigation/g1_runtime_cube_sim.yaml">configs/navigation/g1_runtime_cube_sim.yaml</a></li>
 </ul>
@@ -820,7 +832,7 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 04:07</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 15:27</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -828,12 +840,12 @@ title: NeuPAN局部路径与终端制动
 subtitle: 原生优化产生轨迹，执行端使用第一步速度
 lang: zh
 doc_id: algo-neupan
-implementation: d2b4fa77907de8c4
+implementation: 155e1488ea6ea0fa
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-导航可消费空间模块的 `nav_stabilized` 参考。NeuPAN 保持固定 map 坐标中的目标、路径和障碍，只替换同戳规划状态；真实本体位置保留给几何检查。速度经 `command_frame.py` 换轴后沿原公共执行器发送，SDK 已发速度在下次求解时换回当前规划轴。该接线不改变原生优化器或路径缓存，目前部署仍为 shadow。
+导航可消费空间模块的 `nav_stabilized` 参考。NeuPAN 保持固定 map 坐标中的目标、路径和障碍，只替换同戳规划状态；真实本体位置保留给几何检查。速度经 `command_frame.py` 换轴后沿原公共执行器发送，SDK 已发速度在下次求解时换回当前规划轴。该接线不改变原生优化器或路径缓存，二维联合仿真profile已使用active平滑；三维部署状态由各自profile决定。
 
 ## A 作用与输入输出
 
@@ -862,19 +874,23 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 
 | 参数 | 基础路径值 | 作用 |
 | --- | --- | --- |
-| 预测步数 / 步长 | 10 / 0.1s | 预测约1秒 |
+| 预测步数 / 步长 | 20 / 0.2s | 预测4秒；不等同于控制发布周期 |
 | 最大平移速度 | min(设备限制,0.5m/s) | 速度上限 |
 | 最大偏航速度 | min(设备限制,0.2rad/s) | 偏航上限 |
 | 参考速度 | min(上限,0.22m/s) | 正常前进目标 |
-| q_s / p_u / d_max | 10 / 2.5 / 0.2 | 状态跟踪、速度跟踪与距离参数 |
-| 碰撞圆柱 | 半径0.2m、高1.6m | 导航本体外形 |
+| q_s / p_u | 1 / 1 | 状态参考与速度参考的残差权重 |
+| d_max | 通用默认0.2m；二维实验0.4m | 原生距离奖励饱和值；d_min仍为0.1m软距离下界；不是硬停止值 |
+| 本体圆柱 | 半径0.2m、高1.6m | 本体范围内的未知格处理 |
+| 规划圆形包络 | 二维空手0.35m；当前携物0.65m | 携物尺寸由任务提供，不能小于配置的基础包络 |
 | 自体点云滤除 | 半径0.3m | 感知自体区域 |
 
 粗到位30cm是任务profile的制动触发值。底层通用ArrivalRule默认值不应混为任务配置。
 
-原生目标函数对加权状态和速度残差分别求平方和。基础G1装配提高状态跟踪权重。短距离且朝向不一致时，优化器能够降低平移速度并转向。这样可避免速度参考压过路径跟踪。没有增加导航旁路；预测步长、速度和加速度限制、粗制动及BODY交接保持原值。`native_mpc`同时报告实际状态与速度权重，便于核对部署参数。
+原生目标函数对加权状态与速度参考残差求平方和。p_u不是相邻控制量变化的惩罚；本轮未新增AMO动力学模型。预测时域为4秒，速度与加速度上限保持。d_max通过profile配置，d_min保留0.1m，借助原生二次违约代价偏好更大间隙。
 
-该参数有原生CPU收敛检查，物理适用范围需由对应实验确认。
+经用户批准，二维profile的原生停止和执行前校核统一为0.05m；5—10cm不单独触发失败。通用默认仍为0.1m，由profile显式改变。
+
+二维0.35m包络加0.4m距离奖励的中途停车场景已完成一次空手到位，独立物理误差2.34cm，未记录到外部接触。这批使用调整前的10cm硬边界。该批RTF为0.473，未达到大于0.5的性能标准；不能扩张为所有动态行为或携物通过。见[实验记录](simulation-experiments.html)。
 
 绝对位置精调使用有界SE(2)分段。中间点触发制动后保持归零，停稳后向最终目标续接；最终5cm/10°条件保持严格。SDK判稳的1秒观测窗口与导航交接的连续2秒确认是两个阶段。
 
@@ -896,6 +912,7 @@ BasicNavigationController校验原生路径，使用第一步原生命令，不�
 
 配置入口：
 
+- [configs/navigation/g1_planar_sim.yaml](https://github.com/gao377/agentic-embodied-system/blob/main/configs/navigation/g1_planar_sim.yaml)
 - [configs/navigation/g1_runtime_basic_sim.yaml](https://github.com/gao377/agentic-embodied-system/blob/main/configs/navigation/g1_runtime_basic_sim.yaml)
 - [configs/navigation/g1_runtime_cube_sim.yaml](https://github.com/gao377/agentic-embodied-system/blob/main/configs/navigation/g1_runtime_cube_sim.yaml)
 

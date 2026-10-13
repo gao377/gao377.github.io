@@ -698,12 +698,12 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>联合仿真实验录像库</h1><p class="am-sub">按批次关联IR-SIM、MuJoCo与Blender；保留成功、失败及中断的不同结论</p><div class="am-head-meta"><span><b>doc_id</b>simulation-recordings</span><span><b>implementation</b>31cae10ff65dd2d4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
-<p><a href="simulation-experiments.html">近期对比</a> · <a href="simulation-experiment-catalog.html">123批次档案</a> · <a href="experiment-media.json">媒体校验清单</a></p>
-<p>7个批次仍有录制文件，其中6批共18个窗口可播放；中断批次的3个文件缺少MP4尾部索引，保留损坏记录且不嵌入无效播放器。全部为完整录制区间的20倍墙钟加速版本。窗口录制起点略有差异，不能仅凭播放器进度当作严格同帧同步，也不能由播放速度推断RTF。原始1倍文件在本地保留。以下结果保留实验当时的条件，不把历史组件通过改写为当前任务通过。</p>
+<header class="am-head"><h1>联合仿真实验录像库</h1><p class="am-sub">按批次关联IR-SIM、MuJoCo与Blender；保留成功、失败及中断的不同结论</p><div class="am-head-meta"><span><b>doc_id</b>simulation-recordings</span><span><b>implementation</b>155e1488ea6ea0fa</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<p><a href="simulation-experiments.html">近期对比</a> · <a href="simulation-experiment-catalog.html">130批次档案</a> · <a href="experiment-media.json">媒体校验清单</a></p>
+<p>14个批次仍有录制文件，其中13批共39个窗口可播放；中断批次的3个文件缺少MP4尾部索引，保留损坏记录且不嵌入无效播放器。全部为完整录制区间的20倍墙钟加速版本。窗口录制起点略有差异，不能仅凭播放器进度当作严格同帧同步，也不能由播放速度推断RTF。原始1倍文件在本地保留。以下结果保留实验当时的条件，不把历史组件通过改写为当前任务通过。</p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 单障碍横穿：空手5m</a><a href="#panel-B">B · 双G1持续相向横穿：空手5m</a><a href="#panel-C">C · 一台G1中途停止：中断批次</a><a href="#panel-D">D · 一台G1中途停止：完整批次</a><a href="#panel-E">E · 工装双手承托：v3</a><a href="#panel-F">F · 工装双手承托：v5</a><a href="#panel-G">G · 4m前进与二维SLAM</a><a href="#panel-H">H · 失败录像缺失的批次</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 单障碍横穿：空手5m</a><a href="#panel-B">B · 双G1持续相向横穿：空手5m</a><a href="#panel-C">C · 一台G1中途停止：中断批次</a><a href="#panel-D">D · 一台G1中途停止：完整批次</a><a href="#panel-E">E · 工装双手承托：v3</a><a href="#panel-F">F · 工装双手承托：v5</a><a href="#panel-G">G · 4m前进与二维SLAM</a><a href="#panel-H">H · 空手：0.35m包络，中途停车</a><a href="#panel-I">I · 空手：0.35m包络，暂停后继续</a><a href="#panel-J">J · 空手：0.35m包络，临时折向</a><a href="#panel-K">K · 空手：0.35m包络与0.4m期望间距，中途停车</a><a href="#panel-L">L · 携物：0.65m载荷包络与0.4m期望间距</a><a href="#panel-M">M · 携物：0.6m期望间距单参数对照</a><a href="#panel-N">N · 携物：10cm软间隙、5cm硬边界</a><a href="#panel-O">O · 失败录像缺失的批次</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>单障碍横穿：空手5m</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T043909Z-4397fa5a</code>。到位与原生无外部接触通过；RTF 0.533，未做600秒性能验收。</p>
@@ -791,14 +791,105 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="4m前进与二维SLAM blender" src="media/pl-forward4m-slam-v2-blender-20x.mp4"></video></div>
 </section>
 <section class="am-panel" id="panel-H">
-<header class="am-panel-head"><span class="am-panel-id">H</span><h2>失败录像缺失的批次</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>空手：0.35m包络，中途停车</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T065706Z-f96b0d14</code>。30.82s停止，原生间隙8.46cm；已记录部分无外部接触。短段RTF 0.4994，未到位。</p>
+<p><strong>irsim，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，中途停车 irsim" src="media/20261013T065706Z-f96b0d14-irsim-20x.mp4"></video>
+<div class="am-md"><p><strong>mujoco，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，中途停车 mujoco" src="media/20261013T065706Z-f96b0d14-mujoco-20x.mp4"></video>
+<div class="am-md"><p><strong>blender，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，中途停车 blender" src="media/20261013T065706Z-f96b0d14-blender-20x.mp4"></video></div>
+</section>
+<section class="am-panel" id="panel-I">
+<header class="am-panel-head"><span class="am-panel-id">I</span><h2>空手：0.35m包络，暂停后继续</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T065948Z-1dffbb13</code>。23.84s停止，原生间隙5.03cm；已记录部分无外部接触。短段RTF 0.4428，未到位。</p>
+<p><strong>irsim，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，暂停后继续 irsim" src="media/20261013T065948Z-1dffbb13-irsim-20x.mp4"></video>
+<div class="am-md"><p><strong>mujoco，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，暂停后继续 mujoco" src="media/20261013T065948Z-1dffbb13-mujoco-20x.mp4"></video>
+<div class="am-md"><p><strong>blender，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，暂停后继续 blender" src="media/20261013T065948Z-1dffbb13-blender-20x.mp4"></video></div>
+</section>
+<section class="am-panel" id="panel-J">
+<header class="am-panel-head"><span class="am-panel-id">J</span><h2>空手：0.35m包络，临时折向</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T070218Z-8078e5e8</code>。17.82s预测路径观测域检查失败；已记录部分无外部接触。短段RTF 0.4976，未到位。</p>
+<p><strong>irsim，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，临时折向 irsim" src="media/20261013T070218Z-8078e5e8-irsim-20x.mp4"></video>
+<div class="am-md"><p><strong>mujoco，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，临时折向 mujoco" src="media/20261013T070218Z-8078e5e8-mujoco-20x.mp4"></video>
+<div class="am-md"><p><strong>blender，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络，临时折向 blender" src="media/20261013T070218Z-8078e5e8-blender-20x.mp4"></video></div>
+</section>
+<section class="am-panel" id="panel-K">
+<header class="am-panel-head"><span class="am-panel-id">K</span><h2>空手：0.35m包络与0.4m期望间距，中途停车</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T070429Z-2e10c431</code>。到位PASS，固定B点独立误差2.34cm；45000帧无外部接触。180s核心RTF 0.4732，性能未达标。</p>
+<p><strong>irsim，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络与0.4m期望间距，中途停车 irsim" src="media/20261013T070429Z-2e10c431-irsim-20x.mp4"></video>
+<div class="am-md"><p><strong>mujoco，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络与0.4m期望间距，中途停车 mujoco" src="media/20261013T070429Z-2e10c431-mujoco-20x.mp4"></video>
+<div class="am-md"><p><strong>blender，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="空手：0.35m包络与0.4m期望间距，中途停车 blender" src="media/20261013T070429Z-2e10c431-blender-20x.mp4"></video></div>
+</section>
+<section class="am-panel" id="panel-L">
+<header class="am-panel-head"><span class="am-panel-id">L</span><h2>携物：0.65m载荷包络与0.4m期望间距</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T071552Z-8f9e9203</code>。21.06s因原生间隙8.39cm停止；未掉落，手掌相对位移3.58cm，持物保持评价FAIL；未到机架。短段RTF 0.4088。</p>
+<p><strong>irsim，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：0.65m载荷包络与0.4m期望间距 irsim" src="media/20261013T071552Z-8f9e9203-irsim-20x.mp4"></video>
+<div class="am-md"><p><strong>mujoco，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：0.65m载荷包络与0.4m期望间距 mujoco" src="media/20261013T071552Z-8f9e9203-mujoco-20x.mp4"></video>
+<div class="am-md"><p><strong>blender，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：0.65m载荷包络与0.4m期望间距 blender" src="media/20261013T071552Z-8f9e9203-blender-20x.mp4"></video></div>
+</section>
+<section class="am-panel" id="panel-M">
+<header class="am-panel-head"><span class="am-panel-id">M</span><h2>携物：0.6m期望间距单参数对照</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T071832Z-862626e0</code>。21.68s预测路径包络检查失败，手掌相对位移3.38cm，持物保持评价FAIL；未到机架。短段RTF 0.4009；该参数未取代空手已验证的0.4m默认值。</p>
+<p><strong>irsim，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：0.6m期望间距单参数对照 irsim" src="media/20261013T071832Z-862626e0-irsim-20x.mp4"></video>
+<div class="am-md"><p><strong>mujoco，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：0.6m期望间距单参数对照 mujoco" src="media/20261013T071832Z-862626e0-mujoco-20x.mp4"></video>
+<div class="am-md"><p><strong>blender，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：0.6m期望间距单参数对照 blender" src="media/20261013T071832Z-862626e0-blender-20x.mp4"></video></div>
+</section>
+<section class="am-panel" id="panel-N">
+<header class="am-panel-head"><span class="am-panel-id">N</span><h2>携物：10cm软间隙、5cm硬边界</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>批次：<code>20261013T072345Z-2024e6fa</code>。新边界生效，21.46s在原生间隙4.57cm时停止；未到机架，手掌相对位移3.49cm。保留失败完整录像；不计成功。</p>
+<p><strong>irsim，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：10cm软间隙、5cm硬边界 irsim" src="media/20261013T072345Z-2024e6fa-irsim-20x.mp4"></video>
+<div class="am-md"><p><strong>mujoco，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：10cm软间隙、5cm硬边界 mujoco" src="media/20261013T072345Z-2024e6fa-mujoco-20x.mp4"></video>
+<div class="am-md"><p><strong>blender，20倍速</strong></p>
+</div>
+<video controls preload="none" playsinline style="width:100%;max-height:560px;background:#15191d" aria-label="携物：10cm软间隙、5cm硬边界 blender" src="media/20261013T072345Z-2024e6fa-blender-20x.mp4"></video></div>
+</section>
+<section class="am-panel" id="panel-O">
+<header class="am-panel-head"><span class="am-panel-id">O</span><h2>失败录像缺失的批次</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>平滑接通后的停止、暂停后继续、临时绕行三批原录像此前按失败删除规则清理，只能提供日志形成的结果摘要。携物脱手案例另有明确标注的<a href="simulation-experiments.html">离线状态回放</a>，不冒充原始GUI录屏。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 14:42</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 15:26</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -806,14 +897,14 @@ title: 联合仿真实验录像库
 subtitle: 按批次关联IR-SIM、MuJoCo与Blender；保留成功、失败及中断的不同结论
 lang: zh
 doc_id: simulation-recordings
-implementation: 31cae10ff65dd2d4
+implementation: 155e1488ea6ea0fa
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-[近期对比](simulation-experiments.html) · [123批次档案](simulation-experiment-catalog.html) · [媒体校验清单](experiment-media.json)
+[近期对比](simulation-experiments.html) · [130批次档案](simulation-experiment-catalog.html) · [媒体校验清单](experiment-media.json)
 
-7个批次仍有录制文件，其中6批共18个窗口可播放；中断批次的3个文件缺少MP4尾部索引，保留损坏记录且不嵌入无效播放器。全部为完整录制区间的20倍墙钟加速版本。窗口录制起点略有差异，不能仅凭播放器进度当作严格同帧同步，也不能由播放速度推断RTF。原始1倍文件在本地保留。以下结果保留实验当时的条件，不把历史组件通过改写为当前任务通过。
+14个批次仍有录制文件，其中13批共39个窗口可播放；中断批次的3个文件缺少MP4尾部索引，保留损坏记录且不嵌入无效播放器。全部为完整录制区间的20倍墙钟加速版本。窗口录制起点略有差异，不能仅凭播放器进度当作严格同帧同步，也不能由播放速度推断RTF。原始1倍文件在本地保留。以下结果保留实验当时的条件，不把历史组件通过改写为当前任务通过。
 
 ## 单障碍横穿：空手5m
 
@@ -955,6 +1046,160 @@ implementation: 31cae10ff65dd2d4
 
 ```html
 &lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;4m前进与二维SLAM blender&quot; src=&quot;media/pl-forward4m-slam-v2-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+## 空手：0.35m包络，中途停车
+
+批次：`20261013T065706Z-f96b0d14`。30.82s停止，原生间隙8.46cm；已记录部分无外部接触。短段RTF 0.4994，未到位。
+
+**irsim，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，中途停车 irsim&quot; src=&quot;media/20261013T065706Z-f96b0d14-irsim-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**mujoco，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，中途停车 mujoco&quot; src=&quot;media/20261013T065706Z-f96b0d14-mujoco-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**blender，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，中途停车 blender&quot; src=&quot;media/20261013T065706Z-f96b0d14-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+## 空手：0.35m包络，暂停后继续
+
+批次：`20261013T065948Z-1dffbb13`。23.84s停止，原生间隙5.03cm；已记录部分无外部接触。短段RTF 0.4428，未到位。
+
+**irsim，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，暂停后继续 irsim&quot; src=&quot;media/20261013T065948Z-1dffbb13-irsim-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**mujoco，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，暂停后继续 mujoco&quot; src=&quot;media/20261013T065948Z-1dffbb13-mujoco-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**blender，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，暂停后继续 blender&quot; src=&quot;media/20261013T065948Z-1dffbb13-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+## 空手：0.35m包络，临时折向
+
+批次：`20261013T070218Z-8078e5e8`。17.82s预测路径观测域检查失败；已记录部分无外部接触。短段RTF 0.4976，未到位。
+
+**irsim，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，临时折向 irsim&quot; src=&quot;media/20261013T070218Z-8078e5e8-irsim-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**mujoco，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，临时折向 mujoco&quot; src=&quot;media/20261013T070218Z-8078e5e8-mujoco-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**blender，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络，临时折向 blender&quot; src=&quot;media/20261013T070218Z-8078e5e8-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+## 空手：0.35m包络与0.4m期望间距，中途停车
+
+批次：`20261013T070429Z-2e10c431`。到位PASS，固定B点独立误差2.34cm；45000帧无外部接触。180s核心RTF 0.4732，性能未达标。
+
+**irsim，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络与0.4m期望间距，中途停车 irsim&quot; src=&quot;media/20261013T070429Z-2e10c431-irsim-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**mujoco，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络与0.4m期望间距，中途停车 mujoco&quot; src=&quot;media/20261013T070429Z-2e10c431-mujoco-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**blender，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;空手：0.35m包络与0.4m期望间距，中途停车 blender&quot; src=&quot;media/20261013T070429Z-2e10c431-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+## 携物：0.65m载荷包络与0.4m期望间距
+
+批次：`20261013T071552Z-8f9e9203`。21.06s因原生间隙8.39cm停止；未掉落，手掌相对位移3.58cm，持物保持评价FAIL；未到机架。短段RTF 0.4088。
+
+**irsim，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：0.65m载荷包络与0.4m期望间距 irsim&quot; src=&quot;media/20261013T071552Z-8f9e9203-irsim-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**mujoco，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：0.65m载荷包络与0.4m期望间距 mujoco&quot; src=&quot;media/20261013T071552Z-8f9e9203-mujoco-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**blender，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：0.65m载荷包络与0.4m期望间距 blender&quot; src=&quot;media/20261013T071552Z-8f9e9203-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+## 携物：0.6m期望间距单参数对照
+
+批次：`20261013T071832Z-862626e0`。21.68s预测路径包络检查失败，手掌相对位移3.38cm，持物保持评价FAIL；未到机架。短段RTF 0.4009；该参数未取代空手已验证的0.4m默认值。
+
+**irsim，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：0.6m期望间距单参数对照 irsim&quot; src=&quot;media/20261013T071832Z-862626e0-irsim-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**mujoco，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：0.6m期望间距单参数对照 mujoco&quot; src=&quot;media/20261013T071832Z-862626e0-mujoco-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**blender，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：0.6m期望间距单参数对照 blender&quot; src=&quot;media/20261013T071832Z-862626e0-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+## 携物：10cm软间隙、5cm硬边界
+
+批次：`20261013T072345Z-2024e6fa`。新边界生效，21.46s在原生间隙4.57cm时停止；未到机架，手掌相对位移3.49cm。保留失败完整录像；不计成功。
+
+**irsim，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：10cm软间隙、5cm硬边界 irsim&quot; src=&quot;media/20261013T072345Z-2024e6fa-irsim-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**mujoco，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：10cm软间隙、5cm硬边界 mujoco&quot; src=&quot;media/20261013T072345Z-2024e6fa-mujoco-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+**blender，20倍速**
+
+```html
+&lt;video controls preload=&quot;none&quot; playsinline style=&quot;width:100%;max-height:560px;background:#15191d&quot; aria-label=&quot;携物：10cm软间隙、5cm硬边界 blender&quot; src=&quot;media/20261013T072345Z-2024e6fa-blender-20x.mp4&quot;&gt;&lt;/video&gt;
 ```
 
 ## 失败录像缺失的批次

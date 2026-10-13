@@ -97,8 +97,8 @@
     },
     {
       "file": "algo-neupan.html",
-      "source_sha256": "ca008a07cd4a83d45ed17a806b8dc1c2d9b44a94f2cb0c239ef6d2d43946c316",
-      "implementation_sha256": "d2b4fa77907de8c4e96337c6cf1596a3d49ceeee43cd7c5b4bca07d51433b8d1"
+      "source_sha256": "be118f09d01c0261ffa7874e9be5805e225cea178c302ef01532095cc07646e5",
+      "implementation_sha256": "155e1488ea6ea0fa4759d6564b8eeec587f6e89278efcbfcd00e5730c8499d0c"
     },
     {
       "file": "algo-pbvs.html",
@@ -170,8 +170,8 @@
     },
     {
       "file": "experiments.html",
-      "source_sha256": "b80627912aecd2606dd35fb8aab665c53918740987c3f63cdb22f56a8f63d872",
-      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
+      "source_sha256": "72f30d4815b25a7892ef9ce465d04e6cfb1e6f10c6665ce8d775c849270a3cf3",
+      "implementation_sha256": "155e1488ea6ea0fa4759d6564b8eeec587f6e89278efcbfcd00e5730c8499d0c"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -337,8 +337,8 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "1a301b10b268432600b1ef314e18592cfbf1a256e8afdd2fc0f3b9af89b1894b",
-      "implementation_sha256": "8c35e72cdccb326dc428a8f89017c17752c7b595148588443c4dd491e4a4631b"
+      "source_sha256": "6462d69765d9a7a8e8f1f166aae21084b27cecc797c7463e7e27f73e35f17a79",
+      "implementation_sha256": "155e1488ea6ea0fa4759d6564b8eeec587f6e89278efcbfcd00e5730c8499d0c"
     },
     {
       "file": "module-robot-perception_runtime.html",
@@ -437,18 +437,18 @@
     },
     {
       "file": "simulation-experiments.html",
-      "source_sha256": "fbc096c89d9878e078733f41d82eb704c2489e38e4a1b3193622cb91186e56de",
-      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
+      "source_sha256": "e6f6d98a7e460b84d3ec67c4e03304aef4b81c8070912b5be752e3ae3405c8f7",
+      "implementation_sha256": "155e1488ea6ea0fa4759d6564b8eeec587f6e89278efcbfcd00e5730c8499d0c"
     },
     {
       "file": "simulation-experiment-catalog.html",
-      "source_sha256": "cf95d3181a0260a5b509eb8daa0c46a0a6b1f29c19a416f438ed7b6d68e3196b",
-      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
+      "source_sha256": "9907e127bcf400102d1db320499240ccbc7c7e596a8c78df418009f61eca7362",
+      "implementation_sha256": "155e1488ea6ea0fa4759d6564b8eeec587f6e89278efcbfcd00e5730c8499d0c"
     },
     {
       "file": "simulation-recordings.html",
-      "source_sha256": "74ef406fe769714802b10c15b7deb4e1a067101ef52c5e8bf06f238c35dd6e47",
-      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
+      "source_sha256": "0687540b486f5ff567158303e29f710a14583c866c92af842c773bf91efecda1",
+      "implementation_sha256": "155e1488ea6ea0fa4759d6564b8eeec587f6e89278efcbfcd00e5730c8499d0c"
     }
   ],
   "assets": [
@@ -591,6 +591,90 @@
     {
       "file": "media/20261013T060536Z-62798db9-mujoco-20x.mp4",
       "sha256": "8da77af8d5eaafe4587b6a2c871f2f4ad3417a66e8dc8d56c2e543ffa70456af"
+    },
+    {
+      "file": "media/20261013T065706Z-f96b0d14-blender-20x.mp4",
+      "sha256": "db443dd14af2995c4958b6d1da5cd8c956a2307aefca2472555bf1cecc47f313"
+    },
+    {
+      "file": "media/20261013T065706Z-f96b0d14-irsim-20x.mp4",
+      "sha256": "c07c846e39dc4faf95612a9d71600f647d237357f2e3ef492d353e8ea98cd5ce"
+    },
+    {
+      "file": "media/20261013T065706Z-f96b0d14-mujoco-20x.mp4",
+      "sha256": "5c757cf8aabf0a040d08a5ba3fd57295a61c56d58a6c12cbf3f2c69a797cfd6e"
+    },
+    {
+      "file": "media/20261013T065948Z-1dffbb13-blender-20x.mp4",
+      "sha256": "879f6d7ee633d38ceb27ce6663f6ad5aaa44301a66c7897578d68fbc2558d8a2"
+    },
+    {
+      "file": "media/20261013T065948Z-1dffbb13-irsim-20x.mp4",
+      "sha256": "3ad7aecea5a8bab834a917880bb8f724f8d9c3c3d5ab2c2e51790dfab658fb23"
+    },
+    {
+      "file": "media/20261013T065948Z-1dffbb13-mujoco-20x.mp4",
+      "sha256": "20ae2a11a510c52692482a4cb6b3e2710c469eef6fe92545c41d49c11a409a0b"
+    },
+    {
+      "file": "media/20261013T070218Z-8078e5e8-blender-20x.mp4",
+      "sha256": "4eef05c7b920ebc220f5ae4994c8da21b4657c3b8d6d1ff7608ad26ffd4a4438"
+    },
+    {
+      "file": "media/20261013T070218Z-8078e5e8-irsim-20x.mp4",
+      "sha256": "bc1c510cc501cdc0b4a59ed52c5a3b4a7f12b6f7d2cb43fb50924ff1f7d6118c"
+    },
+    {
+      "file": "media/20261013T070218Z-8078e5e8-mujoco-20x.mp4",
+      "sha256": "16df4485f6f2f516e1701c06c5edf599dd17046113f07f1f3682d6780703bb8f"
+    },
+    {
+      "file": "media/20261013T070429Z-2e10c431-blender-20x.mp4",
+      "sha256": "6053925b75374877c6c4c8e9f01372e867b4ad5002f033e355ab00c3851b71ac"
+    },
+    {
+      "file": "media/20261013T070429Z-2e10c431-irsim-20x.mp4",
+      "sha256": "d30912366a4249c2c7c58c8fe8080adef8925c230a4bd9ee629069580d2f9881"
+    },
+    {
+      "file": "media/20261013T070429Z-2e10c431-mujoco-20x.mp4",
+      "sha256": "fb97a4d2d49a2f7b7ee7d68a0a7cd27aeda37bc49bbf002f3a660df5db78f9f9"
+    },
+    {
+      "file": "media/20261013T071552Z-8f9e9203-blender-20x.mp4",
+      "sha256": "76c55f3486925b561ca3104e549d4e3dd8b118829ce1f8352e792b882dfbe91c"
+    },
+    {
+      "file": "media/20261013T071552Z-8f9e9203-irsim-20x.mp4",
+      "sha256": "ca166588fdf875b7aba015620334d3c243f58ec37cd3afd000aa5c44f44c6cba"
+    },
+    {
+      "file": "media/20261013T071552Z-8f9e9203-mujoco-20x.mp4",
+      "sha256": "2172c82756a1c442b1a53cad71a0103c4e4a950de6d8c165ba42ef50435fd58f"
+    },
+    {
+      "file": "media/20261013T071832Z-862626e0-blender-20x.mp4",
+      "sha256": "57aa7150d0a1c873c52067c0e30a38b41520355a73568f97faaa7822cabbfb95"
+    },
+    {
+      "file": "media/20261013T071832Z-862626e0-irsim-20x.mp4",
+      "sha256": "e9f4238ca6df179c541120435ac02d7a6fa104c3fa3feb134cb186a05f84e6e8"
+    },
+    {
+      "file": "media/20261013T071832Z-862626e0-mujoco-20x.mp4",
+      "sha256": "18833e60bc33a31cc9b6e4fe43e6eede9475c3ab4c82c19a994a8e62e5afe5da"
+    },
+    {
+      "file": "media/20261013T072345Z-2024e6fa-blender-20x.mp4",
+      "sha256": "786a8da9c8aa5a434367501e011b48e39ab4c6358dc8c3c9535fa6c4b564af25"
+    },
+    {
+      "file": "media/20261013T072345Z-2024e6fa-irsim-20x.mp4",
+      "sha256": "753a7635cf4566fb051d3cbea0136a313a1652eca402549a8f421123c6e9d890"
+    },
+    {
+      "file": "media/20261013T072345Z-2024e6fa-mujoco-20x.mp4",
+      "sha256": "dda43e88ec8cff7105ed19d2cb259365b8626542b5fbd467e538d343dfe21535"
     },
     {
       "file": "media/approach-base-isaac-20x.mp4",
