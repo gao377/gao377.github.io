@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="generator" content="Answer me with HTML 0.4.14">
-<title>联合仿真实验 · 导航到位与脱手案例</title>
+<title>联合仿真实验 · 导航、双机器人行为与携物</title>
 <style>
 html[data-theme="blueprint"], html[data-theme="blueprint"][data-mode="light"] {
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -698,13 +698,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>联合仿真实验 · 导航到位与脱手案例</h1><p class="am-sub">三窗口成功录屏与明确标注的失败轨迹回放</p><div class="am-head-meta"><span><b>doc_id</b>simulation-experiments</span><span><b>implementation</b>3dcf9ca6ba56d59d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
-<p><a href="simulation.html">仿真原理</a> · <a href="simulation-usage.html">运行命令</a> · <a href="simulation-performance.html">历史RTF分析</a></p>
+<header class="am-head"><h1>联合仿真实验 · 导航、双机器人行为与携物</h1><p class="am-sub">到位、接触、性能分项判读；关联完整批次档案与现存录像</p><div class="am-head-meta"><span><b>doc_id</b>simulation-experiments</span><span><b>implementation</b>31cae10ff65dd2d4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<p><a href="simulation.html">仿真原理</a> · <a href="simulation-usage.html">运行命令</a> · <a href="simulation-performance.html">历史RTF分析</a> · <a href="simulation-experiment-catalog.html">123批次档案</a> · <a href="simulation-recordings.html">全部现存录像</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 两组证据分别证明什么</a><a href="#panel-B">B · 成功导航：同批三窗口完整录像</a><a href="#panel-C">C · 失败反例：工装从双手脱落</a><a href="#panel-D">D · 代码归属和运行机制</a><a href="#panel-E">E · 可复制的成功场景命令</a><a href="#panel-F">F · 版本与媒体来源</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与验收范围</a><a href="#panel-G">G · 双机器人行为实验</a><a href="#panel-B">B · 成功导航：同批三窗口完整录像</a><a href="#panel-C">C · 失败反例：工装从双手脱落</a><a href="#panel-D">D · 代码归属和运行机制</a><a href="#panel-E">E · 可复制的成功场景命令</a><a href="#panel-F">F · 版本与媒体来源</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>两组证据分别证明什么</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>证据与验收范围</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -730,6 +730,74 @@ MuJoCo负责动力学，IR-SIM负责真实二维扫描，Blender显示同一世�
 没有用场景真值替代定位或避障输入。</p>
 <p>物理250Hz、AMO控制50Hz、激光10Hz，RGB-D关闭。
 AMO采用明确的锁步实验模式，不代表异步真机资格。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>双机器人行为实验</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>所有这些批次均使用同一应用链路：二维SLAM → NeuPAN → AMO → MuJoCo，两个障碍机器人由场景轨迹驱动，应用只得到当前扫描，不得到未来轨迹。动态机器人外观的步行动画仅供显示，不构成第二套动力学求解。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>批次／行为</th>
+<th>导航任务</th>
+<th>原生外部接触</th>
+<th align="right">核心RTF</th>
+<th>判读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>054152：持续相向横穿</td>
+<td>PASS；固定B点误差2.38cm</td>
+<td>PASS，45000帧未检出</td>
+<td align="right">0.4944</td>
+<td>到位通过，性能未达&gt;0.5</td>
+</tr>
+<tr>
+<td>060046：中途停止，首批</td>
+<td>记录中断</td>
+<td>无完整结论</td>
+<td align="right">未完成</td>
+<td>SIGTERM中断；3个MP4缺少索引，无法播放</td>
+</tr>
+<tr>
+<td>060536：中途停止，复验</td>
+<td>PASS；固定B点误差3.60cm</td>
+<td>FAIL，143条记录</td>
+<td align="right">0.4917</td>
+<td>到位不等于无擦碰</td>
+</tr>
+<tr>
+<td>062202：平滑开启，中途停止</td>
+<td>FAIL，26.80s停止</td>
+<td>FAIL，27条记录</td>
+<td align="right">0.5011（短段）</td>
+<td>最小间隙触发停止</td>
+</tr>
+<tr>
+<td>062426：平滑开启，暂停8秒再继续</td>
+<td>FAIL，23.82s停止</td>
+<td>FAIL，544条记录</td>
+<td align="right">0.4903（短段）</td>
+<td>最小间隙触发停止</td>
+</tr>
+<tr>
+<td>062700：平滑开启，临时折向</td>
+<td>FAIL，17.80s停止</td>
+<td>PASS，仅已记录4520帧</td>
+<td align="right">0.4927（短段）</td>
+<td>预测路径超出允许观测域；未完成任务</td>
+</tr>
+<tr>
+<td>055010：双障碍携物</td>
+<td>FAIL，21.08s停止</td>
+<td>不作成功结论</td>
+<td align="right">约0.412（短段）</td>
+<td>载荷漂移超2cm；未到机架，不标为脱手成功样本</td>
+</tr>
+</tbody></table></div>
+<p>表中6位数字对应完整批次ID的UTC时分秒。<a href="simulation-experiment-catalog.html">全批次档案</a>保留完整身份及原始记录哈希，<a href="simulation-recordings.html">录像库</a>关联三个观察窗口。接触“条数”是物理采样中的接触记录，不能解释为独立事故次数。失败短段RTF不代表整段或600秒性能。</p>
+<p>平滑开启的三批均确认导航实际消费<code>nav_stabilized</code>，合计683帧（60帧预热、623帧READY），数据年龄0—20ms；平滑接线有效，避障任务仍失败，不能混为同一结论。原始定位和扫描保留其几何意义，仅规划参考坐标经过既有滤波链处理。</p>
+<p><strong>相关录像与短段失败证据已经分别归档；未重新运行实验补造成功结果。</strong></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -912,12 +980,12 @@ IR-SIM按场景边界显示，动态代理只镜像动力学世界。</p>
 <td>916bf62，加固定源码适配</td>
 </tr>
 <tr>
-<td>应用发布快照</td>
-<td>894c7aa，独立实测分支</td>
+<td>应用实测快照</td>
+<td>7de98f3，保留分支及每批独立源码哈希</td>
 </tr>
 <tr>
-<td>仿真器发布提交</td>
-<td>fdfcf29</td>
+<td>单障碍历史仿真提交</td>
+<td>fdfcf29；当前源码见仓库main</td>
 </tr>
 <tr>
 <td>失败轨迹SHA256前缀</td>
@@ -925,7 +993,7 @@ IR-SIM按场景边界显示，动态代理只镜像动力学世界。</p>
 </tr>
 </tbody></table></div>
 <p><a href="https://github.com/gao377/agentic-embodied-system/tree/codex/mujoco-qualified-20261013">已实测应用源码分支</a>
-保留本批应用实现，不覆盖主分支后续的Isaac变更。
+保留本批应用实现及准确身份。经接口适配后的实现已同步至主分支，同时保留主分支较新的传感器、空间与任务层接口；合并检查不替代一次新的GUI资格验证。
 <a href="https://github.com/gao377/agentic-embodied-system-sim">仿真器源码</a>
 包含场景转换、显示、离线评价和回放工具。</p>
 <p>文件哈希、倍率及录屏／回放分类见<a href="experiment-media.json">媒体清单</a>。
@@ -936,22 +1004,22 @@ IR-SIM按场景边界显示，动态代理只镜像动力学世界。</p>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 13:02</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 14:42</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
-title: 联合仿真实验 · 导航到位与脱手案例
-subtitle: 三窗口成功录屏与明确标注的失败轨迹回放
+title: 联合仿真实验 · 导航、双机器人行为与携物
+subtitle: 到位、接触、性能分项判读；关联完整批次档案与现存录像
 lang: zh
 doc_id: simulation-experiments
-implementation: 3dcf9ca6ba56d59d
+implementation: 31cae10ff65dd2d4
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-[仿真原理](simulation.html) · [运行命令](simulation-usage.html) · [历史RTF分析](simulation-performance.html)
+[仿真原理](simulation.html) · [运行命令](simulation-usage.html) · [历史RTF分析](simulation-performance.html) · [123批次档案](simulation-experiment-catalog.html) · [全部现存录像](simulation-recordings.html)
 
-## A 两组证据分别证明什么
+## A 证据与验收范围
 
 | 证据 | 条件与结果 | 结论边界 |
 | --- | --- | --- |
@@ -965,6 +1033,26 @@ MuJoCo负责动力学，IR-SIM负责真实二维扫描，Blender显示同一世�
 
 物理250Hz、AMO控制50Hz、激光10Hz，RGB-D关闭。
 AMO采用明确的锁步实验模式，不代表异步真机资格。
+
+## 双机器人行为实验
+
+所有这些批次均使用同一应用链路：二维SLAM → NeuPAN → AMO → MuJoCo，两个障碍机器人由场景轨迹驱动，应用只得到当前扫描，不得到未来轨迹。动态机器人外观的步行动画仅供显示，不构成第二套动力学求解。
+
+| 批次／行为 | 导航任务 | 原生外部接触 | 核心RTF | 判读 |
+| --- | --- | --- | ---: | --- |
+| 054152：持续相向横穿 | PASS；固定B点误差2.38cm | PASS，45000帧未检出 | 0.4944 | 到位通过，性能未达&gt;0.5 |
+| 060046：中途停止，首批 | 记录中断 | 无完整结论 | 未完成 | SIGTERM中断；3个MP4缺少索引，无法播放 |
+| 060536：中途停止，复验 | PASS；固定B点误差3.60cm | FAIL，143条记录 | 0.4917 | 到位不等于无擦碰 |
+| 062202：平滑开启，中途停止 | FAIL，26.80s停止 | FAIL，27条记录 | 0.5011（短段） | 最小间隙触发停止 |
+| 062426：平滑开启，暂停8秒再继续 | FAIL，23.82s停止 | FAIL，544条记录 | 0.4903（短段） | 最小间隙触发停止 |
+| 062700：平滑开启，临时折向 | FAIL，17.80s停止 | PASS，仅已记录4520帧 | 0.4927（短段） | 预测路径超出允许观测域；未完成任务 |
+| 055010：双障碍携物 | FAIL，21.08s停止 | 不作成功结论 | 约0.412（短段） | 载荷漂移超2cm；未到机架，不标为脱手成功样本 |
+
+表中6位数字对应完整批次ID的UTC时分秒。[全批次档案](simulation-experiment-catalog.html)保留完整身份及原始记录哈希，[录像库](simulation-recordings.html)关联三个观察窗口。接触“条数”是物理采样中的接触记录，不能解释为独立事故次数。失败短段RTF不代表整段或600秒性能。
+
+平滑开启的三批均确认导航实际消费`nav_stabilized`，合计683帧（60帧预热、623帧READY），数据年龄0—20ms；平滑接线有效，避障任务仍失败，不能混为同一结论。原始定位和扫描保留其几何意义，仅规划参考坐标经过既有滤波链处理。
+
+**相关录像与短段失败证据已经分别归档；未重新运行实验补造成功结果。**
 
 ## B 成功导航：同批三窗口完整录像
 
@@ -1094,12 +1182,12 @@ IR-SIM按场景边界显示，动态代理只镜像动力学世界。
 | 成功场景SHA256前缀 | de0c87261d4a |
 | 动力学场景SHA256前缀 | 532c10effa49 |
 | 机器人基础提交 | 916bf62，加固定源码适配 |
-| 应用发布快照 | 894c7aa，独立实测分支 |
-| 仿真器发布提交 | fdfcf29 |
+| 应用实测快照 | 7de98f3，保留分支及每批独立源码哈希 |
+| 单障碍历史仿真提交 | fdfcf29；当前源码见仓库main |
 | 失败轨迹SHA256前缀 | 83475ae91ed0 |
 
 [已实测应用源码分支](https://github.com/gao377/agentic-embodied-system/tree/codex/mujoco-qualified-20261013)
-保留本批应用实现，不覆盖主分支后续的Isaac变更。
+保留本批应用实现及准确身份。经接口适配后的实现已同步至主分支，同时保留主分支较新的传感器、空间与任务层接口；合并检查不替代一次新的GUI资格验证。
 [仿真器源码](https://github.com/gao377/agentic-embodied-system-sim)
 包含场景转换、显示、离线评价和回放工具。
 

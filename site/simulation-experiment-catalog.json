@@ -1,0 +1,2969 @@
+{
+  "schema_version": 1,
+  "captured_on": "2026-10-13",
+  "scope": "All 123 local co-simulation run directories; previous Isaac results remain in the experiment handbook.",
+  "interpretation": "Execution FINISHED, task PASS, contact PASS and performance qualification are separate. Missing evidence is NOT_EVALUATED, not a pass.",
+  "runs": [
+    {
+      "run_id": "20261011-empty-ab-purple-v1",
+      "execution_status": "BLOCKED",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "4b9e314f9c9b6131a18bdd8467b4a571c1131d98879869612f82ca98b09b71bc"
+      },
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "20261011-empty-ab-purple-v2",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "22d98b8c6df3ac8d6dc4cd042c5e4ed824e9e9900e867e2599c0f834fdc52082",
+        "manifest.json": "49ade15c6948e8b1dc707d060338222ff93859107dfce4bf01012448b881abf7"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "3b77088acb411588af206157b45b57fb1cf74f12541e9be348b24acca339dbee"
+    },
+    {
+      "run_id": "20261011-empty-ab-purple-v3",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 49.999999999994046,
+      "core_rtf": 0.4330696441401998,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "10e1181801aff20f47a17ea1cd4834a5a10664bda4fdfd8a03937f5ea39e2359",
+        "spatial-result.json": "17f13603103c19508baab81e77830bae08d04cc0e942087d49a0c3cb6c0506fe",
+        "manifest.json": "a991205cccee5729f436b157f589b6870e31e9c1d7e71fea4c223311937ddffb"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "2230c8ac6ce786368750467a2c6560656f572696975be19ed1a6f8636cc73447"
+    },
+    {
+      "run_id": "20261012-empty-ab-purple-v4",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 100.00000000003028,
+      "core_rtf": 0.40575246840031604,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "1a77fff0a8ab743d4a5b169c52cb886253ae9916f9501947a018f383b438ad27",
+        "spatial-result.json": "9ebd435356178d825957a419c41d370cdf1de35f06e39f9f5b9e7a14f5a8c035",
+        "manifest.json": "02ccf9aa42ed2fbbcec2bab03f1c63ffc097f6e28d6fca307a1cb6a24e1af438"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "fff19a86730fb68a9bf74064cda795a93d3d6b8c1d9e84677fd8a113b5cc33ce"
+    },
+    {
+      "run_id": "20261013T014734Z-058ba7dd",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "b6abf71d92930665d73d6ed593004ad45e9784a7a3a169fde181e7f4fb9595a6"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "f32a5e7e46930a0ad96012c4cf6263456e3ddd95f2382e8a4480f123ad2d14a2"
+    },
+    {
+      "run_id": "20261013T014937Z-3d4df56e",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "forward-4m",
+      "sim_s": 35.00000000000236,
+      "core_rtf": 0.48291062684736813,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "forward-distance-result": "SUCCEEDED",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "forward-distance-result.json": "361d294d40845b4095fd00d99406bcd96d337e4885fbadb9838c677902a2462e",
+        "spatial-result.json": "663eab50e65975393a07bd81607e198f868bc22dd30a0943d87a8ba8abe242d0",
+        "manifest.json": "6fca963907eb60aa077ba98a3bc5c40bca94a7438adddd03de7f0e381ba32f47"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "e10484c3d2d8834a4db4f5300cf545f24495551a23d785838370c00f82a8393c"
+    },
+    {
+      "run_id": "20261013T015153Z-dfda5d2c",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 100.00000000003028,
+      "core_rtf": 0.6513505525005862,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "48b3f823b3b5ef847bd0a11b2ae1bfdf2746da77fb00f94da9d11332523aa528",
+        "spatial-result.json": "cda17701484fcaf58ff7039276f78ad66c8a3cae81712ccc980a4833635b1944",
+        "manifest.json": "8f26338916e83346facb8b10bbe453e313cc760916843db1035ace910d44d068"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "d0a979b7a3c7394bd37ad1452ca88180512910be112ca084774068e49b45b26d"
+    },
+    {
+      "run_id": "20261013T015712Z-3ee33ad7",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "20261013T015903Z-789b1edb",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "forward-4m",
+      "sim_s": 35.00000000000236,
+      "core_rtf": 0.4979963785089305,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "forward-distance-result": "SUCCEEDED",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "forward-distance-result.json": "4ec0179bfffc40e059f7d88d23086b1836cb2c341646872050b13bcfd3f1e1b7",
+        "spatial-result.json": "57e93de17e09dba617ebcde2d1a3f8aa1406966ce25e5dbc422a1c067d63f138",
+        "manifest.json": "a5d3a3e7d6e91c942303bde865c2bf4c72b98304432bae9ad83cb93bb6d56af0"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "8e79ed77f6d0af8281a53ba2dfce1fe2e69978bc6eaafdb59cfb7bb58f28651e"
+    },
+    {
+      "run_id": "20261013T020244Z-25a4dd69",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "forward-4m",
+      "sim_s": 35.00000000000236,
+      "core_rtf": 0.5042966702134691,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "forward-distance-result": "SUCCEEDED",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "forward-distance-result.json": "f69eb46545d53ad54e07bd65764877d287909708934d44245257c46e8839033a",
+        "spatial-result.json": "0f2a243cb5044ad9cfe709f1a6651829dd8da32d6f71437839e9243e6357ab2c",
+        "manifest.json": "68c0e5ea9f1c48d4909796843d3206953817d0c2ad57cc79dca3b3773f1a4190"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "09d49d1a4ed0c3eabd788c4ab31c8a867aff75f09595d7597c7e3e1f0fa6489c"
+    },
+    {
+      "run_id": "20261013T020423Z-5109dd12",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 100.00000000003028,
+      "core_rtf": 0.6440425199892919,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "86b078339b21f3ead9002fb14e776331efcc674d99bc902c234abac8b2df6fbf",
+        "spatial-result.json": "4550fa6267ef3f4d6d1f5699b7ae7e8fabc30636d3c2aed87bd42a2b01f880bc",
+        "manifest.json": "f3257fe0023f6502dfd2f14fcec7545f8a9624d709a5b9e6a56c9bee09ec3e65"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "09d49d1a4ed0c3eabd788c4ab31c8a867aff75f09595d7597c7e3e1f0fa6489c"
+    },
+    {
+      "run_id": "20261013T022203Z-b2502468",
+      "execution_status": "INTERRUPTED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 16.011999999998686,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "5eb49eed55ee4b312e2e51e1e023a02beb3586e47b4aab834361883c9892b594",
+        "manifest.json": "5a277eee468a2c8c9db6ddf120a24a163f9153fe73400b134f6162712579bf86"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "2d5cffabbc984e59b6e21b06128f1e9fdf4a67d1792bd55151b12d59fea6c415"
+    },
+    {
+      "run_id": "20261013T022326Z-ce093d01",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 64.99999999998751,
+      "core_rtf": 0.6362025719605351,
+      "observed_failure_rtf": null,
+      "navigation_status": "PASS",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "PASS",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "5b56caf483514bbf5a6723b8ade0011effee83eb64ac7f9d3d6f57880afd162d",
+        "spatial-result.json": "126efa536fc1e21f386b65f3182c5ba8b04439d1fe133384d19fdc8cfd37dc7f",
+        "manifest.json": "bf37a68bf2face6863d42d26090c496001250c1acd056a39af13ccb17f536b5d"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "2d5cffabbc984e59b6e21b06128f1e9fdf4a67d1792bd55151b12d59fea6c415"
+    },
+    {
+      "run_id": "20261013T023145Z-1e0d0835",
+      "execution_status": "INTERRUPTED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 99.14000000002923,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "a2e71c9c0081c0d0be8bc48a9b9cdce4da3dbd7b71403d556752bab142f6f5c0",
+        "manifest.json": "c4a2bd1b563f2df1162c61ca66bc345cffe377f4878ac2a62de03eb38b62f1ac"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "b6a17a76d3c4317cc6dbffa8af5cfc1691169e52b3a5b3ba5d91cc368f82c656"
+    },
+    {
+      "run_id": "20261013T023615Z-cd2bfc47",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "lateral-response",
+      "sim_s": 64.99999999998751,
+      "core_rtf": 0.6569752560973586,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "d836f0c1fd43031252cb297cc5fa604774fee132ce256858dc00c235656452fe",
+        "manifest.json": "294b43ea889b204cc8bf8d8f15d0fd3dec81564eed2fa9f8e51bec5217fa65fc"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "2ec364036f6093620c8b15ade5f36005a0bbe703aa053c181729378dd6f11f10"
+    },
+    {
+      "run_id": "20261013T024309Z-55d04d22",
+      "execution_status": "INTERRUPTED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 15.819999999998702,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "97568df7e0581a3642cd01324ac7cb67a9c6dc11e0bc6e4f5ec63c65d29e7436",
+        "navigation-result.json": "6392192a9a0dd44ad8f4d940f1ef9b0ebc327ef4a26532b31f25e513c94de54d",
+        "manifest.json": "aa9a0c7ad90326345d1f8dadf513dcebcacaebae2f5d42e88596131e489e16c4"
+      },
+      "scene_sha256": "372956b93ccb0e1ebdcabb40e4137bacfe523f547072ebcde9be339be3da0b7d",
+      "source_manifest_sha256": "eb73ca7213296b744d8e028f30f720a5e25b86400f116e64c617081b0d69781a"
+    },
+    {
+      "run_id": "20261013T024556Z-bbab1a6f",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 2.660000000000002,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "51c1be1b6aa0cbabc430c5419ac63711c329b37bdb48793689d8fb710e88999a",
+        "navigation-result.json": "f85cc04d0ede2a0947d2a5ba85c86b71ef47570aab5a41d2cfa4efef6de83f9d",
+        "manifest.json": "affd8ab35c52e12c85cde0e101911a34385b91089a9edb5e7f3781988f5efcbc"
+      },
+      "scene_sha256": "baae89da431761e8e2b356f548b2301c6bb00e66c4b01856d4d28fc9ec164a67",
+      "source_manifest_sha256": "de6b382de750109fce61f55c4ed654ebbf898769827ef02d8fc41576d9c8782a"
+    },
+    {
+      "run_id": "20261013T024741Z-a7931434",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 15.599999999998726,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "2f2879828ce02d85bfd1bafb9078d2a6ffce1ed19a460687b5f5419cb20352d2",
+        "navigation-result.json": "4f1dd3f791167c2027d5fa79a2fde090cad7c572142433d3da84629a3d9ec81a",
+        "manifest.json": "e7f9d9161ef46ae032dbdf1cd49ca61129c27c35987e462a2ed2ba94ddf15778"
+      },
+      "scene_sha256": "baae89da431761e8e2b356f548b2301c6bb00e66c4b01856d4d28fc9ec164a67",
+      "source_manifest_sha256": "de6b382de750109fce61f55c4ed654ebbf898769827ef02d8fc41576d9c8782a"
+    },
+    {
+      "run_id": "20261013T025132Z-0aa73ab2",
+      "execution_status": "INTERRUPTED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "ebf7328ddd75e138fe05262fe0b0d3e2edf5f03768c7252a0aff9902a536faf7",
+        "manifest.json": "8df5a7a88c4fbd919c591412fc99cb40eeecf072da4d038d4fd9e38349b1137e"
+      },
+      "scene_sha256": "baae89da431761e8e2b356f548b2301c6bb00e66c4b01856d4d28fc9ec164a67",
+      "source_manifest_sha256": "de6b382de750109fce61f55c4ed654ebbf898769827ef02d8fc41576d9c8782a"
+    },
+    {
+      "run_id": "20261013T031116Z-58b05588",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "ca16a3597bdfead51edcd23161b3da8b7578ffb4b9a769b615f84846e971aefd"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "ae4d58f38df64a45a686c56879f44a772b99a0f8d47cc2945f828606dfe333ad"
+    },
+    {
+      "run_id": "20261013T031315Z-31b00a9b",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 100.00000000003028,
+      "core_rtf": 0.6318950473479414,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "36eafda30743f903c2c239bbda1308263ee44d885842eeb19b654d2d147ae3cf",
+        "spatial-result.json": "91fdedb599269527cafa47a175a5194cb4ee9897f022eedac6541987b3cf85d1",
+        "manifest.json": "9393e6399cc8bf66d057cf842b9f9cf7600523caaddccb3f3a726145da5f5731"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "ae4d58f38df64a45a686c56879f44a772b99a0f8d47cc2945f828606dfe333ad"
+    },
+    {
+      "run_id": "20261013T031829Z-2da04c08",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 32.72000000000362,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "71acfe5640e917ab43b18b68fe8f8957451f34955a05817f3da97a1d6e1e3157",
+        "navigation-result.json": "621a2812587139083dd05fa82ddd712bf20d4a2d70beae5a29123f33f2511adf",
+        "manifest.json": "308bbad787f0d00770dc077ab136a3c2bf1706affb4c4b874d6658567aa233da"
+      },
+      "scene_sha256": "3fe2a6627b9a93580377967604ec571bf75538565b2c2c76c2c71c58f66b9300",
+      "source_manifest_sha256": "cf544a15820d17c58b9646cdc4a24cbcd21f718ce3948d710dc839f9dae31b93"
+    },
+    {
+      "run_id": "20261013T032147Z-1ee33096",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 33.52000000000318,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "9819008444f46261c8059bd55ff863b69384c7ee73a0808e44b421537126772c",
+        "navigation-result.json": "0962d3dc1ef06bb1a8e6c18fd9f3b3c34a17cb57f25836d7daf297114a3e46d9",
+        "manifest.json": "907990b9e77755258529e8916225e3ef0527b2fb9616207433a559f9f2558fd3"
+      },
+      "scene_sha256": "3fe2a6627b9a93580377967604ec571bf75538565b2c2c76c2c71c58f66b9300",
+      "source_manifest_sha256": "bfc82c7225a7d7d1af127e76ce6ab9ec08667f4b41a3e99414046a6b5891bc95"
+    },
+    {
+      "run_id": "20261013T033419Z-67081a2d",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "stand",
+      "sim_s": 0.02,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "048425034934ed5b0bed4ff4e0d0f6e2ba654563585de6aaacc57a2fda12041c"
+      },
+      "scene_sha256": "3fe2a6627b9a93580377967604ec571bf75538565b2c2c76c2c71c58f66b9300",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T033518Z-eaa01e45",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 36.720000000001406,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "695e818b8f278b22091a46541ecd79fc951dae05e46bcbd01ce237b3b42bc8d9",
+        "navigation-result.json": "184924499ba8bf72f884e2e10a735224bb85bd9061b03ae3212601ffac5cf55a",
+        "manifest.json": "4782f503e511e89d16611266e09cf6bfee5a06dfa705a4d4e7e3c969ab44e345"
+      },
+      "scene_sha256": "3fe2a6627b9a93580377967604ec571bf75538565b2c2c76c2c71c58f66b9300",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T034004Z-4ef82cc6",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 13.819999999998922,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "5588ccabd3b5b3118de5a5f842c205d1e058ab7e3fcfed21edafb42d91461cf7",
+        "navigation-result.json": "6a11e74f009c0e3243687ebde7add091da33c95da1054acd6ce1f1fed00259a6",
+        "manifest.json": "2708bf4635ec69c1bd6bfc572a7cc5f04d386d8fb352f359f6e1fe04aa83bcf0"
+      },
+      "scene_sha256": "ce7bd6b5a71e3e045d90b68101eafec4ac86ed75d539cde40346ebdac7e9ff9b",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T034318Z-5fc892d0",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "20261013T034348Z-f63f51bb",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "20261013T034425Z-03df0988",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 25.320000000001794,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7962f372ee681ed839703ea34c2b86fd5d119e9aecd909a738276108c50f4e88",
+        "navigation-result.json": "3f641a9217225de0173c61177ab4e99ec16631d4af555a602a9d14059f1e9d15",
+        "manifest.json": "5be70913c6e115c0671997df84397b6f6b13c40572dec4706a3aa11389cfad35"
+      },
+      "scene_sha256": "dc5ede5626da8ea6b7e10fa366fedc31de9ccd6d3c2ac2764429bbef272dab3d",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T034621Z-efc2ff13",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 10.739999999999261,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "4984450053737976429f419a10789434bfb9bb4a45a7b8cc55623c4386dc7bfe",
+        "navigation-result.json": "f2efc8f70d9a5b7ca1d2f36ac58a758cd3b6fc5e3812adaeb5c1f800d1b71d44",
+        "manifest.json": "bd9bae759b9b093110022a73eeeed18af4dd642cf65457087b4619e180610898"
+      },
+      "scene_sha256": "dc5ede5626da8ea6b7e10fa366fedc31de9ccd6d3c2ac2764429bbef272dab3d",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T035314Z-cdac1714",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 10.779999999999257,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "f26e5099b68726d278554adad7359c1169c8a8d7c30c357671e9734ee0986f19",
+        "navigation-result.json": "899e15d2a131468aa0da03eece9e9d1b1301978fc8d480d641eafcc9d7692819",
+        "manifest.json": "fb468d8bc1c1317a53f1038eb33a1773a643fc7d433e52bccc4cec8626b2c03b"
+      },
+      "scene_sha256": "faf477a93c32939337a886e18358b30c3e0f1f8d305c3572c9be9a8a3b763275",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T035655Z-7fa2f55e",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 16.61999999999889,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "261c9b511f8225c4dd23c6c8ce312800e0685d874ea898062312158939eeb7e3",
+        "navigation-result.json": "3816423d31572dda79f7284ae4fda809e7d0a69e39a6211081a2d6001e2c34ea",
+        "manifest.json": "dfff4268a89e5e29cd9f64800d18e6a260d58d66c1e72138c9fba74266354e17"
+      },
+      "scene_sha256": "faf477a93c32939337a886e18358b30c3e0f1f8d305c3572c9be9a8a3b763275",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T035840Z-e04f1fe5",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 14.179999999998882,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7ff936d46e4ed2d9b03e3d2a8d56623d6c157c31d0c6393ce522a7886a46e201",
+        "navigation-result.json": "600eb43ff92599199ae17d9f5a829204354c9c7be7334e31025eef5b8791282b",
+        "manifest.json": "5a87112394e9028a1d1a61f7df2b151c238d0b2697c4273c8abe3eaf7edf369a"
+      },
+      "scene_sha256": "faf477a93c32939337a886e18358b30c3e0f1f8d305c3572c9be9a8a3b763275",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T040125Z-d4132cbe",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 110.0000000000425,
+      "core_rtf": 0.8340396236894846,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "a971c0889fadea745e42454ea9706a1046ffe661910df22357df30d77bfb8e4d",
+        "spatial-result.json": "2f145102a6bd898b43d9a6f22a1c8f62acaa731b39f5fa9e832d21d85d5dbbc5",
+        "manifest.json": "6c6a81c00fa217324e1e8d9dca4a463115e7fb419ca917f263273d841b25f75d"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "97d2f0cc71e66192d23066310ac41486e030a89da17bfa921566342ee3e2e695"
+    },
+    {
+      "run_id": "20261013T040645Z-dcf351a3",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "22d98b8c6df3ac8d6dc4cd042c5e4ed824e9e9900e867e2599c0f834fdc52082",
+        "manifest.json": "96362b66ce14ef70001680347f3fedc4d15684b29c6634670d75a8a820d7504f"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "ec65a1c301ced374d59125560b622fab7391a5f171ea13fcdcb0bbe393bed5ef"
+    },
+    {
+      "run_id": "20261013T041043Z-94d49ffe",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty",
+      "motion": "empty-5m",
+      "sim_s": 110.0000000000425,
+      "core_rtf": 0.8320490144017539,
+      "observed_failure_rtf": null,
+      "navigation_status": "PASS",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "PASS",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "df8e8a69d76debcb28a0f579d09ea4ca667efbb3c00e100a93101a3aaa5e7688",
+        "spatial-result.json": "4403ad881eed11151b8dead3bfa1c4be2ece1bbf3ad91a88e06aa0251138f1fb",
+        "manifest.json": "ff7ff5a952d9d9a8864d98a2d2cfc55dd195ea669cebb09ca6589a666ee9f300"
+      },
+      "scene_sha256": "70ad019b2471a4f9d28de7761f3b70c38109967363452eb2608c13e83f140591",
+      "source_manifest_sha256": "074992a9080a18bc34378aa67c55c4422d1fafddc022712001d16413acb7e4e3"
+    },
+    {
+      "run_id": "20261013T041459Z-48f2359e",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty-crossing",
+      "motion": "empty-5m",
+      "sim_s": 120.00000000005473,
+      "core_rtf": 0.5369032584621694,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "7d08e9dd62d36d3dc51e033b4bcfce9b195c913ebaa4de7c926891a85a56fbcc",
+        "spatial-result.json": "f1c1268fce0915a63f742f95af2bf66faad149a281c5326f257cfea22c107e6a",
+        "navigation-contact-result.json": "922e5e2bf277b689b6e6397d4a65a11e4c61c5c11ef373e4ad5ec93887823323",
+        "manifest.json": "9bd066426a1ad722e7844b0138f55b594ec31ccf5b2375a1e951850163d7ae47"
+      },
+      "scene_sha256": "de0c87261d4a5512330be4e382e93afea39e117b4997d015990269a0f15ba757",
+      "source_manifest_sha256": "0e8af28c29a517d15446dcd6bf085d72c123aa0770326bbe19e0f09751e4d99d"
+    },
+    {
+      "run_id": "20261013T042359Z-6d9027b6",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty-crossing",
+      "motion": "empty-5m",
+      "sim_s": 140.00000000003652,
+      "core_rtf": 0.5403442114409521,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "376e6d8a3f42c6919e33b034c49ecd54c1ad2f75db10dd30596b6293f0c9b1b3",
+        "spatial-result.json": "d8948682b59d1d524e0a70343fb8fd2260185fa9a20d2a29b1efb0160efc6275",
+        "manifest.json": "2d69dafbd941b84e3479d5b0b159b9e461d1e3b0cfcce0b47a811921a64c70d5"
+      },
+      "scene_sha256": "de0c87261d4a5512330be4e382e93afea39e117b4997d015990269a0f15ba757",
+      "source_manifest_sha256": "6fa50d4e1071efe223678ab514c2418f8027bad09822ef8e983067ef0e06501b"
+    },
+    {
+      "run_id": "20261013T042944Z-9be095ec",
+      "execution_status": "INTERRUPTED",
+      "scene": "simple-warehouse-empty-crossing",
+      "motion": "empty-5m",
+      "sim_s": 71.57999999999555,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "f02934fc8ed110ae86041af6e1c9131c1af2b4b8047961a4397d2e1a1dacc9ac",
+        "manifest.json": "07271c2fb6677c595affb355c9443c4ccdf37f2afcc5906473091d9631de0738"
+      },
+      "scene_sha256": "de0c87261d4a5512330be4e382e93afea39e117b4997d015990269a0f15ba757",
+      "source_manifest_sha256": "bec9a47120e89a0f7892ff6ed0befe2faf8939c2dbe928884e6e6d63ac268b41"
+    },
+    {
+      "run_id": "20261013T043251Z-e44d1bc7",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-crossing",
+      "motion": "empty-5m",
+      "sim_s": 119.72000000005438,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "7d910320c50958e65bc84976b05bf3452f0780fcc6798d6c178c3138e5cd7d92",
+        "manifest.json": "029e37dd7192b558a52547358e1b67d8fa76ffdb366bccd34081763393724781"
+      },
+      "scene_sha256": "de0c87261d4a5512330be4e382e93afea39e117b4997d015990269a0f15ba757",
+      "source_manifest_sha256": "35fecbea23c0db945788691b25ccda335cdfc33b0840b8634aeaafac760809e7"
+    },
+    {
+      "run_id": "20261013T043909Z-4397fa5a",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty-crossing",
+      "motion": "empty-5m",
+      "sim_s": 140.00000000003652,
+      "core_rtf": 0.5332338783328915,
+      "observed_failure_rtf": null,
+      "navigation_status": "PASS",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "PASS",
+        "spatial-result": "SUCCEEDED",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "8d9d2fd00fab83573390ba2fcbbe24a26614df7aff257127a1a58a61b62fa0ce",
+        "spatial-result.json": "8b3d688ff69d83ce479e01e59422f301eb0f11c517459b5c95cc55173bf3bfce",
+        "navigation-contact-result.json": "636698d7d2ff83f975a1b772f7f85dc5266bb7bce0e5b517b01d9bb18771669a",
+        "manifest.json": "4af1044ba34e75b8f8e98f2857e24d4285bc3a16b298f1328740b62b1a5a6b3e"
+      },
+      "scene_sha256": "de0c87261d4a5512330be4e382e93afea39e117b4997d015990269a0f15ba757",
+      "source_manifest_sha256": "35fecbea23c0db945788691b25ccda335cdfc33b0840b8634aeaafac760809e7"
+    },
+    {
+      "run_id": "20261013T051700Z-fe4282eb",
+      "execution_status": "INTERRUPTED",
+      "scene": "simple-warehouse-empty-opposing",
+      "motion": "empty-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "8ad9a92d933035012a370eddccc5464c7070867759f0e7facf5bd3773e78904a",
+        "manifest.json": "38ef73d2124a1702ad7158ca03ca014754d43a45f2fa7968fd52bd77d45ac62c"
+      },
+      "scene_sha256": "afed589d549862bed47080315556d50e94949668c288d9242fc6f3417521127b",
+      "source_manifest_sha256": "d887251d1fcd9a86a0fe3aaac1573054d812c7fb365127a52c97a126095db877"
+    },
+    {
+      "run_id": "20261013T051859Z-533b97bf",
+      "execution_status": "INTERRUPTED",
+      "scene": "simple-warehouse-empty-opposing",
+      "motion": "empty-5m",
+      "sim_s": 77.79600000000315,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "d331a664f9bed466f2ff3f7fbe387e9403a753cc4ac5c69f9750e87025b01cc5",
+        "manifest.json": "f133c4461df5df22c68c0df3ed859a9e516174bc4a5eb8ae127fd3a64a8135f2"
+      },
+      "scene_sha256": "afed589d549862bed47080315556d50e94949668c288d9242fc6f3417521127b",
+      "source_manifest_sha256": "10525118b3e7faa7c1655c0d21e0514cffc2b470cdd573d59ec83343b45a89c6"
+    },
+    {
+      "run_id": "20261013T052225Z-561cd5e9",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1",
+      "motion": "empty-5m",
+      "sim_s": 119.60000000005424,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "3b1114ed38aa607480373a36d695a89e19589ea1d1d22bc745b99c88ad943aff",
+        "navigation-contact-result.json": "b772fb2184b16b8b706cfd88f6d2263969d6084404f34d1f5a88e70abcbc25bf",
+        "manifest.json": "d392d324bbb719ccbbecabda48055b45bbd687600640fb480b6a00de71b5809f"
+      },
+      "scene_sha256": "1c693194e4c5ea1584c637eeb9d8be37d8e6c074e94c62233acb56cb6e3c575f",
+      "source_manifest_sha256": "c84b6a48036471bea56d5e9763d52c10b9880b2210c2e4b156a861b238a93f04"
+    },
+    {
+      "run_id": "20261013T052811Z-fabf7250",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1",
+      "motion": "empty-5m",
+      "sim_s": 178.4999999999468,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "f95d360f381c158620abc5b1c76ac8c25a7d2394b66e3c39b192bbeb10c4e2d1",
+        "manifest.json": "df6115abff9874e07fd59f33b092f16d7ff673c2af881c205faf8bb42648efa2"
+      },
+      "scene_sha256": "1c693194e4c5ea1584c637eeb9d8be37d8e6c074e94c62233acb56cb6e3c575f",
+      "source_manifest_sha256": "978ca7aafbc78a7ee39ac4023b3fa5a0209e86fdb90e70f85c00e802c525e5aa"
+    },
+    {
+      "run_id": "20261013T053758Z-9a14983e",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1",
+      "motion": "empty-5m",
+      "sim_s": 17.179999999999076,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "45b451e07e4df9e2e2391ed4b602bdfed9e5b4dacbe97998114e2b4b35dc86bd",
+        "manifest.json": "a7f2f653cf300bf82ea7bfd197782426e1e40626183f350c3d9308b9a8e27ee7"
+      },
+      "scene_sha256": "1c693194e4c5ea1584c637eeb9d8be37d8e6c074e94c62233acb56cb6e3c575f",
+      "source_manifest_sha256": "978ca7aafbc78a7ee39ac4023b3fa5a0209e86fdb90e70f85c00e802c525e5aa"
+    },
+    {
+      "run_id": "20261013T054152Z-408a2b81",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty-dual-g1",
+      "motion": "empty-5m",
+      "sim_s": 179.9999999999433,
+      "core_rtf": 0.49441634252944666,
+      "observed_failure_rtf": null,
+      "navigation_status": "PASS",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "PASS",
+        "spatial-result": "SUCCEEDED",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "a2b094710f19eaa0b15d8d097618a24ea83319f2eb44d72e1fa8d766f3d79fe8",
+        "spatial-result.json": "38e821ddc4775603a486b153cf1a402e489aaea7b26ce6fb189788efd9d7c474",
+        "navigation-contact-result.json": "d56d00e38a58d890cd0008dc16d166e369f77fd8dedb3ccb6a3a131571ca1896",
+        "manifest.json": "11a1e4b11a0a8374973ffc998c46646a48d5e250c697796fa1d55f34a0e1c506"
+      },
+      "scene_sha256": "1c693194e4c5ea1584c637eeb9d8be37d8e6c074e94c62233acb56cb6e3c575f",
+      "source_manifest_sha256": "978ca7aafbc78a7ee39ac4023b3fa5a0209e86fdb90e70f85c00e802c525e5aa"
+    },
+    {
+      "run_id": "20261013T055010Z-fb61927e",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt-dual-g1",
+      "motion": "carry-5m",
+      "sim_s": 21.300000000000452,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "542c06e6016bb15a7a3d93601461fac467633c00a62f69562a35ec35a6371347",
+        "navigation-result.json": "1a4da16ae33dab223e821cf832a40f0cd149d24d678442cdd3916db0b5cf134a",
+        "manifest.json": "12bdd91a0c4a9ee6586af55eadcee74a36c1adcf609e4896ca5864e3e482c984"
+      },
+      "scene_sha256": "fbdea73e04b295c06c36b63271ddc229a73cba1e6d4e2025202b22292f3e2734",
+      "source_manifest_sha256": "978ca7aafbc78a7ee39ac4023b3fa5a0209e86fdb90e70f85c00e802c525e5aa"
+    },
+    {
+      "run_id": "20261013T060046Z-da900aa7",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 0,
+      "recording_file_status": {
+        "mujoco-original.mp4": "UNREADABLE",
+        "irsim-original.mp4": "UNREADABLE",
+        "blender-original.mp4": "UNREADABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "393cdc76d1faf42c40d4aa89af49c82f0ecdccbe34b66f78850ea85ad2c59ae2"
+      },
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "20261013T060536Z-62798db9",
+      "execution_status": "FINISHED",
+      "scene": "simple-warehouse-empty-dual-g1-stop",
+      "motion": "empty-5m",
+      "sim_s": 179.9999999999433,
+      "core_rtf": 0.4917236095082415,
+      "observed_failure_rtf": null,
+      "navigation_status": "PASS",
+      "contact_status": "FAIL",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "PASS",
+        "spatial-result": "SUCCEEDED",
+        "navigation-contact-result": "FAIL"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "navigation-result.json": "25528ac05ddb977f9aba7944bca21181e6b00e9f46f5156b0751dc6d1f97f33a",
+        "spatial-result.json": "be3c5804720a710d4003ff1e5e3094bed6e57c0c74bdc99c0d07877903202fb2",
+        "navigation-contact-result.json": "8706dc2beb9be45ad6cda830d85a298f860c50ade498c9562f2f3a907df67a7e",
+        "manifest.json": "02235f721a78567186404494ec6aceaa366f42f3efbb74bf2752eebfe7e9a316"
+      },
+      "scene_sha256": "ad7b77f33cbdf4f1c210ce7cf7e1ec977ba34dc57dca76acdf3f03f1c46682b4",
+      "source_manifest_sha256": "66c57b1d956c4666efb0a4442266f53d55430c36fff299b302d740d0947e91ca"
+    },
+    {
+      "run_id": "20261013T062202Z-f83636d2",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1-stop",
+      "motion": "empty-5m",
+      "sim_s": 27.16000000000241,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.5010584893795259,
+      "navigation_status": "FAIL",
+      "contact_status": "FAIL",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "navigation-contact-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "f95fbac05d525eaabad39ee964eea2ff9c0f4534c73413fbb692019abea79ede",
+        "navigation-contact-result.json": "797c3cc913e94d558a8dfc57b3b2db4267fa5a08a577704e8f1ce431fba27e44",
+        "manifest.json": "3272aed9bd255bc7c3f7bc4d65eb71b148e0365df43fa47902ea236b1d835607"
+      },
+      "scene_sha256": "ad7b77f33cbdf4f1c210ce7cf7e1ec977ba34dc57dca76acdf3f03f1c46682b4",
+      "source_manifest_sha256": "82b8300f27acff20c7e8ece10755079bd671904ba3bf489138fa66a0fcb158ec"
+    },
+    {
+      "run_id": "20261013T062426Z-f53a7b35",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1-pause-resume",
+      "motion": "empty-5m",
+      "sim_s": 24.100000000001387,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.490253579629948,
+      "navigation_status": "FAIL",
+      "contact_status": "FAIL",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "navigation-contact-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "f1dd50ef8f5fceb12eadb415129255061ce01873db7d23acc4233a6fc72c1d07",
+        "navigation-contact-result.json": "483d7399fb32b731e3717a37886c4dc45320379776c82c33c3fb1f179756e3f5",
+        "manifest.json": "4067b5332708855a69f36d09bcebc0322b32a3c47a8ab975e87a2f19f37e9287"
+      },
+      "scene_sha256": "e8cf0a294459f82fa4101dcd261330acef1b35991b0e536b593d29fab6aa3e23",
+      "source_manifest_sha256": "82b8300f27acff20c7e8ece10755079bd671904ba3bf489138fa66a0fcb158ec"
+    },
+    {
+      "run_id": "20261013T062700Z-cca9f8db",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-empty-dual-g1-detour",
+      "motion": "empty-5m",
+      "sim_s": 18.079999999999377,
+      "core_rtf": null,
+      "observed_failure_rtf": 0.4927093912510065,
+      "navigation_status": "FAIL",
+      "contact_status": "PASS",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL",
+        "navigation-contact-result": "PASS"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "c956495d2149161e223e73046371289cb9f29229f4c86734e84c3214688e4ecd",
+        "navigation-contact-result.json": "7c7534f82d372993b7da572886fd7e458d332a91b2fc879963485ffd9514b7df",
+        "manifest.json": "497eb7a874c14d0a0c3e5486d1405c9f4071b435e2917bd6895ffe6e3ff4b864"
+      },
+      "scene_sha256": "6b4489c5c75f925d42507f53ef4eda1fbe31c7c69b9daa3fbaf4d6f155e10391",
+      "source_manifest_sha256": "82b8300f27acff20c7e8ece10755079bd671904ba3bf489138fa66a0fcb158ec"
+    },
+    {
+      "run_id": "il01-isaaclab-native-rigid-v3",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il01-isaaclab-native-rigid-v4",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il01-silkit-python312-to310-v1",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il02-mujoco-adapter-stand-v1",
+      "execution_status": "FAILED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "stand",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "3f4b03a46952302e17f023d4678aa7cd1a1194675c0ee98fac63efa2f4ba9f82"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "c368fe1ee6496df0662aa3a46950ed09d55d29b28347ec11415fcad453e5c8ae"
+    },
+    {
+      "run_id": "il02-mujoco-adapter-stand-v2",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "stand",
+      "sim_s": 3.000000000000002,
+      "core_rtf": 0.45377540744207234,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "9f78aca32c8c1e9d0ccdc6c57033c88348f80bc3b2e01d4004809012018af796",
+        "manifest.json": "ca6e2124d6609bcb031ea4f3b6fe717ed6d7a38102b5bd9681893275ba5ac352"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "d2a6e15d125cb06712c33e1410c207b1d483a409c0d2cd0c2f852ecf31f9c7f5"
+    },
+    {
+      "run_id": "il04-native-g1-device-v1",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il04-native-g1-device-v2",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il05-native-contact-cpu-v1",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il05-native-contact-cpu-v2",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il05-native-contact-cpu-v3",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il06-isaaclab-amo-stand-v1",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "il06-isaaclab-amo-stand-v2",
+      "execution_status": "FAILED",
+      "scene": "sensor-fixture",
+      "motion": "stand",
+      "sim_s": 0.02,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "2d0a29fa368823f1a261f421fdbc3789a7ef4c3c8c5dce65eb1ebc74fb246dae"
+      },
+      "scene_sha256": "dc0cb889ef0ad355ab16bc593ff2fb4bf5758d8e21d44efe4ae13346e7dfdbbe",
+      "source_manifest_sha256": "ba070e8f20e7d21aeacb4f45efc3d498d68491b0477fa9f5c1d0e367cc32319c"
+    },
+    {
+      "run_id": "il06-isaaclab-amo-stand-v3",
+      "execution_status": "FAILED",
+      "scene": "sensor-fixture",
+      "motion": "stand",
+      "sim_s": 0.02,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "3f49b307f23fce590fe8bf2b8f83f70827a1da86fb4cb3a4ec9a8d969cdfef17"
+      },
+      "scene_sha256": "dc0cb889ef0ad355ab16bc593ff2fb4bf5758d8e21d44efe4ae13346e7dfdbbe",
+      "source_manifest_sha256": "95cac481d95d87745063234b33042ca7eedeab98fe1f4432d2930d0e40837c35"
+    },
+    {
+      "run_id": "il06-isaaclab-amo-stand-v4",
+      "execution_status": "FINISHED",
+      "scene": "isaaclab-device-probe",
+      "motion": "stand",
+      "sim_s": 3.0,
+      "core_rtf": 0.06658141861173661,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "d5169c749d43fc3f6aad9d45f7442e517661c91fe991f1f9b1dc13a9a1a2e500"
+      },
+      "scene_sha256": "35db3e940183743e25a82eed38d227c225250f5d5ca523e3e43f4c46d9fa0d5e",
+      "source_manifest_sha256": "c4b3eee9f9ac3c3559f84143e2dd70285cf08c5d5ddd2d3157934abdea7bb404"
+    },
+    {
+      "run_id": "il06-isaaclab-cpu-amo-sequence-v1",
+      "execution_status": "FINISHED",
+      "scene": "isaaclab-device-probe",
+      "motion": "sequence",
+      "sim_s": 30.0,
+      "core_rtf": 0.44980351255201567,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "ef1480d822b5cc9b3eb7ac00987615ac2a8c3048116f8876a9868a6e8dcbc025"
+      },
+      "scene_sha256": "35db3e940183743e25a82eed38d227c225250f5d5ca523e3e43f4c46d9fa0d5e",
+      "source_manifest_sha256": "e4726dbf3a62ee2659346dfffb00d8cc3c8593e93a9745808dcda43fdf876be1"
+    },
+    {
+      "run_id": "il06-isaaclab-cpu-amo-stand-v1",
+      "execution_status": "FINISHED",
+      "scene": "isaaclab-device-probe",
+      "motion": "stand",
+      "sim_s": 3.0,
+      "core_rtf": 0.29776399354803196,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "93b8effa742faa7605e0e38cce8a7c56b0c09be542d0a812feb2819ccda00230"
+      },
+      "scene_sha256": "35db3e940183743e25a82eed38d227c225250f5d5ca523e3e43f4c46d9fa0d5e",
+      "source_manifest_sha256": "c4b3eee9f9ac3c3559f84143e2dd70285cf08c5d5ddd2d3157934abdea7bb404"
+    },
+    {
+      "run_id": "il07-isaaclab-cpu-planar-stand-v1",
+      "execution_status": "FINISHED",
+      "scene": "isaaclab-warehouse-g0",
+      "motion": "stand",
+      "sim_s": 3.0,
+      "core_rtf": 0.3188860542078828,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "0c1005c05960fdb7ba00c83ef203a1cd1c94382d3e20f7217e6ab0058dbf387c",
+        "manifest.json": "eed52f16d2c36152f260ff613616576fd84caf3e109a97280b941441d1e1d638"
+      },
+      "scene_sha256": "89188ac7e6e51b7d1ada967be2e85cf9d37b5c530f68604084b041701a38c1b8",
+      "source_manifest_sha256": "7823ccebaf4c6a4ae68fef22873a0c39d13686c70ca05eb19aecce284cbd02a9"
+    },
+    {
+      "run_id": "il07-isaaclab-three-gui-v1",
+      "execution_status": "FAILED",
+      "scene": "isaaclab-warehouse-g0",
+      "motion": "stand",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "847ccac22e62eeeb5ad67074a9fdf8025daadd23f860fc106dee2560433d31ad"
+      },
+      "scene_sha256": "89188ac7e6e51b7d1ada967be2e85cf9d37b5c530f68604084b041701a38c1b8",
+      "source_manifest_sha256": "7823ccebaf4c6a4ae68fef22873a0c39d13686c70ca05eb19aecce284cbd02a9"
+    },
+    {
+      "run_id": "il07-isaaclab-three-gui-v2",
+      "execution_status": "FAILED",
+      "scene": "isaaclab-warehouse-g0",
+      "motion": "sequence",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "16a4d605a6b27b75cef8aaa8a69db3ea2bd2bdc222dfa5986245c954e787e16f"
+      },
+      "scene_sha256": "89188ac7e6e51b7d1ada967be2e85cf9d37b5c530f68604084b041701a38c1b8",
+      "source_manifest_sha256": "18bb431e7c0e7a4e36a86428b0c5e76b42c6d6f5ed7e42ba389dddc7beaa4362"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v10",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 8.339999999999526,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "6c609241641032fa8cafa9dc4a8261f64314ec488f2a81df10ce37d509d539c8",
+        "manifest.json": "9bfa81c3a6a9f71404904fe56c049c6d6a787f7b2a8383c503417d53e3f333b6"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "a39526502691e6829e68d4d1996bc8b11267033426996e5bc78a061a889a3674"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v11",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 16.399999999998816,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "0502c0cde27fa247909de0c9f2f7c16ba477737a30a2f16e586c5ffe09dbdebe",
+        "manifest.json": "9b3a740e83369e22ab3951c5b2442fe31bb0342489b72885a29ae76068719083"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "4c677f73d44ff2152ab169043b611ba2678dd822143b22113631998a0d00cbb6"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v12",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 15.319999999998757,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "7cb47a2e2172495e92409fb8ae44960f5052f1ecc31afcdaedfd633adc6d92fc",
+        "manifest.json": "a3d5f540c840b84dae6d098405df99d1bcbceca940abcdda6c49d5107b787692"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "46578cede8d557872eacec0d4900c308b57df5ceee7fcd73ccaba4cf77b1d593"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v13",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 24.120000000001394,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "bef29cd9ec033900d3fc9a79e3a05e65d573cba9ef46b6f7bd2643f29feef89a",
+        "manifest.json": "3b0c52e25a3a359651d174cc2762e9ab622a48a9d3e7219a997aff1629631a72"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "231b52a76f52180e3ddf45bcf636eeac25bab340e5f90bf4edbb3415bcb51c4e"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v6",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 0.8400000000000006,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "816d131a8fcb7c4ccba5b10bbfb833fa1b32552ad4f7d675a73cf737fd8a2fe1",
+        "manifest.json": "8dd8c9401e293343e744d8fdd1f9de9ed58e9f0abd7c38484cea4d5a27b9c94f"
+      },
+      "scene_sha256": "7ae82969196e3f7b2600d28916a156c3d2ff016dccc78fd92a2158726eaa8eeb",
+      "source_manifest_sha256": "bc9b31a56cd721c2cb1a43add1262cb681ded0203015bde56854c246858a47ec"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v7",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 3.700000000000003,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "4dc404b064f8b9c5d6f14097fd865c97434aa03c8af27578ef27d93486e2ab50",
+        "manifest.json": "c9ebd86ff09d41ec80f566b84e2003b568c6bb5e59849db9e4af6b9ac8d518c4"
+      },
+      "scene_sha256": "7ae82969196e3f7b2600d28916a156c3d2ff016dccc78fd92a2158726eaa8eeb",
+      "source_manifest_sha256": "fa18894f95166a5496e61a699be7082c42adaa8f6bb0cb8bb8bcf1ce0039fa20"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v8",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "0debe11a6a3a2a5696828a907e754f4b8546effdc4f653b9c2dd235dd0d00ab6",
+        "manifest.json": "79e248d8aef5376f40b54ef98010512ebe76a2f9f8aee441b1a68fe0c2512485"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "bc196ad98f2170b8c320fb790871a603598508220cabde11c69e4d33a592a3b8"
+    },
+    {
+      "run_id": "lvdt-ideal-nav-v9",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 8.399999999999519,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "050c0e54d594c920834b2a4446d78b8f71205c09f5b425fd4c347bc0558c60cb",
+        "manifest.json": "72e307c0b23c9e937901b32023816eae58c2fd90a489c6f3ad9049aa08871477"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "a39526502691e6829e68d4d1996bc8b11267033426996e5bc78a061a889a3674"
+    },
+    {
+      "run_id": "lvdt-ideal-stand-v5",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "stand",
+      "sim_s": 7.999999999999562,
+      "core_rtf": 0.2707724799839881,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "b00a31758e39d04b000aa43ed522315ea3e202dda9e164ce9614395a9d1dedb6",
+        "manifest.json": "5db8a3696e07f4ba0eaec054d754ee03556d7cc97aec97d907f8ff5119ac9507"
+      },
+      "scene_sha256": "7ae82969196e3f7b2600d28916a156c3d2ff016dccc78fd92a2158726eaa8eeb",
+      "source_manifest_sha256": "77d8bcf9cc0986409f077d61e4093899b3bd1d4eaaf555192b99ae159eba8ecb"
+    },
+    {
+      "run_id": "lvdt-native-planar-navigation-v16",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 2.4200000000000017,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "651aae9701765c7e4a352fbf1ab9fc4a22b31dccee372216b23e5b4146bb3a8a",
+        "manifest.json": "cffc8c373f5c3835a15fc7e1ac5940ca491f059a2dcc552379a4a8e077683755"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "9069fc53b3cf019b662ae667e781b3fbb815d1323e4a1cce228b16053290064f"
+    },
+    {
+      "run_id": "lvdt-original-navigation-v14",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "036b9a5b33e0b3e33cf0f8f9a6c5eb1a1f916fd4694fadc31ef010e4d2d2c331",
+        "manifest.json": "ef0b6bce306db28b0c4b8cea2b1dbd95f8f807a65a067aef278d769e80373433"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "6607528003ee1df42cf36c514a09c9680666978aadcc6f674794e519ca985643"
+    },
+    {
+      "run_id": "lvdt-original-navigation-v15",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "carry-5m",
+      "sim_s": 15.239999999998766,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "navigation-result.json": "9adeaf5fa74cc981eed08f2256a002f756df32cbdb500bf552b73a7352774ba9",
+        "manifest.json": "cb5ba0d4367554d5a53f55d131c90099be1e16075bea06cab511a05da457e094"
+      },
+      "scene_sha256": "2473edfc613b3aac9770fd76547a3ea3b788d7384562d0053fabc7ba20765199",
+      "source_manifest_sha256": "e016f034138977df7e3b771bd7352391ba269589e42c72fb392e9b5c2f5ded56"
+    },
+    {
+      "run_id": "lvdt-preheld-stand-v1",
+      "execution_status": "FAILED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "stand",
+      "sim_s": 1.0400000000000007,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "1f0cc221d8a427b1ceaa2d7e65d0762d5ebaf4435dcca7b9767524d7e9cf73d3"
+      },
+      "scene_sha256": "a9178c57ea83e80337b80ae59b5bfaa7e13a228288c25b874444fc0df31225f2",
+      "source_manifest_sha256": "018137ac00ee18e3496dbba9a965c6b54f60372059fec79e7d6643564228659f"
+    },
+    {
+      "run_id": "lvdt-preheld-stand-v2",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "stand",
+      "sim_s": 7.999999999999562,
+      "core_rtf": 0.6009364670598514,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "2e8e1570fddd95406f21baab262236e46da9d3ecf43fcac7d1dc35affd9c04a7",
+        "manifest.json": "e02fe88ae10de3271f2e2d9ea50fb9c7a4d741301f9484c95a594d290d5d2ab9"
+      },
+      "scene_sha256": "42504ecba2ddbfa05a4e55d0f9d18c4722fe6484c2528b0ac57b18fbc3f4f1f1",
+      "source_manifest_sha256": "0c300c272aa8b61392c26e784f6b02a0fceaf0c6b48ea9daab54df13d31b710a"
+    },
+    {
+      "run_id": "lvdt-preheld-stand-v3",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-carry-ab5m",
+      "motion": "stand",
+      "sim_s": 7.999999999999562,
+      "core_rtf": 0.24867190805592368,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "57d962106b6fdc25530f67f5bd1c4765dc66a4997a34586089c38ab9b6eeb33a",
+        "manifest.json": "a77b7ad417dd266e9105ddba70505866301e4729d5e89cad15db935c320d464d"
+      },
+      "scene_sha256": "e0f67ddc07ebf5ae4cf7d6908e49d6a2f5c5fb80a9f77b30a8dd39263c449c74",
+      "source_manifest_sha256": "cc8e361365354ce56648028c1cf974db1a075d6dc032272be685527675a5b495"
+    },
+    {
+      "run_id": "lvdt-revo2-closure-v1",
+      "execution_status": "FAILED",
+      "scene": "lvdt-hand-closure",
+      "motion": "hand-close",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7306d024587a80c0b5677ed3da575d12df51ab9d7c46bb9d7c5f19ef35d9b730",
+        "manifest.json": "b2cd8f6477bb22dbfe30831176ed78c9a74ad7344303ee0f10cdad63f9f1495c"
+      },
+      "scene_sha256": "80bd8c184c927ab7c70649848cba842024a8195030c1d4b68235cf55eb6eba62",
+      "source_manifest_sha256": "d268cdf6eb9cb0baf0a8b3a80c77cf3deb93de099ef97a0723395dc8b6a0373d"
+    },
+    {
+      "run_id": "lvdt-revo2-closure-v2",
+      "execution_status": "FAILED",
+      "scene": "lvdt-hand-closure",
+      "motion": "hand-close",
+      "sim_s": 0.10000000000000006,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7306d024587a80c0b5677ed3da575d12df51ab9d7c46bb9d7c5f19ef35d9b730",
+        "manifest.json": "45204ffd882a50b9aa5f6cf00681e1fca70a7f5bd54619863424aeac7a265c60"
+      },
+      "scene_sha256": "80bd8c184c927ab7c70649848cba842024a8195030c1d4b68235cf55eb6eba62",
+      "source_manifest_sha256": "d268cdf6eb9cb0baf0a8b3a80c77cf3deb93de099ef97a0723395dc8b6a0373d"
+    },
+    {
+      "run_id": "lvdt-revo2-closure-v3",
+      "execution_status": "FAILED",
+      "scene": "lvdt-hand-closure",
+      "motion": "hand-close",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7306d024587a80c0b5677ed3da575d12df51ab9d7c46bb9d7c5f19ef35d9b730",
+        "manifest.json": "ee8560ea10e784fffc4528362a1ab76ed88e2bdc41403d6a0319c4d1910ff1bc"
+      },
+      "scene_sha256": "80bd8c184c927ab7c70649848cba842024a8195030c1d4b68235cf55eb6eba62",
+      "source_manifest_sha256": "09314152ad93ca17d8dfe4136d0c5c9f357fc5846cfa712158aa2e9a0a8a6a79"
+    },
+    {
+      "run_id": "lvdt-revo2-closure-v4",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-closure",
+      "motion": "hand-close",
+      "sim_s": 11.999999999999122,
+      "core_rtf": 0.4575402893098055,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7958edc6afcb2a1c3c33b0cfcd22fe1d1f212767e2a04a74271597610d865ebf",
+        "spatial-result.json": "8a9b23d3f6f241a9d28ab5d1143eb48ffacb68578a1c1dd56fc6b3586c014478",
+        "manifest.json": "59f1ec2a359657d754099864fd160527103527830def483c5fa0431d3031496e"
+      },
+      "scene_sha256": "80bd8c184c927ab7c70649848cba842024a8195030c1d4b68235cf55eb6eba62",
+      "source_manifest_sha256": "47eb1db11ec5d08bbc044e900f5109897207f3476abd9c644001c91c57a060b4"
+    },
+    {
+      "run_id": "lvdt-revo2-closure-v5",
+      "execution_status": "FAILED",
+      "scene": "lvdt-hand-closure",
+      "motion": "hand-close",
+      "sim_s": 2.4000000000000017,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7306d024587a80c0b5677ed3da575d12df51ab9d7c46bb9d7c5f19ef35d9b730",
+        "manifest.json": "282cd58ada7b3a6a3e121e07fac25fc79c0b8326f8458c9d8ccaf0bb57415094"
+      },
+      "scene_sha256": "80bd8c184c927ab7c70649848cba842024a8195030c1d4b68235cf55eb6eba62",
+      "source_manifest_sha256": "b8fb63756b23efcdb26dde2ee283cb60c8f8aa8f87c8ff7ea6fc34a68d834073"
+    },
+    {
+      "run_id": "lvdt-revo2-closure-v6",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-closure",
+      "motion": "hand-close",
+      "sim_s": 11.999999999999122,
+      "core_rtf": 0.43786510587307303,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "eca9b9f4c307bf950fbb160fcf020e5cc68f40ae4ca9a101881ebf4982209917",
+        "spatial-result.json": "d1cf191c3211e41bd3a5aa2e61dc381b3f7075c530fb0b659fb366291e84d596",
+        "manifest.json": "64ccc785e043af920e4c09c535289cc84d5267273337835c1f49f4287489f3f2"
+      },
+      "scene_sha256": "80bd8c184c927ab7c70649848cba842024a8195030c1d4b68235cf55eb6eba62",
+      "source_manifest_sha256": "8d9e4d750f3b392b11112b18d52c85c4ff76f8e839ceddb9bbfa5d882b562395"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-500g-v1",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 15.999999999998682,
+      "core_rtf": 0.6072783572201762,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "4c0861cbadd0d1566566ed332a2442260d2234d4673ddee54a3f7415327132eb",
+        "spatial-result.json": "947f4c2ec24ba8fc5d9c2554047055b3fda4dc594e54ef3ccf43432d1d08431c",
+        "manifest.json": "b29594df3078dc776b5248e155d5ab5d52bb4a00efb7e5409115b943ed78426d"
+      },
+      "scene_sha256": "b6d915f614ec1ddc40be5a65678d6ca32b022b37031c6af63bd18ffbe115520c",
+      "source_manifest_sha256": "95b9b1fbcd91425959bf7e1221a19e51b111241a313cced3e0521086ec9c387b"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-500g-v2",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 15.999999999998682,
+      "core_rtf": 0.5549546578586833,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "d33e6e6cfa2b24a44c6e6849673931aed416b06c274134d25b6bf6296d8ac660",
+        "spatial-result.json": "1a12489238e69676dba4d6e0d7b55bd78a52495176a26f092665c14dfa209cc7",
+        "manifest.json": "97c4390923462b0146b37113b4bcb2f68c025b7e43d87308b06a09f66342aace"
+      },
+      "scene_sha256": "fb078d0c762966b8bfff1676c4322e816db837ba466a6646e29079797012f2da",
+      "source_manifest_sha256": "ff2565df779305ee69aae8f4dc38f00560fd955712f9fd16a360ed44ae4a6485"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-500g-v3",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 15.999999999998682,
+      "core_rtf": 0.5812836847271365,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "8aaed6331593aa35a4ac32c207dbac93df0fbcd1e8ae64beb4ecdbbdf7320b5a",
+        "spatial-result.json": "c12e810395a0a2f37e6c35a478c3ff0c67734b6dc6c8cad33b9478e169b8af63",
+        "manifest.json": "3be23d7c6be434d13b977389c5532f866d7edfb6bebfac41bc674a2050596766"
+      },
+      "scene_sha256": "fb078d0c762966b8bfff1676c4322e816db837ba466a6646e29079797012f2da",
+      "source_manifest_sha256": "9e51a7375d673d80ac84dff4fc884a23234b6f177b08c5fbf23854d2953a72b8"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-v1",
+      "execution_status": "FAILED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 4.799999999999915,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "7306d024587a80c0b5677ed3da575d12df51ab9d7c46bb9d7c5f19ef35d9b730",
+        "manifest.json": "42b8ca652585e625f257d47b46f97de0b0af5ac11e27b845371ccf35674f386f"
+      },
+      "scene_sha256": "4814e50fe9278f81de30d6b6602cf5479f1f69bd666ecdaaebd3cda3ff522f20",
+      "source_manifest_sha256": "bec12c7956c616f7dd31a34b0df02e312229349e53feddbe39ed1043b138b6bf"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-v2",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 11.999999999999122,
+      "core_rtf": 0.4617542643652144,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "faddd5fa2cc49e409c49bf6679533e786f36691dec2ad038fde01a188c7929da",
+        "spatial-result.json": "79b969ada2e3f7be998b49f109984742f658eb941df3bb8db5dbb39beb90b48c",
+        "manifest.json": "23bc9d5e20c80594a18098e2cb0e8036bfffb46e607a9ff99af2e63b4eef7917"
+      },
+      "scene_sha256": "a9304cb258aca4857b33af9a014e80e497b0868fc0bb00a02d76d99ed3d199fc",
+      "source_manifest_sha256": "a0d247323f443ef6633a421488e871db3ccff6508f1c2f09f93a250b3439b7cd"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-v3",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 11.999999999999122,
+      "core_rtf": 0.46828765972157005,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "PASS",
+      "other_results": {
+        "hand-closure-result": "PASS",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "hand-closure-result.json": "1304379b6b1a7919bbd515ecfc0c90343383e6fb15ecfcfacbbe15bd6c376c2a",
+        "spatial-result.json": "548ab0d599cb5eb005653a90c1547152dcbabe8734b5eed5a10cd252474dd36a",
+        "manifest.json": "788f95e3e22be1baed0c2f575143d069a2a8d2e59f63659a7d42ab406e0f4825"
+      },
+      "scene_sha256": "7a56a1c79670b9e94b4f58f286e0c3a6abefe634acb19c8e2b39f9292237892d",
+      "source_manifest_sha256": "c79dafa0bc478d906503ce2ca492fdd3b59e0eff27f996d7b8069d8a7f55bc07"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-v4",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 15.999999999998682,
+      "core_rtf": 0.43257642889493253,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "798ab54db9884b0f4dccfce121ed63db56e3bbff67e1b7b1a443b6129488333c",
+        "spatial-result.json": "07c6f409251115a1b054c3d9c5501401c1768f2d2b2273ea88a318fd4b81ef3d",
+        "manifest.json": "02252b8fd8c68e9917d6d361a7b98f70523638a97ca546d1824780a45ab59527"
+      },
+      "scene_sha256": "7a56a1c79670b9e94b4f58f286e0c3a6abefe634acb19c8e2b39f9292237892d",
+      "source_manifest_sha256": "d40fee6bf70a76775027966a29919d2cfb98ed4d5ef14129e584f0ca660ccc19"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-v5",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 15.999999999998682,
+      "core_rtf": 0.49646788894722604,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "PASS",
+      "other_results": {
+        "hand-closure-result": "PASS",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "hand-closure-result.json": "681d2b642a9dcbba632a8b62e4ab04390c63218f8b822a16a8c39b2d4bd37420",
+        "spatial-result.json": "d302b2621d855b570ad3333e654a7372711a74cfbce099c347a3c2aec756cf41",
+        "manifest.json": "7e1685bb67eb112a963d7aaf53754c925eaaff584ce930757c243c3f6b4d7e52"
+      },
+      "scene_sha256": "7a56a1c79670b9e94b4f58f286e0c3a6abefe634acb19c8e2b39f9292237892d",
+      "source_manifest_sha256": "5d5c6517fee83fe7f8c4cde128838f965b8947c722e180a49779879893129167"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-v6",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 15.999999999998682,
+      "core_rtf": 0.5628620558636823,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "adbdf13b2201c61e15546c47f8ac9fe0113e05eed58346e705d725b1b7216687",
+        "spatial-result.json": "5b26a1c0867ba69e2cd0a8f3114f6362976b9105a8cc28460cfecb6fd8370aa1",
+        "manifest.json": "0117666275918ff1e95bf6c4672f1eeee3f35ab99f5c429a191d7fd9ebc39148"
+      },
+      "scene_sha256": "7a56a1c79670b9e94b4f58f286e0c3a6abefe634acb19c8e2b39f9292237892d",
+      "source_manifest_sha256": "02320c80594dd1310baae2ec414cbd72d6bb6a45b0e70822552531b6507efff3"
+    },
+    {
+      "run_id": "lvdt-revo2-underhand-v7",
+      "execution_status": "FINISHED",
+      "scene": "lvdt-hand-support",
+      "motion": "hand-close",
+      "sim_s": 15.999999999998682,
+      "core_rtf": 0.5911387346256054,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "c11a9ac6172e194222dac2e7d99274da698401d2803b3a307413612f6a9c301e",
+        "spatial-result.json": "e624e4d4d8368800269085935ee240ac9bc8a2e424e62b068fdcea6f7f8bd506",
+        "manifest.json": "985009a1e6b4a6d72d2100fe4068b412f37221beb546c1114c13ca585e750bc6"
+      },
+      "scene_sha256": "7a56a1c79670b9e94b4f58f286e0c3a6abefe634acb19c8e2b39f9292237892d",
+      "source_manifest_sha256": "00ad82521b3694749adff2106c5ac1d8448c19e39cecad867252720a461f3e83"
+    },
+    {
+      "run_id": "pl-close-v1",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-dynamic",
+      "motion": "stand",
+      "sim_s": 5.999999999999782,
+      "core_rtf": 0.13481857268815184,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "7a2abec65561ef6861cf18ebfe3e0ab019c41a21b6218e37bd3b3c2dab5e30d3"
+      },
+      "scene_sha256": "ef9e7537b9304b74f6087869c1b117abd1c857fbe0e8d68bbc3c90a647581487",
+      "source_manifest_sha256": "548e60bec982cfa01d5c7b62cd889ba7d72d237c7b25ac9f920ae9d7f03444bd"
+    },
+    {
+      "run_id": "pl-dynamic-v1",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-dynamic",
+      "motion": "stand",
+      "sim_s": 3.000000000000002,
+      "core_rtf": 0.13210169399237848,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "7d2a8fd9214db08f2ce6ebcec89690c2d4004cb9ca5368369f2ecf717b334b90"
+      },
+      "scene_sha256": "ef9e7537b9304b74f6087869c1b117abd1c857fbe0e8d68bbc3c90a647581487",
+      "source_manifest_sha256": "2ce87995ec18b7db00d25af1174e08c20c37e48c6900ada6e7d4f03e718f9ba4"
+    },
+    {
+      "run_id": "pl-forward4m-slam-v1",
+      "execution_status": "FAILED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "forward-4m",
+      "sim_s": 35.00000000000236,
+      "core_rtf": 0.38708160349301335,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "forward-distance-result": "FAILED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "forward-distance-result.json": "1bfc826b1f164471b9055aa5a6326667cc162594caa3cce108140358b777cb25",
+        "manifest.json": "f1c0315a358629725d5f760a8d1e4d21da29269075d132066686610103c4893d"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "cf30dfbe0c9b1837a0390d38924a4726a65bcdc36253aac05686a3f7b88f7344"
+    },
+    {
+      "run_id": "pl-forward4m-slam-v2",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "forward-4m",
+      "sim_s": 35.00000000000236,
+      "core_rtf": 0.34152104132201927,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "forward-distance-result": "SUCCEEDED",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 3,
+      "readable_recording_windows": 3,
+      "recording_file_status": {
+        "mujoco-original.mp4": "READABLE",
+        "irsim-original.mp4": "READABLE",
+        "blender-original.mp4": "READABLE"
+      },
+      "source_record_sha256": {
+        "forward-distance-result.json": "c6965a7a1c6231aa363814b218ab8522e6072cb3eab2e6bdf4405b53d989501c",
+        "spatial-result.json": "523aa5653c90f80ca731e320d115358bb88b26e5fe35e242a87c29b1bec821a0",
+        "manifest.json": "7e47ebc8087c290ec650a470a257dbb85eed1f3d527585edca22e931ecbc45e7"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "2505d0cb8ab9bd6d856af95669af6ff213187d19e465b95814294dcf535a7882"
+    },
+    {
+      "run_id": "pl-forward4m-slam-v3-no-recording",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "forward-4m",
+      "sim_s": 35.00000000000236,
+      "core_rtf": 0.33616358523194795,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "forward-distance-result": "SUCCEEDED",
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "forward-distance-result.json": "205e1595ca62a52fff67cc9db923183349db73632822b0a3b699d73441c64c59",
+        "spatial-result.json": "9a3e506df1805d18967914fd3ce8905a194aa8655340e4fccf0c137ad450a705",
+        "manifest.json": "40e5760188d15a088676f5526cdad3bb28c8c78aa779dc61df95eae053cb8496"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "2505d0cb8ab9bd6d856af95669af6ff213187d19e465b95814294dcf535a7882"
+    },
+    {
+      "run_id": "pl-live-spatial-v1",
+      "execution_status": "FAILED",
+      "scene": "warehouse-planar",
+      "motion": "sequence",
+      "sim_s": 9.999999999999343,
+      "core_rtf": 0.2360444591116137,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "5b800dbe49c917c9ccbc54cbd72f129d236f99722a89685dc2a8c40bca907f8b"
+      },
+      "scene_sha256": "9f8b8b07bf5c8ff11d1b3c8f501c980fbbebc089ca951809a5ae377e5109af41",
+      "source_manifest_sha256": "d1049da47643be0d08b474aa5faf9638b152d609fec571cf78e1dd8e412cd170"
+    },
+    {
+      "run_id": "pl-live-spatial-v2",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar",
+      "motion": "sequence",
+      "sim_s": 9.999999999999343,
+      "core_rtf": 0.2737163234359163,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "fc65745db059962ff3ee3a277418850702cd61eface3c7a7c8ed3ae40d51dfa1",
+        "manifest.json": "87e148464c81405c795438c1c675bcef2720440eb28624f8af69c022fc2d3432"
+      },
+      "scene_sha256": "9f8b8b07bf5c8ff11d1b3c8f501c980fbbebc089ca951809a5ae377e5109af41",
+      "source_manifest_sha256": "50302e4a5ae197a7d3b92f3db889eaaef3bb2be2508835d566b09989e7c974f9"
+    },
+    {
+      "run_id": "pl-motion-v1",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar",
+      "motion": "sequence",
+      "sim_s": 9.999999999999343,
+      "core_rtf": 0.145310904952861,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "b839f09cdc0d2a41a5d94420ba8344eacdd69556da4150aa55a74fd2c31e48a4"
+      },
+      "scene_sha256": "9f8b8b07bf5c8ff11d1b3c8f501c980fbbebc089ca951809a5ae377e5109af41",
+      "source_manifest_sha256": "d150cecd57f546c9ea027d444e664db86d7271d9a80ed7d321da0b42a80ff68b"
+    },
+    {
+      "run_id": "pl-primitives-layout-v1",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "sequence",
+      "sim_s": 9.999999999999343,
+      "core_rtf": 0.37177382464100417,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "23e1c68ac669aeb03f508e013ff31a899ec4e926fda79fa9e2c8e59f530dc58a",
+        "manifest.json": "b10e679729c75a9a8644dd22bbf456ddb679bf3665dabbfd4d746a175cccea7d"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "298703d4e40bb55e85e151d3e8d7675fbbd14d9df16927ffbc1baf50d1c8946d"
+    },
+    {
+      "run_id": "pl-primitives-three-views-v1",
+      "execution_status": "FAILED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "sequence",
+      "sim_s": 0.0,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "92561bb5fbd99733b131c203b562408574bcc9f6236a4a292677409a5af79259"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "6ee01c59101aeb30e4265825f75f74388652ad1a91b5e9b5e6e9ff3cd1a1ddee"
+    },
+    {
+      "run_id": "pl-primitives-three-views-v2",
+      "execution_status": "FAILED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "sequence",
+      "sim_s": 20.000000000000018,
+      "core_rtf": 0.43249920236064326,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "611991a7dbeba61047cce93c8df1aad816d3752d033c950c026468b31b2780cf"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "d7ebf16b79d738daa3bf93d2c795b627fb88893cd06b51c16b507b553267ce23"
+    },
+    {
+      "run_id": "pl-primitives-three-views-v3",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar-primitives",
+      "motion": "sequence",
+      "sim_s": 9.999999999999343,
+      "core_rtf": 0.4368352297306674,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {
+        "spatial-result": "SUCCEEDED"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "spatial-result.json": "47a1ea177b482591912c7444eb953b38ec4b9623ec3aecf14c523399dd8327d4",
+        "manifest.json": "2a87e4ad7f825b5413c302fe1f73b4dd0af8e530d024dd23aedb18261e53281a"
+      },
+      "scene_sha256": "edba2a04276f57d775f0b468f37898152915019fdc7498112b9b47613ef9c8a0",
+      "source_manifest_sha256": "270bb8761a236da008e8d51eac5449ef579b4ef1177a6ae607cd313093c15b4d"
+    },
+    {
+      "run_id": "pl-stand-v1",
+      "execution_status": "FAILED",
+      "scene": "warehouse-planar",
+      "motion": "stand",
+      "sim_s": 0.22000000000000017,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "1dcc16789740910375b9609973adc23f869bfe126d13d5ecfe28257284f4bdca"
+      },
+      "scene_sha256": "9f8b8b07bf5c8ff11d1b3c8f501c980fbbebc089ca951809a5ae377e5109af41",
+      "source_manifest_sha256": "b29c0e64031acd2cedbfad36f369a0485e6d284fcdc8c6895c769f87ca1656d3"
+    },
+    {
+      "run_id": "pl-stand-v2",
+      "execution_status": "FINISHED",
+      "scene": "warehouse-planar",
+      "motion": "stand",
+      "sim_s": 3.000000000000002,
+      "core_rtf": 0.15463717924247153,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "manifest.json": "18c107373cc78fa3ab5209ff29f70b68b48312bbadee6520b2109a8d978b9e6e"
+      },
+      "scene_sha256": "9f8b8b07bf5c8ff11d1b3c8f501c980fbbebc089ca951809a5ae377e5109af41",
+      "source_manifest_sha256": "d150cecd57f546c9ea027d444e664db86d7271d9a80ed7d321da0b42a80ff68b"
+    },
+    {
+      "run_id": "simple-warehouse-task-carry-v1",
+      "execution_status": "INCOMPLETE",
+      "scene": "unrecorded",
+      "motion": "unrecorded",
+      "sim_s": null,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "NOT_EVALUATED",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "NOT_EVALUATED",
+      "other_results": {},
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {},
+      "scene_sha256": null,
+      "source_manifest_sha256": null
+    },
+    {
+      "run_id": "simple-warehouse-task-carry-v2",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 10.539999999999283,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "2904e6966e0a6f29a12799a6dfee9c1cbe4a84648c8083af911240179e1ee4ae",
+        "navigation-result.json": "18f0a0e29146c879c9fda6f302750a093ade9ddf3b32c26cd27aad936825a361",
+        "manifest.json": "aeecd54c9b5a054badfb5a19fb0f27f04edca99c0a038589bc71c95d1af17f9b"
+      },
+      "scene_sha256": "a839fe25ddc0b7a2953eccb0342f1c0ba20aab9db4a08f404d9fb150bfd3f6f1",
+      "source_manifest_sha256": "220b40f400b0ff1dd87120984fc73822b2e76edda807039bb52fd712154f8634"
+    },
+    {
+      "run_id": "simple-warehouse-task-carry-v3",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 25.300000000001788,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "b7e86117deaaab30d71add215a374f8831d31bf8ef722859f07a3a1a6fd19e35",
+        "navigation-result.json": "11a96819431859dae9011272398110f36a07e275791911f152c7ca887c52c4ce",
+        "manifest.json": "f34e66ceeec20549ba4fa536e543cf25b04e66380485823ed7c3dca14205de0d"
+      },
+      "scene_sha256": "a839fe25ddc0b7a2953eccb0342f1c0ba20aab9db4a08f404d9fb150bfd3f6f1",
+      "source_manifest_sha256": "b98536df3885a275cae02cce25457ac97923457f3e4be09d2056196039323763"
+    },
+    {
+      "run_id": "simple-warehouse-task-carry-v4",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 25.300000000001788,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "09897c443612424b637ae0ef6c7d4c0bc30c7f2bfdacf9d17430894a29c4af07",
+        "navigation-result.json": "a71ba9cc551fcb3c5a23178e2d8e2aaa52693bd0a0c942e159da70d7cf6ebf0f",
+        "manifest.json": "9e131f7a7bd2eadaef620bb5164ca6fdd63c248359703b7ea30a54912516285c"
+      },
+      "scene_sha256": "a839fe25ddc0b7a2953eccb0342f1c0ba20aab9db4a08f404d9fb150bfd3f6f1",
+      "source_manifest_sha256": "b98536df3885a275cae02cce25457ac97923457f3e4be09d2056196039323763"
+    },
+    {
+      "run_id": "simple-warehouse-task-carry-v5",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 13.399999999998968,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "995b82815bbde6e97a9ee7a1f0e2d1cbbe27f4095b7ab1d389664fbcd4af3fdd",
+        "navigation-result.json": "efa5c61e342741d54045192b0233e7759dc5ce7382385040a635629998ed6660",
+        "manifest.json": "9375021f171d77c4563b0b3c268a6cf2cd9bf2fd068b738419d8981be4cae97b"
+      },
+      "scene_sha256": "a839fe25ddc0b7a2953eccb0342f1c0ba20aab9db4a08f404d9fb150bfd3f6f1",
+      "source_manifest_sha256": "828426b62edb2b358050d54dda7a5480e44f500f126fa7290d5c35f427d7d477"
+    },
+    {
+      "run_id": "simple-warehouse-task-carry-v6",
+      "execution_status": "FAILED",
+      "scene": "simple-warehouse-lvdt",
+      "motion": "carry-5m",
+      "sim_s": 25.320000000001794,
+      "core_rtf": null,
+      "observed_failure_rtf": null,
+      "navigation_status": "FAIL",
+      "contact_status": "NOT_EVALUATED",
+      "hand_status": "FAIL",
+      "other_results": {
+        "hand-closure-result": "FAIL",
+        "navigation-result": "FAIL"
+      },
+      "surviving_recording_windows": 0,
+      "readable_recording_windows": 0,
+      "recording_file_status": {},
+      "source_record_sha256": {
+        "hand-closure-result.json": "ca76b3fbd91f51a817bedd79e1f32af4ad50594144e59fd2261fe347e8ef7ef0",
+        "navigation-result.json": "e209d2bb24647881c5063b34c002744ae84fa6130cdb523b96f3d7a629880492",
+        "manifest.json": "2d3e32b9913d3b711a808eaa5dde67497c112e0aade34184f42f3a7928a3023e"
+      },
+      "scene_sha256": "9327cab20e15e9c53d7c4000093fa3ee6210cfd3c92889bca84a0034f5e80685",
+      "source_manifest_sha256": "31138ec9ecd4d6f97033a9fd60d75777890d2718333f6a0d11ad34c19bf87b2c"
+    }
+  ]
+}

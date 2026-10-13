@@ -170,8 +170,8 @@
     },
     {
       "file": "experiments.html",
-      "source_sha256": "64db4e70581aee60c28cbdc4fb962e59166b35c9148e7e6b889cd6b0a9a20ec7",
-      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
+      "source_sha256": "b80627912aecd2606dd35fb8aab665c53918740987c3f63cdb22f56a8f63d872",
+      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -427,8 +427,8 @@
     },
     {
       "file": "simulation.html",
-      "source_sha256": "bbd8d1b47f491763bd76483b12f7693d740e5dbd64998fefd832b3af4f917a1e",
-      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
+      "source_sha256": "9b5bb48401a821437f89af22e2ee3b7993f630139c52284b696d6cc31c59899e",
+      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
     },
     {
       "file": "simulation-performance.html",
@@ -437,8 +437,18 @@
     },
     {
       "file": "simulation-experiments.html",
-      "source_sha256": "bb4f34284335dae04242c80263323978929030f7a262b1df14516eaa7d6b96cb",
-      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
+      "source_sha256": "fbc096c89d9878e078733f41d82eb704c2489e38e4a1b3193622cb91186e56de",
+      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
+    },
+    {
+      "file": "simulation-experiment-catalog.html",
+      "source_sha256": "cf95d3181a0260a5b509eb8daa0c46a0a6b1f29c19a416f438ed7b6d68e3196b",
+      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
+    },
+    {
+      "file": "simulation-recordings.html",
+      "source_sha256": "74ef406fe769714802b10c15b7deb4e1a067101ef52c5e8bf06f238c35dd6e47",
+      "implementation_sha256": "31cae10ff65dd2d417693e7dc0f9bfd1c7b3b58903313c12035d7cdea84eb7d0"
     }
   ],
   "assets": [
@@ -559,6 +569,30 @@
       "sha256": "423d8a46ba7bdb1a62c3759e3ab7c9a0d2d5bfa34ffa30bb9ed8ad3d25b01c3e"
     },
     {
+      "file": "media/20261013T054152Z-408a2b81-blender-20x.mp4",
+      "sha256": "83677108d510c24856f30e63e9daab2673096af26a439b49da162fd20336d121"
+    },
+    {
+      "file": "media/20261013T054152Z-408a2b81-irsim-20x.mp4",
+      "sha256": "97b2a72c78b8e3cae392cd4290739d0f523af2b00f76f9689508a3c5da658d80"
+    },
+    {
+      "file": "media/20261013T054152Z-408a2b81-mujoco-20x.mp4",
+      "sha256": "e23e731fbdd50d764607660065dfc738f902b872b3364c6d6742f2b9887115ea"
+    },
+    {
+      "file": "media/20261013T060536Z-62798db9-blender-20x.mp4",
+      "sha256": "40f80a2c63b76af88d21ba70531c32f65531859abc85798451732e7a1bd2c1c5"
+    },
+    {
+      "file": "media/20261013T060536Z-62798db9-irsim-20x.mp4",
+      "sha256": "29d56720a76aa65682dcfd44ddfe5f99babd073db03685f555b4fc1d6222e77a"
+    },
+    {
+      "file": "media/20261013T060536Z-62798db9-mujoco-20x.mp4",
+      "sha256": "8da77af8d5eaafe4587b6a2c871f2f4ad3417a66e8dc8d56c2e543ffa70456af"
+    },
+    {
       "file": "media/approach-base-isaac-20x.mp4",
       "sha256": "aa2b17100c7799c65758985b9f4c877f352551b7e51c0a248a33a2636d13b393"
     },
@@ -603,6 +637,30 @@
       "sha256": "43f479c614055451429b65066b4855285b89829e0b4cfc6650852667234f473a"
     },
     {
+      "file": "media/lvdt-revo2-underhand-v3-blender-20x.mp4",
+      "sha256": "af86cc311665637daecbc821f31428d5a088273ac342def2841af212fd102bc6"
+    },
+    {
+      "file": "media/lvdt-revo2-underhand-v3-irsim-20x.mp4",
+      "sha256": "622c8064c7b2e84261933769d896651ef3fcfa8629e95de8aeb8a85169699654"
+    },
+    {
+      "file": "media/lvdt-revo2-underhand-v3-mujoco-20x.mp4",
+      "sha256": "0951f3a747102c7abcb73a13dfad6e98c87f327e0765ccc148f0771fefb3356b"
+    },
+    {
+      "file": "media/lvdt-revo2-underhand-v5-blender-20x.mp4",
+      "sha256": "afb4f535b8c816c35648c1df9ec99f766d899dc30eadc4121738243a491f7364"
+    },
+    {
+      "file": "media/lvdt-revo2-underhand-v5-irsim-20x.mp4",
+      "sha256": "9a78958bfa048863b19569458da335d5d6ebb63f2e70651115eae66a001c3687"
+    },
+    {
+      "file": "media/lvdt-revo2-underhand-v5-mujoco-20x.mp4",
+      "sha256": "57450417c0047530bf52e7a1a0643a990291c1535e63276116db5ef795557b6a"
+    },
+    {
       "file": "media/manip-left-isaac-20x.mp4",
       "sha256": "d65dd3499c171f763daee35272866be298ccd95f4f3a8560b7c298cab98dca2e"
     },
@@ -625,6 +683,18 @@
     {
       "file": "media/manip-right-sensors-20x.mp4",
       "sha256": "b624ad13557c6e8d6e9d19e63416ecb716bb6b874be3f43d2e095993c084ac0a"
+    },
+    {
+      "file": "media/pl-forward4m-slam-v2-blender-20x.mp4",
+      "sha256": "07856adad6da1ebe158c9481084e1320da5009057ee34b5d79c4b122b2ef97e4"
+    },
+    {
+      "file": "media/pl-forward4m-slam-v2-irsim-20x.mp4",
+      "sha256": "94e02f0102b0152b4a49e29cb6c37be6f092d55e5cf0c06f9920c90aed4f106a"
+    },
+    {
+      "file": "media/pl-forward4m-slam-v2-mujoco-20x.mp4",
+      "sha256": "fac7ff581c9684eb7a57fdfdd9f42dd15872831985d3eaec119de6f647721830"
     },
     {
       "file": "media/planar-crossing-blender-20x.mp4",
