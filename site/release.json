@@ -156,7 +156,8 @@
     },
     {
       "file": "dependencies.html",
-      "source_sha256": "e277d0070198e8fb98330b66174de8c6c46dd8562760096537c640635fe585ac"
+      "source_sha256": "b51d717aaaa13c471e117ffa5fb09ecd556fcbac84ca046b7b93437dcf3bdbee",
+      "implementation_sha256": "73766645592403840cfe78b43318e2c8c454f7480798355bd518e249ac291b34"
     },
     {
       "file": "development.html",
