@@ -165,13 +165,13 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "710d7d8e1d574662542fd255c0ba42a03a1a5c0b41d83db7559f34341fe4cb56",
-      "implementation_sha256": "c1b646bf06cca55028ff4cf1b8043acb95972b5c26dc4c7ed21e10b65740ffbb"
+      "source_sha256": "f134e2b1ad4074a1b94a0e5facb568fa6f2a98226ec7f54490b5d3baf36d6a26",
+      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
     },
     {
       "file": "experiments.html",
-      "source_sha256": "2e1fd50958747dbfdb25061c1208a8c18347e6196f24c118666859d41ee6e2b1",
-      "implementation_sha256": "28ef1404f8d386dbfa57f59e8e5c701d6b0149d489514093a34ddeddde6298e6"
+      "source_sha256": "64db4e70581aee60c28cbdc4fb962e59166b35c9148e7e6b889cd6b0a9a20ec7",
+      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -422,18 +422,23 @@
     },
     {
       "file": "simulation-usage.html",
-      "source_sha256": "42a5cc7f08edcfe89298adb9cc2a88c48bca81f2972f01423ab07a169c89c91f",
-      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
+      "source_sha256": "852bdf007aac029b78d014f4357b10e52a59626456cad432b1e2325ce93ec75b",
+      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
     },
     {
       "file": "simulation.html",
-      "source_sha256": "faa561ee85cca11a8aa663099aecc5faaa0a19b5b8e51464eb45118529d33508",
-      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
+      "source_sha256": "bbd8d1b47f491763bd76483b12f7693d740e5dbd64998fefd832b3af4f917a1e",
+      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
     },
     {
       "file": "simulation-performance.html",
-      "source_sha256": "bb6c0bee2372c2a187ea389f2277bc8e6df91dce1e948a791049f579e44a7527",
-      "implementation_sha256": "47cc9dff033648b9f1c1cdf9838b3fc8bfc51a0b3a0a629e3855ce9350a65fbc"
+      "source_sha256": "6a3c15b2a37eab9bc11a47d11a12d6ea2c9e8d6aad1aa234706d33ec6186a7a3",
+      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
+    },
+    {
+      "file": "simulation-experiments.html",
+      "source_sha256": "bb4f34284335dae04242c80263323978929030f7a262b1df14516eaa7d6b96cb",
+      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
     }
   ],
   "assets": [
@@ -590,6 +595,14 @@
       "sha256": "06017c9882f73e9a00dbb70fb834db32b3a3fc8976179e4eedcb91a24190bef0"
     },
     {
+      "file": "media/carry-drop-replay-1x.mp4",
+      "sha256": "dc924a13a0058b37d3b0e713b5fbaae1da0dd767ab024d574691c02e8d4a5a85"
+    },
+    {
+      "file": "media/carry-drop-replay-20x.mp4",
+      "sha256": "43f479c614055451429b65066b4855285b89829e0b4cfc6650852667234f473a"
+    },
+    {
       "file": "media/manip-left-isaac-20x.mp4",
       "sha256": "d65dd3499c171f763daee35272866be298ccd95f4f3a8560b7c298cab98dca2e"
     },
@@ -612,6 +625,18 @@
     {
       "file": "media/manip-right-sensors-20x.mp4",
       "sha256": "b624ad13557c6e8d6e9d19e63416ecb716bb6b874be3f43d2e095993c084ac0a"
+    },
+    {
+      "file": "media/planar-crossing-blender-20x.mp4",
+      "sha256": "50a76d0a57cafad25d160c0e712b33e90d3badee932e7f297a896d22f92bbee2"
+    },
+    {
+      "file": "media/planar-crossing-irsim-20x.mp4",
+      "sha256": "a23fbbcd0ac7f508f3133557f40e05b6c7905b5844460568c1240db385d855bd"
+    },
+    {
+      "file": "media/planar-crossing-mujoco-20x.mp4",
+      "sha256": "87a68057642dc11dbc6df0b294db2aa52d1f6a477c6b99c9d657d4ede300b953"
     },
     {
       "file": "media/warehouse-map-navigation-isaac-20x.mp4",

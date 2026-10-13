@@ -1,5 +1,5 @@
 {
-  "derivative": "Complete start-to-end archived experiment coverage at 20x playback speed; H.264, 10fps, max width 1440, no audio. Original recordings remain private; each record identifies its actual source.",
+  "derivative": "Each clip declares playback speed and source type. Default presentation is full-coverage 20x; explicitly marked failure replays also provide a simulation-time 1x detail version. No physical experiment is implied by replay.",
   "clips": [
     {
       "experiment": "SIM-MANIP-L",
@@ -354,6 +354,91 @@
       "fps": "10/1",
       "playback_speed": 20,
       "original_duration_s": 735.3
+    },
+    {
+      "experiment": "SIM-NAV-CROSS-20261013",
+      "role": "blender",
+      "file": "planar-crossing-blender-20x.mp4",
+      "sha256": "50a76d0a57cafad25d160c0e712b33e90d3badee932e7f297a896d22f92bbee2",
+      "source_sha256": "4c8e5f5474982b1ab9ecf02ac23a440008423cf615ad075b904fbe7d411c1868",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "PASS",
+      "playback_speed": 20,
+      "duration_s": 13.234,
+      "size_bytes": 2487550,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "experiment": "SIM-NAV-CROSS-20261013",
+      "role": "irsim",
+      "file": "planar-crossing-irsim-20x.mp4",
+      "sha256": "a23fbbcd0ac7f508f3133557f40e05b6c7905b5844460568c1240db385d855bd",
+      "source_sha256": "5c01a21af9ebf04a943edc7e1bbcdbb0a5b320186fb9685c6ff17af8df3b0891",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "PASS",
+      "playback_speed": 20,
+      "duration_s": 13.334,
+      "size_bytes": 1350277,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "experiment": "SIM-NAV-CROSS-20261013",
+      "role": "mujoco",
+      "file": "planar-crossing-mujoco-20x.mp4",
+      "sha256": "87a68057642dc11dbc6df0b294db2aa52d1f6a477c6b99c9d657d4ede300b953",
+      "source_sha256": "bd6bb4ff7682f6028cf5c566697a4fac5f3142d988be013a37690d4a3334849c",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "PASS",
+      "playback_speed": 20,
+      "duration_s": 13.4,
+      "size_bytes": 658203,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "experiment": "SIM-CARRY-DROP-20261013",
+      "role": "mujoco-replay",
+      "file": "carry-drop-replay-20x.mp4",
+      "sha256": "43f479c614055451429b65066b4855285b89829e0b4cfc6650852667234f473a",
+      "source_sha256": "ae9baf9d0dcfc73578d83a483541360b4fc5f1ac378a4475bb4c8c52120e9840",
+      "source_kind": "OFFLINE_RECORDED_STATE_REPLAY",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 1.867,
+      "size_bytes": 167211,
+      "width": 960,
+      "height": 720,
+      "fps": "30/1",
+      "time_basis": "recorded simulation time",
+      "action_start_s": null
+    },
+    {
+      "experiment": "SIM-CARRY-DROP-20261013",
+      "role": "mujoco-replay",
+      "file": "carry-drop-replay-1x.mp4",
+      "sha256": "dc924a13a0058b37d3b0e713b5fbaae1da0dd767ab024d574691c02e8d4a5a85",
+      "source_sha256": "ae9baf9d0dcfc73578d83a483541360b4fc5f1ac378a4475bb4c8c52120e9840",
+      "source_kind": "OFFLINE_RECORDED_STATE_REPLAY",
+      "experiment_status": "FAIL",
+      "playback_speed": 1,
+      "duration_s": 36.72,
+      "size_bytes": 2161443,
+      "width": 960,
+      "height": 720,
+      "fps": "25/1",
+      "time_basis": "recorded simulation time",
+      "action_start_s": null
     }
   ]
 }
