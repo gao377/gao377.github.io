@@ -1,0 +1,841 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-14 Asia/Shanghai",
+  "scope": "SIM_RESPONSE_AND_COARSE_NAVIGATION_DIAGNOSTICS",
+  "qualification": "NOT_QUALIFIED_FOR_REPEATABLE_5CM_OR_REAL",
+  "parameters": {
+    "forward_gain": 0.6989241192641898,
+    "forward_tau_s": 0.3059105119081245,
+    "forward_delay_s": 0.0,
+    "heading_gain_per_s": 4.822571805073486,
+    "heading_delay_s": 0.030000803555182722,
+    "heading_bias_rad": 0.029562550127159644,
+    "walking_lateral_mps": 0.0241946916698279
+  },
+  "independent_prediction": {
+    "M0": {
+      "0.2": {
+        "p50": [
+          0.0004041607668944704,
+          0.0016114858326887402
+        ],
+        "p95": [
+          0.05101513126800931,
+          0.07551824003081241
+        ]
+      },
+      "0.5": {
+        "p50": [
+          0.0013672726558527032,
+          0.004434956121347998
+        ],
+        "p95": [
+          0.07438884480773207,
+          0.09096354338826973
+        ]
+      },
+      "1.0": {
+        "p50": [
+          0.007100693107002183,
+          0.009124095058343943
+        ],
+        "p95": [
+          0.09622453914402146,
+          0.09083976844091125
+        ]
+      },
+      "2.0": {
+        "p50": [
+          0.03592047663011495,
+          0.024439306652249033
+        ],
+        "p95": [
+          0.1667856964667473,
+          0.110532301274516
+        ]
+      },
+      "4.0": {
+        "p50": [
+          0.08853008566302334,
+          0.043778192331512186
+        ],
+        "p95": [
+          0.27418363096793597,
+          0.12448889802218767
+        ]
+      }
+    },
+    "H3": {
+      "0.2": {
+        "p50": [
+          0.00033800884944168615,
+          0.001530156392008911
+        ],
+        "p95": [
+          0.048121699996896077,
+          0.05488595241092185
+        ]
+      },
+      "0.5": {
+        "p50": [
+          0.0014783373455303141,
+          0.0040919483193930795
+        ],
+        "p95": [
+          0.06014877672888685,
+          0.05306600321170912
+        ]
+      },
+      "1.0": {
+        "p50": [
+          0.005713378486683696,
+          0.008553364885528492
+        ],
+        "p95": [
+          0.061362177166965536,
+          0.05287731211454037
+        ]
+      },
+      "2.0": {
+        "p50": [
+          0.023200217948848103,
+          0.021273242096022896
+        ],
+        "p95": [
+          0.07433676545369783,
+          0.05745512177611344
+        ]
+      },
+      "4.0": {
+        "p50": [
+          0.044434494723398665,
+          0.03572468746849819
+        ],
+        "p95": [
+          0.08746055062757369,
+          0.07114705076653163
+        ]
+      }
+    }
+  },
+  "independent_run": "20261013T153231Z-4b904269",
+  "stopping_max_error_m": 0.0560857512,
+  "coarse_baseline": {
+    "run": "20261013T153825Z-8b66f078",
+    "coarse_end_s": 29.88,
+    "coarse_error_m": 0.1775276921995536,
+    "error_xy_m": [
+      -0.13003288507290467,
+      0.12086161631103653
+    ],
+    "slam_error_m": 0.15489499488250938
+  },
+  "excluded_adjustment": {
+    "adjust_end_s": 69.18,
+    "adjust_error_m": 0.03708952599736392,
+    "reason": "Map-pose adjustment is not coarse navigation or visual-servo acceptance"
+  },
+  "coarse_runs": [
+    {
+      "run": "20261013T160041Z-72bda478",
+      "status": "COARSE_COMPLETE",
+      "coarse": {
+        "end_sim_s": 29.48,
+        "physics_stamp_s": 29.48,
+        "position_xy_m": [
+          2.8734014592647843,
+          -5.978359008915471
+        ],
+        "error_xy_m": [
+          -0.1265985407352157,
+          0.02164099108452877
+        ],
+        "position_error_m": 0.1284348979499214,
+        "public_status": "SUCCEEDED"
+      },
+      "rtf": 0.7700061832561499,
+      "min_full_10s_rtf": 0.7464000000000001,
+      "evidence_sha256": {
+        "navigation-result.json": "a8b0b7c87cd117c65cc82c7aa6495299d811a69270c33236ca72d4920ac9db99",
+        "navigation-performance.json": "366baf8a3f40594724750237befaa6a0b336ff3a3c835a9aa3015d4d72a1b030",
+        "navigation-contact-result.json": "7d39a940c690647805414c1375828545d8ea61a82af59a774b417f201f130739",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "source-hashes.json": "83f3238b35216f4facf343de3e01c9169dc9fbb14f1e27b73642d5846122d54a",
+        "viewer-acceptance.json": "d162452b51244979624ab44098a692923770d3c44ffd45458af9e0724a1692e0",
+        "viewers-confirmed-before-app.json": "6479b9b0681cd19fa4afafcbc6362e260af9f933135704dec5329e44dabc09f7",
+        "physics.json": "1f4538f52fc4eeb5e7f205b4197469bf9d1c13dae5ae0aa5b2b03c1b5a3f065e",
+        "recordings/irsim-recording.json": "5ce6a94b09f76fb23e721ae5bacfaae3306a24b260b07a0469b62c2518669a67",
+        "recordings/irsim-original.mp4": "165542ff17e2f3d4b1073f629030c7d95c281acd465f7ced2fcd10d2e85af2bb",
+        "recordings/irsim-20x.mp4": "9c3e4f66debd2766f7c8b10354c861dfa3f7c272600951e8216f766f3304af3b",
+        "recordings/mujoco-recording.json": "7419c4b40955cf6b423555d99401804aef697cf97b9090f584d673b69f4f82d1",
+        "recordings/mujoco-original.mp4": "53ec7ef35d32cabefee7fd82338d3ae910d705dff39b835fcc3d3f31659277d5",
+        "recordings/mujoco-20x.mp4": "34a9685bd10df4ee5ab90dca8731e4e5874cf0a09f47d3173589edf181d1df8a",
+        "recordings/blender-recording.json": "a7a3330b67900f0da56e566872f6a80d163b634a2f22c32b0ef45ffc0097df9d",
+        "recordings/blender-original.mp4": "ce21129a04f234b4a42bd38627d80bbd6bca01533e7e26745e77ae82f6c300f1",
+        "recordings/blender-20x.mp4": "412e6be353a2c977cd65872510ef5be09ca71cb3520187eac2e41cab1f55e352"
+      }
+    },
+    {
+      "run": "20261013T160432Z-ef4d6c34",
+      "status": "COARSE_COMPLETE",
+      "coarse": {
+        "end_sim_s": 29.46,
+        "physics_stamp_s": 29.46,
+        "position_xy_m": [
+          2.868680093629821,
+          -5.985614351958235
+        ],
+        "error_xy_m": [
+          -0.13131990637017887,
+          0.014385648041765009
+        ],
+        "position_error_m": 0.13210550586048292,
+        "public_status": "SUCCEEDED"
+      },
+      "rtf": 0.763184584599033,
+      "min_full_10s_rtf": 0.7456,
+      "evidence_sha256": {
+        "navigation-result.json": "40ae348ecee5e02ccb2040d14f96e6ec9175652e416d54b8febe964f9f48f133",
+        "navigation-performance.json": "bb6c572f0b3bfd1f2e6ee2362f008a38a29ecdd62d6ee1059955c2412fffbf31",
+        "navigation-contact-result.json": "7d39a940c690647805414c1375828545d8ea61a82af59a774b417f201f130739",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "source-hashes.json": "83f3238b35216f4facf343de3e01c9169dc9fbb14f1e27b73642d5846122d54a",
+        "viewer-acceptance.json": "d162452b51244979624ab44098a692923770d3c44ffd45458af9e0724a1692e0",
+        "viewers-confirmed-before-app.json": "6479b9b0681cd19fa4afafcbc6362e260af9f933135704dec5329e44dabc09f7",
+        "physics.json": "2676589e24a38fa880cf253c9e02de9a49d0a37f45fa888839bea1cdf615f422",
+        "recordings/irsim-recording.json": "36d68b92254ceacfda75b17a1db5ecc6e50b4aa4d83063a0e06db1eeca79d1f6",
+        "recordings/irsim-original.mp4": "ddf2156a7b316dc4d736cfc3b7562a50e3cceb8d2a24145298a527d40c78f7b6",
+        "recordings/irsim-20x.mp4": "a91dfd430bb07f45b36792ad87efaccfeb045dd4fb80f10f450880789e61a3f0",
+        "recordings/mujoco-recording.json": "6d111a6658e1a7252c4dab5865ecfe5bb2e2418628807eb54f8eb7d568a34616",
+        "recordings/mujoco-original.mp4": "a37235ab36ae61ee50714ae0bcbc37f838a765d099001cc58f6737df97a3d34c",
+        "recordings/mujoco-20x.mp4": "aee6f433595a7c0c7a2d42ddff50d335f04bc84b594a2bcd4f49a1b001ce7449",
+        "recordings/blender-recording.json": "5997c29094d68706c4ff128287fa3c4056191d016cd30c1dc91b4dc1a32abf8b",
+        "recordings/blender-original.mp4": "ea63353c2c5fb1505f78ded888fc083b8bddffec4ffc4ea4796c00ea085ac8de",
+        "recordings/blender-20x.mp4": "fd66111aeeff35a58eeb79262f4ff106484d57289cf4bbaf67f2af007e91f0d2"
+      }
+    }
+  ],
+  "terminal_runs": [
+    {
+      "run_id": "20261013T161744Z-a0622843",
+      "public_status": "ABORTED",
+      "reason": "NAVIGATION_TIMEOUT",
+      "stage_end_sim_s": 58.02,
+      "physical_error_m": 0.6527874384843606,
+      "last_online_range_m": 0.6722767440699199,
+      "core_rtf": null,
+      "partial_loop_rtf": 0.7661762705469144,
+      "evidence_sha256": {
+        "manifest.json": "4ec44a78fe1147fb8d01150a8fb71f933bce123ce5db139dd9fc4cda009f0fa3",
+        "physics.json": "4a6bc178268c9e49840f999bac10068e6858936a0bb41e6f8b26c70de5abd728",
+        "navigation-result.json": "9a2bbae06383c769eb1fc3022765e8cae5817789c2be1f5ee7dd0381d0eeeff4",
+        "navigation-observations.jsonl": "b5b59095240d5336305b49aa6bb19805bb25ddb078d40d028b2c60cc5aa74c43",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "navigation-profile.yaml": "ef1aadd970e1f8f5cc83692b81dd084937fd975348b3bc800eddafabeaabef2f",
+        "navigation-response-model.json": "a3739b906c017a7d048920cdb56a394ec6e2c08a7d02c923d73b3411bb8454fc"
+      }
+    },
+    {
+      "run_id": "20261013T162213Z-e824af0a",
+      "public_status": "ABORTED",
+      "reason": "NAVIGATION_TIMEOUT",
+      "stage_end_sim_s": 58.080000000000005,
+      "physical_error_m": 0.10549674355118502,
+      "last_online_range_m": 0.08145574883496251,
+      "core_rtf": null,
+      "partial_loop_rtf": 0.7639515807725322,
+      "evidence_sha256": {
+        "manifest.json": "55fdccaf43f3d0d81ac5a08396fd588604be3a7b4bacfd7f63376f346e361cce",
+        "physics.json": "3eae6c39906a1fdd09abc52c2f315ce082fcfd5f02e9b7cd0d1ad6f9b69a7415",
+        "navigation-result.json": "a55e39bda64474c58536c003be713009739979b6a23558af1dbe77df89ec66a6",
+        "navigation-observations.jsonl": "24e659a7b81c09b08482c120579f170b0fe617de17dd7de0d0e36fe3b8533c00",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "navigation-profile.yaml": "ef1aadd970e1f8f5cc83692b81dd084937fd975348b3bc800eddafabeaabef2f",
+        "navigation-response-model.json": "a3739b906c017a7d048920cdb56a394ec6e2c08a7d02c923d73b3411bb8454fc"
+      }
+    },
+    {
+      "run_id": "20261013T162546Z-83951696",
+      "public_status": "SUCCEEDED",
+      "reason": "",
+      "stage_end_sim_s": 46.620000000000005,
+      "physical_error_m": 0.062156845386876915,
+      "last_online_range_m": 0.040676573341727765,
+      "core_rtf": 0.7665860390616929,
+      "partial_loop_rtf": null,
+      "evidence_sha256": {
+        "manifest.json": "e40c9d7704dff7302da12600d5dc77dd830483d43f8864bbe0ca8661c1b48621",
+        "physics.json": "b857777eea3ea6bf11f8ba0d546ec353340c3e2eda7b6f9bca09b0a64e6f77ad",
+        "navigation-result.json": "ffb3e7e0eb41441887177b1765c3667f0c2be3b0d6d8c7e5a1eb76cc42438b07",
+        "navigation-observations.jsonl": "30158484da6672bc7eaba6da3cb5492bbba8c846c4e0c373b5838160201d40d2",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "navigation-profile.yaml": "ef1aadd970e1f8f5cc83692b81dd084937fd975348b3bc800eddafabeaabef2f",
+        "navigation-response-model.json": "a3739b906c017a7d048920cdb56a394ec6e2c08a7d02c923d73b3411bb8454fc"
+      }
+    },
+    {
+      "run_id": "20261013T163025Z-a17b45b6",
+      "public_status": "ABORTED",
+      "reason": "NAVIGATION_TIMEOUT",
+      "stage_end_sim_s": 58.02,
+      "physical_error_m": 0.5026165590493792,
+      "last_online_range_m": 0.42644344315260485,
+      "core_rtf": null,
+      "partial_loop_rtf": 0.7655457057750151,
+      "evidence_sha256": {
+        "manifest.json": "a3799f31a333707f8ec6c6e939fa7102bcb3a738248bed5fa2f5e41a1f613734",
+        "physics.json": "145e3ea926b8283378abea082c3f608d69202923ccdc5fd18bfa412a803dcaa2",
+        "navigation-result.json": "bbbda46a42fe6c42962ebe670f776daa6de7017011f136e4cdc82c5f04bbbf81",
+        "navigation-observations.jsonl": "a1b1eb80eb34db2553e3681c45967f2047d2ad6aec82056082ca98e810d3b569",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "navigation-profile.yaml": "ef1aadd970e1f8f5cc83692b81dd084937fd975348b3bc800eddafabeaabef2f",
+        "navigation-response-model.json": "a3739b906c017a7d048920cdb56a394ec6e2c08a7d02c923d73b3411bb8454fc"
+      }
+    },
+    {
+      "run_id": "20261013T163552Z-f078486a",
+      "public_status": "ABORTED",
+      "reason": "NAVIGATION_TIMEOUT",
+      "stage_end_sim_s": 58.040000000000006,
+      "physical_error_m": 0.24334177000818225,
+      "last_online_range_m": 0.2553752936664516,
+      "core_rtf": null,
+      "partial_loop_rtf": 0.762052983402213,
+      "evidence_sha256": {
+        "manifest.json": "1f65220dacb122d5760a1c4269827e5023bd977425619124cb90e009c71e7ff0",
+        "physics.json": "c944862390c1a17301926aaa383846e0393b1ae87696bf3b9f4d0aadbc92d232",
+        "navigation-result.json": "14d192191d44bcab30b4bd5113a204dedede9a4c9c6afd615b03e41c9ee97528",
+        "navigation-observations.jsonl": "ed3e46c769a3b80d9c3aa8c09ec7b899f73b436d3c5dd2361df08db78f0e95b3",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "navigation-profile.yaml": "ef1aadd970e1f8f5cc83692b81dd084937fd975348b3bc800eddafabeaabef2f",
+        "navigation-response-model.json": "a3739b906c017a7d048920cdb56a394ec6e2c08a7d02c923d73b3411bb8454fc"
+      }
+    },
+    {
+      "run_id": "20261013T163916Z-3fae2da2",
+      "public_status": "ABORTED",
+      "reason": "NAVIGATION_TIMEOUT",
+      "stage_end_sim_s": 58.080000000000005,
+      "physical_error_m": 0.20418113869990415,
+      "last_online_range_m": 0.19772117554588442,
+      "core_rtf": null,
+      "partial_loop_rtf": 0.7749198500428912,
+      "evidence_sha256": {
+        "manifest.json": "bfd35f29417d3498d89e69191a9d8d0258cc6f0c6522897271e66f3f0ef0b585",
+        "physics.json": "f2faa9ed1bc8c9738fdabd9c65a9bee814c5a914a51e231c06c77f7dfdd0c595",
+        "navigation-result.json": "5f29e4aae375118c42b78a9be48ed85115ffa6f397e1a1d2449e9e60decdf25d",
+        "navigation-observations.jsonl": "ea76d30803971e3bc3b59c17f221cde705a5ae85b91d469a4d51d672098c4c8a",
+        "navigation-profile-selection.json": "4423ab65965881d67fd4bd17477905c034e67676c675f24b75e896a440de1252",
+        "navigation-profile.yaml": "ef1aadd970e1f8f5cc83692b81dd084937fd975348b3bc800eddafabeaabef2f",
+        "navigation-response-model.json": "a3739b906c017a7d048920cdb56a394ec6e2c08a7d02c923d73b3411bb8454fc"
+      }
+    }
+  ],
+  "retained_source_sha256": {
+    "navigate_to.py": "3cd368cac8984d2502d8122a0b3d62fdcf8f18b9f6c415095ea34f9be7232906",
+    "thirdparty/neupan/neupan/neupan.py": "42974239daf986d52568d66dcbfb88c3f012c6045c7983f97878a3aa079b2831"
+  },
+  "qp_condensation": {
+    "variables_before": 165,
+    "variables_after": 123,
+    "parameters_before": 5117,
+    "parameters_after": 3395,
+    "max_pose_abs_delta": 0.0,
+    "max_command_abs_delta": 3.725290298461914e-09,
+    "scope": "One same-input native obstacle QP instance; not a solver-time benchmark"
+  },
+  "report_sha256": {
+    "neupan-amo-response-results-20261013.json": "ccd60ba56206b8962e35bb37f545decd4dcc83a27f32bae6535bd7ead1537fb1",
+    "response-h3-new-holdout-20261013.json": "3ad53db69d5027018cd271ed16f01cc76173b334815f161eb87e56f2aa918170",
+    "coarse-navigation-20261014.json": "8778e56a295efa6d515739901dc44d8b08525e0126fbbad7efa2ffb921d5558c",
+    "natural-mpc-terminal-20261014.json": "e77d3fef7acfdb55a8f2a90b03eb540f46e66f1e50c751f891764ea91a45af8c"
+  },
+  "recordings": [
+    {
+      "file": "20261013T153825Z-8b66f078-irsim-20x.mp4",
+      "sha256": "993972f78257d2bca5d89d3cda912a6ccc689a5631e7fc12637c2dadfd2281e4",
+      "source_sha256": "3f2955ac9dd3652e173b48fc11360e0c427f0a30871289edfc93f6f701fdc223",
+      "experiment": "20261013T153825Z-8b66f078",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "HISTORICAL_COARSE_AND_MAP_ADJUST_PASS",
+      "playback_speed": 20,
+      "duration_s": 6.6,
+      "source_duration_wall_s": 132.32,
+      "size_bytes": 728747,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T153825Z-8b66f078-mujoco-20x.mp4",
+      "sha256": "a163f607734cdf32d351672614babc1181c73368128f8cd2958bfdabf6ac551d",
+      "source_sha256": "be945f010ed5eb0ba14382b219e43f5547e8bb8d37e6741f03bb5d61becc1b57",
+      "experiment": "20261013T153825Z-8b66f078",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "HISTORICAL_COARSE_AND_MAP_ADJUST_PASS",
+      "playback_speed": 20,
+      "duration_s": 6.667,
+      "source_duration_wall_s": 133.365,
+      "size_bytes": 357402,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T153825Z-8b66f078-blender-20x.mp4",
+      "sha256": "c79e1077408f5cfd11b8bec8f2c0f62b0ab498702106bd042a92f96a5020dd1c",
+      "source_sha256": "126542a12c7f1076f622753d523712c7d635390a40f70bcfe985fba3b77704b9",
+      "experiment": "20261013T153825Z-8b66f078",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "HISTORICAL_COARSE_AND_MAP_ADJUST_PASS",
+      "playback_speed": 20,
+      "duration_s": 6.567,
+      "source_duration_wall_s": 131.479,
+      "size_bytes": 1310735,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T160041Z-72bda478-irsim-20x.mp4",
+      "sha256": "9c3e4f66debd2766f7c8b10354c861dfa3f7c272600951e8216f766f3304af3b",
+      "source_sha256": "165542ff17e2f3d4b1073f629030c7d95c281acd465f7ced2fcd10d2e85af2bb",
+      "experiment": "20261013T160041Z-72bda478",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "COARSE_COMPLETE_NOT_5CM",
+      "playback_speed": 20,
+      "duration_s": 4.067,
+      "source_duration_wall_s": 81.2,
+      "size_bytes": 424471,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T160041Z-72bda478-mujoco-20x.mp4",
+      "sha256": "34a9685bd10df4ee5ab90dca8731e4e5874cf0a09f47d3173589edf181d1df8a",
+      "source_sha256": "53ec7ef35d32cabefee7fd82338d3ae910d705dff39b835fcc3d3f31659277d5",
+      "experiment": "20261013T160041Z-72bda478",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "COARSE_COMPLETE_NOT_5CM",
+      "playback_speed": 20,
+      "duration_s": 4.1,
+      "source_duration_wall_s": 81.84,
+      "size_bytes": 220264,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T160041Z-72bda478-blender-20x.mp4",
+      "sha256": "412e6be353a2c977cd65872510ef5be09ca71cb3520187eac2e41cab1f55e352",
+      "source_sha256": "ce21129a04f234b4a42bd38627d80bbd6bca01533e7e26745e77ae82f6c300f1",
+      "experiment": "20261013T160041Z-72bda478",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "COARSE_COMPLETE_NOT_5CM",
+      "playback_speed": 20,
+      "duration_s": 4.034,
+      "source_duration_wall_s": 80.412,
+      "size_bytes": 893121,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T160432Z-ef4d6c34-irsim-20x.mp4",
+      "sha256": "a91dfd430bb07f45b36792ad87efaccfeb045dd4fb80f10f450880789e61a3f0",
+      "source_sha256": "ddf2156a7b316dc4d736cfc3b7562a50e3cceb8d2a24145298a527d40c78f7b6",
+      "experiment": "20261013T160432Z-ef4d6c34",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "COARSE_COMPLETE_NOT_5CM",
+      "playback_speed": 20,
+      "duration_s": 4.1,
+      "source_duration_wall_s": 81.92,
+      "size_bytes": 429538,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T160432Z-ef4d6c34-mujoco-20x.mp4",
+      "sha256": "aee6f433595a7c0c7a2d42ddff50d335f04bc84b594a2bcd4f49a1b001ce7449",
+      "source_sha256": "a37235ab36ae61ee50714ae0bcbc37f838a765d099001cc58f6737df97a3d34c",
+      "experiment": "20261013T160432Z-ef4d6c34",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "COARSE_COMPLETE_NOT_5CM",
+      "playback_speed": 20,
+      "duration_s": 4.134,
+      "source_duration_wall_s": 82.56,
+      "size_bytes": 221305,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T160432Z-ef4d6c34-blender-20x.mp4",
+      "sha256": "fd66111aeeff35a58eeb79262f4ff106484d57289cf4bbaf67f2af007e91f0d2",
+      "source_sha256": "ea63353c2c5fb1505f78ded888fc083b8bddffec4ffc4ea4796c00ea085ac8de",
+      "experiment": "20261013T160432Z-ef4d6c34",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "COARSE_COMPLETE_NOT_5CM",
+      "playback_speed": 20,
+      "duration_s": 4.067,
+      "source_duration_wall_s": 81.12,
+      "size_bytes": 849331,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T161744Z-a0622843-irsim-20x.mp4",
+      "sha256": "8d6ad67ad000d8a5f1c34f65c4762f6c6efea39909cafec1ff21fc4126f2faa6",
+      "source_sha256": "3d9c5655aba1d758ad1dcddb6e01086f07e1734944d262600cb9ae81de408681",
+      "experiment": "20261013T161744Z-a0622843",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.967,
+      "source_duration_wall_s": 79.04,
+      "size_bytes": 565983,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T161744Z-a0622843-mujoco-20x.mp4",
+      "sha256": "f8c34a857a88e1a37709fa9939d09f89c3d4d9abd37f0e676e52416aa243980d",
+      "source_sha256": "1da72b5150503ffcfcc19ebe4ceb5f4ad4c991b41a1160430f35a850f8008d3a",
+      "experiment": "20261013T161744Z-a0622843",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 4.0,
+      "source_duration_wall_s": 79.8,
+      "size_bytes": 309867,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T161744Z-a0622843-blender-20x.mp4",
+      "sha256": "ba399e7a10e53efd2e66332ec0e2d832ef14e0ba8fae407df22bde9c3f485a96",
+      "source_sha256": "0c961f66670e362bf925c3bb29446e807f1ad5a08dd2d2bd2b196c21bc87e97f",
+      "experiment": "20261013T161744Z-a0622843",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.9,
+      "source_duration_wall_s": 78.24,
+      "size_bytes": 970779,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T162213Z-e824af0a-irsim-20x.mp4",
+      "sha256": "4d2ec6f0cdce7c24038b9680e9fd105168be04b2a022611480f6054bd34e9f5c",
+      "source_sha256": "3ca0caf5cb594b898e659511b92d0d841e8bae1c6d3fa09f64d6a1712b104d8a",
+      "experiment": "20261013T162213Z-e824af0a",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.967,
+      "source_duration_wall_s": 79.36,
+      "size_bytes": 578475,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T162213Z-e824af0a-mujoco-20x.mp4",
+      "sha256": "4a1b145f7883742e1e446f4c8c19dff67dac896f4bb56c5c03991d3081b31ce8",
+      "source_sha256": "dd6640762bf49f1cf1cd4c958373d59ea37af590f15046f9d17b51e1f9a64de1",
+      "experiment": "20261013T162213Z-e824af0a",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 4.0,
+      "source_duration_wall_s": 80.16,
+      "size_bytes": 298074,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T162213Z-e824af0a-blender-20x.mp4",
+      "sha256": "23859935e456d9963da3e43783ebf35c56b29c8844ba2a5af1002a94d812847d",
+      "source_sha256": "511c63e9c97449ed8da1290ff2dfb5af78e4ed0fc2d3dc0aaecbb0f5aa1ec93f",
+      "experiment": "20261013T162213Z-e824af0a",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.934,
+      "source_duration_wall_s": 78.52,
+      "size_bytes": 1246053,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T162546Z-83951696-irsim-20x.mp4",
+      "sha256": "bf914f8a5530c3495ddd6b5b50bb616bf1ac9d68f9f89e469d68cbdca70a95ad",
+      "source_sha256": "f840d4bd17476277b49dcb4ac9c54a6133b8bb57f0ed25ba8f660c2dc03a7050",
+      "experiment": "20261013T162546Z-83951696",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "ONLINE_COMPLETE_PHYSICAL_5CM_FAIL",
+      "playback_speed": 20,
+      "duration_s": 4.067,
+      "source_duration_wall_s": 81.56,
+      "size_bytes": 513026,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T162546Z-83951696-mujoco-20x.mp4",
+      "sha256": "d9d0d9d806166d47eacb29d8d87c7393732ac47e85afbf510896cdc9a1f35ed8",
+      "source_sha256": "b5d1e7acceb53c035082689fc702236515250c98da056f51dff80159cbdd5754",
+      "experiment": "20261013T162546Z-83951696",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "ONLINE_COMPLETE_PHYSICAL_5CM_FAIL",
+      "playback_speed": 20,
+      "duration_s": 4.134,
+      "source_duration_wall_s": 82.395,
+      "size_bytes": 268175,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T162546Z-83951696-blender-20x.mp4",
+      "sha256": "ae7473d3592d877af61a83126ae0a0b9373c4aa947fe41e78345584f86439aa0",
+      "source_sha256": "eebbd5da81593afbb71718de7aaed680af4bc438f4ca9c71b1b10afae28ac4be",
+      "experiment": "20261013T162546Z-83951696",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "ONLINE_COMPLETE_PHYSICAL_5CM_FAIL",
+      "playback_speed": 20,
+      "duration_s": 4.034,
+      "source_duration_wall_s": 80.76,
+      "size_bytes": 1037455,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163025Z-a17b45b6-irsim-20x.mp4",
+      "sha256": "c7434f1dba6d1cfc70b1292e56dca9fde5fbd3bbb82dbb8d1abf3aae992da77c",
+      "source_sha256": "eac2805c963a30b4cb77c11a9e37493aafddae5531a09dc4bf73de45d6c43616",
+      "experiment": "20261013T163025Z-a17b45b6",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.967,
+      "source_duration_wall_s": 79.04,
+      "size_bytes": 556462,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163025Z-a17b45b6-mujoco-20x.mp4",
+      "sha256": "bde1af4df049958574463bb2ce8f3c4e52a23cf1ffae037a8b40ec92ca276cf3",
+      "source_sha256": "d7f9828c876e256203dec9efede3f889948d4212ae3d6ac0b8fad392381a9aa2",
+      "experiment": "20261013T163025Z-a17b45b6",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 4.0,
+      "source_duration_wall_s": 79.8,
+      "size_bytes": 291946,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163025Z-a17b45b6-blender-20x.mp4",
+      "sha256": "d45cc19b1a90c4553f9612e74d0647a2165ca3e643b6b6bab906786d8cd432df",
+      "source_sha256": "463938b09ec967763bf1927a5ae652bc7a1461459c312673c2e34e678ded9a24",
+      "experiment": "20261013T163025Z-a17b45b6",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.9,
+      "source_duration_wall_s": 78.24,
+      "size_bytes": 1156108,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163552Z-f078486a-irsim-20x.mp4",
+      "sha256": "b199e8305c9e4cee5eff02d11f25fd704c223b5394a60f6cf6036058f55dc2f2",
+      "source_sha256": "e653bf803314342a6ff3e07bddbb4717d8f92c7e9f3db1571f08b3418d30cdb6",
+      "experiment": "20261013T163552Z-f078486a",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "REJECTED_FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.967,
+      "source_duration_wall_s": 79.52,
+      "size_bytes": 562674,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163552Z-f078486a-mujoco-20x.mp4",
+      "sha256": "c56f1973e46d5e0ae4e64840dc92a834a58e28342f7b544fe02ab8d7911efdc5",
+      "source_sha256": "e6cd5377858ef2150ab6c35ec51357d9f0f62020e22784be3e6116188d08a43b",
+      "experiment": "20261013T163552Z-f078486a",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "REJECTED_FAIL",
+      "playback_speed": 20,
+      "duration_s": 4.0,
+      "source_duration_wall_s": 80.28,
+      "size_bytes": 289563,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163552Z-f078486a-blender-20x.mp4",
+      "sha256": "6c1772dd76c5ac0350aea0faf1267afe2a12854c87c7e55e2055f861e8c232c3",
+      "source_sha256": "70dcbeb433d6a4a27e322feab275f4422109bed3107ba36f866b8aa01f64313a",
+      "experiment": "20261013T163552Z-f078486a",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "REJECTED_FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.934,
+      "source_duration_wall_s": 78.72,
+      "size_bytes": 1215288,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163916Z-3fae2da2-irsim-20x.mp4",
+      "sha256": "414fafdd30a80db794b9ad63b34767ec8e2cebd552e3e202654aad300001025b",
+      "source_sha256": "a8c930a7be42861ffe9c0ce6e92a6a1c4ccd05e4e346fa00498bfecce0458fa7",
+      "experiment": "20261013T163916Z-3fae2da2",
+      "role": "irsim",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "REJECTED_FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.9,
+      "source_duration_wall_s": 78.2,
+      "size_bytes": 552130,
+      "width": 732,
+      "height": 1120,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163916Z-3fae2da2-mujoco-20x.mp4",
+      "sha256": "11f095459f29b62ca4a4b51ccd4792bc58735f5f25d26038c2a88a561dc48436",
+      "source_sha256": "cba66fcc41bfe3c77ec753ed3b7d9c9c70da8347b82c838be3bae5fe8948810d",
+      "experiment": "20261013T163916Z-3fae2da2",
+      "role": "mujoco",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "REJECTED_FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.934,
+      "source_duration_wall_s": 78.96,
+      "size_bytes": 288242,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    },
+    {
+      "file": "20261013T163916Z-3fae2da2-blender-20x.mp4",
+      "sha256": "f95a379b63aa82a87bed47303d0bf296e6c89e99ec7a0261aba9d5dc70b4984d",
+      "source_sha256": "b6ab66e30ca1d9eafdfdeb677120bbfe3bd0ed09ebb90c1d25fa26ea44c2ca45",
+      "experiment": "20261013T163916Z-3fae2da2",
+      "role": "blender",
+      "source_kind": "ORIGINAL_GUI_RECORDING",
+      "experiment_status": "REJECTED_FAIL",
+      "playback_speed": 20,
+      "duration_s": 3.867,
+      "source_duration_wall_s": 77.408,
+      "size_bytes": 1192280,
+      "width": 1086,
+      "height": 538,
+      "fps": "30/1",
+      "time_basis": "recording wall clock",
+      "action_start_s": null
+    }
+  ]
+}

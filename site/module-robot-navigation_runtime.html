@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>导航运行架构 · navigation_runtime</h1><p class="am-sub">SW-06 的公共能力、规划选路、视觉精调与执行反馈</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-navigation_runtime</span><span><b>implementation</b>155e1488ea6ea0fa</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>导航运行架构 · navigation_runtime</h1><p class="am-sub">SW-06 的公共能力、规划选路、视觉精调与执行反馈</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-navigation_runtime</span><span><b>implementation</b>a455d3a3cf56722b</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="diagrams/navigation-runtime.html">内部可编辑多页图</a> · <a href="diagrams/navigation-runtime.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
@@ -736,6 +736,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>原生TARE前瞻点→fusion路点保持→NavigateTo→NeuPAN；物理验收单列</td>
 </tr>
 <tr>
+<td>H3响应预测</td>
+<td>显式SIM诊断候选</td>
+<td>原生MPC内建模；5cm停稳未通过复验</td>
+</tr>
+<tr>
 <td>PCT / FDM-MPPI</td>
 <td>可选组件</td>
 <td>当前 basic_geometry profile 不调用它们</td>
@@ -762,8 +767,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>粗导航的状态视图</h2></header>
-<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 1453 220" width="1453" height="220" role="img" aria-label="流程图：接收目标、输入就绪、巡航求解、制动锁存、本体判稳、粗到位完成、零速等待、失败停止" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M94,105 L143.6,105 Q193.3,105 242.9,105 L292.5,105" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="118" y="96" width="150.5" height="18" rx="3"/><text x="193.3" y="105" text-anchor="middle" dominant-baseline="central">地图、包络与SDK状态有效</text></g></g><g data-step="1"><path class="am-edge" d="M372.5,105 L414.2,105 Q455.8,105 500.6,105 L545.3,105" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="396.5" y="96" width="118.6" height="18" rx="3"/><text x="455.8" y="105" text-anchor="middle" dominant-baseline="central">原生 NeuPAN 重规划</text></g></g><g data-step="2"><path class="am-edge" d="M545.3,177 L545.3,177 Q545.3,177 565.3,168.3 Q585.3,159.5 605.3,150.8 Q625.3,142 625.3,142 Q625.3,142 605.3,150.8 Q585.3,159.5 585.3,159.5 L585.3,159.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="540.1" y="150.5" width="90.5" height="18" rx="3"/><text x="585.3" y="159.5" text-anchor="middle" dominant-baseline="central">新点云更新障碍</text></g></g><g data-step="3"><path class="am-edge" d="M621.1,87.5 L678.2,59.5 Q735.3,31.5 787.2,31.5 L839.1,31.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="684.3" y="22.5" width="102" height="18" rx="3"/><text x="735.3" y="31.5" text-anchor="middle" dominant-baseline="central">进入任务粗到位圈</text></g></g><g data-step="4"><path class="am-edge" d="M919.1,31.5 L956.6,31.5 Q994.1,31.5 1031.6,31.5 L1069.1,31.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="943.1" y="22.5" width="102" height="18" rx="3"/><text x="994.1" y="31.5" text-anchor="middle" dominant-baseline="central">实际已发速度归零</text></g></g><g data-step="5"><path class="am-edge" d="M1149.1,31.5 L1198.1,31.5 Q1247.1,31.5 1296.1,31.5 L1345.1,31.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1173.1" y="22.5" width="148" height="18" rx="3"/><text x="1247.1" y="31.5" text-anchor="middle" dominant-baseline="central">本体相对稳定满足停稳时长</text></g></g><g data-step="6"><path class="am-edge am-edge--dashed" d="M625.3,110.1 L680.3,117 Q735.3,124 787.2,116.2 L839.1,108.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="667.1" y="115" width="136.5" height="18" rx="3"/><text x="735.3" y="124" text-anchor="middle" dominant-baseline="central">可恢复的路径域检查失败</text></g></g><g data-step="7"><path class="am-edge" d="M839.1,97.9 L787.2,92 Q735.3,86 680.3,93 L625.3,99.9" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="678.6" y="77" width="113.5" height="18" rx="3"/><text x="735.3" y="86" text-anchor="middle" dominant-baseline="central">限定窗口内输入恢复</text></g></g><g data-step="8"><path class="am-edge am-edge--dashed" d="M621.1,122.5 L678.2,150.5 Q735.3,178.5 787.2,178.5 L839.1,178.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="655.6" y="169.5" width="159.5" height="18" rx="3"/><text x="735.3" y="178.5" text-anchor="middle" dominant-baseline="central">原生不可解、超时或无效输入</text></g></g></g><g><g class="am-node am-node--rect" data-key="接收目标" data-step="0"><rect class="am-node-shape" x="14" y="87.5" width="80" height="35" rx="3"/><text x="54" y="105" text-anchor="middle" dominant-baseline="central">接收目标</text></g><g class="am-node am-node--rect" data-key="输入就绪" data-step="0"><rect class="am-node-shape" x="292.5" y="87.5" width="80" height="35" rx="3"/><text x="332.5" y="105" text-anchor="middle" dominant-baseline="central">输入就绪</text></g><g class="am-node am-node--rect" data-key="巡航求解" data-step="1"><rect class="am-node-shape" x="545.3" y="87.5" width="80" height="35" rx="3"/><text x="585.3" y="105" text-anchor="middle" dominant-baseline="central">巡航求解</text></g><g class="am-node am-node--rect" data-key="制动锁存" data-step="3"><rect class="am-node-shape" x="839.1" y="14" width="80" height="35" rx="3"/><text x="879.1" y="31.5" text-anchor="middle" dominant-baseline="central">制动锁存</text></g><g class="am-node am-node--rect" data-key="本体判稳" data-step="4"><rect class="am-node-shape" x="1069.1" y="14" width="80" height="35" rx="3"/><text x="1109.1" y="31.5" text-anchor="middle" dominant-baseline="central">本体判稳</text></g><g class="am-node am-node--rect" data-key="粗到位完成" data-step="5"><rect class="am-node-shape" x="1345.1" y="14" width="93" height="35" rx="3"/><text x="1391.6" y="31.5" text-anchor="middle" dominant-baseline="central">粗到位完成</text></g><g class="am-node am-node--rect" data-key="零速等待" data-step="6"><rect class="am-node-shape" x="839.1" y="85" width="80" height="35" rx="3"/><text x="879.1" y="102.5" text-anchor="middle" dominant-baseline="central">零速等待</text></g><g class="am-node am-node--rect" data-key="失败停止" data-step="8"><rect class="am-node-shape" x="839.1" y="161" width="80" height="35" rx="3"/><text x="879.1" y="178.5" text-anchor="middle" dominant-baseline="central">失败停止</text></g></g></svg></figure>
-<div class="am-md"><p>30cm是任务层的制动触发条件。触发后停稳在圈外，仍可完成粗导航。<code>adjust_base</code>再承担最终位置与朝向验收。原生 BLOCKED 与路径域检查失败，目前使用不同失败分支。</p>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 1569 256" width="1569" height="256" role="img" aria-label="流程图：接收目标、输入就绪、巡航求解、终端保持、本体判稳、粗到位完成、零速等待、失败停止" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M94,102.8 L143.6,102.8 Q193.3,102.8 242.9,102.8 L292.5,102.8" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="118" y="93.8" width="150.5" height="18" rx="3"/><text x="193.3" y="102.8" text-anchor="middle" dominant-baseline="central">地图、包络与SDK状态有效</text></g></g><g data-step="1"><path class="am-edge" d="M372.5,102.8 L414.2,102.8 Q455.8,102.8 500.6,102.8 L545.3,102.8" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="396.5" y="93.8" width="118.6" height="18" rx="3"/><text x="455.8" y="102.8" text-anchor="middle" dominant-baseline="central">原生 NeuPAN 重规划</text></g></g><g data-step="2"><path class="am-edge" d="M545.3,174.8 L545.3,174.8 Q545.3,174.8 565.3,166 Q585.3,157.3 605.3,148.5 Q625.3,139.8 625.3,139.8 Q625.3,139.8 605.3,148.5 Q585.3,157.3 585.3,157.3 L585.3,157.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="540.1" y="148.3" width="90.5" height="18" rx="3"/><text x="585.3" y="157.3" text-anchor="middle" dominant-baseline="central">新点云更新障碍</text></g></g><g data-step="3"><path class="am-edge" d="M606.9,120.3 L671.1,172.4 Q735.3,224.5 796.1,224.5 L856.8,224.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="655.7" y="215.5" width="159.3" height="18" rx="3"/><text x="735.3" y="224.5" text-anchor="middle" dominant-baseline="central">5cm候选范围与请求朝向满足</text></g></g><g data-step="4"><path class="am-edge" d="M936.8,224.5 L994.7,224.5 Q1052.6,224.5 1111.9,171.1 L1171.2,117.8" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="978.6" y="215.5" width="148" height="18" rx="3"/><text x="1052.6" y="224.5" text-anchor="middle" dominant-baseline="central">沿加速度界减速至实际归零</text></g></g><g data-step="5"><path class="am-edge" d="M1230.6,100.3 L1288.2,100.3 Q1345.8,100.3 1403.5,100.3 L1461.1,100.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="1254.6" y="91.3" width="182.5" height="18" rx="3"/><text x="1345.8" y="100.3" text-anchor="middle" dominant-baseline="central">当前位置、朝向和稳定时长均满足</text></g></g><g data-step="6"><path class="am-edge" d="M1159.3,82.8 L1106,52.9 Q1052.6,23 974.7,23 Q896.8,23 816.1,23 Q735.3,23 676.8,54.1 L618.3,85.3" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="840.1" y="14" width="113.5" height="18" rx="3"/><text x="896.8" y="23" text-anchor="middle" dominant-baseline="central">停稳后越出请求范围</text></g></g><g data-step="7"><path class="am-edge am-edge--dashed" d="M625.3,102.8 L680.3,102.8 Q735.3,102.8 796.1,93.3 L856.8,83.8" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="667.1" y="93.8" width="136.5" height="18" rx="3"/><text x="735.3" y="102.8" text-anchor="middle" dominant-baseline="central">可恢复的路径域检查失败</text></g></g><g data-step="8"><path class="am-edge" d="M856.8,74.3 L796.1,69.5 Q735.3,64.8 680.3,78.7 L625.3,92.6" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="678.6" y="55.8" width="113.5" height="18" rx="3"/><text x="735.3" y="64.8" text-anchor="middle" dominant-baseline="central">限定窗口内输入恢复</text></g></g><g data-step="9"><path class="am-edge am-edge--dashed" d="M625.3,116.3 L680.3,134.9 Q735.3,153.5 796.1,153.5 L856.8,153.5" marker-end="url(#am2-arrow)"/><g class="am-edge-label"><rect x="655.6" y="144.5" width="159.5" height="18" rx="3"/><text x="735.3" y="153.5" text-anchor="middle" dominant-baseline="central">原生不可解、超时或无效输入</text></g></g></g><g><g class="am-node am-node--rect" data-key="接收目标" data-step="0"><rect class="am-node-shape" x="14" y="85.3" width="80" height="35" rx="3"/><text x="54" y="102.8" text-anchor="middle" dominant-baseline="central">接收目标</text></g><g class="am-node am-node--rect" data-key="输入就绪" data-step="0"><rect class="am-node-shape" x="292.5" y="85.3" width="80" height="35" rx="3"/><text x="332.5" y="102.8" text-anchor="middle" dominant-baseline="central">输入就绪</text></g><g class="am-node am-node--rect" data-key="巡航求解" data-step="1"><rect class="am-node-shape" x="545.3" y="85.3" width="80" height="35" rx="3"/><text x="585.3" y="102.8" text-anchor="middle" dominant-baseline="central">巡航求解</text></g><g class="am-node am-node--rect" data-key="终端保持" data-step="3"><rect class="am-node-shape" x="856.8" y="207" width="80" height="35" rx="3"/><text x="896.8" y="224.5" text-anchor="middle" dominant-baseline="central">终端保持</text></g><g class="am-node am-node--rect" data-key="本体判稳" data-step="4"><rect class="am-node-shape" x="1150.6" y="82.8" width="80" height="35" rx="3"/><text x="1190.6" y="100.3" text-anchor="middle" dominant-baseline="central">本体判稳</text></g><g class="am-node am-node--rect" data-key="粗到位完成" data-step="5"><rect class="am-node-shape" x="1461.1" y="82.8" width="93" height="35" rx="3"/><text x="1507.6" y="100.3" text-anchor="middle" dominant-baseline="central">粗到位完成</text></g><g class="am-node am-node--rect" data-key="零速等待" data-step="7"><rect class="am-node-shape" x="856.8" y="60" width="80" height="35" rx="3"/><text x="896.8" y="77.5" text-anchor="middle" dominant-baseline="central">零速等待</text></g><g class="am-node am-node--rect" data-key="失败停止" data-step="9"><rect class="am-node-shape" x="856.8" y="136" width="80" height="35" rx="3"/><text x="896.8" y="153.5" text-anchor="middle" dominant-baseline="central">失败停止</text></g></g></svg></figure>
+<div class="am-md"><p>当前粗导航不再以30cm触发快速制动，成功不豁免当前位置检查。5cm保持是在观察到振荡后保留的诊断候选，尚未稳定通过物理复验；见<a href="navigation-response-model.html">设计和实验</a>。<code>adjust_base</code>仍是独立能力。原生 BLOCKED 与路径域检查失败，目前使用不同失败分支。</p>
 <p>SDK判稳使用1秒窗口内的质心与姿态相对变化。导航交接还需连续2秒保持新鲜稳定反馈和零速；该确认不使用SLAM速度判稳。</p>
 <p>是否要求空手由本机任务策略决定，不属于通用导航条件。导航保留定位、局部图、SDK、本体判稳与几何包络检查。二维输入使用PlanarNavigationInputs，局部规划仍调用原NeuPAN；携物通过任务声明的占用半径表达，不新增场景专用导航算法。</p>
 </div></div>
@@ -890,7 +895,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>G1方块SIM的失败重规划窗口为6s，覆盖fusion路点保持器的5s无进展恢复。
 拒绝期间只发零速；新参考通过原检查后才恢复运动。持续失败仍终止，父截止不重置。</p>
 <p>G1探索profile使用原生20cm进展半径，保留5s无进展恢复与60cm路径前瞻。
-该半径用于区分步态摆动与有效移动，不改变30cm粗到位、精调或障碍检查条件。
+该半径用于区分步态摆动与有效移动，不改变能力请求的到位容差、精调或障碍检查条件。
 原生保持器源码继续复用；物理验收独立记录。</p>
 <p>探索路点保持器只保持未被实测障碍占用的目标。复用同一圆柱间隙检查，发现占用先归零，
 再受理TARE更新的原生路点；新目标同样检查。建图会话、探索执行和父截止保持不变。</p>
@@ -959,7 +964,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-13 15:27</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-14 08:16</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -967,10 +972,10 @@ title: 导航运行架构 · navigation_runtime
 subtitle: SW-06 的公共能力、规划选路、视觉精调与执行反馈
 lang: zh
 doc_id: module-robot-navigation_runtime
-implementation: 155e1488ea6ea0fa
+implementation: a455d3a3cf56722b
 ---
 
-[首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
+[首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
 [内部可编辑多页图](diagrams/navigation-runtime.html) · [draw.io图源](diagrams/navigation-runtime.drawio) · [五模块对照](runtime-internals.html)
 
@@ -985,6 +990,7 @@ implementation: 155e1488ea6ea0fa
 | navigation.adjust_base | 公共能力已接线 | 地图精调与视觉关系精调两条路径 |
 | navigation.approach_target | 路由存在，当前装配未提供依赖 | 需要 object_reader 与 assess_stance |
 | navigation.explore | 探索profile已装配 | 原生TARE前瞻点→fusion路点保持→NavigateTo→NeuPAN；物理验收单列 |
+| H3响应预测 | 显式SIM诊断候选 | 原生MPC内建模；5cm停稳未通过复验 |
 | PCT / FDM-MPPI | 可选组件 | 当前 basic_geometry profile 不调用它们 |
 | follow_target / follow_route / patrol / coverage | 契约目录 | 不因契约存在宣称具备公共实现 |
 
@@ -1033,15 +1039,16 @@ VISER保留原TARE／PCT／NeuPAN路径图层，并读取同戳原始／平滑�
 接收目标 -&gt; 输入就绪: 地图、包络与SDK状态有效
 输入就绪 -&gt; 巡航求解: 原生 NeuPAN 重规划
 巡航求解 -&gt; 巡航求解: 新点云更新障碍
-巡航求解 -&gt; 制动锁存: 进入任务粗到位圈
-制动锁存 -&gt; 本体判稳: 实际已发速度归零
-本体判稳 -&gt; 粗到位完成: 本体相对稳定满足停稳时长
+巡航求解 -&gt; 终端保持: 5cm候选范围与请求朝向满足
+终端保持 -&gt; 本体判稳: 沿加速度界减速至实际归零
+本体判稳 -&gt; 粗到位完成: 当前位置、朝向和稳定时长均满足
+本体判稳 -&gt; 巡航求解: 停稳后越出请求范围
 巡航求解 --&gt; 零速等待: 可恢复的路径域检查失败
 零速等待 -&gt; 巡航求解: 限定窗口内输入恢复
 巡航求解 --&gt; 失败停止: 原生不可解、超时或无效输入
 ```
 
-30cm是任务层的制动触发条件。触发后停稳在圈外，仍可完成粗导航。`adjust_base`再承担最终位置与朝向验收。原生 BLOCKED 与路径域检查失败，目前使用不同失败分支。
+当前粗导航不再以30cm触发快速制动，成功不豁免当前位置检查。5cm保持是在观察到振荡后保留的诊断候选，尚未稳定通过物理复验；见[设计和实验](navigation-response-model.html)。`adjust_base`仍是独立能力。原生 BLOCKED 与路径域检查失败，目前使用不同失败分支。
 
 SDK判稳使用1秒窗口内的质心与姿态相对变化。导航交接还需连续2秒保持新鲜稳定反馈和零速；该确认不使用SLAM速度判稳。
 
@@ -1122,7 +1129,7 @@ G1方块SIM的失败重规划窗口为6s，覆盖fusion路点保持器的5s无�
 拒绝期间只发零速；新参考通过原检查后才恢复运动。持续失败仍终止，父截止不重置。
 
 G1探索profile使用原生20cm进展半径，保留5s无进展恢复与60cm路径前瞻。
-该半径用于区分步态摆动与有效移动，不改变30cm粗到位、精调或障碍检查条件。
+该半径用于区分步态摆动与有效移动，不改变能力请求的到位容差、精调或障碍检查条件。
 原生保持器源码继续复用；物理验收独立记录。
 
 探索路点保持器只保持未被实测障碍占用的目标。复用同一圆柱间隙检查，发现占用先归零，
