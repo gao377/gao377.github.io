@@ -408,7 +408,7 @@
         <mxCell id="text1" value="W3-C 经验、候选与评估时序" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=32;fontColor=#19344C;fontStyle=1;">
           <mxGeometry x="45" y="25" width="1810" height="48" as="geometry" />
         </mxCell>
-        <mxCell id="text3" value="这是稳定的RSI设计；当前SW-21 / 22 / 23是MOCK，SW-18是样例记忆，尚无自动发布执行链。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
+        <mxCell id="text3" value="这是稳定的RSI设计；当前SW-21 / 22 / 23是MOCK，SW-18已提供有来源知识检索，尚无自动发布执行链。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;strokeColor=none;fillColor=none;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#596E84;fontStyle=0;">
           <mxGeometry x="45" y="85" width="1810" height="48" as="geometry" />
         </mxCell>
         <mxCell id="evidence" value="SW-19&lt;br&gt;运行证据" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF3FA;strokeColor=#85A6C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
@@ -429,7 +429,7 @@
             <mxPoint x="381.6666666666667" y="1485" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="memory" value="SW-18 [MOCK]&lt;br&gt;记忆" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF3FA;strokeColor=#85A6C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
+        <mxCell id="memory" value="SW-18 [PARTIAL]&lt;br&gt;记忆" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDF3FA;strokeColor=#85A6C8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344C;align=left;verticalAlign=middle;spacing=15;arcSize=12;">
           <mxGeometry x="578.3333333333334" y="180" width="170" height="90" as="geometry" />
         </mxCell>
         <mxCell value="" edge="1" parent="1" style="html=1;endArrow=none;endFill=1;strokeColor=#B7C7D6;strokeWidth=1.8;dashed=1;fontSize=17;fontColor=#19344C;labelBackgroundColor=#FFFFFF;verticalAlign=bottom;" id="v10">

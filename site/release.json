@@ -148,7 +148,8 @@
     },
     {
       "file": "architecture-map.html",
-      "source_sha256": "21c5fb4a2fd7f7aaf6d2df08227e5057aae62733179b98e01abe3a3b24eab004"
+      "source_sha256": "fa22f8c2463a294d0552f7fe12d13a359633286d5956ad850eb415f860aefe36",
+      "implementation_sha256": "3366ffd4f223f654d418b0e68bb8a5e05a9f376f5b25a04d4110453da6ff6a94"
     },
     {
       "file": "architecture.html",
@@ -264,7 +265,8 @@
     },
     {
       "file": "files-system-knowledge_memory.html",
-      "source_sha256": "4f29a6293868cccdb5ea677fa3bb745cd354d558173da62625dd6c4aede224f5"
+      "source_sha256": "7ebde913d0db7019c2a982d405a1f3ada88847df0cd2bb688f96d5ee2434ff9c",
+      "implementation_sha256": "3366ffd4f223f654d418b0e68bb8a5e05a9f376f5b25a04d4110453da6ff6a94"
     },
     {
       "file": "files-system-reflection_engine.html",
@@ -400,7 +402,8 @@
     },
     {
       "file": "module-system-knowledge_memory.html",
-      "source_sha256": "cb632c8b8639363a29f1a321c426377ea58a9e1af872cfda6901de700bc816dd"
+      "source_sha256": "9a012f99167b64272e9042d8edcad5f4581ed46e0242128766247b4165b4566b",
+      "implementation_sha256": "3366ffd4f223f654d418b0e68bb8a5e05a9f376f5b25a04d4110453da6ff6a94"
     },
     {
       "file": "module-system-reflection_engine.html",
@@ -546,7 +549,7 @@
     },
     {
       "file": "diagrams/runtime-sequences.drawio",
-      "sha256": "812aac2f2534c8d66995a46faf101e897b5cafab66f37553ad7b07fac6f4d6c4"
+      "sha256": "4420008df48c99fd61540d7a06013160688b686fb7e83819dd2ade45b8bcb7d4"
     },
     {
       "file": "diagrams/runtime-sequences.html",
@@ -562,7 +565,7 @@
     },
     {
       "file": "diagrams/software-architecture.drawio",
-      "sha256": "682b344cb5c8fbed24ebee8d536e6a52eb98843b3acbe5ddf6719139f3abc9cc"
+      "sha256": "7bc6fb998394389805564edbf36cdc8cbeb42cec6185e77c2442756bb0f923eb"
     },
     {
       "file": "diagrams/software-architecture.html",
