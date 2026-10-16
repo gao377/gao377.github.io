@@ -698,10 +698,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>接口契约</h1><p class="am-sub">输入语义和执行状态同样重要</p><div class="am-head-meta"><span><b>doc_id</b>interfaces</span><span><b>implementation</b>0d81eb4a21a31e22</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>接口契约</h1><p class="am-sub">输入语义和执行状态同样重要</p><div class="am-head-meta"><span><b>doc_id</b>interfaces</span><span><b>implementation</b>0cca08c28d36cadd</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 一次能力调用</a><a href="#panel-B">B · 请求核心字段</a><a href="#panel-C">C · 坐标与单位</a><a href="#panel-D">D · 来源与时间</a><a href="#panel-E">E · 跨能力交接</a><a href="#panel-F">F · 扩展约束</a><a href="#panel-G">G · 系统任务入口</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 一次能力调用</a><a href="#panel-B">B · 请求核心字段</a><a href="#panel-C">C · 坐标与单位</a><a href="#panel-D">D · 来源与时间</a><a href="#panel-E">E · 跨能力交接</a><a href="#panel-F">F · 扩展约束</a><a href="#panel-G">G · 系统任务入口</a><a href="#panel-H">H · 系统 Skill 编译</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>一次能力调用</h2></header>
 <div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 265 657" width="265" height="657" role="img" aria-label="流程图：assess、submit、execution_id、get、running、terminal、cancel" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M132.5,49 L132.5,65 Q132.5,81 132.5,97 L132.5,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="104.5" y="72" width="56" height="18" rx="3"/><text x="132.5" y="81" text-anchor="middle" dominant-baseline="central">条件允许</text></g></g><g data-step="1"><path class="am-edge" d="M132.5,148 L132.5,164 Q132.5,180 132.5,196 L132.5,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="110.3" y="171" width="44.5" height="18" rx="3"/><text x="132.5" y="180" text-anchor="middle" dominant-baseline="central">已接受</text></g></g><g data-step="2"><path class="am-edge" d="M132.5,247 L132.5,263 Q132.5,279 132.5,295 L132.5,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="104.5" y="270" width="56" height="18" rx="3"/><text x="132.5" y="279" text-anchor="middle" dominant-baseline="central">查询状态</text></g></g><g data-step="3"><path class="am-edge" d="M132.5,346 L132.5,362 Q132.5,378 119,394 L105.4,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="104.5" y="369" width="56" height="18" rx="3"/><text x="132.5" y="378" text-anchor="middle" dominant-baseline="central">尚未完成</text></g></g><g data-step="4"><path class="am-edge" d="M75.8,410 L62.3,394 Q48.8,378 75.8,362 L102.9,346" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="369" width="67.5" height="18" rx="3"/><text x="48.8" y="378" text-anchor="middle" dominant-baseline="central">下一次查询</text></g></g><g data-step="5"><path class="am-edge" d="M158,346 L181.3,362 Q204.6,378 204.6,402.8 Q204.6,427.5 204.6,452.3 Q204.6,477 204.6,501.8 Q204.6,526.5 204.6,551.3 Q204.6,576 183.2,592 L161.7,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="159.4" y="468" width="90.5" height="18" rx="3"/><text x="204.6" y="477" text-anchor="middle" dominant-baseline="central">成功失败或取消</text></g></g><g data-step="6"><path class="am-edge" d="M90.6,445 L90.6,461 Q90.6,477 90.6,493 L90.6,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="62.6" y="468" width="56" height="18" rx="3"/><text x="90.6" y="477" text-anchor="middle" dominant-baseline="central">请求终止</text></g></g><g data-step="7"><path class="am-edge" d="M90.6,544 L90.6,560 Q90.6,576 106,592 L121.4,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="45.4" y="567" width="90.5" height="18" rx="3"/><text x="90.6" y="576" text-anchor="middle" dominant-baseline="central">确认停止与责任</text></g></g></g><g><g class="am-node am-node--rect" data-key="assess" data-step="0"><rect class="am-node-shape" x="96.7" y="14" width="71.7" height="35" rx="3"/><text x="132.5" y="31.5" text-anchor="middle" dominant-baseline="central">assess</text></g><g class="am-node am-node--rect" data-key="submit" data-step="0"><rect class="am-node-shape" x="97.8" y="113" width="69.3" height="35" rx="3"/><text x="132.5" y="130.5" text-anchor="middle" dominant-baseline="central">submit</text></g><g class="am-node am-node--rect" data-key="execution_id" data-step="1"><rect class="am-node-shape" x="79.5" y="212" width="106" height="35" rx="3"/><text x="132.5" y="229.5" text-anchor="middle" dominant-baseline="central">execution_id</text></g><g class="am-node am-node--rect" data-key="get" data-step="2"><rect class="am-node-shape" x="100.5" y="311" width="64" height="35" rx="3"/><text x="132.5" y="328.5" text-anchor="middle" dominant-baseline="central">get</text></g><g class="am-node am-node--rect" data-key="running" data-step="3"><rect class="am-node-shape" x="54.3" y="410" width="72.7" height="35" rx="3"/><text x="90.6" y="427.5" text-anchor="middle" dominant-baseline="central">running</text></g><g class="am-node am-node--rect" data-key="terminal" data-step="5"><rect class="am-node-shape" x="99.4" y="608" width="77.7" height="35" rx="3"/><text x="138.3" y="625.5" text-anchor="middle" dominant-baseline="central">terminal</text></g><g class="am-node am-node--rect" data-key="cancel" data-step="6"><rect class="am-node-shape" x="56.3" y="509" width="68.6" height="35" rx="3"/><text x="90.6" y="526.5" text-anchor="middle" dominant-baseline="central">cancel</text></g></g></svg></figure>
@@ -870,6 +870,15 @@ display 与 place 必须匹配物体、执行手和该上下文。
 结构化端口的职责和命令见<a href="module-system-team_runtime.html">系统任务运行</a>。</p>
 </div></div>
 </section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>系统 Skill 编译</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><code>/system/compile_plan</code>接收PlanDraft并返回TeamPlan；本接口不派发动作。
+Skill参数按版本化schema校验，再复用既有任务构建器。
+编译结果保留上下文快照ID与Skill版本，提交仍走submit_mission。</p>
+<p>静态编译检查implemented与协议版本；依赖前一步结果的ready由本机逐步检查。
+当前未分配角色返回ROLE_ASSIGNMENT_REQUIRED，多节点执行尚不开放。</p>
+</div></div>
+</section>
 </div>
 </div>
 </main>
@@ -888,7 +897,7 @@ display 与 place 必须匹配物体、执行手和该上下文。
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-16 23:13</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-16 23:25</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -896,7 +905,7 @@ title: 接口契约
 subtitle: 输入语义和执行状态同样重要
 lang: zh
 doc_id: interfaces
-implementation: 0d81eb4a21a31e22
+implementation: 0cca08c28d36cadd
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -982,6 +991,15 @@ JSON文档必须符合版本1公共契约；未知字段、重复键及非有限
 
 当前只支持单节点计划和CANCEL。执行来源保留SIM、REAL、MOCK、OFFLINE或UNAVAILABLE；不会将通信检查标成物理成功。
 结构化端口的职责和命令见[系统任务运行](module-system-team_runtime.html)。
+
+## 系统 Skill 编译
+
+`/system/compile_plan`接收PlanDraft并返回TeamPlan；本接口不派发动作。
+Skill参数按版本化schema校验，再复用既有任务构建器。
+编译结果保留上下文快照ID与Skill版本，提交仍走submit_mission。
+
+静态编译检查implemented与协议版本；依赖前一步结果的ready由本机逐步检查。
+当前未分配角色返回ROLE_ASSIGNMENT_REQUIRED，多节点执行尚不开放。
 </textarea>
 <script>
 (() => {
