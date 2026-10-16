@@ -148,8 +148,8 @@
     },
     {
       "file": "architecture-map.html",
-      "source_sha256": "fa22f8c2463a294d0552f7fe12d13a359633286d5956ad850eb415f860aefe36",
-      "implementation_sha256": "3366ffd4f223f654d418b0e68bb8a5e05a9f376f5b25a04d4110453da6ff6a94"
+      "source_sha256": "1bfb7b70ed62806479cf83b5672a8905b6e0b1c0026ae6eeba4323e343892b98",
+      "implementation_sha256": "1cef59487ab039aec2d48322690378df40180a385febbe68f4fad9200127ae15"
     },
     {
       "file": "architecture.html",
@@ -284,7 +284,8 @@
     },
     {
       "file": "files-system-team_verifier.html",
-      "source_sha256": "778fdbb676143fcc89e972ab7bc1e9b42159b9e8439cd64bf8c2579da8c611b6"
+      "source_sha256": "f87f278065cf2ec26d6b65df7ac501a44665671562b5cf596bed1d75e5daff8f",
+      "implementation_sha256": "1cef59487ab039aec2d48322690378df40180a385febbe68f4fad9200127ae15"
     },
     {
       "file": "getting-started.html",
@@ -416,12 +417,13 @@
     },
     {
       "file": "module-system-team_runtime.html",
-      "source_sha256": "7e3c6dacde1c4a634f71ea61dd889262fdaadff746716437f6c286d25f8a0653",
-      "implementation_sha256": "0d81eb4a21a31e228406a4ecb7c326c25392f21384a7c45ba4aedef1b2345e49"
+      "source_sha256": "6e948cbaacdbf893bc265c61ab7c094ca0f2cbc804b63ed22481f807cea1e431",
+      "implementation_sha256": "1cef59487ab039aec2d48322690378df40180a385febbe68f4fad9200127ae15"
     },
     {
       "file": "module-system-team_verifier.html",
-      "source_sha256": "74693b37fda0092cddc33bb2b1b58a63b3e483d284d84bb3792ca82489db1497"
+      "source_sha256": "3e6f84b692458f2650564154df60b71c1418d45beb60980f40e401a1b0c4fe80",
+      "implementation_sha256": "1cef59487ab039aec2d48322690378df40180a385febbe68f4fad9200127ae15"
     },
     {
       "file": "modules.html",
