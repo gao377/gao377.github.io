@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>系统任务运行 · team_runtime</h1><p class="am-sub">system_app 的模块责任与开发入口</p><div class="am-head-meta"><span><b>doc_id</b>module-system-team_runtime</span><span><b>implementation</b>12ea77e5d0bc6781</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>系统任务运行 · team_runtime</h1><p class="am-sub">system_app 的模块责任与开发入口</p><div class="am-head-meta"><span><b>doc_id</b>module-system-team_runtime</span><span><b>implementation</b>0d81eb4a21a31e22</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责</a><a href="#panel-B">B · 输入与输出</a><a href="#panel-C">C · 执行边界</a><a href="#panel-D">D · 算法与实现</a><a href="#panel-E">E · 开发检查</a><a href="#panel-F">F · 扩展与阅读</a></nav><div class="am-doc-body">
@@ -706,7 +706,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责</h2></header>
 <div class="am-panel-body"><div class="am-md"><p><strong>架构归属：SW-02 → TC-03。实现标记：P。</strong></p>
 <p><a href="architecture-map.html">系统与软件映射</a> · <a href="architecture.html">可编辑架构图</a></p>
-<p>提交任务并跟踪结果。</p>
+<p>受理结构化任务，持久化派发意图，查询机器人实际回执并转发取消。
+当前支持一个任务节点、一个机器人；自主规划和跨机分配尚未接入。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -720,11 +721,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </thead>
 <tbody><tr>
 <td>输入</td>
-<td>TaskAssignment与ROS动作反馈</td>
+<td>TaskRequest＋TeamPlan；节点内保留原 TaskAssignment schema2/3</td>
 </tr>
 <tr>
 <td>输出</td>
-<td>执行状态与完成回调</td>
+<td>mission_id、当前状态、阶段、实际下游结果及剩余责任</td>
 </tr>
 <tr>
 <td>下游或数据依赖</td>
@@ -738,19 +739,30 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>执行边界</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>保持任务身份与反馈关联，不能越过本机路由控制SDK。
 输入不足时明确返回原因，不构造假观测或假成功。</p>
+<p>外部交互提交已判定的功能请求。意图识别、对话和模式切换由交互实现负责。
+正式启动默认关闭旧文本样例；只有显式 <code>--legacy-interaction-fixture</code> 才开启。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
 <header class="am-panel-head"><span class="am-panel-id">D</span><h2>算法与实现</h2></header>
 <div class="am-panel-body"><div class="am-md"><p><a href="algo-task.html">task</a></p>
 <p><a href="files-system-team_runtime.html">本模块文件和符号索引</a></p>
+<p>请求与计划在 SQLite 事务提交后才派发。同一 request_id 与相同内容返回原 mission；内容变化明确拒绝。
+取消先进入 CANCELING，收到本机终态才结束。HOLD_OBJECT 等责任随结果保留。</p>
+<p>重启后未确认的任务进入 NEEDS_ATTENTION，不自动重发历史动作。
+当前尚无自动断连对账；需要核实下游状态，不能靠更换 request_id 绕过。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
 <header class="am-panel-head"><span class="am-panel-id">E</span><h2>开发检查</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>先查调用者、provider注册与配置，再改最小实现。
-运行 <code>tests/unit</code> 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。</p>
+<div class="am-panel-body"><div class="am-md"><p>入口和状态持久化由 CPU 检查验证；ROS 检查使用明确 OFFLINE 的下游端点，覆盖 CLI、查询、去重及取消。
+这些检查不证明机器人运动或物理任务成功。</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">ros2 run system_app system_app --data-dir runtime-data/system</span><span class="am-ln">ros2 run system_app mission submit --request request.json --plan plan.json</span><span class="am-ln">ros2 run system_app mission get --mission-id MISSION_ID</span><span class="am-ln">ros2 run system_app mission cancel --mission-id MISSION_ID --revision 1</span></code></pre></figure>
+<div class="am-md"><p>request.json 是 schema_version=1 的 TaskRequest；plan.json 是同版本 TeamPlan，包含一个 RobotAssignmentNode。
+节点里的 assignment 使用现有已校验 typed 任务，保留身份、参数和结果绑定。开发者可用 dataclasses.asdict 序列化公共类型。</p>
+<p>命令默认输出可读摘要，追加 <code>--json</code> 返回结构化数据；不会启动 Isaac 窗口。
+未提供 plan 时当前返回 PLANNER_UNAVAILABLE；PAUSE/RESUME 尚不支持，返回明确原因。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -762,7 +774,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 23:44</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-16 23:13</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -770,7 +782,7 @@ title: 系统任务运行 · team_runtime
 subtitle: system_app 的模块责任与开发入口
 lang: zh
 doc_id: module-system-team_runtime
-implementation: 12ea77e5d0bc6781
+implementation: 0d81eb4a21a31e22
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -781,14 +793,15 @@ implementation: 12ea77e5d0bc6781
 
 [系统与软件映射](architecture-map.html) · [可编辑架构图](architecture.html)
 
-提交任务并跟踪结果。
+受理结构化任务，持久化派发意图，查询机器人实际回执并转发取消。
+当前支持一个任务节点、一个机器人；自主规划和跨机分配尚未接入。
 
 ## B 输入与输出
 
 | 项目 | 内容 |
 | --- | --- |
-| 输入 | TaskAssignment与ROS动作反馈 |
-| 输出 | 执行状态与完成回调 |
+| 输入 | TaskRequest＋TeamPlan；节点内保留原 TaskAssignment schema2/3 |
+| 输出 | mission_id、当前状态、阶段、实际下游结果及剩余责任 |
 | 下游或数据依赖 | team_planner、robot_app、team_verifier |
 
 对外ROS能力遵循[统一契约](interfaces.html)。时间、坐标、来源不能由调用者省略。
@@ -798,17 +811,38 @@ implementation: 12ea77e5d0bc6781
 保持任务身份与反馈关联，不能越过本机路由控制SDK。
 输入不足时明确返回原因，不构造假观测或假成功。
 
+外部交互提交已判定的功能请求。意图识别、对话和模式切换由交互实现负责。
+正式启动默认关闭旧文本样例；只有显式 `--legacy-interaction-fixture` 才开启。
+
 ## D 算法与实现
 
 [task](algo-task.html)
 
 [本模块文件和符号索引](files-system-team_runtime.html)
 
+请求与计划在 SQLite 事务提交后才派发。同一 request_id 与相同内容返回原 mission；内容变化明确拒绝。
+取消先进入 CANCELING，收到本机终态才结束。HOLD_OBJECT 等责任随结果保留。
+
+重启后未确认的任务进入 NEEDS_ATTENTION，不自动重发历史动作。
+当前尚无自动断连对账；需要核实下游状态，不能靠更换 request_id 绕过。
+
 ## E 开发检查
 
-先查调用者、provider注册与配置，再改最小实现。
-运行 `tests/unit` 中引用本模块的测试；原生依赖需在对应算法环境检查。
-接口变化同步检查ROS消息映射和取消路径。物理行为另做同版本实验。
+入口和状态持久化由 CPU 检查验证；ROS 检查使用明确 OFFLINE 的下游端点，覆盖 CLI、查询、去重及取消。
+这些检查不证明机器人运动或物理任务成功。
+
+```bash
+ros2 run system_app system_app --data-dir runtime-data/system
+ros2 run system_app mission submit --request request.json --plan plan.json
+ros2 run system_app mission get --mission-id MISSION_ID
+ros2 run system_app mission cancel --mission-id MISSION_ID --revision 1
+```
+
+request.json 是 schema_version=1 的 TaskRequest；plan.json 是同版本 TeamPlan，包含一个 RobotAssignmentNode。
+节点里的 assignment 使用现有已校验 typed 任务，保留身份、参数和结果绑定。开发者可用 dataclasses.asdict 序列化公共类型。
+
+命令默认输出可读摘要，追加 `--json` 返回结构化数据；不会启动 Isaac 窗口。
+未提供 plan 时当前返回 PLANNER_UNAVAILABLE；PAUSE/RESUME 尚不支持，返回明确原因。
 
 ## F 扩展与阅读
 
