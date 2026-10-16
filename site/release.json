@@ -275,8 +275,8 @@
     },
     {
       "file": "files-system-team_runtime.html",
-      "source_sha256": "dc89e9be067d17502a3e79b79151962cf2fc21750ed47f472fee79563b90653b",
-      "implementation_sha256": "0d81eb4a21a31e228406a4ecb7c326c25392f21384a7c45ba4aedef1b2345e49"
+      "source_sha256": "940b0a44eed145e007b3565e6e265881705438c7fbeec00edabcad421cf69ee4",
+      "implementation_sha256": "71de5c260e787ad4c2251975869249bb8d6d778e7a87404ffcc3f50705d0bfff"
     },
     {
       "file": "files-system-team_verifier.html",
@@ -376,7 +376,8 @@
     },
     {
       "file": "module-system-capability_registry.html",
-      "source_sha256": "77efebdfad3c2aed785e2ab4d0fdd02d8288bcd77cf6afd1d5fa8df46253f175"
+      "source_sha256": "21cdf280014fd90c4643c079ce772466efa04cc4c799ddcd64b5fef43f85be7b",
+      "implementation_sha256": "71de5c260e787ad4c2251975869249bb8d6d778e7a87404ffcc3f50705d0bfff"
     },
     {
       "file": "module-system-config_manager.html",
@@ -384,7 +385,8 @@
     },
     {
       "file": "module-system-context_store.html",
-      "source_sha256": "f2e9c9b71a350f037deebe1ee0b849a98e29446d20f48eb81f127da0ee43988d"
+      "source_sha256": "db382329a26ac94b2961e72826d1a915e2e3d30130e7bfb5fa5b9036aa9a0282",
+      "implementation_sha256": "71de5c260e787ad4c2251975869249bb8d6d778e7a87404ffcc3f50705d0bfff"
     },
     {
       "file": "module-system-evidence_store.html",
