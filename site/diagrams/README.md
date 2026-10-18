@@ -5,6 +5,7 @@ with draw.io Desktop 32.3.0; SVG provides a static first-page preview.
 
 | File | Pages |
 | --- | --- |
+| agent-architecture.drawio | A1 layers; A2 global Agent; A3 local Agent; A4 heterogeneous collaboration; A5 HAL/SAL deployment; A6 execution sequence |
 | system-architecture.drawio | S2: 18 stable system responsibilities |
 | software-architecture.drawio | W1-A: task/control; W1-B: observations; W1-C: support/RSI; W4: deployment |
 | runtime-sequences.drawio | W3-A: task; W3-B: capability; W3-C: RSI design |
@@ -46,3 +47,9 @@ The drawing method follows the source-grounded, editable-XML and rendered-review
 approach described by [Aymen Furter](https://aymenfurter.ch/articles/better-architecture-diagrams-with-gpt-6-astra/).
 The figures retain this project's own architecture and code mappings.
 See the [official embed documentation](https://www.drawio.com/docs/manual/export/embed-html/).
+
+The `agent-global`, `agent-local`, `agent-team`, `agent-device` and `agent-sequence`
+HTML viewers focus pages 2–6 and the SVG files are static page exports of `agent-architecture.drawio`.
+Edit the multi-page source, then re-export the affected page with `--page-index N`.
+Agent component labels describe their own scope; the owning module may have a
+different overall status. Dashed purple edges denote unwired target behavior.

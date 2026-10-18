@@ -1,0 +1,636 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="32.3.0" type="device">
+  <diagram id="A1" name="A1 · 分层系统与两级 Agent">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1250" background="#ffffff" grid="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="A1 · 分层系统与两级 Agent" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="subtitle" value="主线箭头为调用方向，反馈沿原契约返回。右侧为共享支撑，不是串行控制层。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="1193" width="1520" height="38" />
+        </mxCell>
+        <mxCell id="interaction" value="&lt;b&gt;L0 · 外部交互 / TC-01 · SW-01&lt;/b&gt;&lt;br&gt;&lt;br&gt;内部留白，由用户实现提供；功能请求、显式控制、进度与呈现" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="40" y="160" width="1030" height="90" />
+        </mxCell>
+        <object id="global" label="&lt;b&gt;L1 · 系统级 Agent / TC-02—04&lt;/b&gt;&lt;br&gt;&lt;br&gt;SW-03 规划与分工 → SW-02 协调执行 → SW-04 目标核验；P / D" link="https://gao377.github.io/agent-global.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="40" y="300" width="1030" height="95" />
+          </mxCell>
+        </object>
+        <object id="local" label="&lt;b&gt;L2 · 每台机器人本机 Agent / RB-02 · SW-05&lt;/b&gt;&lt;br&gt;&lt;br&gt;任务受理、局部决策、步骤绑定、会话与恢复；固定执行 P，通用自主决策 D" link="https://gao377.github.io/agent-local.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="40" y="445" width="1030" height="95" />
+          </mxCell>
+        </object>
+        <object id="skills" label="&lt;b&gt;L3 · 专业能力 / RB-01、RB-03&lt;/b&gt;&lt;br&gt;&lt;br&gt;SW-06/07 导航与操作；SW-12/13/14 空间、感知和本体状态；已有实现 I" link="https://gao377.github.io/runtime-internals.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="40" y="590" width="1030" height="95" />
+          </mxCell>
+        </object>
+        <object id="body" label="&lt;b&gt;L4 · 本体执行 / RB-04—06&lt;/b&gt;&lt;br&gt;&lt;br&gt;SW-08/09/10/11 协调、执行、保护、网关；保护为 P，AMO 仍在应用侧" link="https://gao377.github.io/module-robot-body_gateway.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="40" y="735" width="1030" height="95" />
+          </mxCell>
+        </object>
+        <mxCell id="hal" value="&lt;b&gt;L5 · HAL 真机设备绑定&lt;/b&gt;&lt;br&gt;&lt;br&gt;SDK / 驱动 → 命令与测量；G1 已有绑定" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="40" y="880" width="485" height="95" />
+        </mxCell>
+        <mxCell id="sal" value="&lt;b&gt;L5 · SAL 仿真设备绑定&lt;/b&gt;&lt;br&gt;&lt;br&gt;同设备语义；MuJoCo 已接，Isaac 新版待接" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="585" y="880" width="485" height="95" />
+        </mxCell>
+        <mxCell id="real" value="&lt;b&gt;L6 · 真实机器人&lt;/b&gt;&lt;br&gt;&lt;br&gt;G1；M20 等其他本体按能力与驱动接入" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="40" y="1030" width="485" height="95" />
+        </mxCell>
+        <mxCell id="sim" value="&lt;b&gt;L6 · 仿真世界&lt;/b&gt;&lt;br&gt;&lt;br&gt;MuJoCo / Isaac；物理真值仅供独立评价" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="585" y="1030" width="485" height="95" />
+        </mxCell>
+        <object id="support" label="&lt;b&gt;SP-01—05 · 共享支撑&lt;/b&gt;&lt;br&gt;&lt;br&gt;SW-16 能力/Skill目录 P&lt;br&gt;SW-17 当前事实与快照 P&lt;br&gt;SW-18 知识与经验 P&lt;br&gt;SW-19 证据 P / SW-20 配置 M&lt;br&gt;&lt;br&gt;SW-24 模型调用：D，已有文本mock" link="https://gao377.github.io/agent-global.html#panel-E">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="1130" y="300" width="420" height="300" />
+          </mxCell>
+        </object>
+        <object id="evolution" label="&lt;b&gt;TC-04 + EV-01—03 · 验证与演化&lt;/b&gt;&lt;br&gt;&lt;br&gt;实际结果 → 目标核验 P&lt;br&gt;→ 反思 M → 候选 M&lt;br&gt;→ 评价/批准 M → 版本激活 D&lt;br&gt;&lt;br&gt;研发平台提供工具；运行系统拥有演化责任" link="https://gao377.github.io/agent-global.html#panel-F">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f0edf7;strokeColor=#8764a8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="1130" y="700" width="420" height="300" />
+          </mxCell>
+        </object>
+        <mxCell id="flow0" source="interaction" target="global" value="TaskRequest / TaskControl" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="flow1" source="global" target="local" value="单机 TaskAssignment；跨机协作由系统持有" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="flow2" source="local" target="skills" value="公共能力请求 / 反馈 / 结果" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="flow3" source="skills" target="body" value="动作参考与控制授权" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="flow4" source="body" target="hal" value="设备命令" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="flow5" source="body" target="sal" value="设备命令" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="flow6" source="hal" target="real" value="真实设备" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="flow7" source="sal" target="sim" value="模拟设备" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="lookup" source="global" target="support" value="查询" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.2;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="evidence" source="local" target="evolution" value="结果引用；演化待接" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1100" y="492" />
+              <mxPoint x="1100" y="850" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="A2" name="A2 · 系统级 Agent 内部职责">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1260" background="#ffffff" grid="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="A2 · 系统级 Agent 内部职责" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="subtitle" value="同一 system_app 内复用现有模块；调用方向见箭头。支撑目录按组件所列引用查询，避免把数据流挤成网状。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="1203" width="1520" height="38" />
+        </mxCell>
+        <mxCell id="planner" value="" vertex="1" parent="1" style="rounded=1;arcSize=5;fillColor=#f7f9fc;strokeColor=#d3dee8;">
+          <mxGeometry as="geometry" x="40" y="150" width="460" height="860" />
+        </mxCell>
+        <mxCell id="plannerlabel" value="TC-02 / SW-03 · team_planner" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="52" y="155" width="436" height="48" />
+        </mxCell>
+        <mxCell id="runtime" value="" vertex="1" parent="1" style="rounded=1;arcSize=5;fillColor=#f7f9fc;strokeColor=#d3dee8;">
+          <mxGeometry as="geometry" x="570" y="150" width="460" height="650" />
+        </mxCell>
+        <mxCell id="runtimelabel" value="TC-03 / SW-02 · team_runtime" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="582" y="155" width="436" height="48" />
+        </mxCell>
+        <mxCell id="supports" value="" vertex="1" parent="1" style="rounded=1;arcSize=5;fillColor=#f7f9fc;strokeColor=#d3dee8;">
+          <mxGeometry as="geometry" x="1100" y="150" width="460" height="860" />
+        </mxCell>
+        <mxCell id="supportslabel" value="SP 支撑 + SW-24" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="1112" y="155" width="436" height="48" />
+        </mxCell>
+        <mxCell id="context" value="&lt;b&gt;D · 规划上下文组装&lt;/b&gt;&lt;br&gt;&lt;br&gt;任务实体、目录、事实与记忆引用&lt;br&gt;按需查询 SW-16/17/18" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="65" y="230" width="410" height="125" />
+        </mxCell>
+        <mxCell id="proposal" value="&lt;b&gt;D · 计划提案 / 目标解析&lt;/b&gt;&lt;br&gt;&lt;br&gt;Skill 与目标条件 → PlanDraft&lt;br&gt;模型建议，不生成控制指令" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="65" y="425" width="410" height="125" />
+        </mxCell>
+        <mxCell id="allocation" value="&lt;b&gt;D · 异构角色分配&lt;/b&gt;&lt;br&gt;&lt;br&gt;硬条件筛选 → 归一化加权匹配&lt;br&gt;只分配当前可派发批次" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="65" y="620" width="410" height="125" />
+        </mxCell>
+        <object id="compile" label="&lt;b&gt;I · 确定性编译&lt;/b&gt;&lt;br&gt;&lt;br&gt;plan_compiler.py&lt;br&gt;模板、schema、依赖、版本与结果绑定" link="https://gao377.github.io/module-system-team_planner.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="65" y="815" width="410" height="125" />
+          </mxCell>
+        </object>
+        <object id="mission" label="&lt;b&gt;P · 请求、状态与持久化&lt;/b&gt;&lt;br&gt;&lt;br&gt;runtime.py / repository.py&lt;br&gt;当前一个 mission 节点；查询和取消已有" link="https://gao377.github.io/module-system-team_runtime.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="595" y="230" width="410" height="125" />
+          </mxCell>
+        </object>
+        <mxCell id="schedule" value="&lt;b&gt;D · 跨机依赖与修订调度&lt;/b&gt;&lt;br&gt;&lt;br&gt;只派发就绪节点；保留未完成责任&lt;br&gt;重连查询与任务级资源预留" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="595" y="425" width="410" height="125" />
+        </mxCell>
+        <mxCell id="dispatch" value="&lt;b&gt;I · 机器人连接与结果查询&lt;/b&gt;&lt;br&gt;&lt;br&gt;robot_clients.py&lt;br&gt;robot_id + instance_id + namespace" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="595" y="620" width="410" height="125" />
+        </mxCell>
+        <object id="verify" label="&lt;b&gt;P · TC-04 / SW-04 核验&lt;/b&gt;&lt;br&gt;&lt;br&gt;完整能力结果 + GoalPredicate&lt;br&gt;满足 / 不满足 / 未知；不以终态代替目标" link="https://gao377.github.io/module-system-team_verifier.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="595" y="850" width="410" height="125" />
+          </mxCell>
+        </object>
+        <mxCell id="catalog" value="&lt;b&gt;P · SW-16 能力与 Skill 目录&lt;/b&gt;&lt;br&gt;&lt;br&gt;实例、版本、implemented、ready&lt;br&gt;目录不能替代本机准入" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1125" y="230" width="410" height="125" />
+        </mxCell>
+        <mxCell id="facts" value="&lt;b&gt;P · SW-17 当前事实与快照&lt;/b&gt;&lt;br&gt;&lt;br&gt;来源、时钟、实例、有效性&lt;br&gt;不复制 SLAM 或本体估计" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1125" y="425" width="410" height="125" />
+        </mxCell>
+        <mxCell id="memory" value="&lt;b&gt;P · SW-18 知识记忆&lt;/b&gt;&lt;br&gt;&lt;br&gt;语义、空间标注、经历、过程经验&lt;br&gt;SQLite / 检索；自动经历写入待接" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1125" y="620" width="410" height="125" />
+        </mxCell>
+        <mxCell id="model" value="&lt;b&gt;D · SW-24 模型服务接入&lt;/b&gt;&lt;br&gt;&lt;br&gt;已有共享文本 mock，未接活动规划&lt;br&gt;只给决策建议，不持有执行权限" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1125" y="815" width="410" height="125" />
+        </mxCell>
+        <mxCell id="step0" source="context" target="proposal" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="step1" source="proposal" target="allocation" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="step2" source="allocation" target="compile" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="step3" source="mission" target="schedule" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="step4" source="schedule" target="dispatch" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="request" source="mission" target="context" value="目标 + 约束" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.5;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="compiled" source="compile" target="schedule" value="已编译计划" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.6;dashed=1;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="535" y="877" />
+              <mxPoint x="535" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="result" source="dispatch" target="verify" value="实际结果" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="footer" value="&lt;b&gt;机器人边界与当前实现&lt;/b&gt;&lt;br&gt;&lt;br&gt;TaskAssignment → 各机器人本机 Agent；反馈与完整结果 → team_verifier。&lt;br&gt;当前带计划的单节点请求可直接由 mission 派发；虚线多机路径尚未接入。" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="40" y="1050" width="1520" height="120" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="A3" name="A3 · 本机 Agent 内部职责">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1190" background="#ffffff" grid="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="A3 · 本机 Agent 内部职责" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="subtitle" value="RB-02 / SW-05 内部细化。任务选择与恢复留在本机任务层；视觉、导航、操作和设备算法留在各自模块。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="1133" width="1520" height="38" />
+        </mxCell>
+        <mxCell id="assignment" value="&lt;b&gt;任务输入 · TaskAssignment&lt;/b&gt;&lt;br&gt;&lt;br&gt;单机器人、版本、步骤、绑定、预算、已声明失败分支" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="160" width="920" height="100" />
+        </mxCell>
+        <mxCell id="escalation" value="&lt;b&gt;系统级决策边界&lt;/b&gt;&lt;br&gt;&lt;br&gt;改变目标 / 改派机器人 / 扩大预算&lt;br&gt;必须回到系统；不自行升级权限" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1040" y="160" width="510" height="100" />
+        </mxCell>
+        <mxCell id="working" value="&lt;b&gt;P · 受理与工作上下文&lt;/b&gt;&lt;br&gt;&lt;br&gt;runtime.py / state_machine.py&lt;br&gt;身份、步骤、结果、会话、责任" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="340" width="430" height="130" />
+        </mxCell>
+        <mxCell id="decision" value="&lt;b&gt;P / D · 本机有限决策&lt;/b&gt;&lt;br&gt;&lt;br&gt;已有候选选择；通用决策待接&lt;br&gt;只在任务允许范围内调整" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="560" y="340" width="430" height="130" />
+        </mxCell>
+        <mxCell id="recovery" value="&lt;b&gt;P · 本机恢复与反思&lt;/b&gt;&lt;br&gt;&lt;br&gt;task_recovery.py 声明恢复&lt;br&gt;通用反思提案 D；保留失败首因" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1070" y="340" width="480" height="130" />
+        </mxCell>
+        <mxCell id="steps" value="&lt;b&gt;I · 步骤推进与绑定&lt;/b&gt;&lt;br&gt;&lt;br&gt;capability_tasks.py&lt;br&gt;父结果、来源、会话与时限" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="580" width="430" height="130" />
+        </mxCell>
+        <object id="router" label="&lt;b&gt;I · 公共能力路由&lt;/b&gt;&lt;br&gt;&lt;br&gt;capability_router.py&lt;br&gt;readiness → execute → get / cancel" link="https://gao377.github.io/module-robot-local_task_runtime.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="560" y="580" width="430" height="130" />
+          </mxCell>
+        </object>
+        <mxCell id="observations" value="&lt;b&gt;I / D · 本机事实来源&lt;/b&gt;&lt;br&gt;&lt;br&gt;STATE / PERCEPTION / SPATIAL 已有&lt;br&gt;通用本机决策事实视图 D；按需读取" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1070" y="580" width="480" height="130" />
+        </mxCell>
+        <object id="nav" label="&lt;b&gt;I · SW-06 导航能力&lt;/b&gt;&lt;br&gt;&lt;br&gt;目标、探索、到位 → 路径与速度&lt;br&gt;不是任务编排器" link="https://gao377.github.io/module-robot-navigation_runtime.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="50" y="870" width="430" height="125" />
+          </mxCell>
+        </object>
+        <object id="manip" label="&lt;b&gt;I · SW-07 操作能力&lt;/b&gt;&lt;br&gt;&lt;br&gt;approach / pick / display / place&lt;br&gt;局部几何、选臂、IK、触觉" link="https://gao377.github.io/module-robot-manipulation_runtime.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="560" y="870" width="430" height="125" />
+          </mxCell>
+        </object>
+        <object id="spatial" label="&lt;b&gt;I · SW-12 空间会话&lt;/b&gt;&lt;br&gt;&lt;br&gt;build_map / localization 等&lt;br&gt;mapping_sessions 管生命周期" link="https://gao377.github.io/module-robot-spatial_runtime.html">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="1070" y="870" width="480" height="125" />
+          </mxCell>
+        </object>
+        <mxCell id="a" source="assignment" target="working" value="受理" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="b" source="working" target="decision" value="上下文" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="c" source="working" target="steps" value="当前步骤" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="d" source="decision" target="router" value="候选经校验" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e" source="steps" target="router" value="typed 请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="f" source="router" target="recovery" value="失败 / 责任" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=1;exitY=0.2;entryX=0;entryY=1;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1020" y="606" />
+              <mxPoint x="1020" y="510" />
+              <mxPoint x="1120" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g" source="recovery" target="escalation" value="超出本机权限" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.5;entryY=1;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="i" source="router" target="nav" value="导航请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="646" y="795" />
+              <mxPoint x="265" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j" source="router" target="manip" value="操作请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="k" source="router" target="spatial" value="会话请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.8;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="904" y="800" />
+              <mxPoint x="1310" y="800" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="responsibility" value="能力持续反馈 → 任务结果与 evidence_buffer → 系统。取消先等待能力停止和会话收尾；残余持物责任不自动释放。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="50" y="1040" width="1500" height="65" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="A4" name="A4 · G1 + M20 异构协作目标视图">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1260" background="#ffffff" grid="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="A4 · G1 + M20 异构协作目标视图" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="subtitle" value="虚线均为目标协作关系；当前 TeamPlan 仍只接受一个节点。示例角色不构成 M20 或多机物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="1203" width="1520" height="38" />
+        </mxCell>
+        <mxCell id="global" value="&lt;b&gt;系统级 Agent · 共同目标与分工&lt;/b&gt;&lt;br&gt;&lt;br&gt;能力与空间关系筛选 → 分配角色 → 管理跨机依赖和产物 → 逐目标核验" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="270" y="160" width="1060" height="110" />
+        </mxCell>
+        <mxCell id="m20" value="&lt;b&gt;机器人 A · M20 角色（D）&lt;/b&gt;&lt;br&gt;&lt;br&gt;robot_id / instance_id / namespace&lt;br&gt;按实际能力声明 exploration / navigation" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="370" width="470" height="130" />
+        </mxCell>
+        <mxCell id="g1" value="&lt;b&gt;机器人 B · G1 角色（P）&lt;/b&gt;&lt;br&gt;&lt;br&gt;robot_id / instance_id / namespace&lt;br&gt;navigation / manipulation / spatial" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1080" y="370" width="470" height="130" />
+        </mxCell>
+        <mxCell id="m20local" value="&lt;b&gt;本机 Agent A&lt;/b&gt;&lt;br&gt;&lt;br&gt;执行探索和建图会话&lt;br&gt;实际定位与传感反馈在本机" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="600" width="470" height="130" />
+        </mxCell>
+        <mxCell id="map" value="&lt;b&gt;共享产物引用&lt;/b&gt;&lt;br&gt;&lt;br&gt;MapRef / world / version / origin&lt;br&gt;不是共享本体局部坐标" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="600" y="600" width="400" height="130" />
+        </mxCell>
+        <mxCell id="g1local" value="&lt;b&gt;本机 Agent B&lt;/b&gt;&lt;br&gt;&lt;br&gt;核对地图和定位 → 导航 → 操作&lt;br&gt;操作继续使用本体局部测量" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1080" y="600" width="470" height="130" />
+        </mxCell>
+        <mxCell id="verified" value="&lt;b&gt;系统目标验证与恢复&lt;/b&gt;&lt;br&gt;&lt;br&gt;A 地图结果 + B 导航/操作结果 + 各自剩余责任&lt;br&gt;缺失或失联为 UNKNOWN；失败后恢复成功不改写原失败" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="270" y="925" width="1060" height="125" />
+        </mxCell>
+        <mxCell id="a" source="global" target="m20" value="探索分工" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="b" source="global" target="g1" value="操作分工" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.8;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="c" source="m20" target="m20local" value="assignment" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="d" source="g1" target="g1local" value="assignment" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e" source="m20local" target="map" value="发布" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="f" source="map" target="g1local" value="消费" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="g" source="m20local" target="verified" value="实际结果" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.2;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="h" source="g1local" target="verified" value="实际结果" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.8;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="bound" value="共同世界与有效变换是交接前提。每机器人首版一个活动 assignment；跨机物理交接与协同持物需要独立能力契约。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="50" y="1100" width="1500" height="65" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="A5" name="A5 · 应用、HAL / SAL 与物理世界">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1320" background="#ffffff" grid="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="A5 · 应用、HAL / SAL 与物理世界" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="subtitle" value="蓝色向下：命令；绿色向上/向左：观测。HAL 与 SAL 二选一；策略在应用侧，评价真值不进入 Agent。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="1263" width="1520" height="38" />
+        </mxCell>
+        <mxCell id="system" value="&lt;b&gt;system_app · 工控机&lt;/b&gt;&lt;br&gt;&lt;br&gt;系统 Agent、目录、记忆、证据；跨机器人发送任务与接收结果" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="150" width="1500" height="95" />
+        </mxCell>
+        <mxCell id="caps" value="&lt;b&gt;robot_app · 本机 Agent 与能力&lt;/b&gt;&lt;br&gt;&lt;br&gt;SW-05 任务 → SW-06/07 导航与操作" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="340" width="650" height="110" />
+        </mxCell>
+        <mxCell id="obs" value="&lt;b&gt;robot_app · 观测服务&lt;/b&gt;&lt;br&gt;&lt;br&gt;SW-12 空间 / SW-13 感知 / SW-14 状态&lt;br&gt;直接供给能力、策略、执行和保护" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="950" y="340" width="600" height="110" />
+        </mxCell>
+        <mxCell id="execute" value="&lt;b&gt;本体执行 · SW-08/09/10&lt;/b&gt;&lt;br&gt;&lt;br&gt;控制租约、轨迹执行、停止；保护机制部分实现" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="530" width="650" height="110" />
+        </mxCell>
+        <mxCell id="sensors" value="&lt;b&gt;sensor_adapters · SW-15&lt;/b&gt;&lt;br&gt;&lt;br&gt;单位、轴序、坐标、源时间、epoch 和来源" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="950" y="530" width="600" height="110" />
+        </mxCell>
+        <mxCell id="gateway" value="&lt;b&gt;body_gateway + 本体后端 · SW-11&lt;/b&gt;&lt;br&gt;&lt;br&gt;运动策略（G1 AMO）+ 臂手参考 → 唯一命令出口&lt;br&gt;可替换策略；需要感知时只消费已有观测" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="720" width="650" height="125" />
+        </mxCell>
+        <mxCell id="contract" value="&lt;b&gt;共同设备语义&lt;/b&gt;&lt;br&gt;&lt;br&gt;DeviceManifest = 支持描述&lt;br&gt;device_status = 连接与反馈生命周期&lt;br&gt;二者均不授予运动权限" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="950" y="720" width="600" height="125" />
+        </mxCell>
+        <mxCell id="hal" value="&lt;b&gt;HAL · 真机驱动绑定&lt;/b&gt;&lt;br&gt;&lt;br&gt;Unitree SDK / REVO2 / 传感器驱动&lt;br&gt;其他机器人使用自己的绑定" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="200" y="955" width="530" height="125" />
+        </mxCell>
+        <mxCell id="sal" value="&lt;b&gt;SAL · 仿真设备绑定&lt;/b&gt;&lt;br&gt;&lt;br&gt;MuJoCo 生命周期已接入&lt;br&gt;Isaac 6.1 原生设备链待适配；不静默回退" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="870" y="955" width="530" height="125" />
+        </mxCell>
+        <mxCell id="real" value="&lt;b&gt;真实硬件&lt;/b&gt;&lt;br&gt;&lt;br&gt;设备状态是实测反馈，不是命令回显" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="200" y="1150" width="530" height="85" />
+        </mxCell>
+        <mxCell id="world" value="&lt;b&gt;仿真世界&lt;/b&gt;&lt;br&gt;&lt;br&gt;250Hz 物理 / 50Hz 控制 / 10Hz 传感为 G1 配置" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="870" y="1150" width="530" height="85" />
+        </mxCell>
+        <mxCell id="a" source="system" target="caps" value="TaskAssignment（反馈沿原契约返回）" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.22;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="b" source="caps" target="execute" value="动作参考" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="c" source="execute" target="gateway" value="授权命令" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="d" source="gateway" target="hal" value="真实命令" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.35;exitY=1;entryX=0.35;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e" source="gateway" target="sal" value="模拟命令" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.85;exitY=1;entryX=0.2;entryY=0;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="602" y="900" />
+              <mxPoint x="976" y="900" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f" source="hal" target="real" value="设备驱动" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="g" source="sal" target="world" value="物理后端" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="h" source="sensors" target="obs" value="规范化观测" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.5;entryY=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="i" source="obs" target="caps" value="状态与局部几何" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="j" source="hal" target="sensors" value="设备测量" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0.9;exitY=0;entryX=0.1;entryY=1;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="677" y="930" />
+              <mxPoint x="800" y="930" />
+              <mxPoint x="800" y="680" />
+              <mxPoint x="1010" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="k" source="sal" target="sensors" value="设备测量" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=1;entryY=0.5;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1580" y="1017" />
+              <mxPoint x="1580" y="585" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="A6" name="A6 · 跨层执行与反馈时序">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1320" background="#ffffff" grid="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="A6 · 跨层执行与反馈时序" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="subtitle" value="向下为时间。蓝色为已有请求路径，绿色为事实返回；紫色虚线为目标扩展，尚未接入活动主路径。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="1263" width="1520" height="38" />
+        </mxCell>
+        <mxCell id="human" value="&lt;b&gt;外部交互&lt;/b&gt;&lt;br&gt;&lt;br&gt;" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="40" y="150" width="230" height="70" />
+        </mxCell>
+        <mxCell id="humanline" edge="1" parent="1" style="endArrow=none;dashed=1;strokeColor=#b9c7d4;strokeWidth=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="155" y="220" />
+            <mxPoint as="targetPoint" x="155" y="1220" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="team" value="&lt;b&gt;系统 Agent&lt;/b&gt;&lt;br&gt;&lt;br&gt;" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="300" y="150" width="230" height="70" />
+        </mxCell>
+        <mxCell id="teamline" edge="1" parent="1" style="endArrow=none;dashed=1;strokeColor=#b9c7d4;strokeWidth=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="415" y="220" />
+            <mxPoint as="targetPoint" x="415" y="1220" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="knowledge" value="&lt;b&gt;目录 / 上下文 / 记忆&lt;/b&gt;&lt;br&gt;&lt;br&gt;" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="560" y="150" width="230" height="70" />
+        </mxCell>
+        <mxCell id="knowledgeline" edge="1" parent="1" style="endArrow=none;dashed=1;strokeColor=#b9c7d4;strokeWidth=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="675" y="220" />
+            <mxPoint as="targetPoint" x="675" y="1220" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="local" value="&lt;b&gt;本机 Agent&lt;/b&gt;&lt;br&gt;&lt;br&gt;" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="820" y="150" width="230" height="70" />
+        </mxCell>
+        <mxCell id="localline" edge="1" parent="1" style="endArrow=none;dashed=1;strokeColor=#b9c7d4;strokeWidth=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="935" y="220" />
+            <mxPoint as="targetPoint" x="935" y="1220" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cap" value="&lt;b&gt;专业能力&lt;/b&gt;&lt;br&gt;&lt;br&gt;" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1080" y="150" width="230" height="70" />
+        </mxCell>
+        <mxCell id="capline" edge="1" parent="1" style="endArrow=none;dashed=1;strokeColor=#b9c7d4;strokeWidth=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="1195" y="220" />
+            <mxPoint as="targetPoint" x="1195" y="1220" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="body" value="&lt;b&gt;执行 / 设备&lt;/b&gt;&lt;br&gt;&lt;br&gt;" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1340" y="150" width="230" height="70" />
+        </mxCell>
+        <mxCell id="bodyline" edge="1" parent="1" style="endArrow=none;dashed=1;strokeColor=#b9c7d4;strokeWidth=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="1455" y="220" />
+            <mxPoint as="targetPoint" x="1455" y="1220" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg0" value="1 功能请求&lt;br&gt;当前须带已编译计划" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="155" y="280" />
+            <mxPoint as="targetPoint" x="415" y="280" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg1" value="2 自主规划按需查询&lt;br&gt;目标扩展" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#8764a8;fontColor=#8764a8;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="415" y="350" />
+            <mxPoint as="targetPoint" x="675" y="350" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" value="3 有来源的事实&lt;br&gt;记忆与 Skill" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#8764a8;fontColor=#8764a8;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="675" y="420" />
+            <mxPoint as="targetPoint" x="415" y="420" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3" value="4 已冻结的单机 TaskAssignment" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="415" y="490" />
+            <mxPoint as="targetPoint" x="935" y="490" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4" value="5 绑定 / readiness&lt;br&gt;execute_goal" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="935" y="560" />
+            <mxPoint as="targetPoint" x="1195" y="560" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5" value="6 动作参考&lt;br&gt;受许可约束" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="1195" y="630" />
+            <mxPoint as="targetPoint" x="1455" y="630" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg6" value="7 实测本体反馈&lt;br&gt;执行状态" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#277a5b;fontColor=#277a5b;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="1455" y="700" />
+            <mxPoint as="targetPoint" x="1195" y="700" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg7" value="8 能力结果 + 条件 + 剩余责任" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#277a5b;fontColor=#277a5b;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="1195" y="770" />
+            <mxPoint as="targetPoint" x="935" y="770" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8" value="9 按声明恢复&lt;br&gt;仍保留失败记录" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="935" y="840" />
+            <mxPoint as="targetPoint" x="1195" y="840" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg9" value="10 assignment 结果 / 阶段证据" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#277a5b;fontColor=#277a5b;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="935" y="910" />
+            <mxPoint as="targetPoint" x="415" y="910" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg10" value="11 经 robot_clients 查询完整结果" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="415" y="980" />
+            <mxPoint as="targetPoint" x="1195" y="980" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg11" value="12 目标核验证据（实际来源）" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#277a5b;fontColor=#277a5b;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="1195" y="1050" />
+            <mxPoint as="targetPoint" x="415" y="1050" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg12" value="13 必要时修订未执行任务（目标）" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#8764a8;fontColor=#8764a8;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=1;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="415" y="1120" />
+            <mxPoint as="targetPoint" x="935" y="1120" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg13" value="14 结果 / UNKNOWN&lt;br&gt;剩余责任" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#277a5b;fontColor=#277a5b;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+          <mxGeometry as="geometry" relative="1">
+            <mxPoint as="sourcePoint" x="415" y="1190" />
+            <mxPoint as="targetPoint" x="155" y="1190" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
