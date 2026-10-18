@@ -298,7 +298,7 @@
     },
     {
       "file": "index.html",
-      "source_sha256": "368c8000a6acd51e91f8ba65df48f922f03926df1a71b845b5aedfef58080983",
+      "source_sha256": "cfe0528a4c51cffca6c54414eec2304fead25de97e6b5323a209fac5508a4e18",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
@@ -379,7 +379,8 @@
     },
     {
       "file": "module-system-candidate_builder.html",
-      "source_sha256": "4076679c3280fc67fff6c2ea666362b024b5f77a7b02846e7e38f1a4a7e77f34"
+      "source_sha256": "a95f9cd366f3596d14179cdb12fdc0f1a7b5f14832a4a3ee22aa118261f3d8be",
+      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "module-system-capability_registry.html",
@@ -401,7 +402,8 @@
     },
     {
       "file": "module-system-evolution_manager.html",
-      "source_sha256": "a7e61500bfafe0afdf5d7ffd0037826a0ae7e5ccf93a762b10c30c6d4148167c"
+      "source_sha256": "05e4c251d0004073178e72a74e0bc12b0e0e9cd53989b48304030ea3e7dc1ee9",
+      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "module-system-knowledge_memory.html",
@@ -410,7 +412,8 @@
     },
     {
       "file": "module-system-reflection_engine.html",
-      "source_sha256": "79ac3d5dc0e4a7fbb8ca175a5b2b9caeeb57122fcfe7f91a53d3f019b8dd0141"
+      "source_sha256": "152e74b73780eeb7a2c418b0bcc4a536fa79014e4af384fd05474ec9b7e88174",
+      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "module-system-team_planner.html",
@@ -488,27 +491,32 @@
     },
     {
       "file": "agent-architecture.html",
-      "source_sha256": "975cf19b0d740ab833040b25f8956605a2bbcfbfefc26a2ddf93a21f86e15537",
+      "source_sha256": "0da8251ae21b038e6d95bef829f39162c7037d2dcd3dad3e60c725f5b355857a",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "agent-contracts.html",
-      "source_sha256": "0bc7e69b53ece278a4e873f85bb20611f0fe3fb77c8e3534c5ebc474dd31f441",
+      "source_sha256": "a2282bf3ab7dca1358a5b9097b8b40687c56d8b3185577442a5a791125b56184",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "agent-global.html",
-      "source_sha256": "3366a09af0a0a32c4383b02d26c47916548996676bf7ddc2d4a3983f9b0c979a",
+      "source_sha256": "ed90c77deef19e4b38fc3a20ca9f1867b6863c8a3672195e62090151a7b67cd0",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "agent-local.html",
-      "source_sha256": "4cdcbeba3e4b7a31dfa7a420235a078c43df3f9ffc331391a7b7be412c0ac8ad",
+      "source_sha256": "34bc710741dd6edd1576396dc33e915fcf8b309d47dd6dea274c37082e4574b3",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "agent-aspire.html",
-      "source_sha256": "32e8320781e4b501f03b76e89746677e2241b5b7c49ce8892119831f051dc6d4",
+      "source_sha256": "16eb03164feab4417a30b9aefd6a84f73ab0f9e68587a923f02edb2ec933d241",
+      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+    },
+    {
+      "file": "agent-evolution.html",
+      "source_sha256": "7c2b1cae7297734d24cab7f4153402fc8b41e5fa14a7013d313517534c6e69e8",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     }
   ],
@@ -519,51 +527,59 @@
     },
     {
       "file": "diagrams/agent-architecture.drawio",
-      "sha256": "7c7d1a85fb2f180f2f7c1788ecf0729a84cfb33bf8004235a038bcfe65e52dd5"
+      "sha256": "ff5a517a685ab0d1842c0e0ce0bea0748d7ee188a17f994511a946c3cc9f67b6"
     },
     {
       "file": "diagrams/agent-architecture.html",
-      "sha256": "865e9ea91b86acb00f90390f65f1e353a18352b8fc342213f53a566ab2cd98f6"
+      "sha256": "0315759fafa2bf9e1d429302aa75754c8cc287740101d65f55af39db25bbc95c"
     },
     {
       "file": "diagrams/agent-architecture.svg",
-      "sha256": "ddbaaa7bf1c443b9a50c9d08ad6f1492829842b53d4e10b6cb82e9f2a1ba7aba"
+      "sha256": "4081d1e54087f664ae52a31ba055e95a68fac0cd2e7958a1ebc8ec4f8f668e58"
     },
     {
       "file": "diagrams/agent-device.html",
-      "sha256": "72d791c344cbcef2b6e02d1048481bcb18a664685076659de475b91a9d0f5cda"
+      "sha256": "c726540e969ebcf2ca61b556399a7bd9d8fac8d4306bce28bbbcf1619fd9db58"
     },
     {
       "file": "diagrams/agent-device.svg",
       "sha256": "e22303b50525f28faf220da0d8232f4e75b765b98aa120f3691486d5b1299c87"
     },
     {
+      "file": "diagrams/agent-evolution.html",
+      "sha256": "2aaae36166796bda53b358e9157cef9b2a14a90061b1ab14857fe32c38d8453a"
+    },
+    {
+      "file": "diagrams/agent-evolution.svg",
+      "sha256": "487728f46cb9c9da659df80801692235bcf65d38028026c79fc5c6261245ca68"
+    },
+    {
       "file": "diagrams/agent-global.html",
-      "sha256": "131546c2fc8b9805894c2b689556a2fe42e0099685fb32b3f41a6035c7adbf02"
+      "sha256": "b6523d2e7042de8d1ea18e7651f3d7442209430e37927e3f3bb9fffd7c603f19"
     },
     {
       "file": "diagrams/agent-global.svg",
-      "sha256": "9ae8aebb57cef6d090699f4753c0edd008a0d2a9c2fd4382b47ba65745f50377"
+      "sha256": "72ab83f827ec7d823beef16005f67fb14042b5f734f05119910231b7c65fd7c9"
     },
     {
       "file": "diagrams/agent-local.html",
-      "sha256": "655957b3dfa3828a9001cce1df193e1542beed4c7680e4143512a387b8bf1d79"
+      "sha256": "ca4574a1d3154da82109a5430f99efa813c2214415cb8ce47f1b643bdb6fb26c"
     },
     {
       "file": "diagrams/agent-local.svg",
-      "sha256": "8d1daf553ee37cf4cfbee7032db72b3adfdab09e38007e3bda6290b2c5be9525"
+      "sha256": "ccbae7b5bb1189ff50e85fb4c14293691194d776538198c95c07fe2cfd083398"
     },
     {
       "file": "diagrams/agent-sequence.html",
-      "sha256": "79396c213f235a8a5dc5f9d0c989e146d094010d5c793e1297e61ca198ceed0f"
+      "sha256": "b6eaa6de9244b82637e206fbcaa95def1e375ba9dd54a7187751a8dac59df345"
     },
     {
       "file": "diagrams/agent-sequence.svg",
-      "sha256": "bc0bdfeb482f5ab956e1c3db08f941dbeba9966e7694fdbe46b296ca72618596"
+      "sha256": "aee9f85c76a94f9f4a2e2b6fac9a7b6d73ddb050173da177335ab92d801d211b"
     },
     {
       "file": "diagrams/agent-team.html",
-      "sha256": "ab1bc805a0eef0d8d157ee90deb26c8254cf12286d9e650376b59248e85bf770"
+      "sha256": "9c41ba17e384992e6c850ac7a0a680c2832e2058eeaa936e8c3aab6ed7b688a3"
     },
     {
       "file": "diagrams/agent-team.svg",

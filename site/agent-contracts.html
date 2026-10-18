@@ -701,7 +701,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <header class="am-head"><h1>Agent 跨层契约与执行时序</h1><p class="am-sub">请求、计划、能力、设备四类接口 · 数据所有权 · 多机与持物同步</p><div class="am-head-meta"><span><b>doc_id</b>agent-contracts</span><span><b>implementation</b>32a0ac226b766693</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 从任务目标到设备命令</a><a href="#panel-B">B · 身份、时间与空间的关联</a><a href="#panel-C">C · 谁拥有数据，谁消费数据</a><a href="#panel-D">D · 请求、执行、核验和修订时序</a><a href="#panel-E">E · 部署与 HAL / SAL 设备视图</a><a href="#panel-F">F · 版本、恢复与演化</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 从任务目标到设备命令</a><a href="#panel-B">B · 身份、时间与空间的关联</a><a href="#panel-C">C · 谁拥有数据，谁消费数据</a><a href="#panel-D">D · 请求、执行、核验和修订时序</a><a href="#panel-E">E · 部署与 HAL / SAL 设备视图</a><a href="#panel-F">F · 版本、恢复与演化</a><a href="#panel-G">G · 本机反馈与演化的目标数据契约</a><a href="#panel-H">H · 编排修订与结果核验规则</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>从任务目标到设备命令</h2></header>
 <div class="am-panel-body"><div class="am-md"><p><a href="agent-architecture.html">分层总览</a> · <a href="agent-global.html">系统 Agent</a> · <a href="agent-local.html">本机 Agent</a></p>
@@ -960,15 +960,133 @@ MuJoCo 已有此边界；Isaac 6.1/Lab 3 的原生设备、传感器和任务链
 <td>静默 fallback 或假成功</td>
 </tr>
 </tbody></table></div>
-<p>技能经验、程序候选和原子能力的不同归属见<a href="agent-aspire.html#panel-E">ASPIRE参考设计</a>。
+<p>技能经验、程序候选和原子能力的不同归属见<a href="agent-evolution.html#panel-B">正式演化设计</a>。
 MCP可作为Agent工具门面；已有ROS任务契约与HAL/SAL保持原职责。</p>
 <p><a href="interface-catalog.html">现有接口目录</a> · <a href="architecture-map.html">软件与代码映射</a> · <a href="simulation.html">设备运行说明</a></p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>本机反馈与演化的目标数据契约</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>下表是新增设计字段，当前类型和 ROS 消息尚未完整提供。
+优先扩展既有 core 类型与记录，不新建平行任务协议。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>目标对象</th>
+<th>最小内容</th>
+<th>生产方 → 消费方</th>
+<th>当前复用基础</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LocalContextSnapshot</td>
+<td>assignment/revision、步骤、观测引用及年龄、已有结果、责任、预算、经验引用</td>
+<td>SW-05 context → planner/verifier</td>
+<td>ExecutionHandle＋现有观测接口</td>
+</tr>
+<tr>
+<td>DecisionProposal</td>
+<td>decision_id/seq、期望 revision/step、提案种类、候选/分支及参数、依据引用</td>
+<td>SW-05 planner → 原任务执行器</td>
+<td>navigation_targets、声明恢复；通用类型 D</td>
+</tr>
+<tr>
+<td>StepAssessment</td>
+<td>step/execution_id、预期效果、SATISFIED/UNSATISFIED/UNKNOWN、证据及责任</td>
+<td>SW-05 verifier → 决策/系统</td>
+<td>能力 overall_verdict 与条件结果</td>
+</tr>
+<tr>
+<td>EvidenceSpan</td>
+<td>身份链、phase/provider、输入摘要、结果、源时间、耗时、关键帧引用</td>
+<td>能力/本机记录 → SW-19</td>
+<td>已有事件与结果，可靠关联待补</td>
+</tr>
+<tr>
+<td>ReflectionReport</td>
+<td>失败分类、observed/inferred/unknown、假设、证据和反例</td>
+<td>SW-21 → SW-22/23、SW-18</td>
+<td>当前 mock</td>
+</tr>
+<tr>
+<td>SkillCandidate</td>
+<td>candidate_id、父版本、差异/摘要、假设、所需能力和适用范围</td>
+<td>SW-22 → SW-23</td>
+<td>当前 mock</td>
+</tr>
+<tr>
+<td>ValidationReport</td>
+<td>程序或经验轨道、条件集、基线、指标、失败、来源、判定</td>
+<td>SW-23 验证 job → 发布决定</td>
+<td>当前 mock；与在线 VerificationReport 分开</td>
+</tr>
+<tr>
+<td>SkillKnowledge / SkillArtifact</td>
+<td>各自版本、兼容范围、验证引用；工件再含可信实现与摘要</td>
+<td>SW-18 或 SW-16/20 → planner/本机</td>
+<td>MemoryRecord、SkillManifest 与目录</td>
+</tr>
+</tbody></table></div>
+<p>模型调用只返回结构化提案；它不能修改执行状态或写设备。
+调用时固定上下文版本，返回时核对当前 revision、步骤与取消状态。
+观测带真实源时间；模型回复时间不能替代测量时间。
+参数单位、空间来源和父结果绑定继续由既有能力合同校验。</p>
+<p>Knowledge 与 Artifact 用引用关联，允许独立升级。
+MCP 工具描述若启用，应由同一目录生成，不维护第二份手写 schema。
+没有共享世界变换时，不把另一台机器人的局部对象直接交给本机能力。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>编排修订与结果核验规则</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>情况</th>
+<th>确定性处理</th>
+<th>状态边界</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>已有分支/参数选择</td>
+<td>当前 assignment 内执行经授权提案</td>
+<td>当前 schema3 分支已有；通用提案绑定待补</td>
+</tr>
+<tr>
+<td>新增步骤或循环</td>
+<td>系统重编译未执行范围并形成新版本</td>
+<td>当前协议不支持就地变更；先完成接口扩展</td>
+</tr>
+<tr>
+<td>动作仍在执行</td>
+<td>保持旧请求身份，只读监测</td>
+<td>不因模型改口重复 execute_goal</td>
+</tr>
+<tr>
+<td>持物或停止责任未交接</td>
+<td>保持原责任链并报告系统</td>
+<td>不直接替换 assignment 或自动释放</td>
+</tr>
+<tr>
+<td>能力成功但目标证据不足</td>
+<td>步骤或系统核验为 UNKNOWN</td>
+<td>不把模型判断当传感确认</td>
+</tr>
+<tr>
+<td>恢复成功而原目标失败</td>
+<td>分别报告恢复与原目标结果</td>
+<td>不改写失败首因</td>
+</tr>
+</tbody></table></div>
+<p>新版本只有在合法步骤边界、无冲突动作且责任可交接时才应用。
+跨任务持物转移需专门契约；首版继续在同一 assignment 内完成抓放。</p>
+<p>步骤核验复用能力判据；系统核验检查业务目标；演化验证检查可复用改进。
+三者共享证据引用，但不互相代签成功。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-18 19:19</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-18 19:34</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1080,10 +1198,52 @@ MuJoCo 已有此边界；Isaac 6.1/Lab 3 的原生设备、传感器和任务链
 | 新策略候选 | EV 模块组织验证和批准，配置链激活 | 反思模块直接热改在线控制循环 |
 | 当前模块缺失 | 保持 D/M 状态和明确错误 | 静默 fallback 或假成功 |
 
-技能经验、程序候选和原子能力的不同归属见[ASPIRE参考设计](agent-aspire.html#panel-E)。
+技能经验、程序候选和原子能力的不同归属见[正式演化设计](agent-evolution.html#panel-B)。
 MCP可作为Agent工具门面；已有ROS任务契约与HAL/SAL保持原职责。
 
 [现有接口目录](interface-catalog.html) · [软件与代码映射](architecture-map.html) · [设备运行说明](simulation.html)
+
+## G 本机反馈与演化的目标数据契约
+
+下表是新增设计字段，当前类型和 ROS 消息尚未完整提供。
+优先扩展既有 core 类型与记录，不新建平行任务协议。
+
+| 目标对象 | 最小内容 | 生产方 → 消费方 | 当前复用基础 |
+| --- | --- | --- | --- |
+| LocalContextSnapshot | assignment/revision、步骤、观测引用及年龄、已有结果、责任、预算、经验引用 | SW-05 context → planner/verifier | ExecutionHandle＋现有观测接口 |
+| DecisionProposal | decision_id/seq、期望 revision/step、提案种类、候选/分支及参数、依据引用 | SW-05 planner → 原任务执行器 | navigation_targets、声明恢复；通用类型 D |
+| StepAssessment | step/execution_id、预期效果、SATISFIED/UNSATISFIED/UNKNOWN、证据及责任 | SW-05 verifier → 决策/系统 | 能力 overall_verdict 与条件结果 |
+| EvidenceSpan | 身份链、phase/provider、输入摘要、结果、源时间、耗时、关键帧引用 | 能力/本机记录 → SW-19 | 已有事件与结果，可靠关联待补 |
+| ReflectionReport | 失败分类、observed/inferred/unknown、假设、证据和反例 | SW-21 → SW-22/23、SW-18 | 当前 mock |
+| SkillCandidate | candidate_id、父版本、差异/摘要、假设、所需能力和适用范围 | SW-22 → SW-23 | 当前 mock |
+| ValidationReport | 程序或经验轨道、条件集、基线、指标、失败、来源、判定 | SW-23 验证 job → 发布决定 | 当前 mock；与在线 VerificationReport 分开 |
+| SkillKnowledge / SkillArtifact | 各自版本、兼容范围、验证引用；工件再含可信实现与摘要 | SW-18 或 SW-16/20 → planner/本机 | MemoryRecord、SkillManifest 与目录 |
+
+模型调用只返回结构化提案；它不能修改执行状态或写设备。
+调用时固定上下文版本，返回时核对当前 revision、步骤与取消状态。
+观测带真实源时间；模型回复时间不能替代测量时间。
+参数单位、空间来源和父结果绑定继续由既有能力合同校验。
+
+Knowledge 与 Artifact 用引用关联，允许独立升级。
+MCP 工具描述若启用，应由同一目录生成，不维护第二份手写 schema。
+没有共享世界变换时，不把另一台机器人的局部对象直接交给本机能力。
+
+## H 编排修订与结果核验规则
+
+| 情况 | 确定性处理 | 状态边界 |
+| --- | --- | --- |
+| 已有分支/参数选择 | 当前 assignment 内执行经授权提案 | 当前 schema3 分支已有；通用提案绑定待补 |
+| 新增步骤或循环 | 系统重编译未执行范围并形成新版本 | 当前协议不支持就地变更；先完成接口扩展 |
+| 动作仍在执行 | 保持旧请求身份，只读监测 | 不因模型改口重复 execute_goal |
+| 持物或停止责任未交接 | 保持原责任链并报告系统 | 不直接替换 assignment 或自动释放 |
+| 能力成功但目标证据不足 | 步骤或系统核验为 UNKNOWN | 不把模型判断当传感确认 |
+| 恢复成功而原目标失败 | 分别报告恢复与原目标结果 | 不改写失败首因 |
+
+新版本只有在合法步骤边界、无冲突动作且责任可交接时才应用。
+跨任务持物转移需专门契约；首版继续在同一 assignment 内完成抓放。
+
+步骤核验复用能力判据；系统核验检查业务目标；演化验证检查可复用改进。
+三者共享证据引用，但不互相代签成功。
 </textarea>
 <script>
 (() => {

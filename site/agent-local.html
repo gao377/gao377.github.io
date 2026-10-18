@@ -701,7 +701,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <header class="am-head"><h1>本机 Agent · 授权范围内的自主执行</h1><p class="am-sub">工作上下文 · 局部决策 · 能力路由 · 会话与恢复 · 结果上报</p><div class="am-head-meta"><span><b>doc_id</b>agent-local</span><span><b>implementation</b>32a0ac226b766693</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 本机 Agent 放在哪里</a><a href="#panel-B">B · 任务内部的七项职责</a><a href="#panel-C">C · 决策循环与权限</a><a href="#panel-D">D · 与专业能力的接口</a><a href="#panel-E">E · 执行、停止与恢复时序</a><a href="#panel-F">F · 本体执行层不属于 Agent 推理</a><a href="#panel-G">G · 开发定位</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 本机 Agent 放在哪里</a><a href="#panel-B">B · 任务内部的八项职责</a><a href="#panel-C">C · 决策循环与权限</a><a href="#panel-D">D · 与专业能力的接口</a><a href="#panel-E">E · 执行、停止与恢复时序</a><a href="#panel-F">F · 本体执行层不属于 Agent 推理</a><a href="#panel-G">G · 开发定位</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>本机 Agent 放在哪里</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>本机 Agent 的任务级职责归 RB-02 / SW-05 local_task_runtime。
@@ -715,7 +715,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>任务内部的七项职责</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>任务内部的八项职责</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -732,16 +732,16 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>P · 身份、幂等、状态已有；完整重启对账待补</td>
 </tr>
 <tr>
-<td>本机事实视图</td>
-<td>当前步骤＋所需字段 → 有来源的局部事实引用</td>
-<td>拟设 local_context.py；复用 state/perception/spatial 接口</td>
-<td>D · 通用视图；现有能力已各自消费观测</td>
+<td>本机事实与经验视图</td>
+<td>当前步骤、观测引用、适用经验 → 决策快照</td>
+<td>拟设 local_context.py；复用 state/perception/spatial 和 SW-18</td>
+<td>D · 通用视图；观测服务和知识检索已有</td>
 </tr>
 <tr>
 <td>有限决策与候选选择</td>
-<td>授权目标、局部事实、预算 → 当前步骤参数或替代提案</td>
+<td>授权范围、局部事实、预算 → 类型化 DecisionProposal</td>
 <td>navigation_targets.py；拟设 local_planner.py</td>
-<td>P · 路径候选选择已有；通用策略未接入</td>
+<td>P · 路径候选选择已有；模型策略未接入</td>
 </tr>
 <tr>
 <td>步骤推进与结果绑定</td>
@@ -754,6 +754,12 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>建图/定位会话、能力请求 → 执行 ID、反馈、结果</td>
 <td>mapping_sessions.py、capability_router.py</td>
 <td>I · 会话可跨多个步骤；算法仍归能力模块</td>
+</tr>
+<tr>
+<td>步骤效果核验</td>
+<td>能力条件结果＋步骤预期 → StepAssessment</td>
+<td>capability_tasks.py；拟设 local_verification.py</td>
+<td>P · 已检查终态与 overall_verdict；结构化核验待补</td>
 </tr>
 <tr>
 <td>本机恢复与升级</td>
@@ -775,8 +781,12 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-C">
 <header class="am-panel-head"><span class="am-panel-id">C</span><h2>决策循环与权限</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>目标循环：读取任务与事实 → 评估当前可执行性 → 选择已授权动作 → 校验 → 调用能力 → 观察结果 → 继续、恢复或升级。
-当前主路径采用确定性步骤与已声明恢复；模型式局部重规划属于目标设计。</p>
+<div class="am-panel-body"><div class="am-md"><p>目标循环：组装事实与经验 → 提出步骤 → 绑定和准入 → 执行监测 → 核验效果 → 继续、恢复或升级。
+采用 ASPIRE 的反馈执行机制，落在现有 SW-05 内。
+当前仍是确定性步骤与声明恢复；模型提案和通用反馈循环为 D。</p>
+<p>决策器只返回一个类型化提案，不持有执行器或设备写入对象。
+固定策略和模型策略使用同一输入、输出与校验。
+模型可在动作运行时只读分析；下一次动作必须经原执行链准入。</p>
 <div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -817,9 +827,51 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>未来本机模型返回类型化步骤、有限候选或编排修订提案。
 提案经同一 typed 校验与准入执行；没有模型时固定策略仍可运行。
 不要求每台机器人部署一个大模型，更不让模型进入每个控制周期。</p>
-<p>参考 ASPIRE，进一步细化为<a href="agent-aspire.html#panel-C">反馈驱动的技能编排</a>。
-技能程序可以组合已有能力；新的可复用程序版本先验证，再发布。
-当前仍只执行受控模板，不支持任意生成程序。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>提案种类（D）</th>
+<th>可以改变什么</th>
+<th>确定性检查</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CONTINUE</td>
+<td>推进已有就绪步骤</td>
+<td>依赖、父结果及当前版本一致</td>
+</tr>
+<tr>
+<td>SELECT_CANDIDATE</td>
+<td>选任务给定的站位、观察或目标候选</td>
+<td>候选在授权集合内；仍调用能力评估</td>
+</tr>
+<tr>
+<td>REQUEST_OBSERVATION</td>
+<td>查询已有观测，或选择已授权观察步骤</td>
+<td>查询无运动；改变视角必须走动作能力</td>
+</tr>
+<tr>
+<td>TAKE_RECOVERY</td>
+<td>走已声明恢复分支，或合同允许的重试</td>
+<td>前次动作已终止、责任可交接、预算未耗尽</td>
+</tr>
+<tr>
+<td>ESCALATE</td>
+<td>提交失败证据与建议给系统</td>
+<td>不私自改变目标、机器人或验收条件</td>
+</tr>
+<tr>
+<td>COMPLETE</td>
+<td>请求汇总 assignment 结果</td>
+<td>已核验目标与剩余责任决定最终状态</td>
+</tr>
+</tbody></table></div>
+<p>首版只选择 schema3 已编译分支与明确允许的参数。
+schema3 没有通用循环或动态改图；不能把这些提案当现有 API 调用。
+新编排需通过同一编译器，形成兼容版本后再接入。
+运行中的 assignment 不就地改写，也不重放已完成动作。</p>
+<p>任务内调整不需要每一步发布新 Skill。
+新的可复用程序进入<a href="agent-evolution.html">技能演化流程</a>。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
@@ -892,8 +944,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 <tr>
 <td>成功</td>
-<td>保存完整能力结果，推进依赖</td>
-<td>成功状态与条件结果一致</td>
+<td>保存能力结果，核验步骤效果，再推进依赖</td>
+<td>成功状态与实际条件一致；UNKNOWN 不当成功</td>
 </tr>
 <tr>
 <td>失败</td>
@@ -917,6 +969,18 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>“展示时讲解，讲完放下”需要新增通用阶段等待。
 目标设计在同一 assignment 内使用 WAIT_SIGNAL；当前 schema2/3 尚不支持。
 不能拆成两个普通任务并直接跨任务复用 holding_context，也不能用 sleep 代替讲解完成。</p>
+<p>目标循环内的决策阶段为：CONTEXT → DECIDE → ADMIT → RUNNING → ASSESS。
+ASSESS 按结果进入下一步骤、RECOVER、ESCALATE 或完成汇总。
+这些是拟设的内部阶段，不替换现有 ROS 任务状态枚举。</p>
+<p>每个提案绑定 assignment/revision、decision_seq 和所依据的结果/观测引用。
+应用前再次检查当前步骤、取消标记和实时 readiness。
+迟到模型输出作废，不能在取消后触发动作。
+本机重试预算与能力内部重试分别计数，防止循环放大。
+同一输入下反复失败、没有新证据或预算耗尽时升级系统。</p>
+<p>观测更新由决策需要和原能力规则触发，不要求每次推理重新拍图。
+遮挡后是否复用最后有效目标，由 perception/manipulation 的契约处理。
+Agent 保留观测年龄，不将旧测量标记为新鲜。
+模型超时也不改变正在执行的能力或持物责任。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-F">
@@ -936,6 +1000,43 @@ body_gateway 与本体后端合成命令，protection_runtime 及后端检查实
 <div class="am-panel-body"><div class="am-md"><p>本页内部文件相对于 <code>src/robot_app/robot_app/modules/local_task_runtime/</code>。
 core 契约位于 <code>src/embodied_core/embodied_core/</code>。
 拟设组件优先放入现有模块；当前不增加顶层服务或新的任务运行时。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>复用点</th>
+<th>设计修订的落点</th>
+<th>应检查的行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ExecutionHandle</td>
+<td>保存决策序号、快照引用与核验记录</td>
+<td>不复制完整观测，不修改历史能力结果</td>
+</tr>
+<tr>
+<td>capability_tasks / task_recovery</td>
+<td>接结构化步骤核验及合法提案</td>
+<td>失败恢复与原任务成功分开</td>
+</tr>
+<tr>
+<td>navigation_targets</td>
+<td>复用已有候选评估</td>
+<td>Agent 不计算导航路径或速度</td>
+</tr>
+<tr>
+<td>evidence_buffer</td>
+<td>增加提案、核验和恢复事件引用</td>
+<td>断连重传不能重复执行动作</td>
+</tr>
+<tr>
+<td>shared model_gateway</td>
+<td>注入可选模型策略</td>
+<td>模型不阻塞查询、反馈和取消</td>
+</tr>
+</tbody></table></div>
+<p>最小设计验收：一次能力失败→基于证据选择合法恢复→再执行→如实汇总。
+还须验证迟到提案丢弃、UNKNOWN 不放行、持物责任持续和断连对账。
+能力内部判据继续复用；不在任务层重新估计触觉、IK 或到位误差。</p>
 <p><a href="module-robot-local_task_runtime.html">本机任务模块</a> · <a href="files-robot-local_task_runtime.html">文件与符号</a> · <a href="interfaces.html">公共能力契约</a></p>
 <p>设计检查：目标和任务策略不下沉到能力；能力算法不上移到任务；设备 SDK 不泄漏到 Agent。
 实现状态与物理结果分别见<a href="architecture-map.html">软件映射</a>和<a href="experiments.html">实验说明</a>。</p>
@@ -944,7 +1045,7 @@ core 契约位于 <code>src/embodied_core/embodied_core/</code>。
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-18 19:20</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-18 19:34</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -972,15 +1073,16 @@ implementation: 32a0ac226b766693
 
 [全窗口查看 A3](diagrams/agent-local.html) · [可编辑图源](diagrams/agent-architecture.drawio) · [SVG 预览](diagrams/agent-local.svg)
 
-## B 任务内部的七项职责
+## B 任务内部的八项职责
 
 | 子组件 | 输入 → 输出 | 已有文件 / 拟设文件 | 状态与边界 |
 | --- | --- | --- | --- |
 | 任务受理与工作上下文 | TaskAssignment → 执行句柄、步骤结果、责任与预算 | runtime.py、state_machine.py | P · 身份、幂等、状态已有；完整重启对账待补 |
-| 本机事实视图 | 当前步骤＋所需字段 → 有来源的局部事实引用 | 拟设 local_context.py；复用 state/perception/spatial 接口 | D · 通用视图；现有能力已各自消费观测 |
-| 有限决策与候选选择 | 授权目标、局部事实、预算 → 当前步骤参数或替代提案 | navigation_targets.py；拟设 local_planner.py | P · 路径候选选择已有；通用策略未接入 |
+| 本机事实与经验视图 | 当前步骤、观测引用、适用经验 → 决策快照 | 拟设 local_context.py；复用 state/perception/spatial 和 SW-18 | D · 通用视图；观测服务和知识检索已有 |
+| 有限决策与候选选择 | 授权范围、局部事实、预算 → 类型化 DecisionProposal | navigation_targets.py；拟设 local_planner.py | P · 路径候选选择已有；模型策略未接入 |
 | 步骤推进与结果绑定 | 就绪步骤、前序结果 → typed 能力请求 | capability_tasks.py；core/task_capabilities.py | I · 不绕过坐标、来源、父结果和责任校验 |
 | 会话与能力路由 | 建图/定位会话、能力请求 → 执行 ID、反馈、结果 | mapping_sessions.py、capability_router.py | I · 会话可跨多个步骤；算法仍归能力模块 |
+| 步骤效果核验 | 能力条件结果＋步骤预期 → StepAssessment | capability_tasks.py；拟设 local_verification.py | P · 已检查终态与 overall_verdict；结构化核验待补 |
 | 本机恢复与升级 | 失败首因、停止结果、持物责任 → 声明恢复或升级 | task_recovery.py；拟设 local_reflection.py | P · 现有声明恢复；通用反思提案待接 |
 | 结果与证据汇总 | 实际能力结果 → assignment 结果、事件、剩余责任 | capability_tasks.py＋evidence_buffer | P · 结果与缓存已有；可靠事件对账待补 |
 
@@ -990,8 +1092,13 @@ implementation: 32a0ac226b766693
 
 ## C 决策循环与权限
 
-目标循环：读取任务与事实 → 评估当前可执行性 → 选择已授权动作 → 校验 → 调用能力 → 观察结果 → 继续、恢复或升级。
-当前主路径采用确定性步骤与已声明恢复；模型式局部重规划属于目标设计。
+目标循环：组装事实与经验 → 提出步骤 → 绑定和准入 → 执行监测 → 核验效果 → 继续、恢复或升级。
+采用 ASPIRE 的反馈执行机制，落在现有 SW-05 内。
+当前仍是确定性步骤与声明恢复；模型提案和通用反馈循环为 D。
+
+决策器只返回一个类型化提案，不持有执行器或设备写入对象。
+固定策略和模型策略使用同一输入、输出与校验。
+模型可在动作运行时只读分析；下一次动作必须经原执行链准入。
 
 | 事项 | 本机可做 | 必须升级到系统 |
 | --- | --- | --- |
@@ -1009,9 +1116,22 @@ implementation: 32a0ac226b766693
 提案经同一 typed 校验与准入执行；没有模型时固定策略仍可运行。
 不要求每台机器人部署一个大模型，更不让模型进入每个控制周期。
 
-参考 ASPIRE，进一步细化为[反馈驱动的技能编排](agent-aspire.html#panel-C)。
-技能程序可以组合已有能力；新的可复用程序版本先验证，再发布。
-当前仍只执行受控模板，不支持任意生成程序。
+| 提案种类（D） | 可以改变什么 | 确定性检查 |
+| --- | --- | --- |
+| CONTINUE | 推进已有就绪步骤 | 依赖、父结果及当前版本一致 |
+| SELECT_CANDIDATE | 选任务给定的站位、观察或目标候选 | 候选在授权集合内；仍调用能力评估 |
+| REQUEST_OBSERVATION | 查询已有观测，或选择已授权观察步骤 | 查询无运动；改变视角必须走动作能力 |
+| TAKE_RECOVERY | 走已声明恢复分支，或合同允许的重试 | 前次动作已终止、责任可交接、预算未耗尽 |
+| ESCALATE | 提交失败证据与建议给系统 | 不私自改变目标、机器人或验收条件 |
+| COMPLETE | 请求汇总 assignment 结果 | 已核验目标与剩余责任决定最终状态 |
+
+首版只选择 schema3 已编译分支与明确允许的参数。
+schema3 没有通用循环或动态改图；不能把这些提案当现有 API 调用。
+新编排需通过同一编译器，形成兼容版本后再接入。
+运行中的 assignment 不就地改写，也不重放已完成动作。
+
+任务内调整不需要每一步发布新 Skill。
+新的可复用程序进入[技能演化流程](agent-evolution.html)。
 
 ## D 与专业能力的接口
 
@@ -1037,7 +1157,7 @@ approach 只负责接近，不能在内部串入 pick、display 和 place。
 | 受理 | 校验 assignment 并建立句柄 | 身份、版本、步骤与来源合法 |
 | 每步开始 | 绑定前序结果，查询实时 readiness | 静态 implemented 不等于当前 ready |
 | 执行中 | 查询反馈；维持会话与时限 | 不自行发送关节或底座命令 |
-| 成功 | 保存完整能力结果，推进依赖 | 成功状态与条件结果一致 |
+| 成功 | 保存能力结果，核验步骤效果，再推进依赖 | 成功状态与实际条件一致；UNKNOWN 不当成功 |
 | 失败 | 保留首因，检查声明恢复 | 不把失败或跳过加入成功集合 |
 | 取消 | 请求能力取消并等待终态 | 停止责任与后台会话完成收尾 |
 | 结束 | 报告结果、持物和剩余责任 | 有责任则继续明确所有者，不自动放手 |
@@ -1049,6 +1169,21 @@ approach 只负责接近，不能在内部串入 pick、display 和 place。
 “展示时讲解，讲完放下”需要新增通用阶段等待。
 目标设计在同一 assignment 内使用 WAIT_SIGNAL；当前 schema2/3 尚不支持。
 不能拆成两个普通任务并直接跨任务复用 holding_context，也不能用 sleep 代替讲解完成。
+
+目标循环内的决策阶段为：CONTEXT → DECIDE → ADMIT → RUNNING → ASSESS。
+ASSESS 按结果进入下一步骤、RECOVER、ESCALATE 或完成汇总。
+这些是拟设的内部阶段，不替换现有 ROS 任务状态枚举。
+
+每个提案绑定 assignment/revision、decision_seq 和所依据的结果/观测引用。
+应用前再次检查当前步骤、取消标记和实时 readiness。
+迟到模型输出作废，不能在取消后触发动作。
+本机重试预算与能力内部重试分别计数，防止循环放大。
+同一输入下反复失败、没有新证据或预算耗尽时升级系统。
+
+观测更新由决策需要和原能力规则触发，不要求每次推理重新拍图。
+遮挡后是否复用最后有效目标，由 perception/manipulation 的契约处理。
+Agent 保留观测年龄，不将旧测量标记为新鲜。
+模型超时也不改变正在执行的能力或持物责任。
 
 ## F 本体执行层不属于 Agent 推理
 
@@ -1068,6 +1203,18 @@ G1 的 AMO 提供腿腰参考，臂手参考由操作与执行层提供。
 本页内部文件相对于 `src/robot_app/robot_app/modules/local_task_runtime/`。
 core 契约位于 `src/embodied_core/embodied_core/`。
 拟设组件优先放入现有模块；当前不增加顶层服务或新的任务运行时。
+
+| 复用点 | 设计修订的落点 | 应检查的行为 |
+| --- | --- | --- |
+| ExecutionHandle | 保存决策序号、快照引用与核验记录 | 不复制完整观测，不修改历史能力结果 |
+| capability_tasks / task_recovery | 接结构化步骤核验及合法提案 | 失败恢复与原任务成功分开 |
+| navigation_targets | 复用已有候选评估 | Agent 不计算导航路径或速度 |
+| evidence_buffer | 增加提案、核验和恢复事件引用 | 断连重传不能重复执行动作 |
+| shared model_gateway | 注入可选模型策略 | 模型不阻塞查询、反馈和取消 |
+
+最小设计验收：一次能力失败→基于证据选择合法恢复→再执行→如实汇总。
+还须验证迟到提案丢弃、UNKNOWN 不放行、持物责任持续和断连对账。
+能力内部判据继续复用；不在任务层重新估计触觉、IK 或到位误差。
 
 [本机任务模块](module-robot-local_task_runtime.html) · [文件与符号](files-robot-local_task_runtime.html) · [公共能力契约](interfaces.html)
 

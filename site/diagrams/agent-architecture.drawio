@@ -22,7 +22,7 @@
             <mxGeometry as="geometry" x="40" y="300" width="1030" height="95" />
           </mxCell>
         </object>
-        <object id="local" label="&lt;b&gt;L2 · 每台机器人本机 Agent / RB-02 · SW-05&lt;/b&gt;&lt;br&gt;&lt;br&gt;任务受理、局部决策、步骤绑定、会话与恢复；固定执行 P，通用自主决策 D" link="https://gao377.github.io/agent-local.html">
+        <object id="local" label="&lt;b&gt;L2 · 每台机器人本机 Agent / RB-02 · SW-05&lt;/b&gt;&lt;br&gt;&lt;br&gt;事实/经验 → 提案 → 能力执行 → 效果核验 → 恢复；固定执行 P，通用决策 D" link="https://gao377.github.io/agent-local.html">
           <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
             <mxGeometry as="geometry" x="40" y="445" width="1030" height="95" />
           </mxCell>
@@ -54,7 +54,7 @@
             <mxGeometry as="geometry" x="1130" y="300" width="420" height="300" />
           </mxCell>
         </object>
-        <object id="evolution" label="&lt;b&gt;TC-04 + EV-01—03 · 验证与演化&lt;/b&gt;&lt;br&gt;&lt;br&gt;实际结果 → 目标核验 P&lt;br&gt;→ 反思 M → 候选 M&lt;br&gt;→ 评价/批准 M → 版本激活 D&lt;br&gt;&lt;br&gt;研发平台提供工具；运行系统拥有演化责任" link="https://gao377.github.io/agent-global.html#panel-F">
+        <object id="evolution" label="&lt;b&gt;TC-04 + EV-01—03 · 验证与演化&lt;/b&gt;&lt;br&gt;&lt;br&gt;任务核验 P；反思 / 候选 / 演化 M&lt;br&gt;程序对照与经验复现两条轨道 D&lt;br&gt;验证后分别发布与激活&lt;br&gt;&lt;br&gt;研发平台提供工具；系统拥有演化责任" link="https://gao377.github.io/agent-evolution.html">
           <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f0edf7;strokeColor=#8764a8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
             <mxGeometry as="geometry" x="1130" y="700" width="420" height="300" />
           </mxCell>
@@ -132,7 +132,7 @@
         <mxCell id="context" value="&lt;b&gt;D · 规划上下文组装&lt;/b&gt;&lt;br&gt;&lt;br&gt;任务实体、目录、事实与记忆引用&lt;br&gt;按需查询 SW-16/17/18" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
           <mxGeometry as="geometry" x="65" y="230" width="410" height="125" />
         </mxCell>
-        <mxCell id="proposal" value="&lt;b&gt;D · 计划提案 / 目标解析&lt;/b&gt;&lt;br&gt;&lt;br&gt;Skill 与目标条件 → PlanDraft&lt;br&gt;模型建议，不生成控制指令" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+        <mxCell id="proposal" value="&lt;b&gt;D · 计划提案 / 目标解析&lt;/b&gt;&lt;br&gt;&lt;br&gt;Skill + 经验 + 目标 → PlanDraft&lt;br&gt;结构化提案，不生成控制指令" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
           <mxGeometry as="geometry" x="65" y="425" width="410" height="125" />
         </mxCell>
         <mxCell id="allocation" value="&lt;b&gt;D · 异构角色分配&lt;/b&gt;&lt;br&gt;&lt;br&gt;硬条件筛选 → 归一化加权匹配&lt;br&gt;只分配当前可派发批次" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
@@ -206,109 +206,115 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="A3" name="A3 · 本机 Agent 内部职责">
-    <mxGraphModel page="1" pageWidth="1600" pageHeight="1190" background="#ffffff" grid="1">
+  <diagram id="A3" name="A3 · 本机 Agent 反馈执行设计">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1570" background="#ffffff" grid="1">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="A3 · 本机 Agent 内部职责" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+        <mxCell id="title" value="A3 · 本机 Agent 反馈执行设计" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
           <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
         </mxCell>
-        <mxCell id="subtitle" value="RB-02 / SW-05 内部细化。任务选择与恢复留在本机任务层；视觉、导航、操作和设备算法留在各自模块。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+        <mxCell id="subtitle" value="同一 SW-05 内完成事实组装、提案、执行与效果核验。通用决策为 D；能力与设备保持原所有权。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
           <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
         </mxCell>
         <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
-          <mxGeometry as="geometry" x="40" y="1133" width="1520" height="38" />
+          <mxGeometry as="geometry" x="40" y="1513" width="1520" height="38" />
         </mxCell>
-        <mxCell id="assignment" value="&lt;b&gt;任务输入 · TaskAssignment&lt;/b&gt;&lt;br&gt;&lt;br&gt;单机器人、版本、步骤、绑定、预算、已声明失败分支" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-          <mxGeometry as="geometry" x="50" y="160" width="920" height="100" />
+        <mxCell id="assignment" value="&lt;b&gt;任务输入 · 固定 assignment / revision&lt;/b&gt;&lt;br&gt;&lt;br&gt;目标、已编译步骤、允许候选、恢复分支与预算" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="80" y="150" width="890" height="100" />
         </mxCell>
-        <mxCell id="escalation" value="&lt;b&gt;系统级决策边界&lt;/b&gt;&lt;br&gt;&lt;br&gt;改变目标 / 改派机器人 / 扩大预算&lt;br&gt;必须回到系统；不自行升级权限" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-          <mxGeometry as="geometry" x="1040" y="160" width="510" height="100" />
+        <mxCell id="system" value="&lt;b&gt;系统级 Agent&lt;/b&gt;&lt;br&gt;&lt;br&gt;改变目标、机器人或新增编排时升级&lt;br&gt;不由本机扩大授权" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1080" y="150" width="470" height="100" />
         </mxCell>
-        <mxCell id="working" value="&lt;b&gt;P · 受理与工作上下文&lt;/b&gt;&lt;br&gt;&lt;br&gt;runtime.py / state_machine.py&lt;br&gt;身份、步骤、结果、会话、责任" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-          <mxGeometry as="geometry" x="50" y="340" width="430" height="130" />
+        <mxCell id="context" value="&lt;b&gt;D · 本机事实与经验快照&lt;/b&gt;&lt;br&gt;&lt;br&gt;local_context.py（拟设）&lt;br&gt;任务结果、带源时间的观测引用、适用经验、预算" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="80" y="330" width="890" height="125" />
         </mxCell>
-        <mxCell id="decision" value="&lt;b&gt;P / D · 本机有限决策&lt;/b&gt;&lt;br&gt;&lt;br&gt;已有候选选择；通用决策待接&lt;br&gt;只在任务允许范围内调整" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-          <mxGeometry as="geometry" x="560" y="340" width="430" height="130" />
+        <mxCell id="sources" value="&lt;b&gt;P / D · 只读来源&lt;/b&gt;&lt;br&gt;&lt;br&gt;STATE / PERCEPTION / SPATIAL&lt;br&gt;SW-18 经验 + SW-16 已发布 Skill&lt;br&gt;数据接口已有；统一决策视图待补" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1080" y="330" width="470" height="150" />
         </mxCell>
-        <mxCell id="recovery" value="&lt;b&gt;P · 本机恢复与反思&lt;/b&gt;&lt;br&gt;&lt;br&gt;task_recovery.py 声明恢复&lt;br&gt;通用反思提案 D；保留失败首因" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-          <mxGeometry as="geometry" x="1070" y="340" width="480" height="130" />
+        <mxCell id="decision" value="&lt;b&gt;P / D · 类型化步骤提案&lt;/b&gt;&lt;br&gt;&lt;br&gt;已有候选选择；local_planner.py（拟设）&lt;br&gt;继续 / 观察 / 选择候选 / 恢复 / 升级；模型不执行动作" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="80" y="545" width="890" height="125" />
         </mxCell>
-        <mxCell id="steps" value="&lt;b&gt;I · 步骤推进与绑定&lt;/b&gt;&lt;br&gt;&lt;br&gt;capability_tasks.py&lt;br&gt;父结果、来源、会话与时限" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-          <mxGeometry as="geometry" x="50" y="580" width="430" height="130" />
+        <mxCell id="admit" value="&lt;b&gt;I / D · 绑定与准入&lt;/b&gt;&lt;br&gt;&lt;br&gt;父结果、来源与 readiness 已有&lt;br&gt;拟补提案 revision / decision_seq / 取消状态核对" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="80" y="760" width="890" height="125" />
         </mxCell>
-        <object id="router" label="&lt;b&gt;I · 公共能力路由&lt;/b&gt;&lt;br&gt;&lt;br&gt;capability_router.py&lt;br&gt;readiness → execute → get / cancel" link="https://gao377.github.io/module-robot-local_task_runtime.html">
+        <object id="capabilities" label="&lt;b&gt;I · 原专业能力&lt;/b&gt;&lt;br&gt;&lt;br&gt;navigation / manipulation / spatial&lt;br&gt;局部算法、连续纠偏与能力内恢复&lt;br&gt;AMO / HAL / SAL 保持原调用链" link="https://gao377.github.io/runtime-internals.html">
           <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-            <mxGeometry as="geometry" x="560" y="580" width="430" height="130" />
+            <mxGeometry as="geometry" x="1080" y="760" width="470" height="150" />
           </mxCell>
         </object>
-        <mxCell id="observations" value="&lt;b&gt;I / D · 本机事实来源&lt;/b&gt;&lt;br&gt;&lt;br&gt;STATE / PERCEPTION / SPATIAL 已有&lt;br&gt;通用本机决策事实视图 D；按需读取" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-          <mxGeometry as="geometry" x="1070" y="580" width="480" height="130" />
-        </mxCell>
-        <object id="nav" label="&lt;b&gt;I · SW-06 导航能力&lt;/b&gt;&lt;br&gt;&lt;br&gt;目标、探索、到位 → 路径与速度&lt;br&gt;不是任务编排器" link="https://gao377.github.io/module-robot-navigation_runtime.html">
+        <object id="execute" label="&lt;b&gt;I · 原任务执行器与路由&lt;/b&gt;&lt;br&gt;&lt;br&gt;capability_tasks / capability_router&lt;br&gt;execute_goal → execution_id → get / cancel；模型不阻塞监测" link="https://gao377.github.io/module-robot-local_task_runtime.html">
           <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-            <mxGeometry as="geometry" x="50" y="870" width="430" height="125" />
+            <mxGeometry as="geometry" x="80" y="975" width="890" height="125" />
           </mxCell>
         </object>
-        <object id="manip" label="&lt;b&gt;I · SW-07 操作能力&lt;/b&gt;&lt;br&gt;&lt;br&gt;approach / pick / display / place&lt;br&gt;局部几何、选臂、IK、触觉" link="https://gao377.github.io/module-robot-manipulation_runtime.html">
-          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-            <mxGeometry as="geometry" x="560" y="870" width="430" height="125" />
-          </mxCell>
-        </object>
-        <object id="spatial" label="&lt;b&gt;I · SW-12 空间会话&lt;/b&gt;&lt;br&gt;&lt;br&gt;build_map / localization 等&lt;br&gt;mapping_sessions 管生命周期" link="https://gao377.github.io/module-robot-spatial_runtime.html">
-          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#e5f3ed;strokeColor=#277a5b;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
-            <mxGeometry as="geometry" x="1070" y="870" width="480" height="125" />
-          </mxCell>
-        </object>
-        <mxCell id="a" source="assignment" target="working" value="受理" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.5;entryY=0;">
+        <mxCell id="evidence" value="&lt;b&gt;P / D · 阶段证据&lt;/b&gt;&lt;br&gt;&lt;br&gt;能力结果、首因和关键观测引用&lt;br&gt;evidence_buffer → SW-19&lt;br&gt;可靠关联与阶段 span 待补" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1080" y="975" width="470" height="150" />
+        </mxCell>
+        <mxCell id="assess" value="&lt;b&gt;P / D · 步骤效果核验&lt;/b&gt;&lt;br&gt;&lt;br&gt;已有终态与 overall_verdict；结构化 StepAssessment 拟补&lt;br&gt;满足 / 不满足 / 未知 + 剩余责任；UNKNOWN 不放行" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="80" y="1190" width="890" height="125" />
+        </mxCell>
+        <mxCell id="recovery" value="&lt;b&gt;P / D · 有限恢复与升级&lt;/b&gt;&lt;br&gt;&lt;br&gt;task_recovery 已有；通用建议待补&lt;br&gt;原失败保留，预算与责任先检查&lt;br&gt;合法分支回决策，超范围报系统" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="1080" y="1190" width="470" height="150" />
+        </mxCell>
+        <mxCell id="accept" source="assignment" target="context" value="受理" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="b" source="working" target="decision" value="上下文" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+        <mxCell id="facts" source="sources" target="context" value="事实 / 经验" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.5;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="c" source="working" target="steps" value="当前步骤" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+        <mxCell id="loop0" source="context" target="decision" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="d" source="decision" target="router" value="候选经校验" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+        <mxCell id="loop1" source="decision" target="admit" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="e" source="steps" target="router" value="typed 请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;">
+        <mxCell id="loop2" source="admit" target="execute" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="f" source="router" target="recovery" value="失败 / 责任" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=1;exitY=0.2;entryX=0;entryY=1;">
+        <mxCell id="loop3" source="execute" target="assess" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="request" source="execute" target="capabilities" value="公共请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=1;exitY=0.3;entryX=0;entryY=0.7;">
           <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="1020" y="606" />
-              <mxPoint x="1020" y="510" />
-              <mxPoint x="1120" y="510" />
+              <mxPoint x="1025" y="1012" />
+              <mxPoint x="1025" y="865" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="g" source="recovery" target="escalation" value="超出本机权限" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=0;entryX=0.5;entryY=1;dashed=1;">
+        <mxCell id="record" source="capabilities" target="evidence" value="结果与阶段引用" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
           <mxGeometry as="geometry" relative="1" />
         </mxCell>
-        <mxCell id="i" source="router" target="nav" value="导航请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.2;exitY=1;entryX=0.5;entryY=0;">
+        <mxCell id="evidence_result" source="evidence" target="assess" value="证据" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0;exitY=0.7;entryX=1;entryY=0.2;">
           <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="646" y="795" />
-              <mxPoint x="265" y="795" />
+              <mxPoint x="1025" y="1080" />
+              <mxPoint x="1025" y="1215" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="j" source="router" target="manip" value="操作请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
-          <mxGeometry as="geometry" relative="1" />
-        </mxCell>
-        <mxCell id="k" source="router" target="spatial" value="会话请求" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#42698d;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#42698d;labelBackgroundColor=#ffffff;exitX=0.8;exitY=1;entryX=0.5;entryY=0;">
+        <mxCell id="next" source="assess" target="context" value="下一步" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=0;entryY=0.5;dashed=1;">
           <mxGeometry as="geometry" relative="1">
             <Array as="points">
-              <mxPoint x="904" y="800" />
-              <mxPoint x="1310" y="800" />
+              <mxPoint x="42" y="1252" />
+              <mxPoint x="42" y="392" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="responsibility" value="能力持续反馈 → 任务结果与 evidence_buffer → 系统。取消先等待能力停止和会话收尾；残余持物责任不自动释放。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344c;spacing=4;">
-          <mxGeometry as="geometry" x="50" y="1040" width="1500" height="65" />
+        <mxCell id="failed" source="assess" target="recovery" value="失败 / 未知" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=1;exitY=0.7;entryX=0;entryY=0.7;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="escalate" source="recovery" target="system" value="升级" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=1;entryY=0.5;dashed=1;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1580" y="1265" />
+              <mxPoint x="1580" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="scope" value="有限恢复沿原声明分支回到决策与准入。首版不就地改图；新编排经系统编译。取消等待停止与会话收尾，持物责任不断链。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="50" y="1400" width="1500" height="90" />
         </mxCell>
       </root>
     </mxGraphModel>
@@ -594,7 +600,7 @@
             <mxPoint as="targetPoint" x="935" y="770" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="msg8" value="9 按声明恢复&lt;br&gt;仍保留失败记录" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
+        <mxCell id="msg8" value="9 核验效果后选择声明恢复&lt;br&gt;通用决策 D；保留原失败" edge="1" parent="1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#42698d;fontColor=#42698d;fontFamily=Noto Sans CJK SC;fontSize=17;labelBackgroundColor=#ffffff;dashed=0;">
           <mxGeometry as="geometry" relative="1">
             <mxPoint as="sourcePoint" x="935" y="840" />
             <mxPoint as="targetPoint" x="1195" y="840" />
@@ -629,6 +635,79 @@
             <mxPoint as="sourcePoint" x="415" y="1190" />
             <mxPoint as="targetPoint" x="155" y="1190" />
           </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="A7" name="A7 · 技能程序与经验双路演化">
+    <mxGraphModel page="1" pageWidth="1600" pageHeight="1490" background="#ffffff" grid="1">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="A7 · 技能程序与经验双路演化" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=30;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="22" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="subtitle" value="EV-01—03 / SW-21—23 当前为 mock。图为目标设计；两条验证独立出结论，不互相补签。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="82" width="1520" height="50" />
+        </mxCell>
+        <mxCell id="legend" value="I 已有功能代码 · P 部分/固定策略 · M mock · D 目标设计未接入；均不代表物理验收。" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#19344c;spacing=4;">
+          <mxGeometry as="geometry" x="40" y="1433" width="1520" height="38" />
+        </mxCell>
+        <object id="evidence" label="&lt;b&gt;SW-19 · 执行证据 P&lt;/b&gt;&lt;br&gt;&lt;br&gt;任务 → 步骤 → 能力执行 → 阶段/provider；实际结果、关键观测、失败与耗时&lt;br&gt;可靠关联与重传待补；不复制传感或记录系统" link="https://gao377.github.io/agent-contracts.html#panel-G">
+          <mxCell vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#fff2d7;strokeColor=#ab7928;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+            <mxGeometry as="geometry" x="50" y="150" width="1500" height="115" />
+          </mxCell>
+        </object>
+        <mxCell id="reflection" value="&lt;b&gt;SW-21 · 证据归因与改进假设 M&lt;/b&gt;&lt;br&gt;&lt;br&gt;区分 observed / inferred / unknown；找重复失败、适用条件和反例&lt;br&gt;缺证据先补观测；不将相关性直接写为原因" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f0edf7;strokeColor=#8764a8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="350" width="1500" height="115" />
+        </mxCell>
+        <mxCell id="candidate" value="&lt;b&gt;SW-22 · 程序候选 M&lt;/b&gt;&lt;br&gt;&lt;br&gt;父版本 + 假设 + 编排/参数差异 + 适用范围&lt;br&gt;复用 Skill 编译器；不改验收标准或控制器" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f0edf7;strokeColor=#8764a8;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="560" width="700" height="125" />
+        </mxCell>
+        <mxCell id="knowledge" value="&lt;b&gt;SW-21 · 经验提炼 D&lt;/b&gt;&lt;br&gt;&lt;br&gt;何时适用、如何执行、失败线索与恢复建议&lt;br&gt;关联证据；不是机器人可执行代码" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="850" y="560" width="700" height="125" />
+        </mxCell>
+        <mxCell id="program_test" value="&lt;b&gt;SW-23 · 程序对照与留出验证 D&lt;/b&gt;&lt;br&gt;&lt;br&gt;相同任务条件下比较基线与候选&lt;br&gt;目标效果、失败、耗时和范围；冻结留出集" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="810" width="700" height="125" />
+        </mxCell>
+        <mxCell id="knowledge_test" value="&lt;b&gt;SW-23 · 独立经验复现 D&lt;/b&gt;&lt;br&gt;&lt;br&gt;新会话仅用经验 + 任务 + 公共接口&lt;br&gt;不读原解法；同工位复现不等于泛化" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="850" y="810" width="700" height="125" />
+        </mxCell>
+        <mxCell id="program_release" value="&lt;b&gt;程序发布 → SW-16 / SW-20 D&lt;/b&gt;&lt;br&gt;&lt;br&gt;SkillArtifact + 验证范围 → 目录 / 分发&lt;br&gt;每实例激活回执；在途任务固定原版本" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="1060" width="700" height="125" />
+        </mxCell>
+        <mxCell id="knowledge_release" value="&lt;b&gt;经验发布 → SW-18 D&lt;/b&gt;&lt;br&gt;&lt;br&gt;SkillKnowledge 独立版本 + 兼容 Skill 引用&lt;br&gt;经验证经验可检索；候选与失败证据另存" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#f4f5f7;strokeColor=#8992a3;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="850" y="1060" width="700" height="125" />
+        </mxCell>
+        <mxCell id="consumers" value="&lt;b&gt;系统 / 本机 Agent 消费已验证产物&lt;/b&gt;&lt;br&gt;&lt;br&gt;经验只提供建议，Skill 仍经编译和能力准入。异构复用需核对能力、设备和来源；程序与知识不强制同版发布。" vertex="1" parent="1" style="rounded=1;arcSize=9;whiteSpace=wrap;html=1;fillColor=#eaf2fb;strokeColor=#42698d;strokeWidth=1.5;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#19344c;spacing=16;align=left;verticalAlign=middle;">
+          <mxGeometry as="geometry" x="50" y="1310" width="1500" height="100" />
+        </mxCell>
+        <mxCell id="observations" source="evidence" target="reflection" value="证据引用" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#277a5b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#277a5b;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="hypothesis" source="reflection" target="candidate" value="程序假设" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.23;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="experience" source="reflection" target="knowledge" value="经验假设" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.77;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="branch0" source="candidate" target="program_test" value="独立实验 job" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="branch1" source="knowledge" target="knowledge_test" value="独立经验验证 job" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="branch2" source="program_test" target="program_release" value="通过 + 发布决定" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="branch3" source="knowledge_test" target="knowledge_release" value="通过 + 发布决定" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="program" source="program_release" target="consumers" value="已激活程序" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.23;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="experience_out" source="knowledge_release" target="consumers" value="已验证经验" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeColor=#8764a8;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#8764a8;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.77;entryY=0;dashed=1;">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
       </root>
     </mxGraphModel>
