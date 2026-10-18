@@ -298,7 +298,7 @@
     },
     {
       "file": "index.html",
-      "source_sha256": "caf6cd01311dc2c17fd55315cd093f583faca5eff17bae0db9ef335eddb6a752",
+      "source_sha256": "368c8000a6acd51e91f8ba65df48f922f03926df1a71b845b5aedfef58080983",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
@@ -488,22 +488,27 @@
     },
     {
       "file": "agent-architecture.html",
-      "source_sha256": "85d9aec8aad360b9aec4334353a8fa4a0f0a123133624a07a7a2f67a34a66d7d",
+      "source_sha256": "975cf19b0d740ab833040b25f8956605a2bbcfbfefc26a2ddf93a21f86e15537",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "agent-contracts.html",
-      "source_sha256": "6d278546ba5ce71616cf64b371885e58999127bd3e5506111501339027171c14",
+      "source_sha256": "0bc7e69b53ece278a4e873f85bb20611f0fe3fb77c8e3534c5ebc474dd31f441",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "agent-global.html",
-      "source_sha256": "cab7f71a78ec954b4ede0d2f06e1bfd537fa1e2bc07fdc1d277ac19f99fe886a",
+      "source_sha256": "3366a09af0a0a32c4383b02d26c47916548996676bf7ddc2d4a3983f9b0c979a",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     },
     {
       "file": "agent-local.html",
-      "source_sha256": "ac9b60fd3a5b41d2fcf1b167070dd6ea66aa73511a795fa43700c83bcd2ce254",
+      "source_sha256": "4cdcbeba3e4b7a31dfa7a420235a078c43df3f9ffc331391a7b7be412c0ac8ad",
+      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+    },
+    {
+      "file": "agent-aspire.html",
+      "source_sha256": "32e8320781e4b501f03b76e89746677e2241b5b7c49ce8892119831f051dc6d4",
       "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
     }
   ],
