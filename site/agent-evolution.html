@@ -698,14 +698,15 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>技能经验与程序演化 · 系统设计</h1><p class="am-sub">执行证据到改进假设 · 两类验证 · 版本发布与异构复用</p><div class="am-head-meta"><span><b>doc_id</b>agent-evolution</span><span><b>implementation</b>32a0ac226b766693</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>技能经验与程序演化 · 系统设计</h1><p class="am-sub">执行证据到改进假设 · 两类验证 · 版本发布与异构复用</p><div class="am-head-meta"><span><b>doc_id</b>agent-evolution</span><span><b>implementation</b>8d625df7f6a1a6d5</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 三种反馈，不混成一个循环</a><a href="#panel-B">B · 知识、程序与原子能力分别管理</a><a href="#panel-C">C · 证据如何变成可验证的假设</a><a href="#panel-D">D · 程序验证与经验复现各自出结论</a><a href="#panel-E">E · 发布与激活是两个步骤</a><a href="#panel-F">F · 异构多机复用语义，分别验证执行</a><a href="#panel-G">G · 设计落地与验收范围</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 三种反馈，不混成一个循环</a><a href="#panel-B">B · 知识、程序与原子能力分别管理</a><a href="#panel-C">C · 证据如何变成可验证的假设</a><a href="#panel-D">D · 程序、经验命题与可传递性分别验证</a><a href="#panel-E">E · 发布与激活是两个步骤</a><a href="#panel-F">F · 异构多机复用语义，分别验证执行</a><a href="#panel-G">G · 设计落地与验收范围</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>三种反馈，不混成一个循环</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>本页将 ASPIRE 的可复用机制纳入系统正式目标设计。
-SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。</p>
+SW-21/22/23 已提供类型与 API 骨架，具体算法尚未实现。
+原显式 mock 未自动接入新端口；下述运行流程仍为设计，不代表已实现 RSI。</p>
 <div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -737,7 +738,7 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。</p
 <p>系统运行层负责改进假设、候选和版本生命周期。
 研发平台提供实验、构建和对比工具，供系统调用。
 本机不能因一次失败自行修改在线控制器。</p>
-<p><a href="agent-architecture.html">分层总览</a> · <a href="agent-global.html">系统 Agent</a> · <a href="agent-local.html">本机 Agent</a> · <a href="agent-aspire.html">研究依据</a></p>
+<p><a href="agent-architecture.html">分层总览</a> · <a href="agent-global.html">系统 Agent</a> · <a href="agent-local.html">本机 Agent</a> · <a href="agent-aspire.html">研究依据</a> · <a href="agent-api.html">框架 API</a></p>
 </div>
 <iframe title="技能程序与经验双路演化 A7" src="diagrams/agent-evolution.html" width="100%" height="900" loading="lazy" style="border:1px solid #d3dee8;border-radius:10px" allowfullscreen></iframe>
 <div class="am-md"><p><a href="diagrams/agent-evolution.html">全窗口查看 A7</a> · <a href="diagrams/agent-architecture.drawio">可编辑图源</a> · <a href="diagrams/agent-evolution.svg">SVG 预览</a></p>
@@ -779,7 +780,8 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。</p
 <td>稳定接口版本与实时 readiness；不归知识库执行</td>
 </tr>
 </tbody></table></div>
-<p>以上三个 Skill 名称是目标数据对象，不是当前已存在的 Python 类。
+<p>SkillCandidate 已有 Python 数据类，候选生成实现仍待接入。
+SkillKnowledge 与 SkillArtifact 仍是目标数据对象，不是已实现的同名 Python 类。
 现有 SkillManifest、MemoryRecord 和目录负责其最小实现起点。
 经验与程序独立版本化，通过引用关联，不强制一对一发布。
 改进经验表述不要求发布新程序；程序通过也不自动证明经验有效。</p>
@@ -808,20 +810,20 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。</p
 <tr>
 <td>SW-21 reflection_engine</td>
 <td>归类首因、提出经验候选、区分事实与假设</td>
-<td>同版本证据 → ReflectionReport</td>
-<td>runtime.py；failure_analysis.py 拟设</td>
+<td>同版本证据 → AnalysisReport</td>
+<td>api.py 已有；分析实现待接</td>
 </tr>
 <tr>
 <td>SW-22 candidate_builder</td>
 <td>将不同假设转成有限候选</td>
-<td>ReflectionReport＋基线 → SkillCandidate</td>
-<td>runtime.py；validation.py 拟设</td>
+<td>AnalysisReport＋基线 → SkillCandidate</td>
+<td>api.py 已有；生成实现待接</td>
 </tr>
 <tr>
 <td>SW-23 evolution_manager</td>
-<td>组织对照、复现及发布决定</td>
-<td>候选和验证范围 → 两类报告与决定</td>
-<td>runtime.py；evaluation.py、release.py 拟设</td>
+<td>组织程序、命题与可传递性验证</td>
+<td>候选和验证范围 → 作业与独立报告</td>
+<td>api.py 已有；调度、评价与发布待接</td>
 </tr>
 </tbody></table></div>
 <p>EvidenceSpan 关联 mission → assignment → step → capability execution → phase/provider。
@@ -838,7 +840,7 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。</p
 </div></div>
 </section>
 <section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>程序验证与经验复现各自出结论</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>程序、经验命题与可传递性分别验证</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -852,13 +854,19 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。</p
 <td>程序对照</td>
 <td>相同条件下执行基线及候选；先开发集再冻结留出集</td>
 <td>候选是否更有效，是否损害原能力</td>
-<td>ProgramValidation：目标结果、失败、耗时、适用范围</td>
+<td>ValidationReport · PROGRAM</td>
 </tr>
 <tr>
-<td>经验复现</td>
+<td>经验命题</td>
+<td>按命题类型检查日志、统计、反例或开展实验</td>
+<td>经验的事实与适用范围是否有证据</td>
+<td>ValidationReport · EXPERIENCE_CLAIM</td>
+</tr>
+<tr>
+<td>知识可传递性</td>
 <td>新会话只读经验、任务和公共接口，独立形成解法</td>
 <td>经验是否足够明确，能否指导另一 Agent</td>
-<td>KnowledgeValidation：复现结果、歧义和反例</td>
+<td>ValidationReport · KNOWLEDGE_TRANSFER</td>
 </tr>
 <tr>
 <td>在线目标核验</td>
@@ -868,7 +876,8 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。</p
 </tr>
 </tbody></table></div>
 <p>独立经验复现由 SW-23 的验证 job 组织，不增加在线 team_verifier 服务。
-验证器不能读取待验证经验对应的原始解法程序。
+可传递性验证器不能读取该经验对应的原始解法程序。
+经验命题检查可读取关联证据，不强制每条经验都重新求解任务。
 留出集不用于逐次修复；开发集效果与留出结果分别报告。
 同工位复现不能证明跨场景或跨机器人泛化。</p>
 <p>比较固定目标判据、场景/任务集、机器人与设备配置、软件版本和预算。
@@ -1001,7 +1010,7 @@ G1 与 M20 可以共享寻找目标、失败恢复等经验。
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-18 19:34</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-18 21:16</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1009,7 +1018,7 @@ title: 技能经验与程序演化 · 系统设计
 subtitle: 执行证据到改进假设 · 两类验证 · 版本发布与异构复用
 lang: zh
 doc_id: agent-evolution
-implementation: 32a0ac226b766693
+implementation: 8d625df7f6a1a6d5
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1017,7 +1026,8 @@ implementation: 32a0ac226b766693
 ## A 三种反馈，不混成一个循环
 
 本页将 ASPIRE 的可复用机制纳入系统正式目标设计。
-SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。
+SW-21/22/23 已提供类型与 API 骨架，具体算法尚未实现。
+原显式 mock 未自动接入新端口；下述运行流程仍为设计，不代表已实现 RSI。
 
 | 反馈范围 | 负责人 | 改变什么 | 何时执行 |
 | --- | --- | --- | --- |
@@ -1029,7 +1039,7 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。
 研发平台提供实验、构建和对比工具，供系统调用。
 本机不能因一次失败自行修改在线控制器。
 
-[分层总览](agent-architecture.html) · [系统 Agent](agent-global.html) · [本机 Agent](agent-local.html) · [研究依据](agent-aspire.html)
+[分层总览](agent-architecture.html) · [系统 Agent](agent-global.html) · [本机 Agent](agent-local.html) · [研究依据](agent-aspire.html) · [框架 API](agent-api.html)
 
 ```html
 &lt;iframe title=&quot;技能程序与经验双路演化 A7&quot; src=&quot;diagrams/agent-evolution.html&quot; width=&quot;100%&quot; height=&quot;900&quot; loading=&quot;lazy&quot; style=&quot;border:1px solid #d3dee8;border-radius:10px&quot; allowfullscreen&gt;&lt;/iframe&gt;
@@ -1046,7 +1056,8 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。
 | SkillArtifact | SkillManifest、可信实现引用、参数 schema、验证范围 | SW-16 登记描述，SW-20 分发工件 | skill_id/version/digest；以本机实际激活版本为准 |
 | AtomicCapability | 请求、评估、反馈、结果、取消及具体算法 | 各能力 runtime | 稳定接口版本与实时 readiness；不归知识库执行 |
 
-以上三个 Skill 名称是目标数据对象，不是当前已存在的 Python 类。
+SkillCandidate 已有 Python 数据类，候选生成实现仍待接入。
+SkillKnowledge 与 SkillArtifact 仍是目标数据对象，不是已实现的同名 Python 类。
 现有 SkillManifest、MemoryRecord 和目录负责其最小实现起点。
 经验与程序独立版本化，通过引用关联，不强制一对一发布。
 改进经验表述不要求发布新程序；程序通过也不自动证明经验有效。
@@ -1060,9 +1071,9 @@ SW-21/22/23 当前仍为 mock；下述流程为 D，不代表已实现 RSI。
 | 模块 | 内部职责 | 输入 → 输出 | 复用与拟设文件 |
 | --- | --- | --- | --- |
 | SW-19 evidence_store | 关联步骤、能力阶段与关键观测 | EvidenceSpan/结果引用 → 可查询执行证据 | runtime.py；repository.py 拟补可靠存储 |
-| SW-21 reflection_engine | 归类首因、提出经验候选、区分事实与假设 | 同版本证据 → ReflectionReport | runtime.py；failure_analysis.py 拟设 |
-| SW-22 candidate_builder | 将不同假设转成有限候选 | ReflectionReport＋基线 → SkillCandidate | runtime.py；validation.py 拟设 |
-| SW-23 evolution_manager | 组织对照、复现及发布决定 | 候选和验证范围 → 两类报告与决定 | runtime.py；evaluation.py、release.py 拟设 |
+| SW-21 reflection_engine | 归类首因、提出经验候选、区分事实与假设 | 同版本证据 → AnalysisReport | api.py 已有；分析实现待接 |
+| SW-22 candidate_builder | 将不同假设转成有限候选 | AnalysisReport＋基线 → SkillCandidate | api.py 已有；生成实现待接 |
+| SW-23 evolution_manager | 组织程序、命题与可传递性验证 | 候选和验证范围 → 作业与独立报告 | api.py 已有；调度、评价与发布待接 |
 
 EvidenceSpan 关联 mission → assignment → step → capability execution → phase/provider。
 记录输入摘要、实际输出、错误首因、源时间和关键帧引用。
@@ -1078,16 +1089,18 @@ EvidenceSpan 关联 mission → assignment → step → capability execution →
 新能力算法、VLA 训练和控制策略变化需独立研发与资格验证。
 候选生成不能通过放宽成功标准、保护或标定来提升通过率。
 
-## D 程序验证与经验复现各自出结论
+## D 程序、经验命题与可传递性分别验证
 
 | 验证轨道 | 输入与执行 | 回答的问题 | 输出 |
 | --- | --- | --- | --- |
-| 程序对照 | 相同条件下执行基线及候选；先开发集再冻结留出集 | 候选是否更有效，是否损害原能力 | ProgramValidation：目标结果、失败、耗时、适用范围 |
-| 经验复现 | 新会话只读经验、任务和公共接口，独立形成解法 | 经验是否足够明确，能否指导另一 Agent | KnowledgeValidation：复现结果、歧义和反例 |
+| 程序对照 | 相同条件下执行基线及候选；先开发集再冻结留出集 | 候选是否更有效，是否损害原能力 | ValidationReport · PROGRAM |
+| 经验命题 | 按命题类型检查日志、统计、反例或开展实验 | 经验的事实与适用范围是否有证据 | ValidationReport · EXPERIENCE_CLAIM |
+| 知识可传递性 | 新会话只读经验、任务和公共接口，独立形成解法 | 经验是否足够明确，能否指导另一 Agent | ValidationReport · KNOWLEDGE_TRANSFER |
 | 在线目标核验 | SW-04 查询实际能力结果并检查 GoalPredicate | 本次业务任务是否满足目标 | 原 VerificationReport |
 
 独立经验复现由 SW-23 的验证 job 组织，不增加在线 team_verifier 服务。
-验证器不能读取待验证经验对应的原始解法程序。
+可传递性验证器不能读取该经验对应的原始解法程序。
+经验命题检查可读取关联证据，不强制每条经验都重新求解任务。
 留出集不用于逐次修复；开发集效果与留出结果分别报告。
 同工位复现不能证明跨场景或跨机器人泛化。
 

@@ -496,13 +496,13 @@
     },
     {
       "file": "agent-contracts.html",
-      "source_sha256": "a2282bf3ab7dca1358a5b9097b8b40687c56d8b3185577442a5a791125b56184",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "7eb78b385d44a6ae987b6b80c64a84351adf4ace86886140e697b580e1915493",
+      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
     },
     {
       "file": "agent-global.html",
-      "source_sha256": "ed90c77deef19e4b38fc3a20ca9f1867b6863c8a3672195e62090151a7b67cd0",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "a5b294243ffcf64ff455c50ea88099a9d355be1fa219b0982f62cacd5d26b8a1",
+      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
     },
     {
       "file": "agent-local.html",
@@ -516,8 +516,13 @@
     },
     {
       "file": "agent-evolution.html",
-      "source_sha256": "7c2b1cae7297734d24cab7f4153402fc8b41e5fa14a7013d313517534c6e69e8",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "911544b91e0e9701bda2995ca1916deedf69de47bdec7e0db28d0888050965b9",
+      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
+    },
+    {
+      "file": "agent-api.html",
+      "source_sha256": "0d0de9354b605b4bac83306bdd6868762ab478ccbcbbf1d2dd2315354203a6a4",
+      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
     }
   ],
   "assets": [
