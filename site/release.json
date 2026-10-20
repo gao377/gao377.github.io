@@ -529,17 +529,17 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "a7ee1b06250d3b6e4b2baad068b2acdf8e2b087b34e8ab1a61c76c89a3930f62",
-      "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
+      "source_sha256": "20a8be35d784cfc72bbb3a0a0c5a2bdbed27d9c97e106c8baee24426aa2325fe",
+      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "interaction-integration.html",
-      "source_sha256": "d9494808507fce964502567e4bb25c2a7f6b7941933c685c1cf9ecedd0ef8101",
+      "source_sha256": "08ce086f61dd002baba729d1ee5fa757553330d21483462f963e5c09253d5877",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "958942d0a902cd29a452b9e0f7cbcb6b109aa1b46029405d0bea5349350b902c",
+      "source_sha256": "3c918497865c290243c7fbc8738763fa055bff88ad9b744b9672b27ffa537223",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {

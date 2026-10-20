@@ -698,16 +698,16 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>同仓库开发与调试</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>collaborative-development</span><span><b>implementation</b>455a6366b269c9c3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>同仓库开发与调试</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>collaborative-development</span><span><b>implementation</b>6368a1bf4538d3cb</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p>先读 <a href="module-ownership.html">目录所有权</a>。源码统一在本仓库；ROS、交互 Python 和原生 GPU 依赖使用各自环境，避免把交互的 NumPy/Torch 版本装进 ROS 运行环境。</p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 统一入口</a><a href="#panel-B">B · 系统接口联调</a><a href="#panel-C">C · 交互工作区</a><a href="#panel-D">D · 感知工作区</a><a href="#panel-E">E · 日常分工</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 统一入口</a><a href="#panel-B">B · 系统接口联调</a><a href="#panel-C">C · 交互工作区</a><a href="#panel-D">D · 感知工作区</a><a href="#panel-E">E · 协同平台工作区</a><a href="#panel-F">F · 日常分工</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>统一入口</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>在仓库根目录执行。<code>doctor</code> 只查看依赖；<code>test</code> 是 CPU 软件检查，不启动设备、仿真、声卡或模型服务。</p>
 </div>
-<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/dev_module.py interaction doctor</span><span class="am-ln">python3 scripts/dev_module.py interaction test</span><span class="am-ln">python3 scripts/dev_module.py perception doctor</span><span class="am-ln">python3 scripts/dev_module.py perception test</span><span class="am-ln">python3 scripts/dev_module.py system test</span><span class="am-ln">python3 scripts/dev_module.py contracts test</span></code></pre></figure>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/dev_module.py interaction doctor</span><span class="am-ln">python3 scripts/dev_module.py interaction test</span><span class="am-ln">python3 scripts/dev_module.py perception doctor</span><span class="am-ln">python3 scripts/dev_module.py perception test</span><span class="am-ln">python3 scripts/dev_module.py system test</span><span class="am-ln">python3 scripts/dev_module.py contracts test</span><span class="am-ln">python3 scripts/dev_module.py platform doctor</span><span class="am-ln">python3 scripts/dev_module.py platform test</span></code></pre></figure>
 <div class="am-md"><p>基础检查需要项目 Python 环境的 pytest、NumPy、SciPy、OpenCV、PyYAML、jsonschema、requests。缺少依赖明确安装或进入已有开发环境，不用假结果替代。其他能力继续使用对应 <code>tests/unit/test_*.py</code>；物理入口保持 <a href="scenarios.html">场景目录</a> 的稳定 ID。</p>
 </div></div>
 </section>
@@ -768,7 +768,18 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>日常分工</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>协同平台工作区</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><code>apps/collaboration_platform</code>保留独立Python包、React前端和<code>hybridctl</code>入口。平台只调用系统/机器人公共接口；开发不需要旧独立工作区。</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 -m venv --system-site-packages apps/collaboration_platform/.venv</span><span class="am-ln">apps/collaboration_platform/.venv/bin/python -m pip install --upgrade pip &#39;setuptools&gt;=68,&lt;80&#39;</span><span class="am-ln">apps/collaboration_platform/.venv/bin/pip install -e &#39;apps/collaboration_platform[dev]&#39;</span><span class="am-ln">npm ci --prefix apps/collaboration_platform/web</span><span class="am-ln">npm run build --prefix apps/collaboration_platform/web</span><span class="am-ln">apps/collaboration_platform/hybridctl serve --port 8110</span></code></pre></figure>
+<div class="am-md"><p>打开<code>http://127.0.0.1:8110/</code>查看只读态势页；没有配置数据源时显示待连接。Ctrl+C停止服务。前端热更新用<code>npm run dev --prefix apps/collaboration_platform/web</code>，后端保持8110端口。模块检查：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">apps/collaboration_platform/.venv/bin/python -m pytest -q apps/collaboration_platform/tests \</span><span class="am-ln">  --ignore=apps/collaboration_platform/tests/test_rosbag_import.py</span></code></pre></figure>
+<div class="am-md"><p>ROS录包检查另需source ROS工作区。<code>--data</code>、<code>--models</code>、<code>--scenes</code>配置本地已录观测、模型和场景；<code>--observe</code>绑定只读实时ROS源，<code>--system-domain</code>读取同一系统的任务/技能/记忆。原始数据、构建和模型不入Git。旧<code>demo factory</code>依赖的独立实验运行器未迁入，明确报<code>DEMO_NOT_CONFIGURED</code>；物理场景使用<a href="scenarios.html">原场景入口</a>，不由页面私自选后端。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-F">
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>日常分工</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>模块负责人提交本目录源代码、契约说明和最小可复现检查。系统负责人维护进程装配与任务绑定；仿真负责人维护传感适配与场景。错误先定位输入/装配/算法/控制层，不把其他模块职责复制进当前模块。共享接口变更同时修改调用者和文档。</p>
 <p>交互模型未部署时，使用<a href="interaction-integration.html">显式协议MOCK</a>运行LLM/ASR/TTS客户端联调，不下载大模型作为功能开发前置。真实模型和声纹效果需要独立验证。</p>
 </div></div>
@@ -776,7 +787,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-20 18:17</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-20 18:39</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -784,7 +795,7 @@ title: 同仓库开发与调试
 subtitle: 稳定目录、真实接口与独立开发条件
 lang: zh
 doc_id: collaborative-development
-implementation: 455a6366b269c9c3
+implementation: 6368a1bf4538d3cb
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -802,6 +813,8 @@ python3 scripts/dev_module.py perception doctor
 python3 scripts/dev_module.py perception test
 python3 scripts/dev_module.py system test
 python3 scripts/dev_module.py contracts test
+python3 scripts/dev_module.py platform doctor
+python3 scripts/dev_module.py platform test
 ```
 
 基础检查需要项目 Python 环境的 pytest、NumPy、SciPy、OpenCV、PyYAML、jsonschema、requests。缺少依赖明确安装或进入已有开发环境，不用假结果替代。其他能力继续使用对应 `tests/unit/test_*.py`；物理入口保持 [场景目录](scenarios.html) 的稳定 ID。
@@ -864,6 +877,28 @@ EMBODIED_INTERACTION_MODE=system .venv/bin/python -m webui.server --host 127.0.0
 真实 engine 不跨 GPU/TensorRT 版本盲目复制。先在原生离线 CLI 对相同 CAD 工件验证，再经 robot_app `--object-profile` 接入；未配齐资产会明确失败，默认场景后端不变。
 
 稳定的原生调试入口为 `python3 scripts/dev_perception.py doctor --profile ...` 和 `python3 scripts/dev_perception.py replay --profile ... --data ... --intrinsics ... --output ...`。前者只检查资产，后者实际运行GPU感知，不启动ROS或仿真。完整命令与结果说明见工件感知接入文档。
+
+## 协同平台工作区
+
+`apps/collaboration_platform`保留独立Python包、React前端和`hybridctl`入口。平台只调用系统/机器人公共接口；开发不需要旧独立工作区。
+
+```bash
+python3 -m venv --system-site-packages apps/collaboration_platform/.venv
+apps/collaboration_platform/.venv/bin/python -m pip install --upgrade pip &#39;setuptools&gt;=68,&lt;80&#39;
+apps/collaboration_platform/.venv/bin/pip install -e &#39;apps/collaboration_platform[dev]&#39;
+npm ci --prefix apps/collaboration_platform/web
+npm run build --prefix apps/collaboration_platform/web
+apps/collaboration_platform/hybridctl serve --port 8110
+```
+
+打开`http://127.0.0.1:8110/`查看只读态势页；没有配置数据源时显示待连接。Ctrl+C停止服务。前端热更新用`npm run dev --prefix apps/collaboration_platform/web`，后端保持8110端口。模块检查：
+
+```bash
+apps/collaboration_platform/.venv/bin/python -m pytest -q apps/collaboration_platform/tests \
+  --ignore=apps/collaboration_platform/tests/test_rosbag_import.py
+```
+
+ROS录包检查另需source ROS工作区。`--data`、`--models`、`--scenes`配置本地已录观测、模型和场景；`--observe`绑定只读实时ROS源，`--system-domain`读取同一系统的任务/技能/记忆。原始数据、构建和模型不入Git。旧`demo factory`依赖的独立实验运行器未迁入，明确报`DEMO_NOT_CONFIGURED`；物理场景使用[原场景入口](scenarios.html)，不由页面私自选后端。
 
 ## 日常分工
 
