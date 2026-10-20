@@ -167,7 +167,8 @@
     },
     {
       "file": "development.html",
-      "source_sha256": "124eea1bcaace6f196eb67f14f939d7e5fe748ca7c1add3e894fa8ed6caf802d"
+      "source_sha256": "2c7b7fa6374e7254ee4f920bb80abda9fbe92e621a172ac89e8b86c919401c41",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
     },
     {
       "file": "experiment-recordings.html",
@@ -298,8 +299,8 @@
     },
     {
       "file": "index.html",
-      "source_sha256": "cfe0528a4c51cffca6c54414eec2304fead25de97e6b5323a209fac5508a4e18",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "bb4545a2593282716d967abeaa29225ef36728d9ba703adcf984feffc2cd686d",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
     },
     {
       "file": "interface-catalog.html",
@@ -334,7 +335,8 @@
     },
     {
       "file": "module-robot-interaction_runtime.html",
-      "source_sha256": "919ffaa8b570ea4181b7b43230e2332b7b1df10780e103855cb9f13115b91232"
+      "source_sha256": "97cfc8f122f0607aead7a86e1cf7f894bafcd48776f2e606ba241a435ebf5771",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
     },
     {
       "file": "module-robot-local_task_runtime.html",
@@ -356,8 +358,8 @@
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "22d5ccf8d5cd4edd05d1514edeac3137cb3cf96278f58c671549426e7343a7a2",
-      "implementation_sha256": "640ab019de9a85f1ac5f4afd5242d34a5362a3deb536b73bba763fb3f1b25a0b"
+      "source_sha256": "3930d7dc70cecbe389ba1a8c70b6b32c522f62e6094eedd113aabea27e449de6",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
     },
     {
       "file": "module-robot-protection_runtime.html",
@@ -417,8 +419,8 @@
     },
     {
       "file": "module-system-team_planner.html",
-      "source_sha256": "d06649c13f4862f5f4962ec765d7d669dc7df308c90a3d8d33a8f0af15e3c3e4",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "68141b46acba7f2ec44fcdf38f2e00c0a33110cf193c8d96849b0dc27d13b9ee",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
     },
     {
       "file": "module-system-team_runtime.html",
@@ -432,7 +434,8 @@
     },
     {
       "file": "modules.html",
-      "source_sha256": "d5973e9817f048bc405acff51bb66b51dfedd308972ffef6de8c2759682f4400"
+      "source_sha256": "62bf7cf629c3542c5bd0e7057720afd679b95010737616149893a9414fc44590",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
     },
     {
       "file": "runtime-internals.html",
@@ -523,6 +526,26 @@
       "file": "agent-api.html",
       "source_sha256": "0d0de9354b605b4bac83306bdd6868762ab478ccbcbbf1d2dd2315354203a6a4",
       "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
+    },
+    {
+      "file": "collaborative-development.html",
+      "source_sha256": "43da3d813861942f0e8aa41f9a80dd11d1d3a50b9316fd2b43c72f762fa1e921",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+    },
+    {
+      "file": "interaction-integration.html",
+      "source_sha256": "225f6516873604a1ec3d8409503e3c5d945b9d432c76e45225fd4c1f897e5038",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+    },
+    {
+      "file": "module-ownership.html",
+      "source_sha256": "4656721380b02b8a4b318c21108a2f4e2d46f89063f548756cefdb42e6b7e891",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+    },
+    {
+      "file": "workpiece-perception.html",
+      "source_sha256": "e11e36f553860bf84b469fe2c732fba918f63e8d3102a1203f14fc6ed517c2b0",
+      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
     }
   ],
   "assets": [

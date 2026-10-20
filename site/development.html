@@ -698,18 +698,24 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>开发与贡献</h1><p class="am-sub">保持实现、接口、参数与证据一致</p><div class="am-head-meta"><span><b>doc_id</b>development</span><span><b>implementation</b>12ea77e5d0bc6781</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>开发与贡献</h1><p class="am-sub">保持实现、接口、参数与证据一致</p><div class="am-head-meta"><span><b>doc_id</b>development</span><span><b>implementation</b>eed18d619dd9add9</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 环境</a><a href="#panel-B">B · ROS 工作区构建</a><a href="#panel-C">C · 模块约定</a><a href="#panel-D">D · 第三方代码</a><a href="#panel-E">E · 开发流程</a><a href="#panel-F">F · 提交</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 协同工作入口</a><a href="#panel-B">B · 环境</a><a href="#panel-C">C · ROS 工作区构建</a><a href="#panel-D">D · 模块约定</a><a href="#panel-E">E · 第三方代码</a><a href="#panel-F">F · 开发流程</a><a href="#panel-G">G · 提交</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>环境</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>协同工作入口</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><a href="module-ownership.html">模块负责人和目录所有权</a> · <a href="collaborative-development.html">分模块及系统调试</a> · <a href="interaction-integration.html">交互接入</a> · <a href="workpiece-perception.html">工件感知</a>。</p>
+<p>所有角色姓名待指定。感知与交互源码统一在系统仓库，开发者按模块开分支。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-B">
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>环境</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>基础软件使用 Ubuntu 22.04 / ROS 2 Humble / Python 3.10。Isaac 容器使用自己的 Python 与 ROS bridge 环境，不能把两个 Python 的二进制扩展混装。G1 原生算法环境需要 MoveIt、Pinocchio、CasADi、Torch 及项目原生扩展，见 <a href="dependencies.html">依赖说明</a>。</p>
 <p>默认用 README 的双容器 mock 运行检查系统通信。离线单元检查不得连接设备。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>ROS 工作区构建</h2></header>
+<section class="am-panel" id="panel-C">
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>ROS 工作区构建</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>在仓库根目录执行：</p>
 </div>
 <figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">source /opt/ros/humble/setup.bash</span><span class="am-ln">colcon build --packages-up-to system_app robot_app</span><span class="am-ln">source install/setup.bash</span><span class="am-ln">python3 -m pytest tests/unit -q</span></code></pre></figure>
@@ -720,8 +726,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <div class="am-md"><p>源代码模式由 <code>tests/conftest.py</code> 添加三个 Python 包。ROS 消息需要 <code>colcon build</code> 生成。不要把源目录混入一个不同版本的已安装进程。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>模块约定</h2></header>
+<section class="am-panel" id="panel-D">
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>模块约定</h2></header>
 <div class="am-panel-body"><div class="am-md"><ul>
 <li>一个模块一个目录，单个能力按职责拆文件；第一方 Python 文件不超过 300 行。</li>
 <li>优先复用现有实现、标准库和成熟官方 API。</li>
@@ -734,16 +740,16 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </ul>
 </div></div>
 </section>
-<section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>第三方代码</h2></header>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>第三方代码</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>依赖放在使用它的模块 <code>thirdparty/</code>。共用设备库放在对应后端。保留许可证、来源 URL、固定版本及修改说明。不要直接调用其他工作区的实现。</p>
 </div>
 <figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/verify_sources.py</span></code></pre></figure>
 <div class="am-md"><p>依赖清单校验错误时先核对来源和修改，不能为消除错误随意改写校验值。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-E">
-<header class="am-panel-head"><span class="am-panel-id">E</span><h2>开发流程</h2></header>
+<section class="am-panel" id="panel-F">
+<header class="am-panel-head"><span class="am-panel-id">F</span><h2>开发流程</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>定位入口和调用链，选择最小修改，运行相关检查。涉及接口时同时检查 ROS 映射；涉及设备运动时，离线检查只覆盖计算与软件行为，需要独立物理验证。</p>
 <p>仿真运行过程中不修改所用代码、模型和配置。每次运行使用独立输出目录。不要用 mock 成功替代设备或物理仿真成功。</p>
 <p>运行中通过ROS消息和日志诊断，不直接查询正在写入的SQLite录包。停止录制后再离线分析数据库。
@@ -751,8 +757,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>文档遵循 <a href="authoring.html">撰写规范</a>。算法、默认参数、接口或实验结论变更后，同步更新相应主题页。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-F">
-<header class="am-panel-head"><span class="am-panel-id">F</span><h2>提交</h2></header>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>提交</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>提交前查看 <code>git diff --check</code>、相关检查输出及新增文件。不要提交 <code>.env</code>、凭据、设备专属密钥、外部大资产、日志、录包、视频或本机绝对路径。生成物放在忽略的 <code>artifacts/</code>。</p>
 <p>提交说明写清行为变化和验证范围。单元检查、原生库计算、mock 通信、物理仿真和实机分别说明。</p>
 </div></div>
@@ -760,7 +766,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-11 23:44</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-20 16:47</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -768,10 +774,16 @@ title: 开发与贡献
 subtitle: 保持实现、接口、参数与证据一致
 lang: zh
 doc_id: development
-implementation: 12ea77e5d0bc6781
+implementation: eed18d619dd9add9
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
+
+## 协同工作入口
+
+[模块负责人和目录所有权](module-ownership.html) · [分模块及系统调试](collaborative-development.html) · [交互接入](interaction-integration.html) · [工件感知](workpiece-perception.html)。
+
+所有角色姓名待指定。感知与交互源码统一在系统仓库，开发者按模块开分支。
 
 ## 环境
 
