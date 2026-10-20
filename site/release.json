@@ -529,17 +529,17 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "9483356fb00a55a40d721c3b2466c6f80ac9988e0766fe6d5e255b27b1f945ea",
+      "source_sha256": "a7ee1b06250d3b6e4b2baad068b2acdf8e2b087b34e8ab1a61c76c89a3930f62",
       "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
     },
     {
       "file": "interaction-integration.html",
-      "source_sha256": "225f6516873604a1ec3d8409503e3c5d945b9d432c76e45225fd4c1f897e5038",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "c13359202f52c1a0e5c415b1b3904a7a572606b9408ca30aa81cf990f1377d21",
+      "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "c4c5d9dd9f6d44c6a2347dbb3f2afb20e1dd43bc9f2058fa914af8d0244837e2",
+      "source_sha256": "cb38143cc429f4e096cbca62dac3560839f260687fd442958ff9aea621d30df6",
       "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
     },
     {

@@ -698,14 +698,14 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>交互与系统任务接入</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>interaction-integration</span><span><b>implementation</b>eed18d619dd9add9</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>交互与系统任务接入</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>interaction-integration</span><span><b>implementation</b>455a6366b269c9c3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p>交互源代码继续在 <code>Interactive_System_V1.00/client</code>、<code>server</code> 维护。默认 <code>EMBODIED_INTERACTION_MODE=system</code>；<code>standalone</code> 仅用于原型独立调试，其模拟任务/定时到位不能作为机器人反馈。</p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与调用链</a><a href="#panel-B">B · 启动与配置</a><a href="#panel-C">C · API 与状态</a><a href="#panel-D">D · 网页整合待确认</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与调用链</a><a href="#panel-B">B · 启动与配置</a><a href="#panel-C">C · 不加载模型的协议联调</a><a href="#panel-D">D · API 与状态</a><a href="#panel-E">E · 网页整合待确认</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>职责与调用链</h2></header>
-<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 333 756" width="333" height="756" role="img" aria-label="流程图：语音身份、意图与模式、闲聊记忆、任务接入、讲解状态机、系统网关、Skill编译、系统任务运行" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M67,49 L67,65 Q67,81 67,97 L67,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="39" y="72" width="56" height="18" rx="3"/><text x="67" y="81" text-anchor="middle" dominant-baseline="central">用户输入</text></g></g><g data-step="1"><path class="am-edge" d="M101,148 L132.1,164 Q163.3,180 169.6,196 L176,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="129.5" y="171" width="67.5" height="18" rx="3"/><text x="163.3" y="180" text-anchor="middle" dominant-baseline="central">非功能请求</text></g></g><g data-step="2"><path class="am-edge" d="M60,148 L53.6,164 Q47.3,180 53.6,196 L60,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="19.3" y="171" width="56" height="18" rx="3"/><text x="47.3" y="180" text-anchor="middle" dominant-baseline="central">功能请求</text></g></g><g data-step="3"><path class="am-edge" d="M272.5,148 L272.5,164 Q272.5,180 189.8,199.9 L107,219.9" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="238.8" y="171" width="67.5" height="18" rx="3"/><text x="272.5" y="180" text-anchor="middle" dominant-baseline="central">讲解点绑定</text></g></g><g data-step="4"><path class="am-edge" d="M65,247 L63.1,263 Q61.3,279 61.3,295 L61.3,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="20.8" y="270" width="80.8" height="18" rx="3"/><text x="61.3" y="279" text-anchor="middle" dominant-baseline="central">TaskRequest</text></g></g><g data-step="5"><path class="am-edge" d="M61.3,346 L61.3,362 Q61.3,378 61.3,394 L61.3,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="27.5" y="369" width="67.5" height="18" rx="3"/><text x="61.3" y="378" text-anchor="middle" dominant-baseline="central">已配置目标</text></g></g><g data-step="6"><path class="am-edge" d="M61.3,445 L61.3,461 Q61.3,477 63.1,493 L65,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="27.5" y="468" width="67.5" height="18" rx="3"/><text x="61.3" y="477" text-anchor="middle" dominant-baseline="central">类型化任务</text></g></g><g data-step="7"><path class="am-edge" d="M67,544 L67,560 Q67,576 67,592 L67,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="37.7" y="567" width="58.5" height="18" rx="3"/><text x="67" y="576" text-anchor="middle" dominant-baseline="central">ROS动作</text></g></g><g data-step="8"><path class="am-edge" d="M67,643 L67,659 Q67,675 67,691 L67,707" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="39" y="666" width="56" height="18" rx="3"/><text x="67" y="675" text-anchor="middle" dominant-baseline="central">公开能力</text></g></g><g data-step="9"><path class="am-edge" d="M100.7,509 L131.5,493 Q162.3,477 162.3,452.3 Q162.3,427.5 162.3,402.8 Q162.3,378 162.3,353.3 Q162.3,328.5 162.3,303.8 Q162.3,279 131.5,263 L100.7,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="117" y="369" width="90.5" height="18" rx="3"/><text x="162.3" y="378" text-anchor="middle" dominant-baseline="central">状态与结果来源</text></g></g></g><g><g class="am-node am-node--rect" data-key="语音身份" data-step="0"><rect class="am-node-shape" x="27" y="14" width="80" height="35" rx="3"/><text x="67" y="31.5" text-anchor="middle" dominant-baseline="central">语音身份</text></g><g class="am-node am-node--rect" data-key="意图与模式" data-step="0"><rect class="am-node-shape" x="20.5" y="113" width="93" height="35" rx="3"/><text x="67" y="130.5" text-anchor="middle" dominant-baseline="central">意图与模式</text></g><g class="am-node am-node--rect" data-key="闲聊记忆" data-step="1"><rect class="am-node-shape" x="143" y="212" width="80" height="35" rx="3"/><text x="183" y="229.5" text-anchor="middle" dominant-baseline="central">闲聊记忆</text></g><g class="am-node am-node--rect" data-key="任务接入" data-step="2"><rect class="am-node-shape" x="27" y="212" width="80" height="35" rx="3"/><text x="67" y="229.5" text-anchor="middle" dominant-baseline="central">任务接入</text></g><g class="am-node am-node--rect" data-key="讲解状态机" data-step="3"><rect class="am-node-shape" x="226" y="113" width="93" height="35" rx="3"/><text x="272.5" y="130.5" text-anchor="middle" dominant-baseline="central">讲解状态机</text></g><g class="am-node am-node--rect" data-key="系统网关" data-step="4"><rect class="am-node-shape" x="21.3" y="311" width="80" height="35" rx="3"/><text x="61.3" y="328.5" text-anchor="middle" dominant-baseline="central">系统网关</text></g><g class="am-node am-node--rect" data-key="Skill编译" data-step="5"><rect class="am-node-shape" x="20" y="410" width="82.6" height="35" rx="3"/><text x="61.3" y="427.5" text-anchor="middle" dominant-baseline="central">Skill编译</text></g><g class="am-node am-node--rect" data-key="系统任务运行" data-step="6"><rect class="am-node-shape" x="14" y="509" width="106" height="35" rx="3"/><text x="67" y="526.5" text-anchor="middle" dominant-baseline="central">系统任务运行</text></g><g class="am-node am-node--rect" data-key="本机任务" data-step="7"><rect class="am-node-shape" x="27" y="608" width="80" height="35" rx="3"/><text x="67" y="625.5" text-anchor="middle" dominant-baseline="central">本机任务</text></g><g class="am-node am-node--rect" data-key="能力执行器" data-step="8"><rect class="am-node-shape" x="20.5" y="707" width="93" height="35" rx="3"/><text x="67" y="724.5" text-anchor="middle" dominant-baseline="central">能力执行器</text></g></g></svg></figure>
+<div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">mermaid</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="mermaid"><span class="am-ln">flowchart LR</span><span class="am-ln">  Voice[语音与身份] --&gt; Intent[意图与模式切换]</span><span class="am-ln">  Intent --&gt; Chat[闲聊及会话记忆]</span><span class="am-ln">  Intent --&gt; Companion[系统任务请求]</span><span class="am-ln">  Tour[讲解状态机] --&gt; Companion</span><span class="am-ln">  Companion --&gt; Gateway[system_app HTTP 网关]</span><span class="am-ln">  Gateway --&gt; Bindings[场景绑定与 Skill 编译]</span><span class="am-ln">  Bindings --&gt; Team[系统任务运行]</span><span class="am-ln">  Team --&gt; Local[本机任务运行]</span><span class="am-ln">  Local --&gt; Cap[能力层及执行器]</span><span class="am-ln">  Team --&gt; Feedback[任务反馈与结果来源]</span><span class="am-ln">  Feedback --&gt; Companion</span></code></pre></figure>
 <div class="am-md"><p>保留原 ASR、TTS、声纹、身份门控、意图分类、聊天、记忆、讲解稿和打断处理。系统模式替换三个接线节点：<code>planner</code> 提交/跟踪系统任务；<code>perception</code> 读取系统上下文；<code>tour</code> 使用真实任务到位结果。其余节点名称及总线主题保持。</p>
 <p>交互 <code>Planner.decide</code> 仍判断任务/聊天/退出。<code>make_plan</code> 不在系统模式执行；场景与能力的实际编排归 system_app。系统可选调用上传 LLM 的 <code>/chat/stream</code> 选择已配置 binding，不让模型直接生成关节或任意运动坐标。当前实现是受控任务绑定，不等于通用多机自主任务规划。</p>
 </div></div>
@@ -726,7 +726,23 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>API 与状态</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>不加载模型的协议联调</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>开发服务只输出明确配置的MOCK响应。LLM精确匹配最后一条用户消息；ASR按输入音频的SHA256匹配固定转写；TTS每段文本返回100ms静音PCM。未配置的文本或音频返回422，不自动编造任务。它不替代真实模型、声纹或麦克风验收。</p>
+<p>从仓库根目录启动，Ctrl+C停止：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">Interactive_System_V1.00/client/.venv/bin/python -m pip install \</span><span class="am-ln">  -r Interactive_System_V1.00/server/requirements-mock.txt</span><span class="am-ln">Interactive_System_V1.00/client/.venv/bin/python \</span><span class="am-ln">  Interactive_System_V1.00/server/mock_services.py \</span><span class="am-ln">  --fixture Interactive_System_V1.00/server/mock.example.json --port 9530</span></code></pre></figure>
+<div class="am-md"><p>三个协议共用一个回环端口；<code>GET http://127.0.0.1:9530/health</code>返回<code>source=MOCK</code>和fixture数量。服务不连接机器人或GPU。<code>mock.example.json</code>仅包含“你好”响应；联调用的完整意图提示词和音频哈希应写入独立fixture，不能把精确匹配当作意图算法。</p>
+<p>启动专业客户端之前显式设置地址，真实服务默认值不变：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">export EMBODIED_LLM_URL=http://127.0.0.1:9530/chat/stream</span><span class="am-ln">export EMBODIED_ASR_URL=http://127.0.0.1:9530/v1/chat/completions</span><span class="am-ln">export EMBODIED_TTS_URL=ws://127.0.0.1:9530/v1/audio/speech/stream</span></code></pre></figure>
+<div class="am-md"><p>检查使用真实HTTP/WebSocket和原LLM/ASR/TTS客户端。宿主测试环境需安装requests、NumPy、websockets、pytest；服务使用上面的独立环境：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q \</span><span class="am-ln">  tests/integration/test_interaction_model_services.py</span></code></pre></figure>
+<div class="am-md"><p>测试覆盖专业意图解析、闲聊响应、未匹配输入的安全默认、固定转写和PCM流结束。节点、系统任务与物理执行的来源仍分别核对；协议通过不代表完整会话或机器人运动完成。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-D">
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>API 与状态</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -768,8 +784,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>会话记忆保留在交互模块；系统知识/空间记忆由系统接口提供。缺失状态显式 unavailable，不能回退编造电量、人物或目标。网页技能编辑器仅维护原型提示；系统实际执行目录以 system_app 的 <code>configs/skills</code> 与绑定为准。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>网页整合待确认</h2></header>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>网页整合待确认</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>推荐：保留全局态势页作为操作员主入口；把会话与讲解状态接入其会话区；独立保留 <code>/client</code> 观众页与交互开发控制台。机器人、地图、任务和系统记忆均使用同一 system_app 数据源。开发控制台的配置修改、模型启动和停止功能不放入面向观众的运行界面。</p>
 <p>已核对的全局页面有机器人、地图、任务事件与会话抽屉；代码中存在的 SystemWorkspace 组件尚未挂载到主页面，不能当作现成可用入口。两套页面本轮保持布局，通过 API 边界避免重复任务执行。下一步应确认是内嵌会话区还是链接独立交互页，再调整前端路由。</p>
 </div></div>
@@ -777,22 +793,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 </div>
 </main>
-<div class="am-lightbox" hidden aria-modal="true" role="dialog" aria-label="图表查看" data-expand="展开查看图表">
-<div class="am-lightbox-backdrop"></div>
-<div class="am-lightbox-header">
-<div class="am-lightbox-title">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-<span class="am-lightbox-title-text"></span>
-</div>
-<div class="am-lightbox-actions">
-<button class="am-lightbox-close" data-action="close" title="关闭" aria-label="关闭">✕</button>
-</div>
-</div>
-<div class="am-lightbox-stage">
-<div class="am-lightbox-canvas am-diagram"></div>
-</div>
-</div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-20 16:47</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-20 18:17</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -800,7 +801,7 @@ title: 交互与系统任务接入
 subtitle: 稳定目录、真实接口与独立开发条件
 lang: zh
 doc_id: interaction-integration
-implementation: eed18d619dd9add9
+implementation: 455a6366b269c9c3
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -809,17 +810,19 @@ implementation: eed18d619dd9add9
 
 ## 职责与调用链
 
-```flow
-语音身份 -&gt; 意图与模式: 用户输入
-意图与模式 -&gt; 闲聊记忆: 非功能请求
-意图与模式 -&gt; 任务接入: 功能请求
-讲解状态机 -&gt; 任务接入: 讲解点绑定
-任务接入 -&gt; 系统网关: TaskRequest
-系统网关 -&gt; Skill编译: 已配置目标
-Skill编译 -&gt; 系统任务运行: 类型化任务
-系统任务运行 -&gt; 本机任务: ROS动作
-本机任务 -&gt; 能力执行器: 公开能力
-系统任务运行 -&gt; 任务接入: 状态与结果来源
+```mermaid
+flowchart LR
+  Voice[语音与身份] --&gt; Intent[意图与模式切换]
+  Intent --&gt; Chat[闲聊及会话记忆]
+  Intent --&gt; Companion[系统任务请求]
+  Tour[讲解状态机] --&gt; Companion
+  Companion --&gt; Gateway[system_app HTTP 网关]
+  Gateway --&gt; Bindings[场景绑定与 Skill 编译]
+  Bindings --&gt; Team[系统任务运行]
+  Team --&gt; Local[本机任务运行]
+  Local --&gt; Cap[能力层及执行器]
+  Team --&gt; Feedback[任务反馈与结果来源]
+  Feedback --&gt; Companion
 ```
 
 保留原 ASR、TTS、声纹、身份门控、意图分类、聊天、记忆、讲解稿和打断处理。系统模式替换三个接线节点：`planner` 提交/跟踪系统任务；`perception` 读取系统上下文；`tour` 使用真实任务到位结果。其余节点名称及总线主题保持。
@@ -856,6 +859,39 @@ python run.py
 ```
 
 可通过 `EMBODIED_TOUR_DOCS` 指定讲解稿，`EMBODIED_INTERACTION_DATA` 指定私有数据目录，`EMBODIED_ROBOT_SCOPE` 限定允许请求的机器人 ID（逗号分隔）。非回环网关需在两端设置相同 `EMBODIED_GATEWAY_TOKEN`；远程网络另配 TLS/访问控制，不把明文开发端口当公开服务。
+
+## 不加载模型的协议联调
+
+开发服务只输出明确配置的MOCK响应。LLM精确匹配最后一条用户消息；ASR按输入音频的SHA256匹配固定转写；TTS每段文本返回100ms静音PCM。未配置的文本或音频返回422，不自动编造任务。它不替代真实模型、声纹或麦克风验收。
+
+从仓库根目录启动，Ctrl+C停止：
+
+```bash
+Interactive_System_V1.00/client/.venv/bin/python -m pip install \
+  -r Interactive_System_V1.00/server/requirements-mock.txt
+Interactive_System_V1.00/client/.venv/bin/python \
+  Interactive_System_V1.00/server/mock_services.py \
+  --fixture Interactive_System_V1.00/server/mock.example.json --port 9530
+```
+
+三个协议共用一个回环端口；`GET http://127.0.0.1:9530/health`返回`source=MOCK`和fixture数量。服务不连接机器人或GPU。`mock.example.json`仅包含“你好”响应；联调用的完整意图提示词和音频哈希应写入独立fixture，不能把精确匹配当作意图算法。
+
+启动专业客户端之前显式设置地址，真实服务默认值不变：
+
+```bash
+export EMBODIED_LLM_URL=http://127.0.0.1:9530/chat/stream
+export EMBODIED_ASR_URL=http://127.0.0.1:9530/v1/chat/completions
+export EMBODIED_TTS_URL=ws://127.0.0.1:9530/v1/audio/speech/stream
+```
+
+检查使用真实HTTP/WebSocket和原LLM/ASR/TTS客户端。宿主测试环境需安装requests、NumPy、websockets、pytest；服务使用上面的独立环境：
+
+```bash
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest -q \
+  tests/integration/test_interaction_model_services.py
+```
+
+测试覆盖专业意图解析、闲聊响应、未匹配输入的安全默认、固定转写和PCM流结束。节点、系统任务与物理执行的来源仍分别核对；协议通过不代表完整会话或机器人运动完成。
 
 ## API 与状态
 
