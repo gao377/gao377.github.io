@@ -534,12 +534,12 @@
     },
     {
       "file": "interaction-integration.html",
-      "source_sha256": "6fb67087855bde88a4f6e5900a91c05df9f7a1bcda65ea57d8f03795e4f48db6",
+      "source_sha256": "d9494808507fce964502567e4bb25c2a7f6b7941933c685c1cf9ecedd0ef8101",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "755796b2cb9ee1702e135ecff98c3c0724221d3e56d6c8e120e82aa96cb4285a",
+      "source_sha256": "958942d0a902cd29a452b9e0f7cbcb6b109aa1b46029405d0bea5349350b902c",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
