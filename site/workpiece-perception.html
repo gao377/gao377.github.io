@@ -698,11 +698,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>工件感知接入</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>workpiece-perception</span><span><b>implementation</b>eed18d619dd9add9</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>工件感知接入</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>workpiece-perception</span><span><b>implementation</b>455a6366b269c9c3</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p>贡献代码已合入 <code>perception_runtime/thirdparty/workpiece_pipeline</code>，来源版本记录于同目录 <code>SOURCE.json</code>。本仓库是后续开发入口，不再依赖外部原工作区或嵌套 Git 仓库。原算法、CAD、工具和 Apache 2.0 许可保留；内部第三方库仍遵守各自许可。</p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 模块边界</a><a href="#panel-B">B · 原生构建</a><a href="#panel-C">C · ROS 配置</a><a href="#panel-D">D · 验证与职责</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 模块边界</a><a href="#panel-B">B · 原生构建</a><a href="#panel-C">C · 稳定调试入口</a><a href="#panel-D">D · ROS 配置</a><a href="#panel-E">E · 验证与职责</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>模块边界</h2></header>
 <div class="am-panel-body"><div class="am-md"><p><code>RGB-D + CameraInfo → YOLOv8-seg → FoundationPose 注册/跟踪 → T_camera_object → 同时刻 TF → ObjectObservation(pelvis)</code>。</p>
@@ -722,8 +722,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>原生构建</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>需要 CUDA、TensorRT、CV-CUDA、OpenCV、Eigen、Assimp 及贡献代码 CMake 所列依赖。依赖放在忽略的 <code>artifacts/dependencies/</code> 或专用环境。先执行 <code>python3 scripts/dev_module.py perception doctor</code>。</p>
 </div>
-<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">PERCEPTION=src/robot_app/robot_app/modules/perception_runtime</span><span class="am-ln">cmake -S &quot;$PERCEPTION/native&quot; -B artifacts/build/workpiece \</span><span class="am-ln">  -DCMAKE_CUDA_ARCHITECTURES=86 \</span><span class="am-ln">  -DCVCUDA_ROOT=&quot;$PWD/artifacts/dependencies/cvcuda/prefix/opt/nvidia/cvcuda0&quot; \</span><span class="am-ln">  -DTENSORRT_INCLUDE_DIR=/usr/local/cuda/include \</span><span class="am-ln">  -DTENSORRT_LIBRARY=/usr/local/cuda/lib64/libnvinfer.so \</span><span class="am-ln">  -DTENSORRT_PLUGIN_LIBRARY=/usr/local/cuda/lib64/libnvinfer_plugin.so \</span><span class="am-ln">  -DTENSORRT_ONNX_PARSER_LIBRARY=/usr/local/cuda/lib64/libnvonnxparser.so</span><span class="am-ln">cmake --build artifacts/build/workpiece --target workpiece_runtime -j4</span></code></pre></figure>
-<div class="am-md"><p>示例架构和 SDK 安装位置需匹配开发机；不能照搬到 Jetson。共享库及其 upstream/lib 依赖需一起部署，或者使用完整构建目录。普通 <code>colcon build</code> 只安装 Python 接线，不自动下载模型或构建 GPU 扩展；这允许无 GPU 开发者继续维护系统模块。</p>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">PERCEPTION=src/robot_app/robot_app/modules/perception_runtime</span><span class="am-ln">cmake -S &quot;$PERCEPTION/native&quot; -B artifacts/build/workpiece \</span><span class="am-ln">  -DCMAKE_CUDA_ARCHITECTURES=89 \</span><span class="am-ln">  -DCVCUDA_ROOT=&quot;$PWD/artifacts/dependencies/cvcuda/prefix/opt/nvidia/cvcuda0&quot; \</span><span class="am-ln">  -DTENSORRT_INCLUDE_DIR=/usr/local/cuda/include \</span><span class="am-ln">  -DTENSORRT_LIBRARY=/usr/local/cuda/lib64/libnvinfer.so \</span><span class="am-ln">  -DTENSORRT_PLUGIN_LIBRARY=/usr/local/cuda/lib64/libnvinfer_plugin.so \</span><span class="am-ln">  -DTENSORRT_ONNX_PARSER_LIBRARY=/usr/local/cuda/lib64/libnvonnxparser.so</span><span class="am-ln">cmake --build artifacts/build/workpiece --target workpiece_runtime workpiece_pipeline -j4</span></code></pre></figure>
+<div class="am-md"><p>示例89对应Ada GPU，Orin使用87；架构和SDK位置需匹配开发机。共享库及构建目录下的 <code>lib/</code> 依赖需一起部署，或者使用完整构建目录。原生CLI在 <code>artifacts/build/workpiece/bin/workpiece_pipeline</code>。普通 <code>colcon build</code> 只安装 Python 接线，不自动下载模型或构建 GPU 扩展；无GPU开发者可以维护系统模块。</p>
 <p>贡献的 <code>tools/download_models.sh</code>、<code>tools/build_engines.sh</code> 保留。ONNX 发行包来自贡献仓库 v0.1.0，发布校验为 <code>8d749f9e5953054432201450f724368243b4e16b2441042db766df306ae2433b</code>。下载后按发行清单核验；模型不进入 Git。</p>
 </div>
 <figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">PERCEPTION=src/robot_app/robot_app/modules/perception_runtime</span><span class="am-ln">WORKPIECE_ONNX_DIR=&quot;$PWD/artifacts/dependencies/workpiece/models_onnx&quot; \</span><span class="am-ln">WORKPIECE_ENGINE_DIR=&quot;$PWD/artifacts/dependencies/workpiece/engines&quot; \</span><span class="am-ln">TRTEXEC=/usr/src/tensorrt/bin/trtexec \</span><span class="am-ln">  bash &quot;$PERCEPTION/thirdparty/workpiece_pipeline/tools/build_engines.sh&quot;</span></code></pre></figure>
@@ -731,7 +731,35 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>ROS 配置</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>稳定调试入口</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><code>scripts/dev_perception.py</code>只包装专业版本的原生CLI，不实现另一套感知算法。先填好下一节的本地profile，再使用实际输入对应的标定：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/dev_perception.py doctor \</span><span class="am-ln">  --profile artifacts/dev/workpiece.local.yaml</span><span class="am-ln">python3 scripts/dev_perception.py replay \</span><span class="am-ln">  --profile artifacts/dev/workpiece.local.yaml \</span><span class="am-ln">  --data artifacts/dependencies/workpiece/sample-data/sample/x/0 \</span><span class="am-ln">  --intrinsics src/robot_app/robot_app/modules/perception_runtime/thirdparty/workpiece_pipeline/config/intrinsics \</span><span class="am-ln">  --output artifacts/dev/workpiece-replay-001</span></code></pre></figure>
+<div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>实际启动内容</th>
+<th>不包含</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>doctor</code></td>
+<td>检查工具和profile资产路径</td>
+<td>模型加载、GPU推理、ROS、仿真</td>
+</tr>
+<tr>
+<td><code>replay</code></td>
+<td>原生YOLO和FoundationPose读取录制RGB-D，输出CAD叠加和位姿</td>
+<td>机器人动作、ROS感知资格、物理验收</td>
+</tr>
+</tbody></table></div>
+<p><code>--data</code>也接受单张RGB图片。<code>--intrinsics</code>必须显式给出，不能把贡献样例标定用于其他相机。输出目录必须不存在，避免覆盖旧记录；<code>native.log</code>保留原程序诊断，<code>run.json</code>记录资产哈希、退出码与墙钟时间。<code>NATIVE_EXIT_OK</code>只代表原生进程正常完成，仍需检查结果。</p>
+<p>默认 <code>--depth-preprocess off</code>与生产桥保持一致；原CLI的 <code>clean/full</code> 可显式选择，用于对照。缺资产或子进程失败会返回非零退出码。需要终止时在启动终端按Ctrl+C，结果记录为中断。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-D">
+<header class="am-panel-head"><span class="am-panel-id">D</span><h2>ROS 配置</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>复制 <code>configs/perception/workpiece.example.yaml</code> 到忽略的本地配置，核对当前传感器 topics。该模板只验证物体观测，尺寸来自贡献 CAD 的米制包络，不含抓取资格。</p>
 <p><code>geometry.mask_backend</code> 设 <code>workpiece_foundationpose</code>，填写实际 object_id、geometry_ref、height_m、size_m、max_age_s。新建顶层 <code>workpiece</code>，只接受以下五个路径：</p>
 </div>
@@ -740,16 +768,16 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>首次模型初始化在视觉工作线程收到内参后执行，控制线程不等待推理。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-D">
-<header class="am-panel-head"><span class="am-panel-id">D</span><h2>验证与职责</h2></header>
-<div class="am-panel-body"><div class="am-md"><p><code>python3 scripts/dev_module.py perception test</code> 检查坐标、时间与失败传播；原生 C++ 库需另行编译。本次接入已完成 CPU 契约检查及本机原生编译/加载；尚无本机 TensorRT engine 推理、真实相机或物理抓取验收。录制 RGB-D、实际 latency、新鲜度和目标位姿误差是后续算法验证条件。</p>
+<section class="am-panel" id="panel-E">
+<header class="am-panel-head"><span class="am-panel-id">E</span><h2>验证与职责</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><code>python3 scripts/dev_module.py perception test</code> 检查坐标、时间与失败传播；原生 C++ 库需另行编译。已在RTX 5000 Ada（sm89）、TensorRT 10.9.0.34上构建三份FP16引擎，并用贡献者10帧RGB-D样例完成原生回放：1次Register、9次Track，10/10正常输出位姿和叠加图，进程退出码0。此结果是录制输入的实际GPU推理；尚不代表ROS观测时效、实时相机、位姿绝对精度或物理抓取验收。换GPU/TensorRT版本需重新构建并复验engine。</p>
 <p>源码与模型适配由感知负责人维护；相机标定由传感负责人提供；对象尺寸/抓取定义由操作与感知共同核对。不要将样例内参、模型单位、目标类别或阈值当作通用设备默认值。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-20 16:47</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-20 18:15</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -757,7 +785,7 @@ title: 工件感知接入
 subtitle: 稳定目录、真实接口与独立开发条件
 lang: zh
 doc_id: workpiece-perception
-implementation: eed18d619dd9add9
+implementation: 455a6366b269c9c3
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -785,16 +813,16 @@ C++ 桥在 `native/workpiece_bridge.cpp`，Python 生命周期在 `workpiece_bac
 ```bash
 PERCEPTION=src/robot_app/robot_app/modules/perception_runtime
 cmake -S &quot;$PERCEPTION/native&quot; -B artifacts/build/workpiece \
-  -DCMAKE_CUDA_ARCHITECTURES=86 \
+  -DCMAKE_CUDA_ARCHITECTURES=89 \
   -DCVCUDA_ROOT=&quot;$PWD/artifacts/dependencies/cvcuda/prefix/opt/nvidia/cvcuda0&quot; \
   -DTENSORRT_INCLUDE_DIR=/usr/local/cuda/include \
   -DTENSORRT_LIBRARY=/usr/local/cuda/lib64/libnvinfer.so \
   -DTENSORRT_PLUGIN_LIBRARY=/usr/local/cuda/lib64/libnvinfer_plugin.so \
   -DTENSORRT_ONNX_PARSER_LIBRARY=/usr/local/cuda/lib64/libnvonnxparser.so
-cmake --build artifacts/build/workpiece --target workpiece_runtime -j4
+cmake --build artifacts/build/workpiece --target workpiece_runtime workpiece_pipeline -j4
 ```
 
-示例架构和 SDK 安装位置需匹配开发机；不能照搬到 Jetson。共享库及其 upstream/lib 依赖需一起部署，或者使用完整构建目录。普通 `colcon build` 只安装 Python 接线，不自动下载模型或构建 GPU 扩展；这允许无 GPU 开发者继续维护系统模块。
+示例89对应Ada GPU，Orin使用87；架构和SDK位置需匹配开发机。共享库及构建目录下的 `lib/` 依赖需一起部署，或者使用完整构建目录。原生CLI在 `artifacts/build/workpiece/bin/workpiece_pipeline`。普通 `colcon build` 只安装 Python 接线，不自动下载模型或构建 GPU 扩展；无GPU开发者可以维护系统模块。
 
 贡献的 `tools/download_models.sh`、`tools/build_engines.sh` 保留。ONNX 发行包来自贡献仓库 v0.1.0，发布校验为 `8d749f9e5953054432201450f724368243b4e16b2441042db766df306ae2433b`。下载后按发行清单核验；模型不进入 Git。
 
@@ -807,6 +835,29 @@ TRTEXEC=/usr/src/tensorrt/bin/trtexec \
 ```
 
 engine 必须针对部署 GPU 和 TensorRT 构建。无 trtexec 或资产时明确报缺失；源码合入、共享库加载成功都不等于推理成功。
+
+## 稳定调试入口
+
+`scripts/dev_perception.py`只包装专业版本的原生CLI，不实现另一套感知算法。先填好下一节的本地profile，再使用实际输入对应的标定：
+
+```bash
+python3 scripts/dev_perception.py doctor \
+  --profile artifacts/dev/workpiece.local.yaml
+python3 scripts/dev_perception.py replay \
+  --profile artifacts/dev/workpiece.local.yaml \
+  --data artifacts/dependencies/workpiece/sample-data/sample/x/0 \
+  --intrinsics src/robot_app/robot_app/modules/perception_runtime/thirdparty/workpiece_pipeline/config/intrinsics \
+  --output artifacts/dev/workpiece-replay-001
+```
+
+| 命令 | 实际启动内容 | 不包含 |
+| --- | --- | --- |
+| `doctor` | 检查工具和profile资产路径 | 模型加载、GPU推理、ROS、仿真 |
+| `replay` | 原生YOLO和FoundationPose读取录制RGB-D，输出CAD叠加和位姿 | 机器人动作、ROS感知资格、物理验收 |
+
+`--data`也接受单张RGB图片。`--intrinsics`必须显式给出，不能把贡献样例标定用于其他相机。输出目录必须不存在，避免覆盖旧记录；`native.log`保留原程序诊断，`run.json`记录资产哈希、退出码与墙钟时间。`NATIVE_EXIT_OK`只代表原生进程正常完成，仍需检查结果。
+
+默认 `--depth-preprocess off`与生产桥保持一致；原CLI的 `clean/full` 可显式选择，用于对照。缺资产或子进程失败会返回非零退出码。需要终止时在启动终端按Ctrl+C，结果记录为中断。
 
 ## ROS 配置
 
@@ -829,7 +880,7 @@ workpiece:
 
 ## 验证与职责
 
-`python3 scripts/dev_module.py perception test` 检查坐标、时间与失败传播；原生 C++ 库需另行编译。本次接入已完成 CPU 契约检查及本机原生编译/加载；尚无本机 TensorRT engine 推理、真实相机或物理抓取验收。录制 RGB-D、实际 latency、新鲜度和目标位姿误差是后续算法验证条件。
+`python3 scripts/dev_module.py perception test` 检查坐标、时间与失败传播；原生 C++ 库需另行编译。已在RTX 5000 Ada（sm89）、TensorRT 10.9.0.34上构建三份FP16引擎，并用贡献者10帧RGB-D样例完成原生回放：1次Register、9次Track，10/10正常输出位姿和叠加图，进程退出码0。此结果是录制输入的实际GPU推理；尚不代表ROS观测时效、实时相机、位姿绝对精度或物理抓取验收。换GPU/TensorRT版本需重新构建并复验engine。
 
 源码与模型适配由感知负责人维护；相机标定由传感负责人提供；对象尺寸/抓取定义由操作与感知共同核对。不要将样例内参、模型单位、目标类别或阈值当作通用设备默认值。
 </textarea>

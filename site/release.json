@@ -529,8 +529,8 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "43da3d813861942f0e8aa41f9a80dd11d1d3a50b9316fd2b43c72f762fa1e921",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "9483356fb00a55a40d721c3b2466c6f80ac9988e0766fe6d5e255b27b1f945ea",
+      "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
     },
     {
       "file": "interaction-integration.html",
@@ -539,13 +539,13 @@
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "c5634dd3d15d901afda6044143b5e163e5d799b2cd4a454051affa9f8f58958d",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "c4c5d9dd9f6d44c6a2347dbb3f2afb20e1dd43bc9f2058fa914af8d0244837e2",
+      "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
     },
     {
       "file": "workpiece-perception.html",
-      "source_sha256": "e11e36f553860bf84b469fe2c732fba918f63e8d3102a1203f14fc6ed517c2b0",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "a1810dd13abaf78db4124dd3c272458fa381037d7c3521129512ca42c95cdc6a",
+      "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
     }
   ],
   "assets": [
