@@ -699,7 +699,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div>
 <main class="am-doc">
 <header class="am-head"><h1>交互与系统任务接入</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>interaction-integration</span><span><b>implementation</b>6368a1bf4538d3cb</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
-<p>交互源代码继续在 <code>Interactive_System_V1.00/client</code>、<code>server</code> 维护。默认 <code>EMBODIED_INTERACTION_MODE=system</code>；<code>standalone</code> 仅用于原型独立调试，其模拟任务/定时到位不能作为机器人反馈。</p>
+<p>交互源代码统一在 <code>apps/interaction/</code> 维护：<code>agent/</code> 为交互节点，<code>webui/</code> 为网页，<code>model_services/</code> 为模型服务。默认 <code>EMBODIED_INTERACTION_MODE=system</code>；<code>standalone</code> 仅用于原型独立调试，其模拟任务/定时到位不能作为机器人反馈。</p>
 </div></div></header>
 <div class="am-doc-layout">
 <nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 职责与调用链</a><a href="#panel-B">B · 启动与配置</a><a href="#panel-C">C · 不加载模型的协议联调</a><a href="#panel-D">D · 任务功能联调</a><a href="#panel-E">E · API 与状态</a><a href="#panel-F">F · 机器人上下文</a><a href="#panel-G">G · 协同平台与交互页面</a></nav><div class="am-doc-body">
@@ -721,7 +721,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">json</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="json"><span class="am-ln">[{&quot;id&quot;:&quot;exhibit_a&quot;,&quot;label&quot;:&quot;到展台A&quot;,&quot;robot_id&quot;:&quot;g1_01&quot;,&quot;skill_id&quot;:&quot;navigate_arrive&quot;,&quot;skill_version&quot;:&quot;1.0&quot;,&quot;parameters&quot;:{&quot;target&quot;:{&quot;position&quot;:[1.0,2.0,0.0],&quot;orientation_xyzw&quot;:[0.0,0.0,0.0,1.0],&quot;frame_id&quot;:&quot;map&quot;}}}]</span></code></pre></figure>
 <div class="am-md"><p><code>navigate_arrive</code> 在已有定位会话中调用原 <code>navigation.navigate_to</code>、<code>navigation.adjust_base</code>；不加载地图、不新增导航算法。导览 <code>tour_bindings.json</code> 为讲解点 ID 到任务 binding_id 的映射；绑定必须是上述到位 Skill。讲解稿、点 ID、物理位置分别配置，不能把讲稿顺序当地图。</p>
 </div>
-<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">cd Interactive_System_V1.00/client</span><span class="am-ln">export EMBODIED_INTERACTION_MODE=system</span><span class="am-ln">export EMBODIED_SYSTEM_URL=http://127.0.0.1:8090</span><span class="am-ln">export EMBODIED_TOUR_BINDINGS=../../configs/interaction/tour_bindings.json</span><span class="am-ln"># 完整语音环境与模型服务准备后：</span><span class="am-ln">python run.py</span></code></pre></figure>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">cd apps/interaction</span><span class="am-ln">export EMBODIED_INTERACTION_MODE=system</span><span class="am-ln">export EMBODIED_SYSTEM_URL=http://127.0.0.1:8090</span><span class="am-ln">export EMBODIED_TOUR_BINDINGS=../../configs/interaction/tour_bindings.json</span><span class="am-ln"># 完整语音环境与模型服务准备后：</span><span class="am-ln">python run.py</span></code></pre></figure>
 <div class="am-md"><p>可通过 <code>EMBODIED_TOUR_DOCS</code> 指定讲解稿，<code>EMBODIED_INTERACTION_DATA</code> 指定私有数据目录，<code>EMBODIED_ROBOT_SCOPE</code> 限定允许请求的机器人 ID（逗号分隔）。非回环网关需在两端设置相同 <code>EMBODIED_GATEWAY_TOKEN</code>；远程网络另配 TLS/访问控制，不把明文开发端口当公开服务。</p>
 </div></div>
 </section>
@@ -730,7 +730,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <div class="am-panel-body"><div class="am-md"><p>开发服务只输出明确配置的MOCK响应。LLM精确匹配最后一条用户消息；ASR按输入音频的SHA256匹配固定转写；TTS每段文本返回100ms静音PCM。未配置的文本或音频返回422，不自动编造任务。它不替代真实模型、声纹或麦克风验收。</p>
 <p>从仓库根目录启动，Ctrl+C停止：</p>
 </div>
-<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">Interactive_System_V1.00/client/.venv/bin/python -m pip install \</span><span class="am-ln">  -r Interactive_System_V1.00/server/requirements-mock.txt</span><span class="am-ln">Interactive_System_V1.00/client/.venv/bin/python \</span><span class="am-ln">  Interactive_System_V1.00/server/mock_services.py \</span><span class="am-ln">  --fixture Interactive_System_V1.00/server/mock.example.json --port 9530</span></code></pre></figure>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">apps/interaction/.venv/bin/python -m pip install \</span><span class="am-ln">  -r apps/interaction/model_services/requirements-mock.txt</span><span class="am-ln">apps/interaction/.venv/bin/python \</span><span class="am-ln">  apps/interaction/model_services/mock_services.py \</span><span class="am-ln">  --fixture apps/interaction/model_services/mock.example.json --port 9530</span></code></pre></figure>
 <div class="am-md"><p>三个协议共用一个回环端口；<code>GET http://127.0.0.1:9530/health</code>返回<code>source=MOCK</code>和fixture数量。服务不连接机器人或GPU。<code>mock.example.json</code>仅包含“你好”响应；联调用的完整意图提示词和音频哈希应写入独立fixture，不能把精确匹配当作意图算法。</p>
 <p>启动专业客户端之前显式设置地址，真实服务默认值不变：</p>
 </div>
@@ -804,13 +804,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <section class="am-panel" id="panel-G">
 <header class="am-panel-head"><span class="am-panel-id">G</span><h2>协同平台与交互页面</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>协同平台已经纳入<code>apps/collaboration_platform</code>，保留全局态势、系统工作区、本体状态、操作感知和底部协同会话。系统工作区可从全局页面打开；没有连接时显示待连接，不生成机器人或任务。</p>
-<p>交互<code>/client</code>观众页与开发控制台继续在原工作区维护。平台与交互使用同一system_app任务和上下文来源；独立页面不拥有第二套机器人执行器。三个入口共用主题变量，底部会话通过原交互网关接线，设计预览与真实来源分开；观察页面可以独立运行，见<a href="collaborative-development.html">协同开发</a>。</p>
+<p>交互<code>/client</code>观众页与开发控制台在 <code>apps/interaction/webui/</code> 维护。平台与交互使用同一system_app任务和上下文来源；独立页面不拥有第二套机器人执行器。三个入口共用主题变量，底部会话通过原交互网关接线，设计预览与真实来源分开；观察页面可以独立运行，见<a href="collaborative-development.html">协同开发</a>。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-21 08:53</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-21 09:23</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -823,7 +823,7 @@ implementation: 6368a1bf4538d3cb
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
 
-交互源代码继续在 `Interactive_System_V1.00/client`、`server` 维护。默认 `EMBODIED_INTERACTION_MODE=system`；`standalone` 仅用于原型独立调试，其模拟任务/定时到位不能作为机器人反馈。
+交互源代码统一在 `apps/interaction/` 维护：`agent/` 为交互节点，`webui/` 为网页，`model_services/` 为模型服务。默认 `EMBODIED_INTERACTION_MODE=system`；`standalone` 仅用于原型独立调试，其模拟任务/定时到位不能作为机器人反馈。
 
 ## 职责与调用链
 
@@ -867,7 +867,7 @@ ros2 run system_app system_app --data-dir artifacts/dev/system \
 `navigate_arrive` 在已有定位会话中调用原 `navigation.navigate_to`、`navigation.adjust_base`；不加载地图、不新增导航算法。导览 `tour_bindings.json` 为讲解点 ID 到任务 binding_id 的映射；绑定必须是上述到位 Skill。讲解稿、点 ID、物理位置分别配置，不能把讲稿顺序当地图。
 
 ```bash
-cd Interactive_System_V1.00/client
+cd apps/interaction
 export EMBODIED_INTERACTION_MODE=system
 export EMBODIED_SYSTEM_URL=http://127.0.0.1:8090
 export EMBODIED_TOUR_BINDINGS=../../configs/interaction/tour_bindings.json
@@ -884,11 +884,11 @@ python run.py
 从仓库根目录启动，Ctrl+C停止：
 
 ```bash
-Interactive_System_V1.00/client/.venv/bin/python -m pip install \
-  -r Interactive_System_V1.00/server/requirements-mock.txt
-Interactive_System_V1.00/client/.venv/bin/python \
-  Interactive_System_V1.00/server/mock_services.py \
-  --fixture Interactive_System_V1.00/server/mock.example.json --port 9530
+apps/interaction/.venv/bin/python -m pip install \
+  -r apps/interaction/model_services/requirements-mock.txt
+apps/interaction/.venv/bin/python \
+  apps/interaction/model_services/mock_services.py \
+  --fixture apps/interaction/model_services/mock.example.json --port 9530
 ```
 
 三个协议共用一个回环端口；`GET http://127.0.0.1:9530/health`返回`source=MOCK`和fixture数量。服务不连接机器人或GPU。`mock.example.json`仅包含“你好”响应；联调用的完整意图提示词和音频哈希应写入独立fixture，不能把精确匹配当作意图算法。
@@ -960,7 +960,7 @@ RUN_ROS_TESTS=1 ROS_LOCALHOST_ONLY=1 ROS_DOMAIN_ID=196 \
 
 协同平台已经纳入`apps/collaboration_platform`，保留全局态势、系统工作区、本体状态、操作感知和底部协同会话。系统工作区可从全局页面打开；没有连接时显示待连接，不生成机器人或任务。
 
-交互`/client`观众页与开发控制台继续在原工作区维护。平台与交互使用同一system_app任务和上下文来源；独立页面不拥有第二套机器人执行器。三个入口共用主题变量，底部会话通过原交互网关接线，设计预览与真实来源分开；观察页面可以独立运行，见[协同开发](collaborative-development.html)。
+交互`/client`观众页与开发控制台在 `apps/interaction/webui/` 维护。平台与交互使用同一system_app任务和上下文来源；独立页面不拥有第二套机器人执行器。三个入口共用主题变量，底部会话通过原交互网关接线，设计预览与真实来源分开；观察页面可以独立运行，见[协同开发](collaborative-development.html)。
 </textarea>
 <script>
 (() => {

@@ -335,8 +335,8 @@
     },
     {
       "file": "module-robot-interaction_runtime.html",
-      "source_sha256": "97cfc8f122f0607aead7a86e1cf7f894bafcd48776f2e606ba241a435ebf5771",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "56d9c503cdc5c404c3c85a7402e9c6256be9fb0ffc5d03d36fd0220497619f8f",
+      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "module-robot-local_task_runtime.html",
@@ -434,8 +434,8 @@
     },
     {
       "file": "modules.html",
-      "source_sha256": "62bf7cf629c3542c5bd0e7057720afd679b95010737616149893a9414fc44590",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "9874ef56a0dc9c273d6f11ccd1db617e53e643c388afa3e34c71f37c99eb9a7e",
+      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "runtime-internals.html",
@@ -529,17 +529,17 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "ab33365a12066a538dd6a9444d18d45d70a45025b00852618ca2bc02a05dd0a1",
+      "source_sha256": "d3f390376421c2803609b7b7e773b75317552a1eef801a4458a72f44c0ff3147",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "interaction-integration.html",
-      "source_sha256": "ddf712f54c844945c15de1730b13934f0088943a4ff7057530c0816fea843ebc",
+      "source_sha256": "0a5157311903b5ca23940e845436521d5dd06dbda883e0f58ac788819a898122",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "d028e02ebdc76cd50d23beb6f4e6a3427a3afe57f15ac8819e03dc59cd446142",
+      "source_sha256": "84f8cfacca05b0bba00efafb4e442a86f2a97d8b812ba579d49688738bfa54cc",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
