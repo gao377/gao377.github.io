@@ -529,17 +529,17 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "20a8be35d784cfc72bbb3a0a0c5a2bdbed27d9c97e106c8baee24426aa2325fe",
+      "source_sha256": "ab33365a12066a538dd6a9444d18d45d70a45025b00852618ca2bc02a05dd0a1",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "interaction-integration.html",
-      "source_sha256": "08ce086f61dd002baba729d1ee5fa757553330d21483462f963e5c09253d5877",
+      "source_sha256": "ddf712f54c844945c15de1730b13934f0088943a4ff7057530c0816fea843ebc",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "3c918497865c290243c7fbc8738763fa055bff88ad9b744b9672b27ffa537223",
+      "source_sha256": "d028e02ebdc76cd50d23beb6f4e6a3427a3afe57f15ac8819e03dc59cd446142",
       "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
     },
     {
