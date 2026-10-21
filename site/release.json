@@ -299,8 +299,8 @@
     },
     {
       "file": "index.html",
-      "source_sha256": "bb4545a2593282716d967abeaa29225ef36728d9ba703adcf984feffc2cd686d",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "b2e00631a64aa5d9700714b756e75e013de577e624406aa70849a586d8a9ed78",
+      "implementation_sha256": "96c874447576c5f2dc6e663e9308ba9f94d659d5f7b132e43df0db8def904cee"
     },
     {
       "file": "interface-catalog.html",
@@ -335,8 +335,8 @@
     },
     {
       "file": "module-robot-interaction_runtime.html",
-      "source_sha256": "56d9c503cdc5c404c3c85a7402e9c6256be9fb0ffc5d03d36fd0220497619f8f",
-      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
+      "source_sha256": "ca5c700d7344c3c5a0909e235f9f5f3cef52cf7cae6fe38e9239b6299e990eb8",
+      "implementation_sha256": "96c874447576c5f2dc6e663e9308ba9f94d659d5f7b132e43df0db8def904cee"
     },
     {
       "file": "module-robot-local_task_runtime.html",
@@ -539,8 +539,8 @@
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "84f8cfacca05b0bba00efafb4e442a86f2a97d8b812ba579d49688738bfa54cc",
-      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
+      "source_sha256": "d3c4286b7bde4abc4bb8691db6fc040b63ee4342cc274500e5924a585580ee37",
+      "implementation_sha256": "96c874447576c5f2dc6e663e9308ba9f94d659d5f7b132e43df0db8def904cee"
     },
     {
       "file": "workpiece-perception.html",

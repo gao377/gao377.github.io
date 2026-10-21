@@ -698,15 +698,16 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>模块所有权与协作</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>module-ownership</span><span><b>implementation</b>6368a1bf4538d3cb</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>模块所有权与协作</h1><p class="am-sub">稳定目录、真实接口与独立开发条件</p><div class="am-head-meta"><span><b>doc_id</b>module-ownership</span><span><b>implementation</b>96c874447576c5f2</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p>所有姓名和 GitHub 账号均<strong>待指定</strong>。以下是职责角色，不是访问权限或 GitHub CODEOWNERS 审批规则。指定账号后，再把相同路径登记为 CODEOWNERS；不要填写虚构账号。</p>
 <p>同一个 Git 仓库是系统实现的唯一开发源。感知贡献代码已复制到所属模块，交互代码归入 <code>apps/interaction/</code>，由 <code>agent/</code>、<code>webui/</code>、<code>model_services/</code> 分别承载交互节点、网页与模型服务。它们不是子模块，不需要另拉原项目仓库。依赖环境可以隔离，源代码仍在本仓库协作。</p>
 </div></div></header>
-<div class="am-doc-layout am-doc-layout--notoc">
-<div class="am-doc-body">
+<div class="am-doc-layout">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 目录和职责</a><a href="#panel-B">B · 接口文件与共同审阅</a><a href="#panel-C">C · 分支与工作区</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>目录和职责</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>下表的 <code>S/</code> 表示 <code>src/system_app/system_app/modules/</code>，<code>R/</code> 表示 <code>src/robot_app/robot_app/modules/</code>。列出的目录包括其文件和子目录；跨边界文件需相邻角色共同审阅。</p>
+<div class="am-panel-body"><div class="am-md"><p>下表的 <code>S/</code> 表示 <code>src/system_app/system_app/modules/</code>，<code>R/</code> 表示 <code>src/robot_app/robot_app/modules/</code>。列出的目录包括其文件和子目录；更具体的文件归属优先于父目录。每项有主维护角色，涉及接口的变更由下文列出的角色共同审阅。</p>
+<p>本文件是负责人登记的唯一依据。根 README 是入口摘要，各模块 README 说明本模块范围；变更目录或负责人时同步这三处。角色不表示功能已完成，也不代表已设置 GitHub 审批规则。</p>
 <div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -717,18 +718,18 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </thead>
 <tbody><tr>
 <td>交互负责人</td>
-<td><code>apps/interaction/agent/</code>、<code>apps/interaction/config.py</code>、<code>apps/interaction/run.py</code>、<code>apps/interaction/evaluation/</code></td>
-<td>语音、身份、意图、闲聊、会话记忆、讲解；系统模式通过任务网关提交，不访问机器人 SDK</td>
+<td><code>apps/interaction/agent/</code>、<code>config.py</code>、<code>run.py</code>、<code>requirements.txt</code>、<code>evaluation/</code>、<code>examples/</code>、<code>tools/</code>、<code>scripts/start_nodes.sh</code>、<code>scripts/stop_nodes.sh</code>（后续路径均相对 <code>apps/interaction/</code>）</td>
+<td>语音、身份、意图、闲聊、会话记忆、讲解与节点生命周期；系统模式通过任务网关提交，不访问机器人 SDK</td>
 </tr>
 <tr>
 <td>模型服务负责人</td>
-<td><code>apps/interaction/model_services/</code>、<code>apps/interaction/model_services/requirements*.txt</code></td>
-<td>ASR/LLM/TTS 服务、模型版本与推理依赖；模型/用户数据不提交</td>
+<td><code>apps/interaction/model_services/</code>，含协议 MOCK、服务脚本、依赖和 <code>thirdparty/</code></td>
+<td>ASR/LLM/TTS 服务、协议、模型版本与推理依赖；模型/用户数据不提交</td>
 </tr>
 <tr>
 <td>交互网页负责人</td>
-<td><code>apps/interaction/webui/</code>、<code>apps/interaction/scripts/</code></td>
-<td>会话与讲解网页、开发控制台；任务状态引用 system_app；观众/控制台布局与平台共享主题共审</td>
+<td><code>apps/interaction/webui/</code>、<code>requirements-web.txt</code>、<code>scripts/start_webui.sh</code>、<code>scripts/stop_webui.sh</code>（后续路径相对应用目录）</td>
+<td>会话与讲解网页、开发控制台及网页进程；任务状态引用 system_app，不接管节点业务</td>
 </tr>
 <tr>
 <td>系统 Agent/任务负责人</td>
@@ -801,6 +802,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <td>全局态势、遥测/回放与系统接口呈现；不实现感知算法或设备控制；入口与交互角色共审</td>
 </tr>
 <tr>
+<td>共享主题负责人</td>
+<td><code>apps/ui_theme/</code></td>
+<td>公共颜色、字阶、间距、控件、图标及素材许可；平台与交互网页角色共同审阅，不包含业务状态</td>
+</tr>
+<tr>
 <td>工具/文档负责人</td>
 <td><code>tools/</code>、<code>docs/</code>、根 <code>README.md</code></td>
 <td>可视化、手册与公共接口说明；模块主题由对应模块负责人提供和复核</td>
@@ -810,21 +816,84 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>分支与工作区</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>接口文件与共同审阅</h2></header>
+<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>文件或目录</th>
+<th>主维护角色</th>
+<th>共同审阅角色及边界</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>apps/interaction/agent/integration/</code></td>
+<td>交互负责人</td>
+<td>系统 Agent/任务、系统上下文；任务请求/取消和事实消费，不在交互侧生成物理状态</td>
+</tr>
+<tr>
+<td><code>src/system_app/system_app/interaction_gateway/</code>、<code>configs/interaction/</code></td>
+<td>系统 Agent/任务负责人</td>
+<td>交互；API、任务绑定、结果与取消责任</td>
+</tr>
+<tr>
+<td><code>apps/interaction/model_services/mock_services.py</code>、<code>mock.example.json</code></td>
+<td>模型服务负责人</td>
+<td>交互；MOCK 仅替换模型协议，不替换任务编排或机器人结果</td>
+</tr>
+<tr>
+<td><code>apps/interaction/evaluation/test_webui.py</code></td>
+<td>交互网页负责人</td>
+<td>交互；网页、日志与应用启停的离线检查</td>
+</tr>
+<tr>
+<td><code>apps/interaction/model_services/scripts/shutdown.sh</code></td>
+<td>模型服务负责人</td>
+<td>交互；跨节点与模型服务的关闭范围</td>
+</tr>
+<tr>
+<td><code>apps/interaction/requirements.txt</code></td>
+<td>交互负责人</td>
+<td>模型服务、交互网页；共享 Python 依赖兼容</td>
+</tr>
+<tr>
+<td><code>apps/collaboration_platform/src/embodied_hybrid/modules/presentation/operator_routes.py</code></td>
+<td>协同平台负责人</td>
+<td>系统 Agent/任务、交互网页；公共接口代理、读写权限与来源语义</td>
+</tr>
+<tr>
+<td><code>apps/ui_theme/</code></td>
+<td>共享主题负责人</td>
+<td>协同平台、交互网页；同时检查平台、控制台和观众页</td>
+</tr>
+<tr>
+<td><code>tests/integration/test_interaction_model_services.py</code></td>
+<td>模型服务负责人</td>
+<td>交互、系统装配/仿真；专业客户端与服务协议联调</td>
+</tr>
+<tr>
+<td><code>tests/integration/test_interaction_bound_mission.py</code></td>
+<td>系统装配/仿真负责人</td>
+<td>交互、系统 Agent/任务；跨 TCP/HTTP/ROS 的提交、取消与结果反馈</td>
+</tr>
+</tbody></table></div>
+<p>交互应用 <code>apps/interaction/</code> 与机器人端 <code>R/interaction_runtime/</code> 分属应用交互和本机能力层。网页、模型服务及会话逻辑维护在前者；后者只承担本机能力接口，不能用来容纳整套交互应用。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-C">
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>分支与工作区</h2></header>
 <div class="am-panel-body"><figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">git clone git@github.com:gao377/agentic-embodied-system.git</span><span class="am-ln">cd agentic-embodied-system</span><span class="am-ln">git switch main</span><span class="am-ln">git pull --ff-only</span><span class="am-ln">git switch -c feat/perception/short-description</span></code></pre></figure>
 <div class="am-md"><p>分支采用 <code>feat/&lt;模块&gt;/&lt;主题&gt;</code> 或 <code>fix/&lt;模块&gt;/&lt;主题&gt;</code>；每名开发者使用独立 checkout。同一机器需要并行分支时用 <code>git worktree</code>，不要共享一个可变工作目录。禁止重新打包源码压缩包回传、嵌套 <code>.git</code> 或把感知实现放到交互目录。</p>
 <p>提交前跑模块检查；跨域修改补系统接口检查。PR 说明行为、接口影响、环境、检查结果与未验证范围。合并前由所有被修改目录的责任角色确认。</p>
 <p>保留上传贡献的成熟算法和许可；新增/修改第一方代码保持单文件不超过 300 行。导入的原始长文件先保持开发者路径，后续拆分由该角色实施，不为行数批量打散。</p>
 <p>运行数据在忽略的 <code>artifacts/</code> 或外置数据盘。交互个人记忆与声纹在本地 <code>apps/interaction/data/</code>，可用 <code>EMBODIED_INTERACTION_DATA</code> 指定独立路径。共享 GPU/仿真/设备一次一个物理任务；CPU 单元检查可独立运行。模块环境和调试入口见 <a href="collaborative-development.html">协同开发</a>。</p>
-<p>交互负责人同时维护 <code>apps/interaction/model_services/mock_services.py</code>、模型协议fixture与 <code>tests/integration/test_interaction_model_services.py</code>。MOCK只替换模型服务，不接管系统任务编排或机器人执行。</p>
-<p>任务功能检查 <code>tests/integration/test_interaction_bound_mission.py</code> 由交互与系统任务角色共同维护；意图协议的 <code>operation=CANCEL</code> 属交互，实际取消与执行责任属于系统任务层。</p>
+<p>意图协议的 <code>operation=CANCEL</code> 属交互，实际取消与执行责任属于系统任务层。任务与模型联调文件按上表分工维护。</p>
 <p><code>GetRobotContext.srv</code>由公共契约负责人维护；本机<code>robot_context_ros.py</code>归系统装配，与感知/空间角色共审字段；系统<code>team_runtime/robot_context_client.py</code>及context_store归系统上下文角色。交互仅消费事实，不拥有观测生成。</p>
 </div></div>
 </section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-21 09:23</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-21 09:27</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -832,7 +901,7 @@ title: 模块所有权与协作
 subtitle: 稳定目录、真实接口与独立开发条件
 lang: zh
 doc_id: module-ownership
-implementation: 6368a1bf4538d3cb
+implementation: 96c874447576c5f2
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -843,13 +912,15 @@ implementation: 6368a1bf4538d3cb
 
 ## 目录和职责
 
-下表的 `S/` 表示 `src/system_app/system_app/modules/`，`R/` 表示 `src/robot_app/robot_app/modules/`。列出的目录包括其文件和子目录；跨边界文件需相邻角色共同审阅。
+下表的 `S/` 表示 `src/system_app/system_app/modules/`，`R/` 表示 `src/robot_app/robot_app/modules/`。列出的目录包括其文件和子目录；更具体的文件归属优先于父目录。每项有主维护角色，涉及接口的变更由下文列出的角色共同审阅。
+
+本文件是负责人登记的唯一依据。根 README 是入口摘要，各模块 README 说明本模块范围；变更目录或负责人时同步这三处。角色不表示功能已完成，也不代表已设置 GitHub 审批规则。
 
 | 负责人角色（姓名待指定） | 主要目录/文件所有权 | 开发范围和接口边界 |
 | --- | --- | --- |
-| 交互负责人 | `apps/interaction/agent/`、`apps/interaction/config.py`、`apps/interaction/run.py`、`apps/interaction/evaluation/` | 语音、身份、意图、闲聊、会话记忆、讲解；系统模式通过任务网关提交，不访问机器人 SDK |
-| 模型服务负责人 | `apps/interaction/model_services/`、`apps/interaction/model_services/requirements*.txt` | ASR/LLM/TTS 服务、模型版本与推理依赖；模型/用户数据不提交 |
-| 交互网页负责人 | `apps/interaction/webui/`、`apps/interaction/scripts/` | 会话与讲解网页、开发控制台；任务状态引用 system_app；观众/控制台布局与平台共享主题共审 |
+| 交互负责人 | `apps/interaction/agent/`、`config.py`、`run.py`、`requirements.txt`、`evaluation/`、`examples/`、`tools/`、`scripts/start_nodes.sh`、`scripts/stop_nodes.sh`（后续路径均相对 `apps/interaction/`） | 语音、身份、意图、闲聊、会话记忆、讲解与节点生命周期；系统模式通过任务网关提交，不访问机器人 SDK |
+| 模型服务负责人 | `apps/interaction/model_services/`，含协议 MOCK、服务脚本、依赖和 `thirdparty/` | ASR/LLM/TTS 服务、协议、模型版本与推理依赖；模型/用户数据不提交 |
+| 交互网页负责人 | `apps/interaction/webui/`、`requirements-web.txt`、`scripts/start_webui.sh`、`scripts/stop_webui.sh`（后续路径相对应用目录） | 会话与讲解网页、开发控制台及网页进程；任务状态引用 system_app，不接管节点业务 |
 | 系统 Agent/任务负责人 | `S/team_planner/`、`S/team_runtime/`、`S/team_verifier/`、`src/system_app/system_app/interaction_gateway/`、`src/system_app/system_app/agent_ports.py`、`configs/skills/`、`configs/interaction/` | 目标绑定、Skill 编译、任务派发、取消与验证；与交互负责人共同审阅 `apps/interaction/agent/integration/` |
 | 系统上下文负责人 | `S/capability_registry/`、`S/context_store/`、`S/knowledge_memory/` | 机器人目录、真实状态、结构化系统记忆；用户会话摘要不充当物理状态 |
 | 系统演进负责人 | `S/reflection_engine/`、`S/candidate_builder/`、`S/evolution_manager/` | 反思与候选接口；框架定义不能描述为已实现自主改进 |
@@ -864,9 +935,27 @@ implementation: 6368a1bf4538d3cb
 | 公共契约负责人 | `src/embodied_core/`、`src/embodied_interfaces/` | 请求、结果、坐标、时间与来源语义；变更须审阅消费者、ROS 映射和版本兼容 |
 | 系统装配/仿真负责人 | 两个应用的 `main.py`、`ros_node.py`、装配文件、`simulation/`、`deploy/`、`configs/scenarios.json` | 进程生命周期、仿真后端、场景启动与安装；不改变各模块算法职责 |
 | 协同平台负责人 | `apps/collaboration_platform/web/`、`apps/collaboration_platform/src/embodied_hybrid/`、同目录README与测试 | 全局态势、遥测/回放与系统接口呈现；不实现感知算法或设备控制；入口与交互角色共审 |
+| 共享主题负责人 | `apps/ui_theme/` | 公共颜色、字阶、间距、控件、图标及素材许可；平台与交互网页角色共同审阅，不包含业务状态 |
 | 工具/文档负责人 | `tools/`、`docs/`、根 `README.md` | 可视化、手册与公共接口说明；模块主题由对应模块负责人提供和复核 |
 
 模块测试由相应模块角色所有；`tests/integration/` 由系统装配与涉及的接口角色共同所有。`src/*/setup.py`、共享依赖、根脚本和公共配置不可由单个模块擅自改动。未列明文件按最近所属模块认领，确有跨域再补本表，不新增第二套平行模块。
+
+## 接口文件与共同审阅
+
+| 文件或目录 | 主维护角色 | 共同审阅角色及边界 |
+| --- | --- | --- |
+| `apps/interaction/agent/integration/` | 交互负责人 | 系统 Agent/任务、系统上下文；任务请求/取消和事实消费，不在交互侧生成物理状态 |
+| `src/system_app/system_app/interaction_gateway/`、`configs/interaction/` | 系统 Agent/任务负责人 | 交互；API、任务绑定、结果与取消责任 |
+| `apps/interaction/model_services/mock_services.py`、`mock.example.json` | 模型服务负责人 | 交互；MOCK 仅替换模型协议，不替换任务编排或机器人结果 |
+| `apps/interaction/evaluation/test_webui.py` | 交互网页负责人 | 交互；网页、日志与应用启停的离线检查 |
+| `apps/interaction/model_services/scripts/shutdown.sh` | 模型服务负责人 | 交互；跨节点与模型服务的关闭范围 |
+| `apps/interaction/requirements.txt` | 交互负责人 | 模型服务、交互网页；共享 Python 依赖兼容 |
+| `apps/collaboration_platform/src/embodied_hybrid/modules/presentation/operator_routes.py` | 协同平台负责人 | 系统 Agent/任务、交互网页；公共接口代理、读写权限与来源语义 |
+| `apps/ui_theme/` | 共享主题负责人 | 协同平台、交互网页；同时检查平台、控制台和观众页 |
+| `tests/integration/test_interaction_model_services.py` | 模型服务负责人 | 交互、系统装配/仿真；专业客户端与服务协议联调 |
+| `tests/integration/test_interaction_bound_mission.py` | 系统装配/仿真负责人 | 交互、系统 Agent/任务；跨 TCP/HTTP/ROS 的提交、取消与结果反馈 |
+
+交互应用 `apps/interaction/` 与机器人端 `R/interaction_runtime/` 分属应用交互和本机能力层。网页、模型服务及会话逻辑维护在前者；后者只承担本机能力接口，不能用来容纳整套交互应用。
 
 ## 分支与工作区
 
@@ -886,9 +975,7 @@ git switch -c feat/perception/short-description
 
 运行数据在忽略的 `artifacts/` 或外置数据盘。交互个人记忆与声纹在本地 `apps/interaction/data/`，可用 `EMBODIED_INTERACTION_DATA` 指定独立路径。共享 GPU/仿真/设备一次一个物理任务；CPU 单元检查可独立运行。模块环境和调试入口见 [协同开发](collaborative-development.html)。
 
-交互负责人同时维护 `apps/interaction/model_services/mock_services.py`、模型协议fixture与 `tests/integration/test_interaction_model_services.py`。MOCK只替换模型服务，不接管系统任务编排或机器人执行。
-
-任务功能检查 `tests/integration/test_interaction_bound_mission.py` 由交互与系统任务角色共同维护；意图协议的 `operation=CANCEL` 属交互，实际取消与执行责任属于系统任务层。
+意图协议的 `operation=CANCEL` 属交互，实际取消与执行责任属于系统任务层。任务与模型联调文件按上表分工维护。
 
 `GetRobotContext.srv`由公共契约负责人维护；本机`robot_context_ros.py`归系统装配，与感知/空间角色共审字段；系统`team_runtime/robot_context_client.py`及context_store归系统上下文角色。交互仅消费事实，不拥有观测生成。
 </textarea>
