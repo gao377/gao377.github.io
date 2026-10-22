@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>实验摘要与复现口径</h1><p class="am-sub">只报告有来源的结果，并说明结论适用范围</p><div class="am-head-meta"><span><b>doc_id</b>experiments</span><span><b>implementation</b>a455d3a3cf56722b</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>实验摘要与复现口径</h1><p class="am-sub">只报告有来源的结果，并说明结论适用范围</p><div class="am-head-meta"><span><b>doc_id</b>experiments</span><span><b>implementation</b>409c0f30733ec6f1</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="navigation-response-model.html">运动响应专题：设计、预测与粗导航实测</a> · <a href="navigation-response-experiments.html">专题实验表</a> · <a href="navigation-response-recordings.html">专题三窗口录像</a></p>
 <p><a href="simulation-experiments.html">联合仿真近期结果</a> · <a href="simulation-experiment-catalog.html">历史批次记录</a> · <a href="simulation-recordings.html">联合仿真录像库</a></p>
 <p><a href="simulation-experiments.html">联合仿真：横穿避障到位、三窗口录像与脱手反例</a></p>
@@ -706,7 +706,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p><a href="simulation-performance.html">联合仿真RTF与硬件收益分析</a>：性能诊断样本，导航超时；不计成功演示。</p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与实验范围</a><a href="#panel-B">B · Warehouse工位前四能力：SIM-MANIP-01</a><a href="#panel-C">C · 轻量工位的左右抓放与本体接近</a><a href="#panel-D">D · 臂手动作与取消恢复</a><a href="#panel-E">E · 对照实验与适用限制</a><a href="#panel-F">F · Warehouse导航往返：SIM-NAV-ROUNDTRIP</a><a href="#panel-G">G · 版本和环境身份</a><a href="#panel-H">H · 软件检查与适用限制</a><a href="#panel-I">I · 保存地图重载后的导航往返：SIM-MAP-NAVIGATION</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与实验范围</a><a href="#panel-B">B · Warehouse工位前四能力：SIM-MANIP-01</a><a href="#panel-C">C · 轻量工位的左右抓放与本体接近</a><a href="#panel-D">D · 臂手动作与取消恢复</a><a href="#panel-E">E · 对照实验与适用限制</a><a href="#panel-F">F · Warehouse导航往返：SIM-NAV-ROUNDTRIP</a><a href="#panel-G">G · 版本和环境身份</a><a href="#panel-H">H · 软件检查与适用限制</a><a href="#panel-I">I · 保存地图重载后的导航往返：SIM-MAP-NAVIGATION</a><a href="#panel-J">J · 原生工厂同源平台</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>证据与实验范围</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
@@ -1087,10 +1087,51 @@ VISER展示注册点云、本体状态、平滑轨迹和NeuPAN输出。
 运行前设置地图目录、任务JSON和离线评价参考，见<a href="scenarios.html#panel-M">保存地图导航启动说明</a>。</p>
 </div></div>
 </section>
+<section class="am-panel" id="panel-J">
+<header class="am-panel-head"><span class="am-panel-id">J</span><h2>原生工厂同源平台</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>Sim6.1＋Lab3 preview，原工厂资产与G1＋REVO2。
+CPU PhysX 0-worker为默认，Newton/MJWarp为可选。
+物理250Hz、AMO和反馈50Hz、雷达10Hz、RGB-D 2Hz、GUI10simHz。
+hybrid、system/interaction与VISER/IR-SIM绑定同一真实会话，原生与网页分别录屏。</p>
+<p>同版完整平台负载各完成600秒连续仿真：</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>实验</th>
+<th>RTF</th>
+<th>完整均步</th>
+<th>核验范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SIM-PLATFORM-CPU10-600</td>
+<td>0.595855</td>
+<td>6.713ms</td>
+<td>原公共待命、设备、平台、GUI、退出及录像</td>
+</tr>
+<tr>
+<td>SIM-PLATFORM-NEWTON10-600</td>
+<td>0.623145</td>
+<td>6.419ms</td>
+<td>同范围，Newton手部业务操作尚未资格化</td>
+</tr>
+</tbody></table></div>
+<p>每项150000步均有真实AMO命令因果关联、无PASSIVE，设备源计数完整。
+15个自有服务与worker全部正常退出，两角色原速及20倍速录像完整解码。
+逐步分布、渲染分组、版本、硬件和计时条件见<a href="simulation.html#panel-G">性能明细</a>。
+<a href="experiment-recordings.html#panel-K">完整GUI与同源平台录像</a>。</p>
+<p>另由正式系统启动命令运行的CPU60秒检查中，RTF为0.58993，完整均步6.780ms。
+15000步命令因果关联、设备源计数、全部自有进程退出及两路原速/20倍速录像解码通过。
+该例只进行零速待命，任务中心如实为空。
+图像、本体和手部反馈来自同批设备；世界显示位姿标为SIM_DISPLAY_ONLY。</p>
+<p>运行方法、详细性能条件与实际安装版本见<a href="simulation.html#panel-G">原生仿真平台</a>。
+本节验收范围为站立设备、展示和生命周期，其他任务按各自实验认定。</p>
+</div></div>
+</section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-14 08:16</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-22 22:24</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1098,7 +1139,7 @@ title: 实验摘要与复现口径
 subtitle: 只报告有来源的结果，并说明结论适用范围
 lang: zh
 doc_id: experiments
-implementation: a455d3a3cf56722b
+implementation: 409c0f30733ec6f1
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1309,6 +1350,33 @@ VISER展示注册点云、本体状态、平滑轨迹和NeuPAN输出。
 
 稳定入口：`python3 scripts/run_scenario.py warehouse-map-navigation`。
 运行前设置地图目录、任务JSON和离线评价参考，见[保存地图导航启动说明](scenarios.html#panel-M)。
+
+## J 原生工厂同源平台
+
+Sim6.1＋Lab3 preview，原工厂资产与G1＋REVO2。
+CPU PhysX 0-worker为默认，Newton/MJWarp为可选。
+物理250Hz、AMO和反馈50Hz、雷达10Hz、RGB-D 2Hz、GUI10simHz。
+hybrid、system/interaction与VISER/IR-SIM绑定同一真实会话，原生与网页分别录屏。
+
+同版完整平台负载各完成600秒连续仿真：
+
+| 实验 | RTF | 完整均步 | 核验范围 |
+| --- | --- | --- | --- |
+| SIM-PLATFORM-CPU10-600 | 0.595855 | 6.713ms | 原公共待命、设备、平台、GUI、退出及录像 |
+| SIM-PLATFORM-NEWTON10-600 | 0.623145 | 6.419ms | 同范围，Newton手部业务操作尚未资格化 |
+
+每项150000步均有真实AMO命令因果关联、无PASSIVE，设备源计数完整。
+15个自有服务与worker全部正常退出，两角色原速及20倍速录像完整解码。
+逐步分布、渲染分组、版本、硬件和计时条件见[性能明细](simulation.html#panel-G)。
+[完整GUI与同源平台录像](experiment-recordings.html#panel-K)。
+
+另由正式系统启动命令运行的CPU60秒检查中，RTF为0.58993，完整均步6.780ms。
+15000步命令因果关联、设备源计数、全部自有进程退出及两路原速/20倍速录像解码通过。
+该例只进行零速待命，任务中心如实为空。
+图像、本体和手部反馈来自同批设备；世界显示位姿标为SIM_DISPLAY_ONLY。
+
+运行方法、详细性能条件与实际安装版本见[原生仿真平台](simulation.html#panel-G)。
+本节验收范围为站立设备、展示和生命周期，其他任务按各自实验认定。
 </textarea>
 <script>
 (() => {

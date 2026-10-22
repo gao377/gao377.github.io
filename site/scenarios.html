@@ -698,10 +698,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>场景与一键启动</h1><p class="am-sub">稳定场景ID、明确窗口与可核对的执行范围</p><div class="am-head-meta"><span><b>doc_id</b>scenarios</span><span><b>implementation</b>cdb76c2b5a1588a1</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>场景与一键启动</h1><p class="am-sub">稳定场景ID、明确窗口与可核对的执行范围</p><div class="am-head-meta"><span><b>doc_id</b>scenarios</span><span><b>implementation</b>409c0f30733ec6f1</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 先选择你要看到的效果</a><a href="#panel-B">B · 终端通信</a><a href="#panel-C">C · 轻量操作工位</a><a href="#panel-D">D · Warehouse场景</a><a href="#panel-E">E · 多窗口实时观察</a><a href="#panel-F">F · 诊断与参考环境</a><a href="#panel-G">G · 已设计但尚未接通</a><a href="#panel-H">H · 版本、环境和指令稳定性</a><a href="#panel-I">I · 只读椭球包络预览</a><a href="#panel-J">J · 轻量仓库与RTF对照</a><a href="#panel-K">K · IR-SIM 二维观察窗口</a><a href="#panel-M">M · 已存地图导航</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 先选择你要看到的效果</a><a href="#panel-J">J · 原生工厂与统一平台</a><a href="#panel-B">B · 终端通信</a><a href="#panel-C">C · 轻量操作工位</a><a href="#panel-D">D · Warehouse场景</a><a href="#panel-E">E · 多窗口实时观察</a><a href="#panel-F">F · 诊断与参考环境</a><a href="#panel-G">G · 已设计但尚未接通</a><a href="#panel-H">H · 版本、环境和指令稳定性</a><a href="#panel-I">I · 只读椭球包络预览</a><a href="#panel-K">K · 轻量仓库与RTF对照</a><a href="#panel-L">L · IR-SIM 二维观察窗口</a><a href="#panel-M">M · 已存地图导航</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>先选择你要看到的效果</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>前提准备好后，在仓库根目录执行表中一条命令。Isaac是桌面窗口，VISER是浏览器；终端mock不会打开仿真。</p>
@@ -709,6 +709,15 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/run_scenario.py --list</span><span class="am-ln">python3 scripts/run_scenario.py workbench-left --describe</span><span class="am-ln">python3 scripts/run_scenario.py workbench-left --dry-run</span><span class="am-ln">python3 scripts/run_scenario.py workbench-left --check</span><span class="am-ln">python3 scripts/run_scenario.py workbench-left</span></code></pre></figure>
 <div class="am-md"><p>只有最后一条运行物理场景。预检可能调用短时检查容器，但不启动物理运动。输出目录自动按时间创建，显式指定时必须用新目录。
 “有入口”不等于本机环境已准备或物理验收通过。依赖、停止方式及参数化工具详见仓库 <code>docs/SCENARIOS.md</code> 和 <code>docs/USAGE.md</code>。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-J">
+<header class="am-panel-head"><span class="am-panel-id">J</span><h2>原生工厂与统一平台</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><code>native-platform</code> 默认 CPU PhysX（0 worker）＋GUI10；<code>native-platform-newton</code> 选择 Newton/MJWarp。两项都调用独立 <code>embodied-sim</code> 的同一个预设目录，不复制物理参数。场景保持当前工厂资产；旧 warehouse/工位入口独立保留。</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln"># 默认使用同级 embodied-sim；不同位置时设置该变量</span><span class="am-ln">export EMBODIED_SIM_ROOT=/path/to/embodied-sim</span><span class="am-ln">python3 scripts/run_scenario.py native-platform --check</span><span class="am-ln">python3 scripts/run_scenario.py native-platform --output &quot;$DATA/native-cpu-new-run&quot;</span><span class="am-ln">python3 scripts/run_scenario.py native-platform-newton --output &quot;$DATA/native-newton-new-run&quot;</span></code></pre></figure>
+<div class="am-md"><p><code>DATA</code> 须由开发者指定到外部数据盘，输出目录必须不存在。安装时需自行接受 NVIDIA 许可；许可、GPU/X11、ROS 接口和平台资源未就绪时明确失败。入口启动原生 GUI、RobotNode、hybrid、系统/交互 HTTP 服务及只读 VISER/IR-SIM，并分别录制原生 GUI 和平台窗口。端口以启动器实际输出为准。</p>
+<p>物理250Hz、AMO/SDK反馈50Hz、雷达10Hz、RGB-D 2Hz、GUI10Hz仿真时间。浏览器只读取原有消息和缓存，不能驱动物理步进。默认页面只读；system/interaction 服务连接不等于模型服务已运行或已获写资格。未启用的 SLAM/导航/感知推理显示不可用；不使用 SIM 显示真值补齐算法输出。本入口的站立/展示结果不等于探索、抓取或实机验收。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
@@ -1040,8 +1049,8 @@ warehouse和轻量工位共用现有Isaac Lab配置转发兼容函数，保留�
 <div class="am-md"><p>此选项仅为旧录包产生离线shadow对照；页面明确标注，原数据不改写。实时控制的off／shadow／active模式由空间profile定义，查看器不改变模式。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-J">
-<header class="am-panel-head"><span class="am-panel-id">J</span><h2>轻量仓库与RTF对照</h2></header>
+<section class="am-panel" id="panel-K">
+<header class="am-panel-head"><span class="am-panel-id">K</span><h2>轻量仓库与RTF对照</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>两个入口复用同一套GUI、AMO/SDK控制与传感链，唯一场景差异是仓库底图：</p>
 </div>
 <figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">python3 scripts/run_scenario.py simple-warehouse-rtf</span><span class="am-ln">python3 scripts/run_scenario.py warehouse-rtf</span></code></pre></figure>
@@ -1053,8 +1062,8 @@ warehouse和轻量工位共用现有Isaac Lab配置转发兼容函数，保留�
 <p>启动器在启动容器前创建原生空间数据输出目录，外置磁盘无需依赖 Docker 自动创建并修改目录属主；输出目录仍必须全新，已有实验不会被覆盖。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-K">
-<header class="am-panel-head"><span class="am-panel-id">K</span><h2>IR-SIM 二维观察窗口</h2></header>
+<section class="am-panel" id="panel-L">
+<header class="am-panel-head"><span class="am-panel-id">L</span><h2>IR-SIM 二维观察窗口</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>首次执行 <code>bash tools/navigation_irsim/launch.sh build</code> 构建查看器，然后运行 <code>python3 scripts/run_scenario.py viewer-navigation-2d</code>。该窗口与Isaac、VISER独立，可同时观察同一个ROS domain。它不执行IR-SIM的物理步进，不模拟激光，也不发布机器人指令。</p>
 <p>地图保留未知、已观测空闲和占用三种状态。橙色为实测轨迹，绿色点为平滑轨迹，红色为最新实测障碍投影；连续变化来自新传感帧，不代表已经实现动态物体跟踪或速度估计。各算法路径独立标识，PCT专用话题无数据时不借用TARE路径填充。</p>
 <p>只读回放：<code>bash tools/navigation_irsim/launch.sh replay &quot;$RUN&quot;</code>。旧录包没有二维话题时可显式附加 <code>--projection-profile /workspace/configs/navigation/g1_exploration.yaml</code>，由同版spatial投影生成显示数据；窗口标为RECORDED REPLAY + DERIVED 2D，不改变原实验结论。完整说明见<a href="https://github.com/gao377/agentic-embodied-system/tree/main/tools/navigation_irsim">查看器源码说明</a>。</p>
@@ -1073,7 +1082,7 @@ warehouse和轻量工位共用现有Isaac Lab配置转发兼容函数，保留�
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-12 20:15</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-22 22:24</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1081,7 +1090,7 @@ title: 场景与一键启动
 subtitle: 稳定场景ID、明确窗口与可核对的执行范围
 lang: zh
 doc_id: scenarios
-implementation: cdb76c2b5a1588a1
+implementation: 409c0f30733ec6f1
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1100,6 +1109,23 @@ python3 scripts/run_scenario.py workbench-left
 
 只有最后一条运行物理场景。预检可能调用短时检查容器，但不启动物理运动。输出目录自动按时间创建，显式指定时必须用新目录。
 “有入口”不等于本机环境已准备或物理验收通过。依赖、停止方式及参数化工具详见仓库 `docs/SCENARIOS.md` 和 `docs/USAGE.md`。
+
+
+## 原生工厂与统一平台
+
+`native-platform` 默认 CPU PhysX（0 worker）＋GUI10；`native-platform-newton` 选择 Newton/MJWarp。两项都调用独立 `embodied-sim` 的同一个预设目录，不复制物理参数。场景保持当前工厂资产；旧 warehouse/工位入口独立保留。
+
+```bash
+# 默认使用同级 embodied-sim；不同位置时设置该变量
+export EMBODIED_SIM_ROOT=/path/to/embodied-sim
+python3 scripts/run_scenario.py native-platform --check
+python3 scripts/run_scenario.py native-platform --output &quot;$DATA/native-cpu-new-run&quot;
+python3 scripts/run_scenario.py native-platform-newton --output &quot;$DATA/native-newton-new-run&quot;
+```
+
+`DATA` 须由开发者指定到外部数据盘，输出目录必须不存在。安装时需自行接受 NVIDIA 许可；许可、GPU/X11、ROS 接口和平台资源未就绪时明确失败。入口启动原生 GUI、RobotNode、hybrid、系统/交互 HTTP 服务及只读 VISER/IR-SIM，并分别录制原生 GUI 和平台窗口。端口以启动器实际输出为准。
+
+物理250Hz、AMO/SDK反馈50Hz、雷达10Hz、RGB-D 2Hz、GUI10Hz仿真时间。浏览器只读取原有消息和缓存，不能驱动物理步进。默认页面只读；system/interaction 服务连接不等于模型服务已运行或已获写资格。未启用的 SLAM/导航/感知推理显示不可用；不使用 SIM 显示真值补齐算法输出。本入口的站立/展示结果不等于探索、抓取或实机验收。
 
 ## B 终端通信
 

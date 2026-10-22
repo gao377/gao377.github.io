@@ -698,11 +698,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>成功实验完整录像</h1><p class="am-sub">8组实验 · 20条20倍速录像 · 覆盖每次录制的完整过程</p><div class="am-head-meta"><span><b>doc_id</b>experiment-recordings</span><span><b>implementation</b>f86891f79ca151eb</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>成功实验完整录像</h1><p class="am-sub">按实验关联独立窗口 · 20倍速总览 · 覆盖每次录制的完整过程</p><div class="am-head-meta"><span><b>doc_id</b>experiment-recordings</span><span><b>implementation</b>409c0f30733ec6f1</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="simulation-experiments.html">联合仿真：横穿避障到位、三窗口录像与脱手反例</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 观看与证据说明</a><a href="#panel-B">B · Warehouse工位前四能力</a><a href="#panel-C">C · 左侧方块三指抓放</a><a href="#panel-D">D · 右侧方块三指抓放</a><a href="#panel-E">E · 实际本体接近后抓放</a><a href="#panel-F">F · 单臂、双臂和手部动作</a><a href="#panel-G">G · 取消、空手恢复与新任务受理</a><a href="#panel-H">H · Warehouse导航往返</a><a href="#panel-I">I · 保存地图重载后的导航往返</a><a href="#panel-J">J · 原生站立设备链性能</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 观看与证据说明</a><a href="#panel-B">B · Warehouse工位前四能力</a><a href="#panel-C">C · 左侧方块三指抓放</a><a href="#panel-D">D · 右侧方块三指抓放</a><a href="#panel-E">E · 实际本体接近后抓放</a><a href="#panel-F">F · 单臂、双臂和手部动作</a><a href="#panel-G">G · 取消、空手恢复与新任务受理</a><a href="#panel-H">H · Warehouse导航往返</a><a href="#panel-I">I · 保存地图重载后的导航往返</a><a href="#panel-J">J · 原生站立设备链性能</a><a href="#panel-K">K · 原生工厂同源平台</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>观看与证据说明</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>当前所列网页视频统一以20倍速播放，覆盖每次录制从初始化到结束的时间范围，没有截取片段。加速时按10fps采样，适合快速浏览；需要逐帧核对时使用保留的原速记录。原始录屏及验收记录保留，文件对应关系见<a href="experiment-media.json">媒体清单</a>。</p>
@@ -860,7 +860,7 @@ VISER初始化阶段可能短暂显示此前缓存状态，应从本批实时数
 <p>一个实验编号关联一组独立窗口，而不是跨实验拼出一条成功链。
 新增材料同时提供版本身份、能力终态、评价结论、录像覆盖范围和每个文件SHA256。
 媒体清单区分原片哈希与网页副本哈希；压缩副本不是原片的逐字节副本。</p>
-<p>本页89条网页录像均为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；加速后按10fps采样，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算。</p>
+<p>本页网页录像为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；加速后按10fps采样，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算，具体文件与哈希以媒体清单为准。</p>
 <p>左右操作、本体接近、臂手动作和取消实验各有3个窗口；warehouse早期工位实验只有1条GUI录像，不补造缺失视图。
 完整移动抓放返回、探索和六点任务没有本页可声明成功的完整录像；导航往返成功也不能替代这些范围；不得用上述工位片替代。</p>
 </div></div>
@@ -878,18 +878,52 @@ VISER初始化阶段可能短暂显示此前缓存状态，应从本批实时数
 <div class="am-md"><p><a href="media/native-device-cpu600-20x.mp4">打开20倍速完整录屏</a> · <a href="simulation.html">配置、分布与验收范围</a></p>
 </div></div>
 </section>
+<section class="am-panel" id="panel-K">
+<header class="am-panel-head"><span class="am-panel-id">K</span><h2>原生工厂同源平台</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><strong>SIM-PLATFORM-CPU10-600</strong>。CPU PhysX 0-worker、GUI10simHz，原公共APP零速待命。
+同一会话接入AMO/SDK、设备、hybrid、system/interaction和VISER/IR-SIM。
+600秒仿真、150000步、RTF0.59585，全部源计数、命令关联、进程退出和录像解码通过。
+本例验收站立设备、展示和生命周期，任务中心为空。</p>
+<p><strong>CPU：Isaac原生物理GUI</strong> · 20倍速50.4秒 · 1440×900</p>
+</div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:540px;background:#15191d" aria-label="SIM-PLATFORM-CPU10-600 Isaac原生物理GUI完整记录" src="media/native-platform-cpu-physics-20x.mp4"></video>
+<div class="am-md"><p><a href="media/native-platform-cpu-physics-20x.mp4">打开CPU物理过程</a></p>
+<p><strong>CPU：hybrid同源全局页</strong> · 20倍速50.4秒 · 1440×1798</p>
+</div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:900px;background:#15191d" aria-label="SIM-PLATFORM-CPU10-600 hybrid同源全局页完整记录" src="media/native-platform-cpu-console-20x.mp4"></video>
+<div class="am-md"><p><a href="media/native-platform-cpu-console-20x.mp4">打开CPU平台页面</a></p>
+<p><strong>SIM-PLATFORM-NEWTON10-600</strong>。Newton/MJWarp、GUI10simHz，同版原公共APP零速待命。
+同样接入全部设备与平台服务，600秒仿真、150000步、RTF0.623145。
+全部源计数、命令关联、进程退出和四份原速/20倍速录像解码通过。
+Newton手部动作回零的反馈范围问题仍未解决，该录像不提供操作资格。</p>
+<p><strong>Newton：Isaac原生物理GUI</strong> · 20倍速48.2秒 · 1440×900</p>
+</div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:540px;background:#15191d" aria-label="SIM-PLATFORM-NEWTON10-600 Isaac原生物理GUI完整记录" src="media/native-platform-newton-physics-20x.mp4"></video>
+<div class="am-md"><p><a href="media/native-platform-newton-physics-20x.mp4">打开Newton物理过程</a></p>
+<p><strong>Newton：hybrid同源全局页</strong> · 20倍速48.2秒 · 1440×1798</p>
+</div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:900px;background:#15191d" aria-label="SIM-PLATFORM-NEWTON10-600 hybrid同源全局页完整记录" src="media/native-platform-newton-console-20x.mp4"></video>
+<div class="am-md"><p><a href="media/native-platform-newton-console-20x.mp4">打开Newton平台页面</a></p>
+<p>两窗口分别录制，网页副本保留各自完整起止并按10fps采样，没有跨批拼接。
+20倍速按现实录制时间计算，不能把播放器秒数直接当作仿真秒数。
+原速另存；窗口起始偏移、源片与副本SHA见<a href="experiment-media.json">媒体清单</a>。
+平台片保留了浏览器首次语言提示，不修改或重构原画面。
+场景世界位姿只供SIM显示，地图和规划图层在本配置中未启用。
+<a href="simulation.html#panel-G">完整性能与配置说明</a> · <a href="experiments.html#panel-J">实验范围</a></p>
+</div></div>
+</section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-22 16:14</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-22 22:24</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
 title: 成功实验完整录像
-subtitle: 8组实验 · 20条20倍速录像 · 覆盖每次录制的完整过程
+subtitle: 按实验关联独立窗口 · 20倍速总览 · 覆盖每次录制的完整过程
 lang: zh
 doc_id: experiment-recordings
-implementation: f86891f79ca151eb
+implementation: 409c0f30733ec6f1
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1145,7 +1179,7 @@ VISER初始化阶段可能短暂显示此前缓存状态，应从本批实时数
 媒体清单区分原片哈希与网页副本哈希；压缩副本不是原片的逐字节副本。
 
 
-本页89条网页录像均为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；加速后按10fps采样，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算。
+本页网页录像为H.264、10fps、20倍速，最大宽度1440，无音轨。每条覆盖原记录的开始和结束，未拼接跨实验片段；加速后按10fps采样，原速材料仍用于细节复核。播放器时间和动作起始时间已按20倍换算，具体文件与哈希以媒体清单为准。
 
 左右操作、本体接近、臂手动作和取消实验各有3个窗口；warehouse早期工位实验只有1条GUI录像，不补造缺失视图。
 完整移动抓放返回、探索和六点任务没有本页可声明成功的完整录像；导航往返成功也不能替代这些范围；不得用上述工位片替代。
@@ -1166,6 +1200,57 @@ VISER初始化阶段可能短暂显示此前缓存状态，应从本批实时数
 ```
 
 [打开20倍速完整录屏](media/native-device-cpu600-20x.mp4) · [配置、分布与验收范围](simulation.html)
+
+## K 原生工厂同源平台
+
+**SIM-PLATFORM-CPU10-600**。CPU PhysX 0-worker、GUI10simHz，原公共APP零速待命。
+同一会话接入AMO/SDK、设备、hybrid、system/interaction和VISER/IR-SIM。
+600秒仿真、150000步、RTF0.59585，全部源计数、命令关联、进程退出和录像解码通过。
+本例验收站立设备、展示和生命周期，任务中心为空。
+
+**CPU：Isaac原生物理GUI** · 20倍速50.4秒 · 1440×900
+
+```html
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:540px;background:#15191d&quot; aria-label=&quot;SIM-PLATFORM-CPU10-600 Isaac原生物理GUI完整记录&quot; src=&quot;media/native-platform-cpu-physics-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+[打开CPU物理过程](media/native-platform-cpu-physics-20x.mp4)
+
+**CPU：hybrid同源全局页** · 20倍速50.4秒 · 1440×1798
+
+```html
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:900px;background:#15191d&quot; aria-label=&quot;SIM-PLATFORM-CPU10-600 hybrid同源全局页完整记录&quot; src=&quot;media/native-platform-cpu-console-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+[打开CPU平台页面](media/native-platform-cpu-console-20x.mp4)
+
+**SIM-PLATFORM-NEWTON10-600**。Newton/MJWarp、GUI10simHz，同版原公共APP零速待命。
+同样接入全部设备与平台服务，600秒仿真、150000步、RTF0.623145。
+全部源计数、命令关联、进程退出和四份原速/20倍速录像解码通过。
+Newton手部动作回零的反馈范围问题仍未解决，该录像不提供操作资格。
+
+**Newton：Isaac原生物理GUI** · 20倍速48.2秒 · 1440×900
+
+```html
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:540px;background:#15191d&quot; aria-label=&quot;SIM-PLATFORM-NEWTON10-600 Isaac原生物理GUI完整记录&quot; src=&quot;media/native-platform-newton-physics-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+[打开Newton物理过程](media/native-platform-newton-physics-20x.mp4)
+
+**Newton：hybrid同源全局页** · 20倍速48.2秒 · 1440×1798
+
+```html
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:900px;background:#15191d&quot; aria-label=&quot;SIM-PLATFORM-NEWTON10-600 hybrid同源全局页完整记录&quot; src=&quot;media/native-platform-newton-console-20x.mp4&quot;&gt;&lt;/video&gt;
+```
+
+[打开Newton平台页面](media/native-platform-newton-console-20x.mp4)
+
+两窗口分别录制，网页副本保留各自完整起止并按10fps采样，没有跨批拼接。
+20倍速按现实录制时间计算，不能把播放器秒数直接当作仿真秒数。
+原速另存；窗口起始偏移、源片与副本SHA见[媒体清单](experiment-media.json)。
+平台片保留了浏览器首次语言提示，不修改或重构原画面。
+场景世界位姿只供SIM显示，地图和规划图层在本配置中未启用。
+[完整性能与配置说明](simulation.html#panel-G) · [实验范围](experiments.html#panel-J)
 </textarea>
 <script>
 (() => {

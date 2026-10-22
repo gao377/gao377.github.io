@@ -698,13 +698,13 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>仿真系统 · 设计与运行原理</h1><p class="am-sub">MuJoCo动力学、IR-SIM激光、Blender观察与统一设备桥</p><div class="am-head-meta"><span><b>doc_id</b>simulation</span><span><b>implementation</b>f86891f79ca151eb</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>仿真系统 · 设计与运行原理</h1><p class="am-sub">MuJoCo动力学、IR-SIM激光、Blender观察与统一设备桥</p><div class="am-head-meta"><span><b>doc_id</b>simulation</span><span><b>implementation</b>409c0f30733ec6f1</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="navigation-response-model.html">运动响应专题：设计、预测与粗导航实测</a> · <a href="navigation-response-experiments.html">专题实验表</a> · <a href="navigation-response-recordings.html">专题三窗口录像</a></p>
 <p><a href="simulation-experiments.html">实验结果</a> · <a href="simulation-experiment-catalog.html">完整批次档案</a> · <a href="simulation-recordings.html">三窗口录像</a></p>
 <p><a href="simulation-experiments.html">联合仿真：横穿避障到位、三窗口录像与脱手反例</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 仿真器与机器人软件分开</a><a href="#panel-B">B · 一个世界，多个后端</a><a href="#panel-C">C · 时序与两种控制模式</a><a href="#panel-D">D · 频率、坐标与扫描语义</a><a href="#panel-E">E · 对应哪些软件模块</a><a href="#panel-F">F · 目录、验证与资源</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 仿真器与机器人软件分开</a><a href="#panel-B">B · 一个世界，多个后端</a><a href="#panel-C">C · 时序与两种控制模式</a><a href="#panel-D">D · 频率、坐标与扫描语义</a><a href="#panel-E">E · 对应哪些软件模块</a><a href="#panel-F">F · 目录、验证与资源</a><a href="#panel-G">G · 原生平台从同一配置与运行取数</a><a href="#panel-H">H · 开发、退出与回放</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>仿真器与机器人软件分开</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>机器人应用保留任务、SLAM、NeuPAN、操作和AMO。
@@ -1434,7 +1434,233 @@ CPU0不渲染的完整步骤平均仍约4.8ms，本次降频尚未达到RTF1。<
 录屏和样本仍只写入指定数据盘，存储不可用时明确失败。</p>
 <p><a href="simulation-usage.html">使用与开发入口</a> · <a href="experiments.html">实验结果</a> · <a href="authoring.html">文档编写规范</a></p>
 <h3>当前原生平台配置选择</h3>
-<p><code>simctl run native-platform</code>默认CPU PhysX（0-worker）与GUI10；<code>--preset newton</code>选择Newton GUI10。两者使用同一工厂和250Hz物理、50Hz控制反馈、10Hz雷达、2Hz RGB-D。旧显式profile仍可复现。此配置选择已实现；平台全页面同会话接入及新组合长时性能另行验证。</p>
+<p><code>simctl run native-platform</code>默认CPU PhysX（0-worker）与GUI10；<code>--preset newton</code>选择Newton GUI10。两者使用同一工厂和250Hz物理、50Hz控制反馈、10Hz雷达、2Hz RGB-D。旧显式profile仍可复现。以下接入说明区分设备、公共任务和展示范围。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>原生平台从同一配置与运行取数</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>CPU PhysX 0-worker＋GUI10是默认选择；Newton/MJWarp＋GUI10为显式可选。
+两者读取仿真仓库同一<code>native-platform-presets.json</code>，不在网页复制物理参数。
+系统代码使用<code>codex/isaac-native-migration-20261021</code>，仿真使用<code>codex/isaac-native-sal-20261021</code>，版本与运行锁配套核对。
+<code>native-platform</code>默认使用原RobotNode公共待命入口，保持零速；不会自动调用导航或抓取。
+显式<code>--motion stand</code>为独立性能探针，不接公共任务。</p>
+</div>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 1586 201" width="1586" height="201" role="img" aria-label="流程图：预设目录、同一原生物理世界、SAL设备消息、robot_app、system_app、hybrid观察器、平台页面、只读诊断查看器" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am4-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M94,77 L127.4,77 Q160.8,77 194.3,77 L227.7,77" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="118" y="68" width="85.7" height="18" rx="3"/><text x="160.8" y="77" text-anchor="middle" dominant-baseline="central">CPU或Newton</text></g></g><g data-step="1"><path class="am-edge" d="M359.7,77 L388.3,77 Q417,77 445.6,77 L474.3,77" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="383.7" y="68" width="66.6" height="18" rx="3"/><text x="417" y="77" text-anchor="middle" dominant-baseline="central">250Hz物理</text></g></g><g data-step="2"><path class="am-edge" d="M565.3,94.5 L616,118 Q666.7,141.5 717.6,141.5 L768.5,141.5" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="617.9" y="132.5" width="97.6" height="18" rx="3"/><text x="666.7" y="141.5" text-anchor="middle" dominant-baseline="central">AMO与SDK语义</text></g></g><g data-step="3"><path class="am-edge" d="M855.8,150.1 L903,159.4 Q950.3,168.8 996,168.8 L1041.7,168.8" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="905.1" y="159.8" width="90.5" height="18" rx="3"/><text x="950.3" y="168.8" text-anchor="middle" dominant-baseline="central">公共任务与事实</text></g></g><g data-step="4"><path class="am-edge" d="M580.8,77 L623.7,77 Q666.7,77 739.4,77 Q812.1,77 881.2,77 Q950.3,77 1021.4,77 Q1092.5,77 1150.2,77 Q1208,77 1235.6,86.9 L1263.2,96.8" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="895.6" y="68" width="109.4" height="18" rx="3"/><text x="950.3" y="77" text-anchor="middle" dominant-baseline="central">原有状态与RGB-D</text></g></g><g data-step="5"><path class="am-edge" d="M855.8,132.9 L903,123.6 Q950.3,114.3 1021.4,114.3 Q1092.5,114.3 1150.2,114.3 Q1208,114.3 1234,114.3 L1260,114.3" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="1030" y="105.3" width="125" height="18" rx="3"/><text x="1092.5" y="114.3" text-anchor="middle" dominant-baseline="central">能力、状态与实际结果</text></g></g><g data-step="6"><path class="am-edge" d="M1143.3,168.8 L1175.6,168.8 Q1208,168.8 1243.4,150.3 L1278.7,131.8" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="1180" y="159.8" width="56" height="18" rx="3"/><text x="1208" y="168.8" text-anchor="middle" dominant-baseline="central">系统任务</text></g></g><g data-step="7"><path class="am-edge" d="M1364.4,114.3 L1396.2,114.3 Q1427.9,114.3 1459.7,114.3 L1491.4,114.3" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="1388.4" y="105.3" width="79" height="18" rx="3"/><text x="1427.9" y="114.3" text-anchor="middle" dominant-baseline="central">快照与帧缓存</text></g></g><g data-step="8"><path class="am-edge" d="M580.8,59.6 L623.7,45.5 Q666.7,31.5 709.7,31.5 L752.6,31.5" marker-end="url(#am4-arrow)"/><g class="am-edge-label"><rect x="604.8" y="22.5" width="123.9" height="18" rx="3"/><text x="666.7" y="31.5" text-anchor="middle" dominant-baseline="central">同一session与ROS域</text></g></g></g><g><g class="am-node am-node--rect" data-key="预设目录" data-step="0"><rect class="am-node-shape" x="14" y="59.5" width="80" height="35" rx="3"/><text x="54" y="77" text-anchor="middle" dominant-baseline="central">预设目录</text></g><g class="am-node am-node--rect" data-key="同一原生物理世界" data-step="0"><rect class="am-node-shape" x="227.7" y="59.5" width="132" height="35" rx="3"/><text x="293.7" y="77" text-anchor="middle" dominant-baseline="central">同一原生物理世界</text></g><g class="am-node am-node--rect" data-key="SAL设备消息" data-step="1"><rect class="am-node-shape" x="474.3" y="59.5" width="106.5" height="35" rx="3"/><text x="527.5" y="77" text-anchor="middle" dominant-baseline="central">SAL设备消息</text></g><g class="am-node am-node--rect" data-key="robot_app" data-step="2"><rect class="am-node-shape" x="768.5" y="124" width="87.3" height="35" rx="3"/><text x="812.1" y="141.5" text-anchor="middle" dominant-baseline="central">robot_app</text></g><g class="am-node am-node--rect" data-key="system_app" data-step="3"><rect class="am-node-shape" x="1041.7" y="151.3" width="101.6" height="35" rx="3"/><text x="1092.5" y="168.8" text-anchor="middle" dominant-baseline="central">system_app</text></g><g class="am-node am-node--rect" data-key="hybrid观察器" data-step="4"><rect class="am-node-shape" x="1260" y="96.8" width="104.4" height="35" rx="3"/><text x="1312.2" y="114.3" text-anchor="middle" dominant-baseline="central">hybrid观察器</text></g><g class="am-node am-node--rect" data-key="平台页面" data-step="7"><rect class="am-node-shape" x="1491.4" y="96.8" width="80" height="35" rx="3"/><text x="1531.4" y="114.3" text-anchor="middle" dominant-baseline="central">平台页面</text></g><g class="am-node am-node--rect" data-key="只读诊断查看器" data-step="8"><rect class="am-node-shape" x="752.6" y="14" width="119" height="35" rx="3"/><text x="812.1" y="31.5" text-anchor="middle" dominant-baseline="central">只读诊断查看器</text></g></g></svg></figure>
+<div class="am-md"><p>物理250Hz、AMO与关节反馈50Hz、雷达10Hz、RGB-D 2Hz、GUI10Hz均使用原供数链。
+网页按需显示已有帧，读取不会触发物理步进、相机采样或模型推理。
+GUI频率按仿真时间计；实际每秒更新次数受RTF影响。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>页面内容</th>
+<th>实际来源</th>
+<th>缺失时的行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>本体、手部、IMU</td>
+<td>SDK兼容反馈及原RobotNode发布</td>
+<td>标注无源或过期</td>
+</tr>
+<tr>
+<td>RGB与深度</td>
+<td>同批相机与CameraInfo</td>
+<td>不使用历史图像补实时流</td>
+</tr>
+<tr>
+<td>场景显示位姿</td>
+<td>独立SIM_DISPLAY_ONLY支路</td>
+<td>不作为定位、规划或成功依据</td>
+</tr>
+<tr>
+<td>地图与规划路径</td>
+<td>spatial/navigation公共输出</td>
+<td>未启用定位时显示不可用</td>
+</tr>
+<tr>
+<td>技能和任务</td>
+<td>system_app与robot_app公共接口</td>
+<td>已注册与可执行资格分开</td>
+</tr>
+<tr>
+<td>交互状态</td>
+<td>原交互HTTP/SSE服务</td>
+<td>已连接只读与未接入分开</td>
+</tr>
+</tbody></table></div>
+<p>运行会话记录实际预设、后端、源代码身份、场景和模型哈希。
+跨批切换清除旧显示状态，诊断消息的run/epoch不匹配时拒绝接入。
+VISER与IR-SIM使用同一个<code>presentation-session.json</code>，不沿用其他任务的ROS域。
+默认网页只读；公共任务由已有授权客户端提交，页面不创建第二个运动写入者。</p>
+<p>系统代码稳定入口：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln"># 已同意NVIDIA许可并完成资源安装后</span><span class="am-ln">export OMNI_KIT_ACCEPT_EULA=YES ACCEPT_EULA=Y EMBODIED_RECORDING_ENCODER=h264_nvenc</span><span class="am-ln">python3 scripts/run_scenario.py native-platform --output &quot;$DATA/new-cpu-run&quot;</span><span class="am-ln">python3 scripts/run_scenario.py native-platform-newton --output &quot;$DATA/new-newton-run&quot;</span></code></pre></figure>
+<div class="am-md"><p>先设置外部数据盘<code>DATA</code>并准备同源资产和应用依赖。输出目录必须为新目录。
+同级仿真仓库可由<code>EMBODIED_SIM_ROOT</code>覆盖，完整说明见<a href="scenarios.html">场景指南</a>。
+模型服务未运行时明确不可用；本节接线不代表SLAM、导航、抓取或实机已经验收。</p>
+<h3>同版完整平台负载：600秒连续性</h3>
+<p>两项各运行600秒仿真，均为150000个4ms物理步。
+同一台i7-14700HX、RTX5000 Ada Laptop 16GB，驱动580.65.06。
+Isaac Sim6.1、Lab3 preview，PhysX7.3.3或Newton1.6.1/MJWarp3.12。
+测试实现为SIM <code>4f65779</code>、平台 <code>91a98c40</code>；APP基线 <code>205ce681</code>，登记补丁后安装SHA前缀 <code>c5b056696d57</code>。
+登记补丁只涉及ROS退出、实际发布计时和缺失空间上下文，不替换控制策略。</p>
+<p>两项均启动持续Kit GUI、原公共RobotNode、AMO/SDK、传感器、system/interaction、VISER、IR-SIM、hybrid、自有浏览器和两路NVENC录屏。
+模型推理、SLAM和导航没有运行，其页面保持无数据。
+初始化、CoACD/JIT、关闭及离线转码不计入核心窗口。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>完整核心窗口</th>
+<th>CPU PhysX：默认</th>
+<th>Newton：可选</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>仿真／现实秒数</td>
+<td>600／1006.957</td>
+<td>600／962.858</td>
+</tr>
+<tr>
+<td>RTF</td>
+<td>0.595855</td>
+<td>0.623145</td>
+</tr>
+<tr>
+<td>完整均步：核心墙钟／150000</td>
+<td>6.713ms</td>
+<td>6.419ms</td>
+</tr>
+<tr>
+<td>每10秒仿真窗口RTF：最低／中位／最高</td>
+<td>0.556／0.596／0.609</td>
+<td>0.597／0.624／0.637</td>
+</tr>
+<tr>
+<td>GUI调用次数／现实平均每秒</td>
+<td>6000／5.959</td>
+<td>6000／6.231</td>
+</tr>
+</tbody></table></div>
+<p>Newton在此样本中平均耗时较低，但渲染步和尾部延迟较高，不能只按平均值判断。
+两项各一个600秒样本，不代表重复成功率；默认仍按用户选择使用CPU PhysX。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>逐步完整循环，毫秒</th>
+<th>CPU PhysX</th>
+<th>Newton</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>平均／标准差</td>
+<td>6.711／5.465</td>
+<td>6.417／8.069</td>
+</tr>
+<tr>
+<td>P50／P95</td>
+<td>4.816／15.864</td>
+<td>4.390／13.490</td>
+</tr>
+<tr>
+<td>P99／P99.9</td>
+<td>29.631／34.546</td>
+<td>43.887／49.252</td>
+</tr>
+<tr>
+<td>最大值</td>
+<td>277.067</td>
+<td>491.720</td>
+</tr>
+<tr>
+<td>含GUI渲染步：6000步平均</td>
+<td>28.397</td>
+<td>42.628</td>
+</tr>
+<tr>
+<td>无GUI渲染步：144000步平均</td>
+<td>5.808</td>
+<td>4.908</td>
+</tr>
+</tbody></table></div>
+<p>完整均步包含循环间隙，逐步分布只统计各步起止之间的完整循环，两者略有不同。
+GUI计数表示渲染调用返回；真实窗口另由完整录屏核验，没有测量显示器实际present时间。
+RGB-D交付与GUI可能落在相邻步，不能把分组均值当成独立阶段相加。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>完整循环耗时区间</th>
+<th>CPU步数</th>
+<th>Newton步数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0—2ms</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>2—4ms</td>
+<td>17399</td>
+<td>44568</td>
+</tr>
+<tr>
+<td>4—8ms</td>
+<td>100193</td>
+<td>92862</td>
+</tr>
+<tr>
+<td>8—16ms</td>
+<td>24948</td>
+<td>5620</td>
+</tr>
+<tr>
+<td>16—32ms</td>
+<td>7000</td>
+<td>930</td>
+</tr>
+<tr>
+<td>32—64ms</td>
+<td>442</td>
+<td>6009</td>
+</tr>
+<tr>
+<td>不小于64ms</td>
+<td>18</td>
+<td>11</td>
+</tr>
+</tbody></table></div>
+<p>每项均得到1200组RGB／深度／CameraInfo、6000帧雷达、30001个唯一身体／IMU反馈时戳。
+150000步全部与实际APP发布命令因果关联，无PASSIVE物理步。
+全部15个自有服务和原生worker正常退出，两角色原速及20倍速共四份录像完整解码。
+原任务中心为空；这是站立、设备、展示及生命周期的组件验证。</p>
+<p>诊断内存只保留4—5秒仿真窗口的细节；完整SDK命令和设备记录持续落盘，失败输入继续保留。
+没有放宽AMO调度、状态时效或其他原保护。
+两项核心窗口均没有Gen2 GC，观测到的GC最长分别为1.062ms与1.320ms；这不是后续永不发生暂停的保证。
+Newton仅沿用已批准SIM性能配置中10个被动mimic超速记录例外，主动轴和其他保护保持。</p>
+<p><a href="experiment-recordings.html#panel-K">两后端完整GUI与平台录像</a> · <a href="experiments.html#panel-J">实验范围</a></p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>开发、退出与回放</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>来源区分开显示APP基线、登记补丁后的实际安装SHA和平台提交。
+冻结APP不会因平台仓库更新而自动换版。
+场景与模型也按实际哈希登记，网页显示资产和物理资产保持来源对应。</p>
+<p>正常结束先封存观察记录，再关闭本批自有进程。
+集成收尾期间读取返回<code>OBSERVER_FINALIZING</code>，不在退出阶段装载大回放。
+已完成记录重新打开时显示REPLAY，不启动新的机器人控制器：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">apps/collaboration_platform/hybridctl serve \</span><span class="am-ln">  --data &quot;$RUN/platform-runs&quot; --models &quot;$RUN/models.json&quot; \</span><span class="am-ln">  --scenes &quot;$RUN/presentation.json&quot; --port 8114</span></code></pre></figure>
+<div class="am-md"><p><code>RUN</code>为保留的批次目录。系统任务HTTP台账、交互历史与观察回放分开管理。
+该回放入口不宣称重放所有Agent服务历史。
+600秒大记录首次解析的两路并发读取实测约13.1秒，退出含Python缓存回收约10.3秒，正常返回0。
+这些是只读回放耗时，不计入物理RTF；首次打开应等待缓存建立。
+网页开发沿用原热更新入口，算法开发通过公共消息供数，不修改网页来补造状态。</p>
+<p>当前原生LIO装配未资格化，显式<code>--lio</code>返回<code>NATIVE_LIO_NOT_QUALIFIED</code>。
+地图、TARE/PCT/NeuPAN在本配置中显示无数据。
+工厂显示位姿只供观察，不进入定位、导航或任务成功判断。</p>
+<p>Newton当前验证范围为SIM零速站立、设备与展示。
+手部动作回零曾出现反馈越出原有效区间，按原保护结束，操作资格尚未通过。
+CPU公共手部到位证据也只覆盖相应指令、反馈与目标核验，不代表物体抓握。</p>
 </div></div>
 </section>
 </div>
@@ -1455,7 +1681,7 @@ CPU0不渲染的完整步骤平均仍约4.8ms，本次降频尚未达到RTF1。<
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-22 18:44</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-22 22:24</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1463,7 +1689,7 @@ title: 仿真系统 · 设计与运行原理
 subtitle: MuJoCo动力学、IR-SIM激光、Blender观察与统一设备桥
 lang: zh
 doc_id: simulation
-implementation: f86891f79ca151eb
+implementation: 409c0f30733ec6f1
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -2018,7 +2244,148 @@ CPU0不渲染的完整步骤平均仍约4.8ms，本次降频尚未达到RTF1。
 
 ### 当前原生平台配置选择
 
-`simctl run native-platform`默认CPU PhysX（0-worker）与GUI10；`--preset newton`选择Newton GUI10。两者使用同一工厂和250Hz物理、50Hz控制反馈、10Hz雷达、2Hz RGB-D。旧显式profile仍可复现。此配置选择已实现；平台全页面同会话接入及新组合长时性能另行验证。
+`simctl run native-platform`默认CPU PhysX（0-worker）与GUI10；`--preset newton`选择Newton GUI10。两者使用同一工厂和250Hz物理、50Hz控制反馈、10Hz雷达、2Hz RGB-D。旧显式profile仍可复现。以下接入说明区分设备、公共任务和展示范围。
+
+
+## G 原生平台从同一配置与运行取数
+
+CPU PhysX 0-worker＋GUI10是默认选择；Newton/MJWarp＋GUI10为显式可选。
+两者读取仿真仓库同一`native-platform-presets.json`，不在网页复制物理参数。
+系统代码使用`codex/isaac-native-migration-20261021`，仿真使用`codex/isaac-native-sal-20261021`，版本与运行锁配套核对。
+`native-platform`默认使用原RobotNode公共待命入口，保持零速；不会自动调用导航或抓取。
+显式`--motion stand`为独立性能探针，不接公共任务。
+
+```flow LR
+预设目录 -&gt; 同一原生物理世界: CPU或Newton
+同一原生物理世界 -&gt; SAL设备消息: 250Hz物理
+SAL设备消息 -&gt; robot_app: AMO与SDK语义
+robot_app -&gt; system_app: 公共任务与事实
+SAL设备消息 -&gt; hybrid观察器: 原有状态与RGB-D
+robot_app -&gt; hybrid观察器: 能力、状态与实际结果
+system_app -&gt; hybrid观察器: 系统任务
+hybrid观察器 -&gt; 平台页面: 快照与帧缓存
+SAL设备消息 -&gt; 只读诊断查看器: 同一session与ROS域
+```
+
+物理250Hz、AMO与关节反馈50Hz、雷达10Hz、RGB-D 2Hz、GUI10Hz均使用原供数链。
+网页按需显示已有帧，读取不会触发物理步进、相机采样或模型推理。
+GUI频率按仿真时间计；实际每秒更新次数受RTF影响。
+
+| 页面内容 | 实际来源 | 缺失时的行为 |
+| --- | --- | --- |
+| 本体、手部、IMU | SDK兼容反馈及原RobotNode发布 | 标注无源或过期 |
+| RGB与深度 | 同批相机与CameraInfo | 不使用历史图像补实时流 |
+| 场景显示位姿 | 独立SIM_DISPLAY_ONLY支路 | 不作为定位、规划或成功依据 |
+| 地图与规划路径 | spatial/navigation公共输出 | 未启用定位时显示不可用 |
+| 技能和任务 | system_app与robot_app公共接口 | 已注册与可执行资格分开 |
+| 交互状态 | 原交互HTTP/SSE服务 | 已连接只读与未接入分开 |
+
+运行会话记录实际预设、后端、源代码身份、场景和模型哈希。
+跨批切换清除旧显示状态，诊断消息的run/epoch不匹配时拒绝接入。
+VISER与IR-SIM使用同一个`presentation-session.json`，不沿用其他任务的ROS域。
+默认网页只读；公共任务由已有授权客户端提交，页面不创建第二个运动写入者。
+
+系统代码稳定入口：
+
+```bash
+# 已同意NVIDIA许可并完成资源安装后
+export OMNI_KIT_ACCEPT_EULA=YES ACCEPT_EULA=Y EMBODIED_RECORDING_ENCODER=h264_nvenc
+python3 scripts/run_scenario.py native-platform --output &quot;$DATA/new-cpu-run&quot;
+python3 scripts/run_scenario.py native-platform-newton --output &quot;$DATA/new-newton-run&quot;
+```
+
+先设置外部数据盘`DATA`并准备同源资产和应用依赖。输出目录必须为新目录。
+同级仿真仓库可由`EMBODIED_SIM_ROOT`覆盖，完整说明见[场景指南](scenarios.html)。
+模型服务未运行时明确不可用；本节接线不代表SLAM、导航、抓取或实机已经验收。
+
+### 同版完整平台负载：600秒连续性
+
+两项各运行600秒仿真，均为150000个4ms物理步。
+同一台i7-14700HX、RTX5000 Ada Laptop 16GB，驱动580.65.06。
+Isaac Sim6.1、Lab3 preview，PhysX7.3.3或Newton1.6.1/MJWarp3.12。
+测试实现为SIM `4f65779`、平台 `91a98c40`；APP基线 `205ce681`，登记补丁后安装SHA前缀 `c5b056696d57`。
+登记补丁只涉及ROS退出、实际发布计时和缺失空间上下文，不替换控制策略。
+
+两项均启动持续Kit GUI、原公共RobotNode、AMO/SDK、传感器、system/interaction、VISER、IR-SIM、hybrid、自有浏览器和两路NVENC录屏。
+模型推理、SLAM和导航没有运行，其页面保持无数据。
+初始化、CoACD/JIT、关闭及离线转码不计入核心窗口。
+
+| 完整核心窗口 | CPU PhysX：默认 | Newton：可选 |
+| --- | --- | --- |
+| 仿真／现实秒数 | 600／1006.957 | 600／962.858 |
+| RTF | 0.595855 | 0.623145 |
+| 完整均步：核心墙钟／150000 | 6.713ms | 6.419ms |
+| 每10秒仿真窗口RTF：最低／中位／最高 | 0.556／0.596／0.609 | 0.597／0.624／0.637 |
+| GUI调用次数／现实平均每秒 | 6000／5.959 | 6000／6.231 |
+
+Newton在此样本中平均耗时较低，但渲染步和尾部延迟较高，不能只按平均值判断。
+两项各一个600秒样本，不代表重复成功率；默认仍按用户选择使用CPU PhysX。
+
+| 逐步完整循环，毫秒 | CPU PhysX | Newton |
+| --- | --- | --- |
+| 平均／标准差 | 6.711／5.465 | 6.417／8.069 |
+| P50／P95 | 4.816／15.864 | 4.390／13.490 |
+| P99／P99.9 | 29.631／34.546 | 43.887／49.252 |
+| 最大值 | 277.067 | 491.720 |
+| 含GUI渲染步：6000步平均 | 28.397 | 42.628 |
+| 无GUI渲染步：144000步平均 | 5.808 | 4.908 |
+
+完整均步包含循环间隙，逐步分布只统计各步起止之间的完整循环，两者略有不同。
+GUI计数表示渲染调用返回；真实窗口另由完整录屏核验，没有测量显示器实际present时间。
+RGB-D交付与GUI可能落在相邻步，不能把分组均值当成独立阶段相加。
+
+| 完整循环耗时区间 | CPU步数 | Newton步数 |
+| --- | --- | --- |
+| 0—2ms | 0 | 0 |
+| 2—4ms | 17399 | 44568 |
+| 4—8ms | 100193 | 92862 |
+| 8—16ms | 24948 | 5620 |
+| 16—32ms | 7000 | 930 |
+| 32—64ms | 442 | 6009 |
+| 不小于64ms | 18 | 11 |
+
+每项均得到1200组RGB／深度／CameraInfo、6000帧雷达、30001个唯一身体／IMU反馈时戳。
+150000步全部与实际APP发布命令因果关联，无PASSIVE物理步。
+全部15个自有服务和原生worker正常退出，两角色原速及20倍速共四份录像完整解码。
+原任务中心为空；这是站立、设备、展示及生命周期的组件验证。
+
+诊断内存只保留4—5秒仿真窗口的细节；完整SDK命令和设备记录持续落盘，失败输入继续保留。
+没有放宽AMO调度、状态时效或其他原保护。
+两项核心窗口均没有Gen2 GC，观测到的GC最长分别为1.062ms与1.320ms；这不是后续永不发生暂停的保证。
+Newton仅沿用已批准SIM性能配置中10个被动mimic超速记录例外，主动轴和其他保护保持。
+
+[两后端完整GUI与平台录像](experiment-recordings.html#panel-K) · [实验范围](experiments.html#panel-J)
+
+
+## H 开发、退出与回放
+
+来源区分开显示APP基线、登记补丁后的实际安装SHA和平台提交。
+冻结APP不会因平台仓库更新而自动换版。
+场景与模型也按实际哈希登记，网页显示资产和物理资产保持来源对应。
+
+正常结束先封存观察记录，再关闭本批自有进程。
+集成收尾期间读取返回`OBSERVER_FINALIZING`，不在退出阶段装载大回放。
+已完成记录重新打开时显示REPLAY，不启动新的机器人控制器：
+
+```bash
+apps/collaboration_platform/hybridctl serve \
+  --data &quot;$RUN/platform-runs&quot; --models &quot;$RUN/models.json&quot; \
+  --scenes &quot;$RUN/presentation.json&quot; --port 8114
+```
+
+`RUN`为保留的批次目录。系统任务HTTP台账、交互历史与观察回放分开管理。
+该回放入口不宣称重放所有Agent服务历史。
+600秒大记录首次解析的两路并发读取实测约13.1秒，退出含Python缓存回收约10.3秒，正常返回0。
+这些是只读回放耗时，不计入物理RTF；首次打开应等待缓存建立。
+网页开发沿用原热更新入口，算法开发通过公共消息供数，不修改网页来补造状态。
+
+当前原生LIO装配未资格化，显式`--lio`返回`NATIVE_LIO_NOT_QUALIFIED`。
+地图、TARE/PCT/NeuPAN在本配置中显示无数据。
+工厂显示位姿只供观察，不进入定位、导航或任务成功判断。
+
+Newton当前验证范围为SIM零速站立、设备与展示。
+手部动作回零曾出现反馈越出原有效区间，按原保护结束，操作资格尚未通过。
+CPU公共手部到位证据也只覆盖相应指令、反馈与目标核验，不代表物体抓握。
 </textarea>
 <script>
 (() => {

@@ -172,13 +172,13 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "2ffacc9900288cbf7a458be9fcdd9e976895f9ba0ec0a7833f159813b0f62a9c",
-      "implementation_sha256": "f86891f79ca151eb21a21d9116d48c8c8c7e520506a719ad7b6deea334498461"
+      "source_sha256": "c67af485ebce6e8d8c185e9f0b5a83b46b6bf5454107c33da92308a3b6c5c8c0",
+      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
     },
     {
       "file": "experiments.html",
-      "source_sha256": "799a61c1072d07dc1ffdd5f101834e928bd05875a7f6500aac29323c5df223f5",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
+      "source_sha256": "cfc10b6305f26367bbee37981a00ad988263888df67b15586344879c3aa09ed7",
+      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -444,8 +444,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "5a0a5fbb9643fdac1d1cae81b99e89a0c5526d7ea5f0e3a4497c608954df6d3a",
-      "implementation_sha256": "cdb76c2b5a1588a18eb8df85a60fd37ab0b4596726a382c2e4c7abf67f93a5dd"
+      "source_sha256": "4987fd411cb892bfa6db135bb3f75f0c2d0cd841a5147dbd1853a10216781b3e",
+      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
     },
     {
       "file": "simulation-usage.html",
@@ -454,8 +454,8 @@
     },
     {
       "file": "simulation.html",
-      "source_sha256": "7da9f4d489662ec9ac7c51b7066f798b47a08ebdfcfcfa23f7768cbb462771b5",
-      "implementation_sha256": "f86891f79ca151eb21a21d9116d48c8c8c7e520506a719ad7b6deea334498461"
+      "source_sha256": "c8ac7c9b28f47618d6d5e7add3082719c6d75b0f6f52574583b229e0c2f100cc",
+      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
     },
     {
       "file": "simulation-performance.html",
@@ -1036,6 +1036,22 @@
     {
       "file": "media/native-device-cpu600-20x.mp4",
       "sha256": "986ae2afd1df59e4e4699adccf3e35ea8d10bb2ef419b36bad9b620100feec55"
+    },
+    {
+      "file": "media/native-platform-cpu-console-20x.mp4",
+      "sha256": "01a601bb97b5fcdf7bcfed180c3d8104c9e729ce6a79ea7d3f42922a7f84bab3"
+    },
+    {
+      "file": "media/native-platform-cpu-physics-20x.mp4",
+      "sha256": "f9d552f7bff9e922f7734569bb537f8e218ab2f7b30251ea4ce46a710179870b"
+    },
+    {
+      "file": "media/native-platform-newton-console-20x.mp4",
+      "sha256": "d2d4d9e4cc0dbfac1bbc8e4bb209b809574551bbe7bcceebd1dd6e20b37c0299"
+    },
+    {
+      "file": "media/native-platform-newton-physics-20x.mp4",
+      "sha256": "af2c0ea6884686d373f8ff419a6e3dc0edca169f674e4f3dcacd6c8ef940f71b"
     },
     {
       "file": "media/navigation-response-evidence.json",
