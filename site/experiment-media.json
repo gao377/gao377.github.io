@@ -1537,6 +1537,21 @@
       "fps": "30/1",
       "time_basis": "recording wall clock",
       "action_start_s": null
+    },
+    {
+      "experiment": "SIM-DEVICE-600-CPU0",
+      "role": "isaac",
+      "source_sha256": "7b12bca68bb9c1ed69c4594cff954bdd9e0f62d1bcd4d7ad0e17473a6c7143c5",
+      "file": "native-device-cpu600-20x.mp4",
+      "action_start_s": null,
+      "sha256": "986ae2afd1df59e4e4699adccf3e35ea8d10bb2ef419b36bad9b620100feec55",
+      "duration_s": 53.5,
+      "size_bytes": 677739,
+      "width": 1440,
+      "height": 900,
+      "fps": "10/1",
+      "playback_speed": 20,
+      "scope": "Standing AMO SDK sensor GUI performance; not manipulation/navigation/REAL acceptance"
     }
   ]
 }

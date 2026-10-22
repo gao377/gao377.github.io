@@ -172,8 +172,8 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "f134e2b1ad4074a1b94a0e5facb568fa6f2a98226ec7f54490b5d3baf36d6a26",
-      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
+      "source_sha256": "2ffacc9900288cbf7a458be9fcdd9e976895f9ba0ec0a7833f159813b0f62a9c",
+      "implementation_sha256": "f86891f79ca151eb21a21d9116d48c8c8c7e520506a719ad7b6deea334498461"
     },
     {
       "file": "experiments.html",
@@ -454,7 +454,7 @@
     },
     {
       "file": "simulation.html",
-      "source_sha256": "80e845b26949e703bd48c77705d4667ee0908bb51114066e16e88bf222ff241c",
+      "source_sha256": "ca8c19e91b21211b5e9a1a0e996dd14398d010dca7b135fcc5de04e57df6f6fc",
       "implementation_sha256": "f86891f79ca151eb21a21d9116d48c8c8c7e520506a719ad7b6deea334498461"
     },
     {
@@ -1032,6 +1032,10 @@
     {
       "file": "media/manip-right-sensors-20x.mp4",
       "sha256": "b624ad13557c6e8d6e9d19e63416ecb716bb6b874be3f43d2e095993c084ac0a"
+    },
+    {
+      "file": "media/native-device-cpu600-20x.mp4",
+      "sha256": "986ae2afd1df59e4e4699adccf3e35ea8d10bb2ef419b36bad9b620100feec55"
     },
     {
       "file": "media/navigation-response-evidence.json",
