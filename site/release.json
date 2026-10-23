@@ -172,8 +172,8 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "c67af485ebce6e8d8c185e9f0b5a83b46b6bf5454107c33da92308a3b6c5c8c0",
-      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
+      "source_sha256": "8eb090c62485133c9b8d276475c4f93f4aac52f1a72039a4947078d2b031f9fe",
+      "implementation_sha256": "301425310639303d45e4a852ca25c1fd86cf4eab88bc7c91da25f92186f79408"
     },
     {
       "file": "experiments.html",
@@ -546,6 +546,11 @@
       "file": "workpiece-perception.html",
       "source_sha256": "a1810dd13abaf78db4124dd3c272458fa381037d7c3521129512ca42c95cdc6a",
       "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
+    },
+    {
+      "file": "task-rsi-demonstration.html",
+      "source_sha256": "dfa4ff94f787a9df247c960101584fd29fc51500fc95419438747f61fee820b6",
+      "implementation_sha256": "301425310639303d45e4a852ca25c1fd86cf4eab88bc7c91da25f92186f79408"
     }
   ],
   "assets": [
@@ -1080,6 +1085,30 @@
     {
       "file": "media/planar-crossing-mujoco-20x.mp4",
       "sha256": "87a68057642dc11dbc6df0b294db2aa52d1f6a477c6b99c9d657d4ede300b953"
+    },
+    {
+      "file": "media/task-rsi-c01-blender-20x.mp4",
+      "sha256": "882668d88a9dc5317bf0249ac323c39a6a27d1f5bf59cc5887230915c16604db"
+    },
+    {
+      "file": "media/task-rsi-demonstration-1080p.mp4",
+      "sha256": "a961e99bf04c3669a821214283dab95a0eb79564d10508777589450add82251f"
+    },
+    {
+      "file": "media/task-rsi-dynamic-revision.mp4",
+      "sha256": "7eba061a98dbfa1b9c98e9075b42c57ab800611c5493f8b73c78849f14b8f934"
+    },
+    {
+      "file": "media/task-rsi-e01-blender-20x.mp4",
+      "sha256": "ca65e8de7cd0d5bbe2c57c56dd8c53b400686f5e3f05beae2a115ede4bd04d44"
+    },
+    {
+      "file": "media/task-rsi-e02-blender-20x.mp4",
+      "sha256": "7d3a6785bf2fd4f4676dff9e095566872b8c779137b794fdfb68680bda610ba7"
+    },
+    {
+      "file": "media/task-rsi-e03-blender-20x.mp4",
+      "sha256": "64de2bb8019c906b2e7fe38edd77d8b578d1f26817c4d187a05b317fc1c2cd26"
     },
     {
       "file": "media/warehouse-map-navigation-isaac-20x.mp4",
