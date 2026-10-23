@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>任务级 RSI · 从执行回顾到流程复用</h1><p class="am-sub">同源动作记录、可见流程变更与独立新任务验证</p><div class="am-head-meta"><span><b>doc_id</b>task-rsi-demonstration</span><span><b>implementation</b>f53b10a7d847e666</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>任务级 RSI · 从执行回顾到流程复用</h1><p class="am-sub">同源动作记录、可见流程变更与独立新任务验证</p><div class="am-head-meta"><span><b>doc_id</b>task-rsi-demonstration</span><span><b>implementation</b>301425310639303d</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="experiment-recordings.html">实验录像</a> · <a href="agent-global.html">系统级Agent</a> · <a href="agent-local.html">本机级Agent</a></p>
 </div></div></header>
 <div class="am-doc-layout">
@@ -711,7 +711,8 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <p>采用 MuJoCo 250Hz、AMO/SDK 50Hz和 Blender显示。
 观测使用仿真特权位姿，工装使用理想双侧抓持与理想支撑约束。
 这些结果不验证接触、摩擦、真实灵巧手抓放或实机表现。</p>
-<p>本页采用动作分段示意口径。本版只包含工位前取放。携物补录在导航准入被拒绝，未收入成片。
+<p>本页采用动作分段示意口径，包含工位前取放，以及独立预持物初态的短距离后退与转向。
+携物片段不从工台连续退出，不能与取放片段拼成一次连续任务成绩。
 完整 A→B 连续转运、整任务收益和能力级 RSI 不属于本页结论。</p>
 </div></div>
 </section>
@@ -750,9 +751,9 @@ B 的可用状态来自场景脚本的业务预约表，不冒充视觉识别。
 <td>RSI案例演示配置</td>
 </tr>
 <tr>
-<td>v1→v2流程变化</td>
-<td>前置条件与依赖差异</td>
-<td>既有React Flow任务图</td>
+<td>同一任务动态修订</td>
+<td>阻塞、插入节点、重接依赖、采用v2、继续推进</td>
+<td>既有React Flow任务图与同源回放游标</td>
 </tr>
 <tr>
 <td>等待对照</td>
@@ -768,7 +769,19 @@ B 的可用状态来自场景脚本的业务预约表，不冒充视觉识别。
 <p>任务条件在本机任务层注入，navigation、manipulation和body_adapter不包含工位预约规则。
 等待期间保留既有持物责任与控制循环。
 拖动页面游标只改变观看位置，不派发机器人动作。</p>
-</div></div>
+<p>同一个任务标识贯穿以下五个阶段，已完成节点始终保留：</p>
+<ol>
+<li>工位状态变化，尚未开始的接近节点标为阻塞。</li>
+<li>插入“提前检查”和“空手等待”，候选节点与依赖以虚线标识。</li>
+<li>重接待执行部分的依赖，导航、操作和到位复查保留原能力接口。</li>
+<li>采用 v2，空手等待成为当前节点。</li>
+<li>条件释放，接近节点高亮并沿新依赖继续推进。</li>
+</ol>
+<p>这是同一任务待执行部分的<strong>动态修订示意</strong>，采用预编排事件；不是生产任务在线改写验收。
+独立 E02/E03 运行验证固定 P1 的执行与复用，来源始终与该示意区分。
+在任务中心和协同与改进页面均可播放、暂停和倒带。</p>
+</div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:640px;background:#152320" aria-label="同一任务动态修订过程" src="media/task-rsi-dynamic-revision.mp4"></video></div>
 </section>
 <section class="am-panel" id="panel-D">
 <header class="am-panel-head"><span class="am-panel-id">D</span><h2>实测对照与范围</h2></header>
@@ -822,6 +835,12 @@ E01没有配置空手等待，网页的缺失项不是测得0s。
 E02 <code>20261023T123452Z-4915edec</code>；E03 <code>20261023T124417Z-5b84cdc8</code>。
 运行APP <code>27388c2f</code>，SIM <code>fbc44d7</code>。
 另一次E03尝试因AMO控制截止超时失败，未用于本片；不能把重试成功解释为该超时问题已修复。</p>
+<p>另一个 C01 分镜从 E01 已测持物构型派生，在原场景开阔过道独立初始化。
+公共任务完成后退0.5米与转向，63.88sim结束，仍承担持物责任；物理继续至75sim。</p>
+<p>原持物包络计算得到0.574米半径，没有改为仅本体包络。
+3751条物理评价样本中，双侧理想约束始终有效、支撑约束未激活，未记录外部碰撞违规；
+动作期间手—物相对位置变化不超过1.27毫米。它只支持这段理想机构下的携物示意。</p>
+<p>来源 <code>20261023T134627Z-dfe0aec0</code>，APP <code>1894b5e0</code> / SIM <code>f6d1364</code>，与三轮工位对照分开。</p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-E">
@@ -842,12 +861,12 @@ E02 <code>20261023T123452Z-4915edec</code>；E03 <code>20261023T124417Z-5b84cdc8
 </thead>
 <tbody><tr>
 <td>S01—S03</td>
-<td>固定流程、取物、持物等待</td>
+<td>固定流程、独立携物、持物等待</td>
 <td>标明独立来源的仿真分项</td>
 </tr>
 <tr>
 <td>S04—S06</td>
-<td>执行回顾、四阶段反思、v1→v2</td>
+<td>执行回顾、四阶段反思、同一任务动态修订</td>
 <td>U01实际网页录制；内容预编排</td>
 </tr>
 <tr>
@@ -863,12 +882,13 @@ E02 <code>20261023T123452Z-4915edec</code>；E03 <code>20261023T124417Z-5b84cdc8
 </tbody></table></div>
 <p>页面录屏按记录的源游标对齐，移除了操作者暂停观看的墙钟间隙。
 仿真录像通过记录的时钟近似对齐，不能据播放器秒数推算控制延迟。
-下方三段是各次90sim实验完整窗口录像的20倍墙钟加速版，包含初始化与结束。
+下方前三段是各次90sim实验完整窗口录像的20倍墙钟加速版，第四段为75sim独立携物。它们均包含初始化与结束。
 它们与上方剪辑成片的口径不同。</p>
 </div>
 <video controls preload="metadata" playsinline style="width:100%;max-height:440px;background:#152320" aria-label="E01完整仿真窗口20倍速" src="media/task-rsi-e01-blender-20x.mp4"></video>
 <video controls preload="metadata" playsinline style="width:100%;max-height:440px;background:#152320" aria-label="E02完整仿真窗口20倍速" src="media/task-rsi-e02-blender-20x.mp4"></video>
-<video controls preload="metadata" playsinline style="width:100%;max-height:440px;background:#152320" aria-label="E03完整仿真窗口20倍速" src="media/task-rsi-e03-blender-20x.mp4"></video></div>
+<video controls preload="metadata" playsinline style="width:100%;max-height:440px;background:#152320" aria-label="E03完整仿真窗口20倍速" src="media/task-rsi-e03-blender-20x.mp4"></video>
+<video controls preload="metadata" playsinline style="width:100%;max-height:440px;background:#152320" aria-label="C01独立携物完整仿真窗口20倍速" src="media/task-rsi-c01-blender-20x.mp4"></video></div>
 </section>
 <section class="am-panel" id="panel-F">
 <header class="am-panel-head"><span class="am-panel-id">F</span><h2>运行与复现</h2></header>
@@ -940,7 +960,7 @@ E02 <code>20261023T123452Z-4915edec</code>；E03 <code>20261023T124417Z-5b84cdc8
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-23 21:08</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-23 21:52</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -948,7 +968,7 @@ title: 任务级 RSI · 从执行回顾到流程复用
 subtitle: 同源动作记录、可见流程变更与独立新任务验证
 lang: zh
 doc_id: task-rsi-demonstration
-implementation: f53b10a7d847e666
+implementation: 301425310639303d
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -965,7 +985,8 @@ implementation: f53b10a7d847e666
 观测使用仿真特权位姿，工装使用理想双侧抓持与理想支撑约束。
 这些结果不验证接触、摩擦、真实灵巧手抓放或实机表现。
 
-本页采用动作分段示意口径。本版只包含工位前取放。携物补录在导航准入被拒绝，未收入成片。
+本页采用动作分段示意口径，包含工位前取放，以及独立预持物初态的短距离后退与转向。
+携物片段不从工台连续退出，不能与取放片段拼成一次连续任务成绩。
 完整 A→B 连续转运、整任务收益和能力级 RSI 不属于本页结论。
 
 ## B 任务流程改变了什么
@@ -990,13 +1011,29 @@ B 的可用状态来自场景脚本的业务预约表，不冒充视觉识别。
 | 任务节点与等待计时 | 同批实际反馈与源时钟 | 本机任务运行时、观测回放 |
 | 历史回顾 | 原始事件和关联录像 | 只读证据投影 |
 | 事实、影响、假设、建议逐项展开 | 标为MOCK的案例内容 | RSI案例演示配置 |
-| v1→v2流程变化 | 前置条件与依赖差异 | 既有React Flow任务图 |
+| 同一任务动态修订 | 阻塞、插入节点、重接依赖、采用v2、继续推进 | 既有React Flow任务图与同源回放游标 |
 | 等待对照 | 实际等待进入/释放事件 | 记录导入与统计 |
 | 新任务采用v2 | 独立assignment、运行与经验引用 | 固定任务profile；非自主检索 |
 
 任务条件在本机任务层注入，navigation、manipulation和body_adapter不包含工位预约规则。
 等待期间保留既有持物责任与控制循环。
 拖动页面游标只改变观看位置，不派发机器人动作。
+
+同一个任务标识贯穿以下五个阶段，已完成节点始终保留：
+
+1. 工位状态变化，尚未开始的接近节点标为阻塞。
+2. 插入“提前检查”和“空手等待”，候选节点与依赖以虚线标识。
+3. 重接待执行部分的依赖，导航、操作和到位复查保留原能力接口。
+4. 采用 v2，空手等待成为当前节点。
+5. 条件释放，接近节点高亮并沿新依赖继续推进。
+
+这是同一任务待执行部分的**动态修订示意**，采用预编排事件；不是生产任务在线改写验收。
+独立 E02/E03 运行验证固定 P1 的执行与复用，来源始终与该示意区分。
+在任务中心和协同与改进页面均可播放、暂停和倒带。
+
+```html
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:640px;background:#152320&quot; aria-label=&quot;同一任务动态修订过程&quot; src=&quot;media/task-rsi-dynamic-revision.mp4&quot;&gt;&lt;/video&gt;
+```
 
 ## D 实测对照与范围
 
@@ -1024,6 +1061,15 @@ E02 `20261023T123452Z-4915edec`；E03 `20261023T124417Z-5b84cdc8`。
 运行APP `27388c2f`，SIM `fbc44d7`。
 另一次E03尝试因AMO控制截止超时失败，未用于本片；不能把重试成功解释为该超时问题已修复。
 
+另一个 C01 分镜从 E01 已测持物构型派生，在原场景开阔过道独立初始化。
+公共任务完成后退0.5米与转向，63.88sim结束，仍承担持物责任；物理继续至75sim。
+
+原持物包络计算得到0.574米半径，没有改为仅本体包络。
+3751条物理评价样本中，双侧理想约束始终有效、支撑约束未激活，未记录外部碰撞违规；
+动作期间手—物相对位置变化不超过1.27毫米。它只支持这段理想机构下的携物示意。
+
+来源 `20261023T134627Z-dfe0aec0`，APP `1894b5e0` / SIM `f6d1364`，与三轮工位对照分开。
+
 ## E 录像与分镜
 
 演示成片约145秒，分为10个镜头。
@@ -1038,20 +1084,21 @@ E02 `20261023T123452Z-4915edec`；E03 `20261023T124417Z-5b84cdc8`。
 
 | 镜头 | 内容 | 素材类型 |
 | --- | --- | --- |
-| S01—S03 | 固定流程、取物、持物等待 | 标明独立来源的仿真分项 |
-| S04—S06 | 执行回顾、四阶段反思、v1→v2 | U01实际网页录制；内容预编排 |
+| S01—S03 | 固定流程、独立携物、持物等待 | 标明独立来源的仿真分项 |
+| S04—S06 | 执行回顾、四阶段反思、同一任务动态修订 | U01实际网页录制；内容预编排 |
 | S07—S08 | P1执行、等待对照 | E02实际记录与指标投影 |
 | S09—S10 | E03新任务、经验采用与边界 | 新运行记录和预编排采用页 |
 
 页面录屏按记录的源游标对齐，移除了操作者暂停观看的墙钟间隙。
 仿真录像通过记录的时钟近似对齐，不能据播放器秒数推算控制延迟。
-下方三段是各次90sim实验完整窗口录像的20倍墙钟加速版，包含初始化与结束。
+下方前三段是各次90sim实验完整窗口录像的20倍墙钟加速版，第四段为75sim独立携物。它们均包含初始化与结束。
 它们与上方剪辑成片的口径不同。
 
 ```html
 &lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:440px;background:#152320&quot; aria-label=&quot;E01完整仿真窗口20倍速&quot; src=&quot;media/task-rsi-e01-blender-20x.mp4&quot;&gt;&lt;/video&gt;
 &lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:440px;background:#152320&quot; aria-label=&quot;E02完整仿真窗口20倍速&quot; src=&quot;media/task-rsi-e02-blender-20x.mp4&quot;&gt;&lt;/video&gt;
 &lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:440px;background:#152320&quot; aria-label=&quot;E03完整仿真窗口20倍速&quot; src=&quot;media/task-rsi-e03-blender-20x.mp4&quot;&gt;&lt;/video&gt;
+&lt;video controls preload=&quot;metadata&quot; playsinline style=&quot;width:100%;max-height:440px;background:#152320&quot; aria-label=&quot;C01独立携物完整仿真窗口20倍速&quot; src=&quot;media/task-rsi-c01-blender-20x.mp4&quot;&gt;&lt;/video&gt;
 ```
 
 ## F 运行与复现
