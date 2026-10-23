@@ -698,12 +698,12 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>联合仿真实验 · 导航、双机器人行为与携物</h1><p class="am-sub">到位、接触、性能分项判读；关联完整批次档案与现存录像</p><div class="am-head-meta"><span><b>doc_id</b>simulation-experiments</span><span><b>implementation</b>a455d3a3cf56722b</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>联合仿真实验 · 导航、双机器人行为与携物</h1><p class="am-sub">到位、接触、性能分项判读；关联完整批次档案与现存录像</p><div class="am-head-meta"><span><b>doc_id</b>simulation-experiments</span><span><b>implementation</b>b6dff00c907291da</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="navigation-response-model.html">运动响应专题：设计、预测与粗导航实测</a> · <a href="navigation-response-experiments.html">专题实验表</a> · <a href="navigation-response-recordings.html">专题三窗口录像</a></p>
 <p><a href="simulation.html">仿真原理</a> · <a href="simulation-usage.html">运行命令</a> · <a href="simulation-performance.html">历史RTF分析</a> · <a href="simulation-experiment-catalog.html">全部批次档案</a> · <a href="simulation-recordings.html">全部现存录像</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与验收范围</a><a href="#panel-G">G · 双机器人行为实验</a><a href="#panel-H">H · 规划包络与携物对照（2026-10-13）</a><a href="#panel-I">I · 当前边界：10cm软间隙、5cm硬停止</a><a href="#panel-B">B · 成功导航：同批三窗口完整录像</a><a href="#panel-C">C · 失败反例：工装从双手脱落</a><a href="#panel-D">D · 代码归属和运行机制</a><a href="#panel-E">E · 可复制的成功场景命令</a><a href="#panel-F">F · 版本与媒体来源</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 证据与验收范围</a><a href="#panel-I">I · 双机器人行为实验</a><a href="#panel-J">J · 规划包络与携物对照（2026-10-13）</a><a href="#panel-K">K · 当前边界：10cm软间隙、5cm硬停止</a><a href="#panel-B">B · 成功导航：同批三窗口完整录像</a><a href="#panel-C">C · 失败反例：工装从双手脱落</a><a href="#panel-D">D · 代码归属和运行机制</a><a href="#panel-E">E · 可复制的成功场景命令</a><a href="#panel-F">F · 版本与媒体来源</a><a href="#panel-G">G · 无渲染动力学与设备链性能</a><a href="#panel-H">H · 适用边界与复现</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>证据与验收范围</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
@@ -733,8 +733,8 @@ MuJoCo负责动力学，IR-SIM负责真实二维扫描，Blender显示同一世�
 AMO采用明确的锁步实验模式，不代表异步真机资格。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-G">
-<header class="am-panel-head"><span class="am-panel-id">G</span><h2>双机器人行为实验</h2></header>
+<section class="am-panel" id="panel-I">
+<header class="am-panel-head"><span class="am-panel-id">I</span><h2>双机器人行为实验</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>所有这些批次均使用同一应用链路：二维SLAM → NeuPAN → AMO → MuJoCo，两个障碍机器人由场景轨迹驱动，应用只得到当前扫描，不得到未来轨迹。动态机器人外观的步行动画仅供显示，不构成第二套动力学求解。</p>
 <div class="am-table-wrap"><table>
 <thead>
@@ -801,8 +801,8 @@ AMO采用明确的锁步实验模式，不代表异步真机资格。</p>
 <p><strong>相关录像与短段失败证据已经分别归档；未重新运行实验补造成功结果。</strong></p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-H">
-<header class="am-panel-head"><span class="am-panel-id">H</span><h2>规划包络与携物对照（2026-10-13）</h2></header>
+<section class="am-panel" id="panel-J">
+<header class="am-panel-head"><span class="am-panel-id">J</span><h2>规划包络与携物对照（2026-10-13）</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>“接触复核”是运行后使用MuJoCo原生碰撞数据检查擦碰，不是新增的在线停止条件。空手中途停车批次已同时通过到位与接触检查；携物是独立实验，不能沿用空手结论。</p>
 <div class="am-table-wrap"><table>
 <thead>
@@ -849,8 +849,8 @@ AMO采用明确的锁步实验模式，不代表异步真机资格。</p>
 <p>本轮七批各有三个原始窗口录像；网页提供20倍速。失败短段RTF与180秒完整批次分开，均不代替600秒性能验收。</p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-I">
-<header class="am-panel-head"><span class="am-panel-id">I</span><h2>当前边界：10cm软间隙、5cm硬停止</h2></header>
+<section class="am-panel" id="panel-K">
+<header class="am-panel-head"><span class="am-panel-id">K</span><h2>当前边界：10cm软间隙、5cm硬停止</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>用户批准将10cm改为软间隙、5cm改为硬边界。MPC原生距离项对不足软间隙的部分保留二次代价；原生停止与执行前轨迹校核共用profile中的5cm。载荷0.65m包络、本体与未知区处理、触觉时效和受力判据不变。</p>
 <p>批次<code>20261013T072345Z-2024e6fa</code>已实测新边界。进入5—10cm后继续规划；21.40s记录的原生间隙为4.57cm，21.46s任务停止。工装未到机架，手掌相对位移3.49cm。该批证明边界修改已接通，不证明携物避障成功。空手成功录像属于此前10cm硬边界版本，不能冒充当前携物结果。</p>
 <p>检查覆盖实际原生停止逻辑与执行校核：8cm可继续重规划，4cm拒绝执行。完整持物导航仍需解决动态障碍下的控制响应，以及手掌支撑漂移；不再将10cm门限作为当前首因。</p>
@@ -1057,10 +1057,154 @@ IR-SIM按场景边界显示，动态代理只镜像动力学世界。</p>
 <p><a href="experiments.html">实验总览</a> · <a href="experiment-recordings.html">其他成功录像</a></p>
 </div></div>
 </section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>无渲染动力学与设备链性能</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>同一工厂、G1/REVO2、250Hz物理和50Hz AMO/SDK。
+两种后端均关闭GUI、RGBD和LiDAR渲染。
+外部UE、Blender和平台页面也未启动。
+SensorAdapters、SpatialRuntime、PerceptionRuntime均不运行。</p>
+<p>RTF表示仿真推进时间与完整核心墙钟时间的比值。
+完整均步包含通信、状态读回与记录。
+初始化、碰撞模型构建和退出单列。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>后端／批次</th>
+<th>负载</th>
+<th align="right">RTF</th>
+<th align="right">均步ms</th>
+<th align="right">P95ms</th>
+<th align="right">P99ms</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MuJoCo A1</td>
+<td>站立</td>
+<td align="right">0.942351</td>
+<td align="right">4.2447</td>
+<td align="right">5.6942</td>
+<td align="right">7.0301</td>
+</tr>
+<tr>
+<td>Newton B1</td>
+<td>站立</td>
+<td align="right">1.148379</td>
+<td align="right">3.4832</td>
+<td align="right">4.8530</td>
+<td align="right">5.5432</td>
+</tr>
+<tr>
+<td>Newton B2</td>
+<td>站立</td>
+<td align="right">1.102297</td>
+<td align="right">3.6288</td>
+<td align="right">5.0826</td>
+<td align="right">6.1105</td>
+</tr>
+<tr>
+<td>MuJoCo A2</td>
+<td>站立</td>
+<td align="right">0.959570</td>
+<td align="right">4.1685</td>
+<td align="right">5.4989</td>
+<td align="right">6.9041</td>
+</tr>
+<tr>
+<td>MuJoCo A1</td>
+<td>前进／转向／停止</td>
+<td align="right">0.985346</td>
+<td align="right">4.0595</td>
+<td align="right">5.2425</td>
+<td align="right">6.9551</td>
+</tr>
+<tr>
+<td>Newton B1</td>
+<td>前进／转向／停止</td>
+<td align="right">1.138181</td>
+<td align="right">3.5144</td>
+<td align="right">4.8547</td>
+<td align="right">5.5035</td>
+</tr>
+<tr>
+<td>Newton B2</td>
+<td>前进／转向／停止</td>
+<td align="right">1.152917</td>
+<td align="right">3.4695</td>
+<td align="right">4.7943</td>
+<td align="right">5.3709</td>
+</tr>
+<tr>
+<td>MuJoCo A2</td>
+<td>前进／转向／停止</td>
+<td align="right">1.001328</td>
+<td align="right">3.9947</td>
+<td align="right">5.0527</td>
+<td align="right">6.6139</td>
+</tr>
+</tbody></table></div>
+<p>每批60sim秒、15000物理步；按A→B→B→A顺序。
+八批均正常结束，原控制因果检查通过。
+Newton站立RTF中位数高18.34%，运动序列高15.32%。
+两次样本不构成统计显著性结论。</p>
+<p>运动入口在2–5s请求前进0.1m/s。
+5–7s请求偏航0.15rad/s，其余时段归零。
+运动结果按原判据通过，不能替代导航到位验收。</p>
+<div class="am-table-wrap"><table>
+<thead>
+<tr>
+<th>运动段</th>
+<th align="right">MuJoCo RTF范围</th>
+<th align="right">Newton RTF范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>前进</td>
+<td align="right">0.9495–0.9936</td>
+<td align="right">1.1156–1.1475</td>
+</tr>
+<tr>
+<td>转向</td>
+<td align="right">0.9825–1.0266</td>
+<td align="right">1.1152–1.1288</td>
+</tr>
+</tbody></table></div>
+<p>证据版本：SIM <code>6322901</code>，应用 <code>3ce8ed8f</code>。
+硬件：i7-14700HX，RTX5000 Ada Laptop 16GB。
+MuJoCo3.2.3 CPU；Newton1.6.1/MJWarp3.12.0 CUDA。
+Newton运行于Isaac Sim6.1和Isaac Lab3 preview。</p>
+<p>Newton同版连续运行600sim秒，RTF 1.134767。
+完整均步3.5250ms，P95 4.9088ms，P99 5.7960ms。
+P99.9 19.3836ms，最大413.856ms。
+24.166%的步超过4ms，平均实时不代表硬实时。
+150000步控制因果通过，8个服务正常退出。
+初末位移10.93cm、偏航变化20.44°，不认定精确站立。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>适用边界与复现</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>这是两套部署链的对照，碰撞表示并不完全等价。
+67个对应本体刚体质量差小于0.000001kg。
+Newton保留Kit加载USD，但没有视口、渲染产品或周期render。
+其被动mimic超速沿用SIM性能记录配置。
+主动轴保护保持启用，不能据此签署手部业务资格。</p>
+<p>配置记录到AMO ready的首轮估计：MuJoCo13.33s、Newton216.50s。
+这些值来自产物时间戳，表示加载成本。
+Newton尚未实现本任务的理想双手抓持设备。
+UE同机渲染和完整搬运需要独立验证。</p>
+<p>资源准备后，在仿真仓库执行：</p>
+</div>
+<figure class="am-codeblock"><figcaption class="am-code-head"><span class="am-code-title"></span><span class="am-code-lang">bash</span><button class="am-code-copy" type="button" data-am="copy-code" data-done="已复制 ✓">复制</button></figcaption><pre class="am-code"><code data-lang="bash"><span class="am-ln">./simctl run factory-privileged \</span><span class="am-ln">  --profile profiles/backend-eval-mujoco-headless.json \</span><span class="am-ln">  --motion stand --seconds 60 --application --no-viewer</span><span class="am-ln"></span><span class="am-ln">OMNI_KIT_ACCEPT_EULA=YES ./simctl run sensor-static \</span><span class="am-ln">  --profile profiles/backend-eval-newton-headless.json \</span><span class="am-ln">  --scene assets/scenes/factory-backend-eval-newton/scene.json \</span><span class="am-ln">  --motion stand --seconds 60 --application --no-viewer --viewer physics</span></code></pre></figure>
+<div class="am-md"><p>Newton命令需要已接受NVIDIA许可。
+场景资产和安装路径由资源绑定提供，源码仓库不携带私有资产。
+改为<code>--motion sequence</code>复现同一运动序列。
+使用<code>tools/evaluation/backend_compare.py</code>生成完整分布及逐步CSV。</p>
+<p><a href="https://github.com/gao377/agentic-embodied-system-sim/tree/codex/mujoco-newton-headless-eval-20261023">仿真评估源码</a></p>
+</div></div>
+</section>
 </div>
 </div>
 </main>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-14 08:16</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-23 17:03</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1068,7 +1212,7 @@ title: 联合仿真实验 · 导航、双机器人行为与携物
 subtitle: 到位、接触、性能分项判读；关联完整批次档案与现存录像
 lang: zh
 doc_id: simulation-experiments
-implementation: a455d3a3cf56722b
+implementation: b6dff00c907291da
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1282,6 +1426,87 @@ IR-SIM按场景边界显示，动态代理只镜像动力学世界。
 公开页不提供私有源码、原始轨迹、内部计划或本机路径。
 
 [实验总览](experiments.html) · [其他成功录像](experiment-recordings.html)
+
+## G 无渲染动力学与设备链性能
+
+同一工厂、G1/REVO2、250Hz物理和50Hz AMO/SDK。
+两种后端均关闭GUI、RGBD和LiDAR渲染。
+外部UE、Blender和平台页面也未启动。
+SensorAdapters、SpatialRuntime、PerceptionRuntime均不运行。
+
+RTF表示仿真推进时间与完整核心墙钟时间的比值。
+完整均步包含通信、状态读回与记录。
+初始化、碰撞模型构建和退出单列。
+
+|后端／批次|负载|RTF|均步ms|P95ms|P99ms|
+|---|---|---:|---:|---:|---:|
+|MuJoCo A1|站立|0.942351|4.2447|5.6942|7.0301|
+|Newton B1|站立|1.148379|3.4832|4.8530|5.5432|
+|Newton B2|站立|1.102297|3.6288|5.0826|6.1105|
+|MuJoCo A2|站立|0.959570|4.1685|5.4989|6.9041|
+|MuJoCo A1|前进／转向／停止|0.985346|4.0595|5.2425|6.9551|
+|Newton B1|前进／转向／停止|1.138181|3.5144|4.8547|5.5035|
+|Newton B2|前进／转向／停止|1.152917|3.4695|4.7943|5.3709|
+|MuJoCo A2|前进／转向／停止|1.001328|3.9947|5.0527|6.6139|
+
+每批60sim秒、15000物理步；按A→B→B→A顺序。
+八批均正常结束，原控制因果检查通过。
+Newton站立RTF中位数高18.34%，运动序列高15.32%。
+两次样本不构成统计显著性结论。
+
+运动入口在2–5s请求前进0.1m/s。
+5–7s请求偏航0.15rad/s，其余时段归零。
+运动结果按原判据通过，不能替代导航到位验收。
+
+|运动段|MuJoCo RTF范围|Newton RTF范围|
+|---|---:|---:|
+|前进|0.9495–0.9936|1.1156–1.1475|
+|转向|0.9825–1.0266|1.1152–1.1288|
+
+证据版本：SIM `6322901`，应用 `3ce8ed8f`。
+硬件：i7-14700HX，RTX5000 Ada Laptop 16GB。
+MuJoCo3.2.3 CPU；Newton1.6.1/MJWarp3.12.0 CUDA。
+Newton运行于Isaac Sim6.1和Isaac Lab3 preview。
+
+Newton同版连续运行600sim秒，RTF 1.134767。
+完整均步3.5250ms，P95 4.9088ms，P99 5.7960ms。
+P99.9 19.3836ms，最大413.856ms。
+24.166%的步超过4ms，平均实时不代表硬实时。
+150000步控制因果通过，8个服务正常退出。
+初末位移10.93cm、偏航变化20.44°，不认定精确站立。
+
+## H 适用边界与复现
+
+这是两套部署链的对照，碰撞表示并不完全等价。
+67个对应本体刚体质量差小于0.000001kg。
+Newton保留Kit加载USD，但没有视口、渲染产品或周期render。
+其被动mimic超速沿用SIM性能记录配置。
+主动轴保护保持启用，不能据此签署手部业务资格。
+
+配置记录到AMO ready的首轮估计：MuJoCo13.33s、Newton216.50s。
+这些值来自产物时间戳，表示加载成本。
+Newton尚未实现本任务的理想双手抓持设备。
+UE同机渲染和完整搬运需要独立验证。
+
+资源准备后，在仿真仓库执行：
+
+```bash
+./simctl run factory-privileged \
+  --profile profiles/backend-eval-mujoco-headless.json \
+  --motion stand --seconds 60 --application --no-viewer
+
+OMNI_KIT_ACCEPT_EULA=YES ./simctl run sensor-static \
+  --profile profiles/backend-eval-newton-headless.json \
+  --scene assets/scenes/factory-backend-eval-newton/scene.json \
+  --motion stand --seconds 60 --application --no-viewer --viewer physics
+```
+
+Newton命令需要已接受NVIDIA许可。
+场景资产和安装路径由资源绑定提供，源码仓库不携带私有资产。
+改为`--motion sequence`复现同一运动序列。
+使用`tools/evaluation/backend_compare.py`生成完整分布及逐步CSV。
+
+[仿真评估源码](https://github.com/gao377/agentic-embodied-system-sim/tree/codex/mujoco-newton-headless-eval-20261023)
 </textarea>
 <script>
 (() => {
