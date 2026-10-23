@@ -1652,6 +1652,68 @@
       "configuration_ref": "newton",
       "sim_implementation_revision": "4f657790a21060882e44a7202884190b841964b4",
       "platform_implementation_revision": "91a98c40"
+    },
+    {
+      "experiment": "TASK-RSI-E01",
+      "role": "blender",
+      "file": "task-rsi-e01-blender-20x.mp4",
+      "sha256": "ca65e8de7cd0d5bbe2c57c56dd8c53b400686f5e3f05beae2a115ede4bd04d44",
+      "source_sha256": "4a93180593a977c37a63a16aaf6e674d7297b097177b6b7bd9fcf984e3116098",
+      "duration_s": 5.067,
+      "size_bytes": 954255,
+      "width": 1834,
+      "height": 1120,
+      "fps": "30/1",
+      "playback_speed": 20,
+      "action_start_s": null,
+      "scope": "Workstation component only; ideal grasp/support; no continuous transfer"
+    },
+    {
+      "experiment": "TASK-RSI-E02",
+      "role": "blender",
+      "file": "task-rsi-e02-blender-20x.mp4",
+      "sha256": "7d3a6785bf2fd4f4676dff9e095566872b8c779137b794fdfb68680bda610ba7",
+      "source_sha256": "7b24d65583fb83a45178fbe213b840c4e808c1b73bb1cad1a83f60aa844704a3",
+      "duration_s": 5.0,
+      "size_bytes": 939673,
+      "width": 1834,
+      "height": 1120,
+      "fps": "30/1",
+      "playback_speed": 20,
+      "action_start_s": null,
+      "scope": "Workstation component only; ideal grasp/support; no continuous transfer"
+    },
+    {
+      "experiment": "TASK-RSI-E03",
+      "role": "blender",
+      "file": "task-rsi-e03-blender-20x.mp4",
+      "sha256": "64de2bb8019c906b2e7fe38edd77d8b578d1f26817c4d187a05b317fc1c2cd26",
+      "source_sha256": "17fda15ad2770234abf01a678939e1806e551c7061f6249747a8d0f4c4ee516f",
+      "duration_s": 5.467,
+      "size_bytes": 982530,
+      "width": 1834,
+      "height": 1120,
+      "fps": "30/1",
+      "playback_speed": 20,
+      "action_start_s": null,
+      "scope": "Workstation component only; ideal grasp/support; no continuous transfer"
+    },
+    {
+      "experiment": "TASK-RSI-STORYBOARD",
+      "role": "edited-demonstration",
+      "file": "task-rsi-demonstration-1080p.mp4",
+      "sha256": "0ef0b920358e0c3d8f1a887470244c99fd4b49e827156aaf0158864a60cfbbd2",
+      "source_sha256": "59a625e1db4005aa69e6bf05a21ba946065a02c5adfe65b20e61e17f4f1bc9a0",
+      "duration_s": 145.0,
+      "size_bytes": 3840499,
+      "width": 1920,
+      "height": 1080,
+      "fps": "25/1",
+      "playback_speed": "VARIES_BY_LABELLED_SHOT",
+      "action_start_s": null,
+      "scope": "workstation pick/place only; short carry admission failed, not included; not continuous A-to-B",
+      "reflection": "SCRIPTED_DEMO",
+      "source_type": "SEGMENTED_EDITED_NOT_CONTINUOUS_TASK"
     }
   ]
 }
