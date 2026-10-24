@@ -1748,6 +1748,25 @@
       "playback_speed": 20,
       "action_start_s": null,
       "scope": "Independent preheld short backward transit and turn; geometric demo; not continuous A-to-B"
+    },
+    {
+      "experiment": "TASK-PLAN-MOTION",
+      "role": "shared-task-ui",
+      "file": "task-plan-motion-subtitles.mp4",
+      "sha256": "86fc9fbb6edef1ffdf88615bc9fbb2bdaa7df0f3f624dafcc359e3032ee378bf",
+      "source_sha256": "3da3295a1c43c157b2254b0bf06311d8cc292f191953f4ec4022ece831295535",
+      "duration_s": 16.04,
+      "size_bytes": 383397,
+      "width": 1586,
+      "height": 992,
+      "fps": "25/1",
+      "playback_speed": "1x wall clock; variable-cadence browser captures",
+      "action_start_s": null,
+      "scope": "Shared task graph insertion, detachment, dependency rewiring and linked subtitles; UI only, no new physical experiment",
+      "reflection": "SCRIPTED_DEMO",
+      "source_type": "SCRIPTED_PRESENTATION_BROWSER_CAPTURE",
+      "title": "共用任务图动效与同步字幕",
+      "source": "SCRIPTED_PRESENTATION"
     }
   ]
 }

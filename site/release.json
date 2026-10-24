@@ -549,8 +549,8 @@
     },
     {
       "file": "task-rsi-demonstration.html",
-      "source_sha256": "f7d471f22c881f9acb43f97e0881a902753403478415546b03ae7c1e4c25d55d",
-      "implementation_sha256": "301425310639303d45e4a852ca25c1fd86cf4eab88bc7c91da25f92186f79408"
+      "source_sha256": "699a7cec6f5381a2a7f10fb31d75e1da0a5b76a587dacb20cb84f1c356748ee1",
+      "implementation_sha256": "cba1039378b8124f1e8b162cbade54766d1c99be0ac213158b6fe32eaf9e8b41"
     }
   ],
   "assets": [
@@ -1085,6 +1085,10 @@
     {
       "file": "media/planar-crossing-mujoco-20x.mp4",
       "sha256": "87a68057642dc11dbc6df0b294db2aa52d1f6a477c6b99c9d657d4ede300b953"
+    },
+    {
+      "file": "media/task-plan-motion-subtitles.mp4",
+      "sha256": "86fc9fbb6edef1ffdf88615bc9fbb2bdaa7df0f3f624dafcc359e3032ee378bf"
     },
     {
       "file": "media/task-rsi-c01-blender-20x.mp4",
