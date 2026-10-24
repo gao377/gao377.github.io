@@ -549,7 +549,7 @@
     },
     {
       "file": "task-rsi-demonstration.html",
-      "source_sha256": "dfa4ff94f787a9df247c960101584fd29fc51500fc95419438747f61fee820b6",
+      "source_sha256": "f7d471f22c881f9acb43f97e0881a902753403478415546b03ae7c1e4c25d55d",
       "implementation_sha256": "301425310639303d45e4a852ca25c1fd86cf4eab88bc7c91da25f92186f79408"
     }
   ],
@@ -1092,11 +1092,11 @@
     },
     {
       "file": "media/task-rsi-demonstration-1080p.mp4",
-      "sha256": "a961e99bf04c3669a821214283dab95a0eb79564d10508777589450add82251f"
+      "sha256": "814d4fb225eb3b40203f97b2b2ebfcd21eeb243ecbec96af8575612ed08a64e1"
     },
     {
       "file": "media/task-rsi-dynamic-revision.mp4",
-      "sha256": "7eba061a98dbfa1b9c98e9075b42c57ab800611c5493f8b73c78849f14b8f934"
+      "sha256": "8c4fe7935364bf217da8b2982fb285eca9c6f18dddd0f366518261ccc0a794e4"
     },
     {
       "file": "media/task-rsi-e01-blender-20x.mp4",
