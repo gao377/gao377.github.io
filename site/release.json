@@ -172,13 +172,13 @@
     },
     {
       "file": "experiment-recordings.html",
-      "source_sha256": "c67af485ebce6e8d8c185e9f0b5a83b46b6bf5454107c33da92308a3b6c5c8c0",
-      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
+      "source_sha256": "22262c66d9b62623a90b53aafd2d938b751cd2dd110dc5cdbb5008c439dc6287",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     },
     {
       "file": "experiments.html",
-      "source_sha256": "4ab0dd7f7c1bbf95144ab3cec5de2c755275e4448e6417d61e5a0ddbc6c15ba4",
-      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
+      "source_sha256": "18aae80eda52d7a57284fe358adcf36364d1835380fbbbb473a7973dc57721aa",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     },
     {
       "file": "files-robot-action_executor.html",
@@ -444,18 +444,18 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "4987fd411cb892bfa6db135bb3f75f0c2d0cd841a5147dbd1853a10216781b3e",
-      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
+      "source_sha256": "0707fd95f8ea1e9182cd572dff8bf24f5acfe14692169b70632ca504fca47f1c",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     },
     {
       "file": "simulation-usage.html",
-      "source_sha256": "852bdf007aac029b78d014f4357b10e52a59626456cad432b1e2325ce93ec75b",
-      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
+      "source_sha256": "7dbbe00d3103d2d26fc013bb83d3857d610aa65c303a930f9f324e3f6257616d",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     },
     {
       "file": "simulation.html",
-      "source_sha256": "d9980e2025e8b915048ef940ffd64f524f1ad8cefaf160eba496800c262de3d8",
-      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
+      "source_sha256": "08fcf0f9dc862a2d39ab8a53080fe6bfd3f01c3fa2c04e85c00d15988bb7aa16",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     },
     {
       "file": "simulation-performance.html",
@@ -464,8 +464,8 @@
     },
     {
       "file": "simulation-experiments.html",
-      "source_sha256": "a1e9276710399dc8c8dbf68713d477f75cbc6adf7ef229e4134f9de9e15d6e94",
-      "implementation_sha256": "b6dff00c907291dad0a07c07a389dddaab5da8716886957be6df4f00d8375011"
+      "source_sha256": "b27b658fbdab5d007b5518e4555aa255436cdb48072e35f1faaf72a129e2a44f",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     },
     {
       "file": "simulation-experiment-catalog.html",
@@ -474,8 +474,8 @@
     },
     {
       "file": "simulation-recordings.html",
-      "source_sha256": "06652f51b502edd484ec67c1570fca8ed5c69e5a91f909e156267e8f00d0744a",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
+      "source_sha256": "f90c9e0f7a133aaebcd5b483f462bc8ba0d3bfa726e8ff8daae1282c5516b845",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     },
     {
       "file": "navigation-response-experiments.html",
@@ -546,6 +546,16 @@
       "file": "workpiece-perception.html",
       "source_sha256": "a1810dd13abaf78db4124dd3c272458fa381037d7c3521129512ca42c95cdc6a",
       "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
+    },
+    {
+      "file": "simulation-newton-usage.html",
+      "source_sha256": "d57d7b4141f81c8a367eabd5e57da93a9fbc468623d90580d49ab0a2a8040477",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
+    },
+    {
+      "file": "simulation-newton-recordings.html",
+      "source_sha256": "75c4a00941279a55e45dec7b1f92b26bd9c6ff918ea1ceb513af6350287bd083",
+      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
     }
   ],
   "assets": [
@@ -1056,6 +1066,42 @@
     {
       "file": "media/navigation-response-evidence.json",
       "sha256": "abf2405333841cc1a613f843811e4e3772462d2389266a82e583ebd4df3c23af"
+    },
+    {
+      "file": "media/newton-ue-transfer-01-console-20x.mp4",
+      "sha256": "d1a57b27ba08ed9b687fbaec6ff22fc12c41e49835408982caffd94671b1f4a8"
+    },
+    {
+      "file": "media/newton-ue-transfer-01-ue5-20x.mp4",
+      "sha256": "e81a4dfa51026fef6792034dd39832c78a16ef42e21e623644342ad14666f25b"
+    },
+    {
+      "file": "media/newton-ue-transfer-02-console-20x.mp4",
+      "sha256": "f72ffc3a18ec4e296734f09cb81d82d4acda32e7114c36e584bdab8ca504cabd"
+    },
+    {
+      "file": "media/newton-ue-transfer-02-ue5-20x.mp4",
+      "sha256": "a47f630f9786645341eb6749c7fccad78d1a3377852be792b95cfbf42fc91687"
+    },
+    {
+      "file": "media/newton-ue-transfer-03-console-20x.mp4",
+      "sha256": "08709c5ca4b9a8d4d6e69dd7f9479f93631dff890d2b46cb9bc5cd0f12b39800"
+    },
+    {
+      "file": "media/newton-ue-transfer-03-ue5-20x.mp4",
+      "sha256": "ddfbe6710775d406d97d9b473ef075b68b7962dc459bf62670c1c9a66defff4b"
+    },
+    {
+      "file": "media/newton-ue-transfer-04-console-20x.mp4",
+      "sha256": "856d04da17c0e10b3b350d9392d11ede00cd270937f6803064c6fd89afcb3a37"
+    },
+    {
+      "file": "media/newton-ue-transfer-04-ue5-20x.mp4",
+      "sha256": "67c32f383119f50123fc0850c3126dcf2fe37295bdfce074b41418ef7fdde128"
+    },
+    {
+      "file": "media/newton-ue-transfer-timing.png",
+      "sha256": "81e1b63dbdea369552899c7787c874233b9a3f2547a7b4bcfdf56917bd543443"
     },
     {
       "file": "media/pl-forward4m-slam-v2-blender-20x.mp4",

@@ -698,28 +698,45 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>仿真系统 · 设计与运行原理</h1><p class="am-sub">原生Isaac与联合仿真 · 统一设备接口、时序与验证</p><div class="am-head-meta"><span><b>doc_id</b>simulation</span><span><b>implementation</b>409c0f30733ec6f1</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>仿真系统 · 设计与运行原理</h1><p class="am-sub">原生Isaac与联合仿真 · 统一设备接口、时序与验证</p><div class="am-head-meta"><span><b>doc_id</b>simulation</span><span><b>implementation</b>ab872793e6dff895</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<p><a href="simulation-newton-recordings.html">Newton与UE实时转运录像</a> · <a href="simulation-newton-usage.html">环境下载与启动</a></p>
 <p><a href="navigation-response-model.html">运动响应专题：设计、预测与粗导航实测</a> · <a href="navigation-response-experiments.html">专题实验表</a> · <a href="navigation-response-recordings.html">专题三窗口录像</a></p>
 <p><a href="simulation-experiments.html">实验结果</a> · <a href="simulation-experiment-catalog.html">完整批次档案</a> · <a href="simulation-recordings.html">三窗口录像</a></p>
 <p><a href="simulation-experiments.html">联合仿真：横穿避障到位、三窗口录像与脱手反例</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 仿真器与机器人软件分开</a><a href="#panel-B">B · 一个世界，多个后端</a><a href="#panel-C">C · 时序与两种控制模式</a><a href="#panel-D">D · 频率、坐标与扫描语义</a><a href="#panel-E">E · 对应哪些软件模块</a><a href="#panel-F">F · 目录、验证与资源</a><a href="#panel-G">G · 原生平台从同一配置与运行取数</a><a href="#panel-H">H · 开发、退出与回放</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · Newton与UE采用单向状态显示</a><a href="#panel-B">B · 动力学与显示后端按配置选择</a><a href="#panel-C">C · 设备时序与历史联合配置</a><a href="#panel-D">D · 频率、坐标与扫描语义</a><a href="#panel-E">E · 对应哪些软件模块</a><a href="#panel-F">F · 目录、验证与资源</a><a href="#panel-G">G · 原生平台从同一配置与运行取数</a><a href="#panel-H">H · 开发、退出与回放</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
-<header class="am-panel-head"><span class="am-panel-id">A</span><h2>仿真器与机器人软件分开</h2></header>
-<div class="am-panel-body"><div class="am-md"><p>机器人应用保留任务、SLAM、NeuPAN、操作和AMO。
-仿真器提供设备反馈，接收设备指令。
-它替代物理设备环境，不替代应用算法。</p>
+<header class="am-panel-head"><span class="am-panel-id">A</span><h2>Newton与UE采用单向状态显示</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>机器人应用拥有任务、NeuPAN、操作和AMO。
+Newton/MJWarp拥有G1动力学与载荷状态。
+UE消费状态快照，只负责显示。</p>
 </div>
-<figure class="am-diagram am-flow"><svg viewBox="0 0 351 558" width="351" height="558" role="img" aria-label="流程图：系统应用、机器人应用、统一设备桥PB、MuJoCo、世界快照、IR-SIM、Blender" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M149,49 L149,65 Q149,81 149,97 L149,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="103.7" y="72" width="90.5" height="18" rx="3"/><text x="149" y="81" text-anchor="middle" dominant-baseline="central">任务与能力请求</text></g></g><g data-step="1"><path class="am-edge" d="M175.6,148 L200,164 Q224.4,180 200,196 L175.6,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="179.1" y="171" width="90.5" height="18" rx="3"/><text x="224.4" y="180" text-anchor="middle" dominant-baseline="central">关节和手部指令</text></g></g><g data-step="2"><path class="am-edge" d="M187.1,247 L221.9,263 Q256.8,279 256.8,295 L256.8,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="211.6" y="270" width="90.5" height="18" rx="3"/><text x="256.8" y="279" text-anchor="middle" dominant-baseline="central">经过校验的控制</text></g></g><g data-step="3"><path class="am-edge" d="M256.8,346 L256.8,362 Q256.8,378 239.4,394 L221.9,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="189.4" y="369" width="134.9" height="18" rx="3"/><text x="256.8" y="378" text-anchor="middle" dominant-baseline="central">本体、关节、接触和IMU</text></g></g><g data-step="4"><path class="am-edge" d="M177.9,445 L155.1,461 Q132.3,477 119.7,493 L107.1,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="75.5" y="468" width="113.5" height="18" rx="3"/><text x="132.3" y="477" text-anchor="middle" dominant-baseline="central">同拍位姿与动态物体</text></g></g><g data-step="5"><path class="am-edge" d="M227.8,445 L250.7,461 Q273.5,477 273.5,493 L273.5,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="211" y="468" width="125" height="18" rx="3"/><text x="273.5" y="477" text-anchor="middle" dominant-baseline="central">机器人姿态与场景状态</text></g></g><g data-step="6"><path class="am-edge" d="M79.6,509 L67.1,493 Q54.5,477 54.5,452.3 Q54.5,427.5 54.5,402.8 Q54.5,378 54.5,353.3 Q54.5,328.5 54.5,303.8 Q54.5,279 85,263 L115.6,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="369" width="79" height="18" rx="3"/><text x="54.5" y="378" text-anchor="middle" dominant-baseline="central">原生二维激光</text></g></g><g data-step="7"><path class="am-edge" d="M177.9,410 L155.1,394 Q132.3,378 132.3,353.3 Q132.3,328.5 132.3,303.8 Q132.3,279 137.6,263 L143,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="92.8" y="319.5" width="79" height="18" rx="3"/><text x="132.3" y="328.5" text-anchor="middle" dominant-baseline="central">实测设备反馈</text></g></g><g data-step="8"><path class="am-edge am-edge--dashed" d="M129.3,212 L111.3,196 Q93.4,180 111.3,164 L129.3,148" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="29.6" y="171" width="127.5" height="18" rx="3"/><text x="93.4" y="180" text-anchor="middle" dominant-baseline="central">ROS设备观测与源时间</text></g></g></g><g><g class="am-node am-node--rect" data-key="系统应用" data-step="0"><rect class="am-node-shape" x="109" y="14" width="80" height="35" rx="3"/><text x="149" y="31.5" text-anchor="middle" dominant-baseline="central">系统应用</text></g><g class="am-node am-node--rect" data-key="机器人应用" data-step="0"><rect class="am-node-shape" x="102.5" y="113" width="93" height="35" rx="3"/><text x="149" y="130.5" text-anchor="middle" dominant-baseline="central">机器人应用</text></g><g class="am-node am-node--rect" data-key="统一设备桥PB" data-step="1"><rect class="am-node-shape" x="93.6" y="212" width="110.7" height="35" rx="3"/><text x="149" y="229.5" text-anchor="middle" dominant-baseline="central">统一设备桥PB</text></g><g class="am-node am-node--rect" data-key="MuJoCo" data-step="2"><rect class="am-node-shape" x="217.5" y="311" width="78.7" height="35" rx="3"/><text x="256.8" y="328.5" text-anchor="middle" dominant-baseline="central">MuJoCo</text></g><g class="am-node am-node--rect" data-key="世界快照" data-step="3"><rect class="am-node-shape" x="162.9" y="410" width="80" height="35" rx="3"/><text x="202.9" y="427.5" text-anchor="middle" dominant-baseline="central">世界快照</text></g><g class="am-node am-node--rect" data-key="IR-SIM" data-step="4"><rect class="am-node-shape" x="57.1" y="509" width="72.5" height="35" rx="3"/><text x="93.4" y="526.5" text-anchor="middle" dominant-baseline="central">IR-SIM</text></g><g class="am-node am-node--rect" data-key="Blender" data-step="5"><rect class="am-node-shape" x="236.4" y="509" width="74.3" height="35" rx="3"/><text x="273.5" y="526.5" text-anchor="middle" dominant-baseline="central">Blender</text></g></g></svg></figure>
-<div class="am-md"><p>Blender在当前二维配置中用于观察，RGB-D关闭。
-三维兼容配置另有Blender RGB-D实现。
-二维链不能因此被描述为已经提供全部视觉输入。</p>
-<p><a href="simulation-usage.html">运行配置与场景命令</a> · <a href="simulation-performance.html">RTF与硬件收益</a> · <a href="https://github.com/gao377/agentic-embodied-system-sim">源码仓库（需权限）</a></p>
+<figure class="am-diagram am-flow"><svg viewBox="0 0 362 657" width="362" height="657" role="img" aria-label="流程图：系统应用、机器人应用、统一设备桥、Newton与MJWarp、只读显示映射、UE工厂、实时任务网页" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M177.3,49 L200.4,65 Q223.5,81 223.5,97 L223.5,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="166.7" y="72" width="113.5" height="18" rx="3"/><text x="223.5" y="81" text-anchor="middle" dominant-baseline="central">真实任务与能力请求</text></g></g><g data-step="1"><path class="am-edge" d="M244.4,148 L263.5,164 Q282.6,180 263.5,196 L244.4,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="225.8" y="171" width="113.5" height="18" rx="3"/><text x="282.6" y="180" text-anchor="middle" dominant-baseline="central">关节目标与控制模式</text></g></g><g data-step="2"><path class="am-edge" d="M201.7,247 L181.8,263 Q161.9,279 181.8,295 L201.7,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="270" width="79" height="18" rx="3"/><text x="161.9" y="279" text-anchor="middle" dominant-baseline="central">有效设备指令</text></g></g><g data-step="3"><path class="am-edge" d="M245.2,311 L265.1,295 Q285.1,279 265.1,263 L245.2,247" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="223.4" y="270" width="123.4" height="18" rx="3"/><text x="285.1" y="279" text-anchor="middle" dominant-baseline="central">关节、IMU与机构反馈</text></g></g><g data-step="4"><path class="am-edge" d="M201.7,212 L181.8,196 Q161.9,180 181.8,164 L201.7,148" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="122.4" y="171" width="79" height="18" rx="3"/><text x="161.9" y="180" text-anchor="middle" dominant-baseline="central">同源设备观测</text></g></g><g data-step="5"><path class="am-edge" d="M223.5,346 L223.5,362 Q223.5,378 223.5,394 L223.5,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="156.6" y="369" width="133.7" height="18" rx="3"/><text x="223.5" y="378" text-anchor="middle" dominant-baseline="central">带身份与tick的最新快照</text></g></g><g data-step="6"><path class="am-edge" d="M223.5,445 L223.5,461 Q223.5,477 223.5,493 L223.5,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="149.2" y="468" width="148.5" height="18" rx="3"/><text x="223.5" y="477" text-anchor="middle" dominant-baseline="central">FACRI关节与工装世界姿态</text></g></g><g data-step="7"><path class="am-edge" d="M223.5,544 L223.5,560 Q223.5,576 200.4,592 L177.3,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="195.5" y="567" width="56" height="18" rx="3"/><text x="223.5" y="576" text-anchor="middle" dominant-baseline="central">场景画面</text></g></g><g data-step="8"><path class="am-edge" d="M119.6,49 L89.9,65 Q60.3,81 60.3,105.8 Q60.3,130.5 60.3,155.3 Q60.3,180 60.3,204.8 Q60.3,229.5 60.3,254.3 Q60.3,279 60.3,303.8 Q60.3,328.5 60.3,353.3 Q60.3,378 60.3,402.8 Q60.3,427.5 60.3,452.3 Q60.3,477 60.3,501.8 Q60.3,526.5 60.3,551.3 Q60.3,576 89.9,592 L119.6,608" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="319.5" width="90.5" height="18" rx="3"/><text x="60.3" y="328.5" text-anchor="middle" dominant-baseline="central">计划与执行事件</text></g></g></g><g><g class="am-node am-node--rect" data-key="系统应用" data-step="0"><rect class="am-node-shape" x="112.1" y="14" width="80" height="35" rx="3"/><text x="152.1" y="31.5" text-anchor="middle" dominant-baseline="central">系统应用</text></g><g class="am-node am-node--rect" data-key="机器人应用" data-step="0"><rect class="am-node-shape" x="177" y="113" width="93" height="35" rx="3"/><text x="223.5" y="130.5" text-anchor="middle" dominant-baseline="central">机器人应用</text></g><g class="am-node am-node--rect" data-key="统一设备桥" data-step="1"><rect class="am-node-shape" x="177" y="212" width="93" height="35" rx="3"/><text x="223.5" y="229.5" text-anchor="middle" dominant-baseline="central">统一设备桥</text></g><g class="am-node am-node--rect" data-key="Newton与MJWarp" data-step="2"><rect class="am-node-shape" x="155" y="311" width="136.9" height="35" rx="3"/><text x="223.5" y="328.5" text-anchor="middle" dominant-baseline="central">Newton与MJWarp</text></g><g class="am-node am-node--rect" data-key="只读显示映射" data-step="5"><rect class="am-node-shape" x="170.5" y="410" width="106" height="35" rx="3"/><text x="223.5" y="427.5" text-anchor="middle" dominant-baseline="central">只读显示映射</text></g><g class="am-node am-node--rect" data-key="UE工厂" data-step="6"><rect class="am-node-shape" x="187.6" y="509" width="71.7" height="35" rx="3"/><text x="223.5" y="526.5" text-anchor="middle" dominant-baseline="central">UE工厂</text></g><g class="am-node am-node--rect" data-key="实时任务网页" data-step="7"><rect class="am-node-shape" x="99.1" y="608" width="106" height="35" rx="3"/><text x="152.1" y="625.5" text-anchor="middle" dominant-baseline="central">实时任务网页</text></g></g></svg></figure>
+<div class="am-md"><p>动力学机器人为宇树G1。
+显示机器人为FACRI，两者不是同一动力学模型。
+显示映射复用Pinocchio与SciPy有界求解。
+它固定根与腰，遵循FACRI原URDF关节范围。
+末端朝向为软目标，不保证逐关节同构。
+映射结果不返回控制链。</p>
+<p>工厂转运配置使用明确标注的SIM特权输入。
+物体位姿、定位与几何观测由仿真提供。
+该配置不运行SLAM、视觉感知、RGBD或激光采样。
+因此，它不能作为真实传感定位与识别的验收。</p>
+<p>理想双手约束在实际末端到位后建立。
+放置时解除约束，保留物体速度并由重力落下。
+真实载荷惯量和环境支撑仍由物理后端计算。
+这验证任务与运控，不证明真实手指接触抓稳。</p>
+<p>显示流采用最新帧与独立发送线程。
+接收器核对run、epoch、tick、布局与有限数值。
+UE不发控制、不等待物理确认、不承担碰撞计算。
+网页任务图使用原system与robot的真实事件。
+它不以预录视频替代LIVE画面。</p>
+<p><a href="simulation-newton-usage.html">Newton与UE快速启动</a> · <a href="simulation-usage.html">其他运行配置</a> · <a href="simulation-experiments.html">实验结果</a> · <a href="simulation-performance.html">RTF与硬件收益</a></p>
 </div></div>
 </section>
 <section class="am-panel" id="panel-B">
-<header class="am-panel-head"><span class="am-panel-id">B</span><h2>一个世界，多个后端</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">B</span><h2>动力学与显示后端按配置选择</h2></header>
 <div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
 <thead>
 <tr>
@@ -729,6 +746,16 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </tr>
 </thead>
 <tbody><tr>
+<td>Newton 1.6.1 / MJWarp 3.12.0</td>
+<td>当前G1、载荷、关节、支撑接触与原生IMU</td>
+<td>导航、操作规划与渲染</td>
+</tr>
+<tr>
+<td>UE 5.8.4</td>
+<td>当前工厂材质、FACRI与工装显示</td>
+<td>机器人控制、动力学与接触判定</td>
+</tr>
+<tr>
 <td>MuJoCo 3.2.3</td>
 <td>自由基座、关节、载荷、接触、IMU</td>
 <td>SLAM、路径规划</td>
@@ -772,7 +799,9 @@ MuJoCo薄适配沿用现有物理与设备实现。
 <p>原生Isaac安装使用Sim distribution 6.1.0.0、Lab VERSION 3.0.0，
 Lab distribution为27.0.4、Python为3.12.12；采用独立原生版本锁。</p>
 <p>原生场景采用factory.user.isaac61.v1工厂USD与独立SAL组合层。
-源资产不改写；组合层由所选profile创建唯一PhysX场景，并适配碰撞表示。
+源资产不改写。
+PhysX配置创建单一PhysX场景。
+Newton配置创建单一Newton/MJWarp动力学模型。
 三块规则地面使用同尺寸、位姿和材质的原生Cube碰撞体。
 旧warehouse实验保留原场景身份，不与新工厂数据混合。</p>
 <p>既有Sim 6.1.0-rc.26容器另保留自己的版本身份。</p>
@@ -785,7 +814,7 @@ SAL代码层可复用已有镜像；原生设备与任务资格单独核验。
 </div></div>
 </section>
 <section class="am-panel" id="panel-C">
-<header class="am-panel-head"><span class="am-panel-id">C</span><h2>时序与两种控制模式</h2></header>
+<header class="am-panel-head"><span class="am-panel-id">C</span><h2>设备时序与历史联合配置</h2></header>
 <div class="am-panel-body"><figure class="am-diagram am-seq"><svg viewBox="0 0 836 390" width="836" height="390" role="img" aria-label="时序图：应用、设备桥、协调器、MuJoCo、IR-SIM、Blender" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am2-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><line class="am-lifeline" x1="54" y1="42" x2="54" y2="386"/><g data-key="应用"><rect class="am-actor" x="12" y="8" width="84" height="34" rx="2"/><text x="54" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">应用</text></g><line class="am-lifeline" x1="230.2" y1="42" x2="230.2" y2="386"/><g data-key="设备桥"><rect class="am-actor" x="188.2" y="8" width="84" height="34" rx="2"/><text x="230.2" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">设备桥</text></g><line class="am-lifeline" x1="408.2" y1="42" x2="408.2" y2="386"/><g data-key="协调器"><rect class="am-actor" x="366.2" y="8" width="84" height="34" rx="2"/><text x="408.2" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">协调器</text></g><line class="am-lifeline" x1="557.1" y1="42" x2="557.1" y2="386"/><g data-key="MuJoCo"><rect class="am-actor" x="515.1" y="8" width="84" height="34" rx="2"/><text x="557.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">MuJoCo</text></g><line class="am-lifeline" x1="669.1" y1="42" x2="669.1" y2="386"/><g data-key="IR-SIM"><rect class="am-actor" x="627.1" y="8" width="84" height="34" rx="2"/><text x="669.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">IR-SIM</text></g><line class="am-lifeline" x1="781.1" y1="42" x2="781.1" y2="386"/><g data-key="Blender"><rect class="am-actor" x="739.1" y="8" width="84" height="34" rx="2"/><text x="781.1" y="25" text-anchor="middle" dominant-baseline="central" font-weight="600">Blender</text></g><g data-step="0"><text x="142.1" y="70" text-anchor="middle">最近有效关节指令</text><path class="am-edge" d="M54,80 L228.2,80" marker-end="url(#am2-arrow)"/></g><g data-step="1"><text x="482.6" y="110" text-anchor="middle">推进4ms物理步</text><path class="am-edge" d="M408.2,120 L555.1,120" marker-end="url(#am2-arrow)"/></g><g data-step="2"><text x="482.6" y="150" text-anchor="middle">提交世界快照与源tick</text><path class="am-edge am-edge--dashed" d="M557.1,160 L410.2,160" marker-end="url(#am2-arrow)"/></g><g data-step="3"><text x="538.6" y="190" text-anchor="middle">到采样时刻时请求扫描</text><path class="am-edge" d="M408.2,200 L667.1,200" marker-end="url(#am2-arrow)"/></g><g data-step="4"><text x="449.6" y="230" text-anchor="middle">同拍LaserScan</text><path class="am-edge am-edge--dashed" d="M669.1,240 L232.2,240" marker-end="url(#am2-arrow)"/></g><g data-step="5"><text x="319.2" y="270" text-anchor="middle">到发布时刻时交付设备状态</text><path class="am-edge" d="M408.2,280 L232.2,280" marker-end="url(#am2-arrow)"/></g><g data-step="6"><text x="142.1" y="310" text-anchor="middle">源时间、关节、IMU和扫描</text><path class="am-edge" d="M230.2,320 L56,320" marker-end="url(#am2-arrow)"/></g><g data-step="7"><text x="594.6" y="350" text-anchor="middle">更新观察快照</text><path class="am-edge" d="M408.2,360 L779.1,360" marker-end="url(#am2-arrow)"/></g></svg></figure>
 <div class="am-md"><div class="am-table-wrap"><table>
 <thead>
@@ -820,7 +849,9 @@ PASSIVE、过期、epoch、限位、APP退出以及原策略源周期检查继�
 </section>
 <section class="am-panel" id="panel-D">
 <header class="am-panel-head"><span class="am-panel-id">D</span><h2>频率、坐标与扫描语义</h2></header>
-<div class="am-panel-body"><div class="am-md"><div class="am-table-wrap"><table>
+<div class="am-panel-body"><div class="am-md"><p>当前Newton＋UE转运配置关闭相机和激光。
+下表保留各显式配置的频率语义。</p>
+<div class="am-table-wrap"><table>
 <thead>
 <tr>
 <th>数据或过程</th>
@@ -842,6 +873,21 @@ PASSIVE、过期、epoch、限位、APP退出以及原策略源周期检查继�
 <td>ROS关节、IMU、时钟</td>
 <td>50Hz</td>
 <td>保留采样源时间</td>
+</tr>
+<tr>
+<td>Newton显示状态发布</td>
+<td>31.25Hz仿真时间</td>
+<td>当前每8个物理tick发布；可丢弃过期显示帧</td>
+</tr>
+<tr>
+<td>UE显示</td>
+<td>上限30FPS墙钟</td>
+<td>使用同源快照，无控制反馈</td>
+</tr>
+<tr>
+<td>网页图像</td>
+<td>10Hz墙钟目标</td>
+<td>捕获实际UE窗口，不是相机数据</td>
 </tr>
 <tr>
 <td>IR-SIM二维扫描</td>
@@ -1656,10 +1702,10 @@ Newton仅沿用已批准SIM性能配置中10个被动mimic超速记录例外，�
 600秒大记录首次解析的两路并发读取实测约13.1秒，退出含Python缓存回收约10.3秒，正常返回0。
 这些是只读回放耗时，不计入物理RTF；首次打开应等待缓存建立。
 网页开发沿用原热更新入口，算法开发通过公共消息供数，不修改网页来补造状态。</p>
-<p>当前原生LIO装配未资格化，显式<code>--lio</code>返回<code>NATIVE_LIO_NOT_QUALIFIED</code>。
-地图、TARE/PCT/NeuPAN在本配置中显示无数据。
-工厂显示位姿只供观察，不进入定位、导航或任务成功判断。</p>
-<p>Newton当前验证范围为SIM零速站立、设备与展示。
+<p>上述历史站立对照不包含LIO，显式<code>--lio</code>返回<code>NATIVE_LIO_NOT_QUALIFIED</code>。
+上述历史站立配置不运行地图、TARE、PCT或NeuPAN。
+UE中的FACRI显示映射只供观察，不进入定位、导航或任务成功判断。</p>
+<p>上述GUI后端对照的Newton验证范围为SIM零速站立、设备与展示。
 手部动作回零曾出现反馈越出原有效区间，按原保护结束，操作资格尚未通过。
 CPU公共手部到位证据也只覆盖相应指令、反馈与目标核验，不代表物体抓握。</p>
 </div></div>
@@ -1682,7 +1728,7 @@ CPU公共手部到位证据也只覆盖相应指令、反馈与目标核验，�
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-22 22:32</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-24 15:57</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -1690,10 +1736,12 @@ title: 仿真系统 · 设计与运行原理
 subtitle: 原生Isaac与联合仿真 · 统一设备接口、时序与验证
 lang: zh
 doc_id: simulation
-implementation: 409c0f30733ec6f1
+implementation: ab872793e6dff895
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
+
+[Newton与UE实时转运录像](simulation-newton-recordings.html) · [环境下载与启动](simulation-newton-usage.html)
 
 [运动响应专题：设计、预测与粗导航实测](navigation-response-model.html) · [专题实验表](navigation-response-experiments.html) · [专题三窗口录像](navigation-response-recordings.html)
 
@@ -1701,34 +1749,55 @@ implementation: 409c0f30733ec6f1
 
 [联合仿真：横穿避障到位、三窗口录像与脱手反例](simulation-experiments.html)
 
-## A 仿真器与机器人软件分开
+## A Newton与UE采用单向状态显示
 
-机器人应用保留任务、SLAM、NeuPAN、操作和AMO。
-仿真器提供设备反馈，接收设备指令。
-它替代物理设备环境，不替代应用算法。
+机器人应用拥有任务、NeuPAN、操作和AMO。
+Newton/MJWarp拥有G1动力学与载荷状态。
+UE消费状态快照，只负责显示。
 
 ```flow TB
-系统应用 -&gt; 机器人应用: 任务与能力请求
-机器人应用 -&gt; 统一设备桥PB: 关节和手部指令
-统一设备桥PB -&gt; MuJoCo: 经过校验的控制
-MuJoCo -&gt; 世界快照: 本体、关节、接触和IMU
-世界快照 -&gt; IR-SIM: 同拍位姿与动态物体
-世界快照 -&gt; Blender: 机器人姿态与场景状态
-IR-SIM -&gt; 统一设备桥PB: 原生二维激光
-世界快照 -&gt; 统一设备桥PB: 实测设备反馈
-统一设备桥PB --&gt; 机器人应用: ROS设备观测与源时间
+系统应用 -&gt; 机器人应用: 真实任务与能力请求
+机器人应用 -&gt; 统一设备桥: 关节目标与控制模式
+统一设备桥 -&gt; Newton与MJWarp: 有效设备指令
+Newton与MJWarp -&gt; 统一设备桥: 关节、IMU与机构反馈
+统一设备桥 -&gt; 机器人应用: 同源设备观测
+Newton与MJWarp -&gt; 只读显示映射: 带身份与tick的最新快照
+只读显示映射 -&gt; UE工厂: FACRI关节与工装世界姿态
+UE工厂 -&gt; 实时任务网页: 场景画面
+系统应用 -&gt; 实时任务网页: 计划与执行事件
 ```
 
-Blender在当前二维配置中用于观察，RGB-D关闭。
-三维兼容配置另有Blender RGB-D实现。
-二维链不能因此被描述为已经提供全部视觉输入。
+动力学机器人为宇树G1。
+显示机器人为FACRI，两者不是同一动力学模型。
+显示映射复用Pinocchio与SciPy有界求解。
+它固定根与腰，遵循FACRI原URDF关节范围。
+末端朝向为软目标，不保证逐关节同构。
+映射结果不返回控制链。
 
-[运行配置与场景命令](simulation-usage.html) · [RTF与硬件收益](simulation-performance.html) · [源码仓库（需权限）](https://github.com/gao377/agentic-embodied-system-sim)
+工厂转运配置使用明确标注的SIM特权输入。
+物体位姿、定位与几何观测由仿真提供。
+该配置不运行SLAM、视觉感知、RGBD或激光采样。
+因此，它不能作为真实传感定位与识别的验收。
 
-## B 一个世界，多个后端
+理想双手约束在实际末端到位后建立。
+放置时解除约束，保留物体速度并由重力落下。
+真实载荷惯量和环境支撑仍由物理后端计算。
+这验证任务与运控，不证明真实手指接触抓稳。
+
+显示流采用最新帧与独立发送线程。
+接收器核对run、epoch、tick、布局与有限数值。
+UE不发控制、不等待物理确认、不承担碰撞计算。
+网页任务图使用原system与robot的真实事件。
+它不以预录视频替代LIVE画面。
+
+[Newton与UE快速启动](simulation-newton-usage.html) · [其他运行配置](simulation-usage.html) · [实验结果](simulation-experiments.html) · [RTF与硬件收益](simulation-performance.html)
+
+## B 动力学与显示后端按配置选择
 
 | 组件 | 拥有的状态或计算 | 不承担的职责 |
 | --- | --- | --- |
+| Newton 1.6.1 / MJWarp 3.12.0 | 当前G1、载荷、关节、支撑接触与原生IMU | 导航、操作规划与渲染 |
+| UE 5.8.4 | 当前工厂材质、FACRI与工装显示 | 机器人控制、动力学与接触判定 |
 | MuJoCo 3.2.3 | 自由基座、关节、载荷、接触、IMU | SLAM、路径规划 |
 | IR-SIM 2.12.0 | 二维障碍、原生Lidar2D采样 | 再次积分G1运动 |
 | Blender 4.2.0 | 场景材质、观察渲染；可选RGB-D | 动力学与导航决策 |
@@ -1753,7 +1822,9 @@ MuJoCo薄适配沿用现有物理与设备实现。
 Lab distribution为27.0.4、Python为3.12.12；采用独立原生版本锁。
 
 原生场景采用factory.user.isaac61.v1工厂USD与独立SAL组合层。
-源资产不改写；组合层由所选profile创建唯一PhysX场景，并适配碰撞表示。
+源资产不改写。
+PhysX配置创建单一PhysX场景。
+Newton配置创建单一Newton/MJWarp动力学模型。
 三块规则地面使用同尺寸、位姿和材质的原生Cube碰撞体。
 旧warehouse实验保留原场景身份，不与新工厂数据混合。
 
@@ -1766,7 +1837,7 @@ Lab发行包元数据为17.0.2，应用仍使用Python 3.10。
 SAL代码层可复用已有镜像；原生设备与任务资格单独核验。
 所选Isaac部署未取得要求的资格时会明确拒绝，不回退到MuJoCo。
 
-## C 时序与两种控制模式
+## C 设备时序与历史联合配置
 
 ```sequence
 应用 -&gt; 设备桥: 最近有效关节指令
@@ -1799,11 +1870,17 @@ PASSIVE、过期、epoch、限位、APP退出以及原策略源周期检查继�
 
 ## D 频率、坐标与扫描语义
 
+当前Newton＋UE转运配置关闭相机和激光。
+下表保留各显式配置的频率语义。
+
 | 数据或过程 | 配置频率 | 语义 |
 | --- | --- | --- |
 | 物理与原生IMU | 250Hz | 4ms物理步；惯性测量在模型site生成 |
 | AMO | 50Hz | 位于原机器人应用 |
 | ROS关节、IMU、时钟 | 50Hz | 保留采样源时间 |
+| Newton显示状态发布 | 31.25Hz仿真时间 | 当前每8个物理tick发布；可丢弃过期显示帧 |
+| UE显示 | 上限30FPS墙钟 | 使用同源快照，无控制反馈 |
+| 网页图像 | 10Hz墙钟目标 | 捕获实际UE窗口，不是相机数据 |
 | IR-SIM二维扫描 | 10Hz | 虚拟水平scan2d_link，瞬时扫描 |
 | 可选Blender RGB-D | 10Hz目标 | 仅已接通配置启用；成对图像与标定 |
 | 原生Isaac工厂RGB-D设备发布 | 2Hz | 每500ms选择一对同源图像；当前原生渲染仍可能随GUI运行 |
@@ -2381,11 +2458,11 @@ apps/collaboration_platform/hybridctl serve \
 这些是只读回放耗时，不计入物理RTF；首次打开应等待缓存建立。
 网页开发沿用原热更新入口，算法开发通过公共消息供数，不修改网页来补造状态。
 
-当前原生LIO装配未资格化，显式`--lio`返回`NATIVE_LIO_NOT_QUALIFIED`。
-地图、TARE/PCT/NeuPAN在本配置中显示无数据。
-工厂显示位姿只供观察，不进入定位、导航或任务成功判断。
+上述历史站立对照不包含LIO，显式`--lio`返回`NATIVE_LIO_NOT_QUALIFIED`。
+上述历史站立配置不运行地图、TARE、PCT或NeuPAN。
+UE中的FACRI显示映射只供观察，不进入定位、导航或任务成功判断。
 
-Newton当前验证范围为SIM零速站立、设备与展示。
+上述GUI后端对照的Newton验证范围为SIM零速站立、设备与展示。
 手部动作回零曾出现反馈越出原有效区间，按原保护结束，操作资格尚未通过。
 CPU公共手部到位证据也只覆盖相应指令、反馈与目标核验，不代表物体抓握。
 </textarea>

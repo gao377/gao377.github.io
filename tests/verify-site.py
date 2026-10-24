@@ -48,8 +48,8 @@ for row in assets:
 
 for name in sorted(expected | {row['file'] for row in assets}):
     path = root/name
-    if path.suffix == '.mp4':
-        # Binary recordings are covered by the asset SHA256 check above.
+    if path.suffix in ('.mp4', '.png'):
+        # Binary recordings/plots are covered by the asset SHA256 check above.
         assert path.stat().st_size < 100 * 1024 * 1024, name
         continue
     content = path.read_text()
