@@ -356,8 +356,8 @@
     },
     {
       "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "4e4c11575a6ff50af2047232beb84da753411634a775ab312cd62cd42629afe9",
-      "implementation_sha256": "c18cf45a7dfeab55fd83281ac836bc9c8f45f68f1cd444a2e385317790282380"
+      "source_sha256": "295dc23d2450cff203d9b51e27698db41b833fa598ae4ca244085c19a4709e0a",
+      "implementation_sha256": "08c1ab451f7363756a231bead32e0135c2d495a70dc1e7d37f75dca5531e7ec8"
     },
     {
       "file": "module-robot-perception_runtime.html",
@@ -488,8 +488,8 @@
     },
     {
       "file": "navigation-response-model.html",
-      "source_sha256": "f9eb7846a3823006510d8f0e3f5c6e8d22e8c7212b02ae20e0476de3b882ac01",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
+      "source_sha256": "54479e2752f6b290420b42411b892ae038fe948ee09fa54d69104ce72cef2993",
+      "implementation_sha256": "08c1ab451f7363756a231bead32e0135c2d495a70dc1e7d37f75dca5531e7ec8"
     },
     {
       "file": "navigation-response-recordings.html",
