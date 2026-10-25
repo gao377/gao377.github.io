@@ -377,7 +377,8 @@
     },
     {
       "file": "module-robot-state_estimation.html",
-      "source_sha256": "90b620e7226b74eb3c43dba5db964443e420d3c0e1eae97b91f5e7fe1a1c1812"
+      "source_sha256": "82eb52b1cd79eb354a1acc8dde11947bc1889c10c61e6d5654678b46a5e299c1",
+      "implementation_sha256": "70d79570cc44ef4b30cb35fae341dde9f04544db00403a4de01de1ebb75aac26"
     },
     {
       "file": "module-system-candidate_builder.html",
