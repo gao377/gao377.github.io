@@ -71,7 +71,8 @@
     },
     {
       "file": "algo-cartesian.html",
-      "source_sha256": "dc2e2b8149570a47aad03c7b85149c16262558a8e82f0bb3d58afbd66608bc21"
+      "source_sha256": "fd2c9b5491aa1da296918d7177a4b2370045c3696d595ac32bb5835a37d2da46",
+      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
     },
     {
       "file": "algo-collision.html",
@@ -345,8 +346,8 @@
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "cda33f719c951ffd7fc115d0b263fb0a91e9853884b8a53dec235898eefa9143",
-      "implementation_sha256": "bdeb947a15cd632dbdd87bfe878ef4185b79baddebe01fd053d91186e4ab294d"
+      "source_sha256": "b3f019d04973ab1e69e3a9614679b26b513bab09b3944598dc6637500e52e1a6",
+      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
     },
     {
       "file": "module-robot-motion_coordinator.html",
@@ -359,8 +360,8 @@
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "71d7c04abca50ee1515e7a9360707127b39a8624fb55ea58d800424a19cc49e9",
-      "implementation_sha256": "41845fe66258f4dca7cafc4bbf39aa8abaed2d5f0920c1ea8c1e09954c3c3d13"
+      "source_sha256": "eca243709a772b8d8f94a380fb5ee8fdd98565a4f8008348a19473e6ddd34d65",
+      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
     },
     {
       "file": "module-robot-protection_runtime.html",
@@ -446,8 +447,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "9108ea33c4bc8100493873ac946260578c081cecc936834f9cf81088376c33ac",
-      "implementation_sha256": "b4977dcc5d59c4e4c81bca897229f0cf219c170fb2ad678970eccdeed79e2c4b"
+      "source_sha256": "b208d65bbed8f5cb51bfb5f53b09c67cc9da8ad307a0d87478bc3d383272d7f2",
+      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
     },
     {
       "file": "simulation-usage.html",
@@ -531,8 +532,8 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "d3f390376421c2803609b7b7e773b75317552a1eef801a4458a72f44c0ff3147",
-      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
+      "source_sha256": "f51d36dfd66cb6fb961a9bc1fa7a0f3ef38c88d9223ac0c53bba99f69f68c95f",
+      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
     },
     {
       "file": "interaction-integration.html",
