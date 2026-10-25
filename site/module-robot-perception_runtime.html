@@ -698,7 +698,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>局部视觉与场景 · perception_runtime</h1><p class="am-sub">SW-13 / RB-01：以采样时刻的 RGB-D 生成本体局部观测</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-perception_runtime</span><span><b>implementation</b>2fbaec96d024d695</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>局部视觉与场景 · perception_runtime</h1><p class="am-sub">SW-13 / RB-01：以采样时刻的 RGB-D 生成本体局部观测</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-perception_runtime</span><span><b>implementation</b>8bb2ed3549ff682f</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="diagrams/perception-runtime.html">内部可编辑多页图</a> · <a href="diagrams/perception-runtime.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
@@ -880,6 +880,9 @@ RGB 与 mask 通过标准库 <code>array(&#39;B&#39;)</code> 写入 ROS Image �
 </div>
 <figure class="am-diagram am-flow"><svg viewBox="0 0 155 657" width="155" height="657" role="img" aria-label="流程图：对齐RGBD、YOLO分割、FoundationPose、相机坐标位姿、本体局部观测、最新观测缓存、操作模块" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am3-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M77.4,49 L77.4,65 Q77.4,81 77.4,97 L77.4,113" marker-end="url(#am3-arrow)"/><g class="am-edge-label"><rect x="40.5" y="72" width="73.7" height="18" rx="3"/><text x="77.4" y="81" text-anchor="middle" dominant-baseline="central">单实例mask</text></g></g><g data-step="1"><path class="am-edge" d="M77.4,148 L77.4,164 Q77.4,180 77.4,196 L77.4,212" marker-end="url(#am3-arrow)"/><g class="am-edge-label"><rect x="43.7" y="171" width="67.5" height="18" rx="3"/><text x="77.4" y="180" text-anchor="middle" dominant-baseline="central">注册或跟踪</text></g></g><g data-step="2"><path class="am-edge" d="M77.4,247 L77.4,263 Q77.4,279 77.4,295 L77.4,311" marker-end="url(#am3-arrow)"/><g class="am-edge-label"><rect x="36.6" y="270" width="81.5" height="18" rx="3"/><text x="77.4" y="279" text-anchor="middle" dominant-baseline="central">完整CAD姿态</text></g></g><g data-step="3"><path class="am-edge" d="M77.4,346 L77.4,362 Q77.4,378 77.4,394 L77.4,410" marker-end="url(#am3-arrow)"/><g class="am-edge-label"><rect x="47.3" y="369" width="60.1" height="18" rx="3"/><text x="77.4" y="378" text-anchor="middle" dominant-baseline="central">源时间TF</text></g></g><g data-step="4"><path class="am-edge" d="M77.4,445 L77.4,461 Q77.4,477 77.4,493 L77.4,509" marker-end="url(#am3-arrow)"/><g class="am-edge-label"><rect x="29.3" y="468" width="96.3" height="18" rx="3"/><text x="77.4" y="477" text-anchor="middle" dominant-baseline="central">原stamp与origin</text></g></g><g data-step="5"><path class="am-edge" d="M77.4,544 L77.4,560 Q77.4,576 77.4,592 L77.4,608" marker-end="url(#am3-arrow)"/><g class="am-edge-label"><rect x="21.1" y="567" width="112.6" height="18" rx="3"/><text x="77.4" y="576" text-anchor="middle" dominant-baseline="central">ObjectObservation</text></g></g></g><g><g class="am-node am-node--rect" data-key="对齐RGBD" data-step="0"><rect class="am-node-shape" x="30.4" y="14" width="94" height="35" rx="3"/><text x="77.4" y="31.5" text-anchor="middle" dominant-baseline="central">对齐RGBD</text></g><g class="am-node am-node--rect" data-key="YOLO分割" data-step="0"><rect class="am-node-shape" x="30.4" y="113" width="94" height="35" rx="3"/><text x="77.4" y="130.5" text-anchor="middle" dominant-baseline="central">YOLO分割</text></g><g class="am-node am-node--rect" data-key="FoundationPose" data-step="1"><rect class="am-node-shape" x="14" y="212" width="126.8" height="35" rx="3"/><text x="77.4" y="229.5" text-anchor="middle" dominant-baseline="central">FoundationPose</text></g><g class="am-node am-node--rect" data-key="相机坐标位姿" data-step="2"><rect class="am-node-shape" x="24.4" y="311" width="106" height="35" rx="3"/><text x="77.4" y="328.5" text-anchor="middle" dominant-baseline="central">相机坐标位姿</text></g><g class="am-node am-node--rect" data-key="本体局部观测" data-step="3"><rect class="am-node-shape" x="24.4" y="410" width="106" height="35" rx="3"/><text x="77.4" y="427.5" text-anchor="middle" dominant-baseline="central">本体局部观测</text></g><g class="am-node am-node--rect" data-key="最新观测缓存" data-step="4"><rect class="am-node-shape" x="24.4" y="509" width="106" height="35" rx="3"/><text x="77.4" y="526.5" text-anchor="middle" dominant-baseline="central">最新观测缓存</text></g><g class="am-node am-node--rect" data-key="操作模块" data-step="5"><rect class="am-node-shape" x="37.4" y="608" width="80" height="35" rx="3"/><text x="77.4" y="625.5" text-anchor="middle" dominant-baseline="central">操作模块</text></g></g></svg></figure>
 <div class="am-md"><p>原生库构建、CPU契约检查及10帧GPU回放已完成。统一开发入口<code>dev_module.py perception replay</code>委托现有原生程序，记录模型、输入与源码身份；不启动机器人、SLAM或操作。1次注册、9次跟踪正常输出，只证明录制输入上的推理；在线相机时效和位姿绝对精度仍需独立验证。默认场景后端未切换。</p>
+<p>独立在线入口<code>python -m robot_app.modules.perception_runtime.online</code>复用同一观察器、原生后端与最新观测缓存；本体状态、IMU、相机和TF均由外部模块提供，不启动完整RobotApp。
+2Hz帧间隔不再被误认为0.2秒结果时效超限；结果仍按原stamp检查新鲜度。时钟回退、对象或几何身份变化、原生跟踪失败分别处理。
+记录分开统计原生处理、原生成功与公共有效观测。GA静态相机已验证实际RGB-D、IMU和关节发布；合成工位的目标检测仍无有效结果，不能以数据链连通宣称视觉精度或抓取可用。</p>
 </div></div>
 </section>
 </div>
@@ -900,7 +903,7 @@ RGB 与 mask 通过标准库 <code>array(&#39;B&#39;)</code> 写入 ROS Image �
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-25 15:30</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-25 15:57</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -908,7 +911,7 @@ title: 局部视觉与场景 · perception_runtime
 subtitle: SW-13 / RB-01：以采样时刻的 RGB-D 生成本体局部观测
 lang: zh
 doc_id: module-robot-perception_runtime
-implementation: 2fbaec96d024d695
+implementation: 8bb2ed3549ff682f
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1040,6 +1043,10 @@ FoundationPose -&gt; 相机坐标位姿: 完整CAD姿态
 ```
 
 原生库构建、CPU契约检查及10帧GPU回放已完成。统一开发入口`dev_module.py perception replay`委托现有原生程序，记录模型、输入与源码身份；不启动机器人、SLAM或操作。1次注册、9次跟踪正常输出，只证明录制输入上的推理；在线相机时效和位姿绝对精度仍需独立验证。默认场景后端未切换。
+
+独立在线入口`python -m robot_app.modules.perception_runtime.online`复用同一观察器、原生后端与最新观测缓存；本体状态、IMU、相机和TF均由外部模块提供，不启动完整RobotApp。
+2Hz帧间隔不再被误认为0.2秒结果时效超限；结果仍按原stamp检查新鲜度。时钟回退、对象或几何身份变化、原生跟踪失败分别处理。
+记录分开统计原生处理、原生成功与公共有效观测。GA静态相机已验证实际RGB-D、IMU和关节发布；合成工位的目标检测仍无有效结果，不能以数据链连通宣称视觉精度或抓取可用。
 </textarea>
 <script>
 (() => {
