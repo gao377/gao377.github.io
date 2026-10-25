@@ -358,8 +358,8 @@
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "3930d7dc70cecbe389ba1a8c70b6b32c522f62e6094eedd113aabea27e449de6",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "source_sha256": "71d7c04abca50ee1515e7a9360707127b39a8624fb55ea58d800424a19cc49e9",
+      "implementation_sha256": "41845fe66258f4dca7cafc4bbf39aa8abaed2d5f0920c1ea8c1e09954c3c3d13"
     },
     {
       "file": "module-robot-protection_runtime.html",
@@ -367,8 +367,8 @@
     },
     {
       "file": "module-robot-sensor_adapters.html",
-      "source_sha256": "c7f7e5bafbad04a8b2cc13303c1d8995b1cb13f32a5a447a975e1d1ccbaaa69e",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "77ace98b6c7fad22a9c7dc77878c6162db345abf671b9ca2c567b647696b5501",
+      "implementation_sha256": "41845fe66258f4dca7cafc4bbf39aa8abaed2d5f0920c1ea8c1e09954c3c3d13"
     },
     {
       "file": "module-robot-spatial_runtime.html",
