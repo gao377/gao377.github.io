@@ -375,8 +375,8 @@
     },
     {
       "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "545d808b9eba1c91ab58e8d2e9c233cdabde7bcb97bf012fe60358a65f529955",
-      "implementation_sha256": "8bb2ed3549ff682f9a4f2f916fd4907468c5d77270b4ff23e510a73e3eea4804"
+      "source_sha256": "a07808e5b57291177a29dfaf62c6a001ad4e83f72229147e30f0d668a2c3a077",
+      "implementation_sha256": "db6a733b419dc1deed2d6c06c244e72b8f55bfefdde79161c3bfb7cb7cdbd8c2"
     },
     {
       "file": "module-robot-state_estimation.html",
