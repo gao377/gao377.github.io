@@ -366,7 +366,8 @@
     },
     {
       "file": "module-robot-protection_runtime.html",
-      "source_sha256": "4f461f7a426eedf3ab03a08e5adb9c1601acc0299ded2f79fb02bcb9a3efceab"
+      "source_sha256": "af8e143a255ba7698fd5424b9a62d23a3b4a0b68519c1b4ede10c3ec9674327b",
+      "implementation_sha256": "24e449839bdd59c446b559b6e447ddf5c3f83fe10fb9df7ac20f537d09c56e1c"
     },
     {
       "file": "module-robot-sensor_adapters.html",
