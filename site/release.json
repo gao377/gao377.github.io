@@ -323,8 +323,8 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "2b7f22c3419e5cfc3a058da7e870ca0237b4027e17d64193dc34e211fb17e4e1",
-      "implementation_sha256": "b4977dcc5d59c4e4c81bca897229f0cf219c170fb2ad678970eccdeed79e2c4b"
+      "source_sha256": "717f40119adbe687a51c4841e6df95b7287e937f08ba819c12e5b2ca3793a7ba",
+      "implementation_sha256": "6ed7e7769520c4743368a9dc85e2fefc46c7056704058b726fbfe883994431fe"
     },
     {
       "file": "module-robot-config_client.html",
@@ -532,8 +532,8 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "7ca0ca912f1cc15a91bde01e3d47806cde39b3b42c21c77cbef0bf34ee642243",
-      "implementation_sha256": "d23a4b19638f1d7f96d32940bcd0fcca9c2afcb8acb91b8d6d86ae1e2ed22642"
+      "source_sha256": "803d2afbfe67dd5727a804c65523d412963b65e640f845d11a69ddd11468e832",
+      "implementation_sha256": "6ed7e7769520c4743368a9dc85e2fefc46c7056704058b726fbfe883994431fe"
     },
     {
       "file": "interaction-integration.html",
