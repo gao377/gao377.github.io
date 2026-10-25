@@ -154,8 +154,8 @@
     },
     {
       "file": "architecture.html",
-      "source_sha256": "c4c1c058aaee4b51278595919cb7d9adaf933732082ea6cf0384758d3f369c7e",
-      "implementation_sha256": "610ff8e5fbe2673a38f1c4e38a49deaccda4536f65c4fd1032f42c32980c1e32"
+      "source_sha256": "5897de82b53f6cfcaf1f9d3de4c95114a14077d307570d7284944a11ba4530d7",
+      "implementation_sha256": "e70fb1be3520d8d2fab01c36f46cf543e996a74c1b44437ee7cd38616cdcbec5"
     },
     {
       "file": "authoring.html",
@@ -328,7 +328,8 @@
     },
     {
       "file": "module-robot-config_client.html",
-      "source_sha256": "1b5ca3d9ea62ed9b4666e40f7b82918269d80f0f45583dba8da557be7ceb6093"
+      "source_sha256": "2325ce9eb0fe2e54df0354814ff5a91836e06d68a3a6bcdecdcfed33037facab",
+      "implementation_sha256": "e70fb1be3520d8d2fab01c36f46cf543e996a74c1b44437ee7cd38616cdcbec5"
     },
     {
       "file": "module-robot-evidence_buffer.html",
