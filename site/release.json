@@ -389,8 +389,8 @@
     },
     {
       "file": "module-system-capability_registry.html",
-      "source_sha256": "831ccb1c5a1e4c667c187ddbbc3f37891fbcc9fd7842a792066494bef6550aed",
-      "implementation_sha256": "0cca08c28d36cadd971e25dfc90f8c42b03e863c15a3b9436301248adfbeb6d1"
+      "source_sha256": "c87cc60af2d6e24409b4e8cc45944a419a4172e78cbb88207219b4af601f82fe",
+      "implementation_sha256": "fc066ce4b547e37228c4bc3e431cc31fa15233ebba2571d10b68b73a23058750"
     },
     {
       "file": "module-system-config_manager.html",
@@ -442,8 +442,8 @@
     },
     {
       "file": "runtime-internals.html",
-      "source_sha256": "d4ec5fbbfe0e905812799d7074e6102fbdf93c1059a38d1d22a1114ee1473611",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "c8ddb6947f2f2e210bf8399698fb2c878a45a3addff3bc1f24c0d97c815b4291",
+      "implementation_sha256": "fc066ce4b547e37228c4bc3e431cc31fa15233ebba2571d10b68b73a23058750"
     },
     {
       "file": "scenarios.html",
