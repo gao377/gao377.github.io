@@ -208,8 +208,8 @@
     },
     {
       "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "6c9deaaeeb361e8ddd6e7b420dee88e3d43894be0b4a0e5ebc05047c649f80ea",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
+      "source_sha256": "bea8ed6eb30eb1e0510d84970d7215b6d35dfc6d141b452391bb73e4e5802209",
+      "implementation_sha256": "2397b809dc3d0535d8d886efc10187b1e221a71c7ce09db9dc27561ea791b5a6"
     },
     {
       "file": "files-robot-motion_coordinator.html",
@@ -347,8 +347,8 @@
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "b3f019d04973ab1e69e3a9614679b26b513bab09b3944598dc6637500e52e1a6",
-      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
+      "source_sha256": "822254d02e0b038bed1bdb75312a3452cd440769092c69800e64424aa49f67ff",
+      "implementation_sha256": "2397b809dc3d0535d8d886efc10187b1e221a71c7ce09db9dc27561ea791b5a6"
     },
     {
       "file": "module-robot-motion_coordinator.html",
