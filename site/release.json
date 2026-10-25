@@ -323,8 +323,8 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "717f40119adbe687a51c4841e6df95b7287e937f08ba819c12e5b2ca3793a7ba",
-      "implementation_sha256": "6ed7e7769520c4743368a9dc85e2fefc46c7056704058b726fbfe883994431fe"
+      "source_sha256": "6f099ed014fc510bd6bb92fd4c29f32257bbadb2fc11c0b05f6664acd0282b88",
+      "implementation_sha256": "2fbaec96d024d695b7b481f8bfb28fffcf3a6587392c16238e444420d82d292e"
     },
     {
       "file": "module-robot-config_client.html",
@@ -361,7 +361,7 @@
     {
       "file": "module-robot-perception_runtime.html",
       "source_sha256": "eca243709a772b8d8f94a380fb5ee8fdd98565a4f8008348a19473e6ddd34d65",
-      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
+      "implementation_sha256": "2fbaec96d024d695b7b481f8bfb28fffcf3a6587392c16238e444420d82d292e"
     },
     {
       "file": "module-robot-protection_runtime.html",
@@ -375,7 +375,7 @@
     {
       "file": "module-robot-spatial_runtime.html",
       "source_sha256": "e5fcdd48dc538b3119093a3decb8709e0bc49722d31b505408132731f2e99a72",
-      "implementation_sha256": "c18cf45a7dfeab55fd83281ac836bc9c8f45f68f1cd444a2e385317790282380"
+      "implementation_sha256": "2fbaec96d024d695b7b481f8bfb28fffcf3a6587392c16238e444420d82d292e"
     },
     {
       "file": "module-robot-state_estimation.html",
@@ -447,8 +447,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "21e15b0bf7b27cc54b59327a27820b3988792f64ed14c7ec2908a19a283c1346",
-      "implementation_sha256": "9ea59ec8919035a45ab92c79df3e957f3f80adf97a39cad064a763a8893ad5d3"
+      "source_sha256": "ca4025018e571f68ddb123c86ac4edaeab5c3ecfdae9e81678125519319b736d",
+      "implementation_sha256": "2fbaec96d024d695b7b481f8bfb28fffcf3a6587392c16238e444420d82d292e"
     },
     {
       "file": "simulation-usage.html",
@@ -532,8 +532,8 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "5772a725891f39b40ab2418ffc838cbee8057c7999b79ce49011d63e6a74a150",
-      "implementation_sha256": "9ea59ec8919035a45ab92c79df3e957f3f80adf97a39cad064a763a8893ad5d3"
+      "source_sha256": "c2aa03e97b85461d25d854e5395f3ab9fea2e9cc4ae8c8a1bfb50b7a71803081",
+      "implementation_sha256": "2fbaec96d024d695b7b481f8bfb28fffcf3a6587392c16238e444420d82d292e"
     },
     {
       "file": "interaction-integration.html",

@@ -698,11 +698,11 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>本体适配与网关 · body_gateway</h1><p class="am-sub">SW-11 / RB-05：统一控制权、AMO与臂手SDK出口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-body_gateway</span><span><b>implementation</b>6ed7e7769520c474</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>本体适配与网关 · body_gateway</h1><p class="am-sub">SW-11 / RB-05：统一控制权、AMO与臂手SDK出口</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-body_gateway</span><span><b>implementation</b>2fbaec96d024d695</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 <p><a href="diagrams/body-adapter.html">内部可编辑多页图</a> · <a href="diagrams/body-adapter.drawio">draw.io图源</a> · <a href="runtime-internals.html">五模块对照</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · body_adapter 在代码中的位置</a><a href="#panel-B">B · 命令合成视图</a><a href="#panel-C">C · 四类命令与生命周期</a><a href="#panel-D">D · 一次控制周期</a><a href="#panel-E">E · 后端选择与文件映射</a><a href="#panel-F">F · 开发与验证边界</a><a href="#panel-G">G · 独立运控回放</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · body_adapter 在代码中的位置</a><a href="#panel-B">B · 命令合成视图</a><a href="#panel-C">C · 四类命令与生命周期</a><a href="#panel-D">D · 一次控制周期</a><a href="#panel-E">E · 后端选择与文件映射</a><a href="#panel-F">F · 开发与验证边界</a><a href="#panel-H">H · 独立运控回放</a><a href="#panel-G">G · 模块物理开发与数值适配范围</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>body_adapter 在代码中的位置</h2></header>
 <div class="am-panel-body"><div class="am-md"><p><strong>SW-11 → RB-05。body_adapter 是本体适配职责名称。</strong>
@@ -913,13 +913,27 @@ SIM/REAL共用业务接口；权重、标定及退出配置按部署校验。</p
 <p><a href="https://github.com/gao377/agentic-embodied-system/blob/main/src/robot_app/robot_app/modules/body_gateway/runtime.py">网关源码</a> · <a href="files-robot-body_gateway.html">文件索引</a></p>
 </div></div>
 </section>
-<section class="am-panel" id="panel-G">
-<header class="am-panel-head"><span class="am-panel-id">G</span><h2>独立运控回放</h2></header>
+<section class="am-panel" id="panel-H">
+<header class="am-panel-head"><span class="am-panel-id">H</span><h2>独立运控回放</h2></header>
 <div class="am-panel-body"><div class="am-md"><p>M20计算适配器复用原57维观测编码、16维输出以及静止分支，经共同PolicyRunner输出12腿位置和4轮速度。模型权重按哈希校验，推理不创建SDK或发布器。<code>body replay</code>入口记录输入身份、命名参考与耗时；其完成不表示物理运动通过。</p>
 <p>M20的<code>M20DeviceSession</code>复用共同<code>CommandMux</code>后写入SDK消息。<code>snapshot()</code>读取命名关节、原始IMU坐标帧和epoch；<code>publish()</code>核对限位、反馈时效、样本时间与递增序号。<code>reset()</code>清除缓存并废弃旧回调。<code>close()</code>释放端点，不代替硬件停止协议。</p>
 <p><code>M20RosTransport</code>使用官方<code>drdds</code>关节与IMU消息。节点、执行器和跨进程启动隔离由应用负责。会话只允许显式隔离的SAL运动，HAL运动拒绝；接触力保持未知，不推断IMU外参。原生消息序列化通过不等于实际DDS连接通过。</p>
 <p>该会话尚未登记为完整Robot后端。策略调度与控制超时处理、IMU到本体坐标转换、实际SAL测量发布仍需接线。源码入口与构建命令见<a href="https://github.com/gao377/agentic-embodied-system/blob/refactor/robot-app-model-driven/docs/development/m20-driver.md">M20设备开发指南</a>。</p>
 <p><a href="https://github.com/gao377/agentic-embodied-system/blob/refactor/robot-app-model-driven/docs/development/locomotion.md">运控开发指南</a> · <a href="module-ownership.html">工具与目录所有权</a>。物理响应仍需匹配真实训练模型、驱动、控制频率与接触条件。</p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>模块物理开发与数值适配范围</h2></header>
+<div class="am-panel-body"><div class="am-md"><p>统一入口<code>dev-locomotion-response</code>默认委托原生GA SAL运行G1自由根AMO短段，不启动导航、SLAM、相机或激光。
+无GUI的2秒样本完成500步与101条策略命令；500次实发应用唯一关联，核心RTF约0.869。
+完整4ms循环实际均值4.59ms、P95 7.98ms、最大16.44ms，仅对应这次短段。
+带GUI/录屏的独立2秒复验也完成500步及101条命令，核心RTF约0.691；运行期渲染最大55.14ms。
+原生SAL在SDK接管前等待官方MDL材质库就绪，该准备没有推进物理；原750ms状态时效保护保持。</p>
+<p>六向响应中右移未通过，不能由短段站立推断全部运动域已合格。</p>
+<p>M20已具备实际Robot服务装配、源时钟、原生drdds编码与ONNX计算链；SAL必须显式提供停止所有者及body-frame IMU约定，尚不据此注册可运动整机。
+G2计算适配复用官方来源的ServoCore/GeneralServo/OptimalServo，以命名四转向位置和四轮速度产出MotionReference；原配置与模型限位冲突会拒绝。
+这些CPU检查、离线策略和设备物理是不同资格。FACRI冻结站立包仍只覆盖零速度域；未提供相应资源时不借用其他本体的算法参数或工具标定。</p>
+<p>完整启动前提和结果字段见源码仓库<code>docs/development/locomotion.md</code>、<code>m20-driver.md</code>及<code>g2-chassis.md</code>。</p>
 </div></div>
 </section>
 </div>
@@ -940,7 +954,7 @@ SIM/REAL共用业务接口；权重、标定及退出配置按部署校验。</p
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-25 14:43</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-25 15:30</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -948,7 +962,7 @@ title: 本体适配与网关 · body_gateway
 subtitle: SW-11 / RB-05：统一控制权、AMO与臂手SDK出口
 lang: zh
 doc_id: module-robot-body_gateway
-implementation: 6ed7e7769520c474
+implementation: 2fbaec96d024d695
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -1127,6 +1141,23 @@ M20的`M20DeviceSession`复用共同`CommandMux`后写入SDK消息。`snapshot()
 该会话尚未登记为完整Robot后端。策略调度与控制超时处理、IMU到本体坐标转换、实际SAL测量发布仍需接线。源码入口与构建命令见[M20设备开发指南](https://github.com/gao377/agentic-embodied-system/blob/refactor/robot-app-model-driven/docs/development/m20-driver.md)。
 
 [运控开发指南](https://github.com/gao377/agentic-embodied-system/blob/refactor/robot-app-model-driven/docs/development/locomotion.md) · [工具与目录所有权](module-ownership.html)。物理响应仍需匹配真实训练模型、驱动、控制频率与接触条件。
+
+
+## G 模块物理开发与数值适配范围
+
+统一入口`dev-locomotion-response`默认委托原生GA SAL运行G1自由根AMO短段，不启动导航、SLAM、相机或激光。
+无GUI的2秒样本完成500步与101条策略命令；500次实发应用唯一关联，核心RTF约0.869。
+完整4ms循环实际均值4.59ms、P95 7.98ms、最大16.44ms，仅对应这次短段。
+带GUI/录屏的独立2秒复验也完成500步及101条命令，核心RTF约0.691；运行期渲染最大55.14ms。
+原生SAL在SDK接管前等待官方MDL材质库就绪，该准备没有推进物理；原750ms状态时效保护保持。
+
+六向响应中右移未通过，不能由短段站立推断全部运动域已合格。
+
+M20已具备实际Robot服务装配、源时钟、原生drdds编码与ONNX计算链；SAL必须显式提供停止所有者及body-frame IMU约定，尚不据此注册可运动整机。
+G2计算适配复用官方来源的ServoCore/GeneralServo/OptimalServo，以命名四转向位置和四轮速度产出MotionReference；原配置与模型限位冲突会拒绝。
+这些CPU检查、离线策略和设备物理是不同资格。FACRI冻结站立包仍只覆盖零速度域；未提供相应资源时不借用其他本体的算法参数或工具标定。
+
+完整启动前提和结果字段见源码仓库`docs/development/locomotion.md`、`m20-driver.md`及`g2-chassis.md`。
 </textarea>
 <script>
 (() => {
