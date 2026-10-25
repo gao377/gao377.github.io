@@ -154,8 +154,8 @@
     },
     {
       "file": "architecture.html",
-      "source_sha256": "934e049da1251025a38d2437fb80b0321bb9db78d80507246dce357be963fa53",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "c4c1c058aaee4b51278595919cb7d9adaf933732082ea6cf0384758d3f369c7e",
+      "implementation_sha256": "610ff8e5fbe2673a38f1c4e38a49deaccda4536f65c4fd1032f42c32980c1e32"
     },
     {
       "file": "authoring.html",
@@ -542,8 +542,8 @@
     },
     {
       "file": "module-ownership.html",
-      "source_sha256": "d3c4286b7bde4abc4bb8691db6fc040b63ee4342cc274500e5924a585580ee37",
-      "implementation_sha256": "96c874447576c5f2dc6e663e9308ba9f94d659d5f7b132e43df0db8def904cee"
+      "source_sha256": "20e766c7cf3d307709333ab76e44be3cce0954e41b61d658cffb583bb9cd20af",
+      "implementation_sha256": "610ff8e5fbe2673a38f1c4e38a49deaccda4536f65c4fd1032f42c32980c1e32"
     },
     {
       "file": "workpiece-perception.html",
