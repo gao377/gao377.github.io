@@ -323,7 +323,7 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "8264b888bb82c3b9f87a4368916d05c079d88eab09e696295ca474893ab88188",
+      "source_sha256": "66977494cd791d8fc5d4fe9b284d109da7531732e4cec81d452023840bed343a",
       "implementation_sha256": "8bb2ed3549ff682f9a4f2f916fd4907468c5d77270b4ff23e510a73e3eea4804"
     },
     {
@@ -360,7 +360,7 @@
     },
     {
       "file": "module-robot-perception_runtime.html",
-      "source_sha256": "39012dbd1a1cfcc17e0446935057b4f3c9de9a6077bc3fb069aebf79c6529ec0",
+      "source_sha256": "7683251bcfdd85174cbc609d1fe89e7c3a5acd84afa509273131d3bb71a394e2",
       "implementation_sha256": "8bb2ed3549ff682f9a4f2f916fd4907468c5d77270b4ff23e510a73e3eea4804"
     },
     {
