@@ -340,12 +340,13 @@
     },
     {
       "file": "module-robot-local_task_runtime.html",
-      "source_sha256": "3f245b1b2f6dd25d14d16a259db4e378b85b5ac31f7237985050c058443070fb",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "source_sha256": "36f3b1fe251e507ae62cb8737263a96ad5cbbb5407d2e5b062064c71bcfff0e7",
+      "implementation_sha256": "8929bdccc61c26bfe0dc578e60e43d7e7bf0661f5d3ee8f71fb9e70b4d8e2058"
     },
     {
       "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "6f9f2920abd02377d6e42559cd91e2525339d925a2ece7b40a0f3bd42f130e5e"
+      "source_sha256": "68c7de5c60ea7eb84f24d2f896e33d0141569e9cafae87bf5bd065750ec95ebe",
+      "implementation_sha256": "8929bdccc61c26bfe0dc578e60e43d7e7bf0661f5d3ee8f71fb9e70b4d8e2058"
     },
     {
       "file": "module-robot-motion_coordinator.html",
