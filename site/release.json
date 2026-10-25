@@ -532,8 +532,8 @@
     },
     {
       "file": "collaborative-development.html",
-      "source_sha256": "f51d36dfd66cb6fb961a9bc1fa7a0f3ef38c88d9223ac0c53bba99f69f68c95f",
-      "implementation_sha256": "775a6bf27fe8e05f1fc395a51012a3b9cdcfacd350adde43e3fd1a3b0e8223c2"
+      "source_sha256": "7ca0ca912f1cc15a91bde01e3d47806cde39b3b42c21c77cbef0bf34ee642243",
+      "implementation_sha256": "d23a4b19638f1d7f96d32940bcd0fcca9c2afcb8acb91b8d6d86ae1e2ed22642"
     },
     {
       "file": "interaction-integration.html",
