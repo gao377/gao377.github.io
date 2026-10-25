@@ -322,8 +322,8 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "1bf63bef35433df99e7bdceb45f1a1a7ff6efbe2cc8563a41657e2ec78495939",
-      "implementation_sha256": "c725d557becbe1cb806fa09fdcb51eb55d9826e89a7aad501623427f4b755a58"
+      "source_sha256": "2b7f22c3419e5cfc3a058da7e870ca0237b4027e17d64193dc34e211fb17e4e1",
+      "implementation_sha256": "b4977dcc5d59c4e4c81bca897229f0cf219c170fb2ad678970eccdeed79e2c4b"
     },
     {
       "file": "module-robot-config_client.html",
@@ -378,8 +378,8 @@
     },
     {
       "file": "module-robot-state_estimation.html",
-      "source_sha256": "82eb52b1cd79eb354a1acc8dde11947bc1889c10c61e6d5654678b46a5e299c1",
-      "implementation_sha256": "70d79570cc44ef4b30cb35fae341dde9f04544db00403a4de01de1ebb75aac26"
+      "source_sha256": "34c246bb7c869de6d475296f09956d2e03dba447629311c9c1a912c82eb9fe6c",
+      "implementation_sha256": "b4977dcc5d59c4e4c81bca897229f0cf219c170fb2ad678970eccdeed79e2c4b"
     },
     {
       "file": "module-system-candidate_builder.html",
@@ -446,8 +446,8 @@
     },
     {
       "file": "scenarios.html",
-      "source_sha256": "4987fd411cb892bfa6db135bb3f75f0c2d0cd841a5147dbd1853a10216781b3e",
-      "implementation_sha256": "409c0f30733ec6f11172ac4d07801fe6268a5983a65381335d5ba092a7b683f1"
+      "source_sha256": "9108ea33c4bc8100493873ac946260578c081cecc936834f9cf81088376c33ac",
+      "implementation_sha256": "b4977dcc5d59c4e4c81bca897229f0cf219c170fb2ad678970eccdeed79e2c4b"
     },
     {
       "file": "simulation-usage.html",

@@ -698,10 +698,10 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 <button class="am-btn" type="button" data-am="copy" data-done="已复制 ✓">复制源稿</button>
 </div>
 <main class="am-doc">
-<header class="am-head"><h1>本体状态 · state_estimation</h1><p class="am-sub">SW-14 / RB-01：实测关节、FK、时间关联与站立局部参考</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-state_estimation</span><span><b>implementation</b>70d79570cc44ef4b</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
+<header class="am-head"><h1>本体状态 · state_estimation</h1><p class="am-sub">SW-14 / RB-01：实测关节、FK、时间关联与站立局部参考</p><div class="am-head-meta"><span><b>doc_id</b>module-robot-state_estimation</span><span><b>implementation</b>b4977dcc5d59c4e4</span></div><div class="am-intro am-md"><div class="am-md"><p><a href="index.html">首页</a> · <a href="architecture.html">系统架构</a> · <a href="architecture-map.html">软件映射</a> · <a href="runtime-internals.html">运行时图册</a> · <a href="algorithms.html#panel-A">算法架构图</a> · <a href="modules.html">软件模块</a> · <a href="interfaces.html">能力接口</a> · <a href="simulation.html">仿真系统</a> · <a href="navigation-response-model.html">运动响应专题</a> · <a href="scenarios.html">场景启动</a> · <a href="experiments.html">实验结果</a> · <a href="experiment-recordings.html">成功录像</a> · <a href="authoring.html">编写规范</a></p>
 </div></div></header>
 <div class="am-doc-layout">
-<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 本体状态的责任</a><a href="#panel-B">B · 数据流与坐标</a><a href="#panel-C">C · 站立参考如何搬运目标</a><a href="#panel-D">D · 文件与算法</a><a href="#panel-E">E · 本体判稳与状态服务的关系</a><a href="#panel-F">F · 扩展约束</a></nav><div class="am-doc-body">
+<nav class="am-toc" aria-label="目录"><a href="#panel-A">A · 本体状态的责任</a><a href="#panel-B">B · 数据流与坐标</a><a href="#panel-C">C · 站立参考如何搬运目标</a><a href="#panel-D">D · 文件与算法</a><a href="#panel-E">E · 本体判稳与状态服务的关系</a><a href="#panel-F">F · 扩展约束</a><a href="#panel-G">G · 独立状态开发</a></nav><div class="am-doc-body">
 <section class="am-panel" id="panel-A">
 <header class="am-panel-head"><span class="am-panel-id">A</span><h2>本体状态的责任</h2></header>
 <div class="am-panel-body"><div class="am-md"><p><strong>SW-14 → RB-01。活动实现提供实测本体状态与运动学。</strong>
@@ -754,7 +754,7 @@ html[data-theme="paper"] .am-md table { font-family: var(--font-sans); }
 </section>
 <section class="am-panel" id="panel-B">
 <header class="am-panel-head"><span class="am-panel-id">B</span><h2>数据流与坐标</h2></header>
-<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 385 558" width="385" height="558" role="img" aria-label="流程图：SDK反馈缓存、SensorAdapters、StateEstimation、URDF模型、PinocchioFK、本体运动学快照、操作能力、SDK关节与IMU" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M89,49 L89,65 Q89,81 89,97 L89,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="38" y="72" width="102" height="18" rx="3"/><text x="89" y="81" text-anchor="middle" dominant-baseline="central">本体历史和手部帧</text></g></g><g data-step="1"><path class="am-edge" d="M89,148 L89,164 Q89,180 89,196 L89,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="171" width="148" height="18" rx="3"/><text x="89" y="180" text-anchor="middle" dominant-baseline="central">目标源时刻之前的有效样本</text></g></g><g data-step="2"><path class="am-edge" d="M233.6,247 L233.6,263 Q233.6,279 210.2,295 L186.9,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="194.1" y="270" width="79" height="18" rx="3"/><text x="233.6" y="279" text-anchor="middle" dominant-baseline="central">完整关节映射</text></g></g><g data-step="3"><path class="am-edge" d="M89,247 L89,263 Q89,279 112.4,295 L135.7,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="54.6" y="270" width="68.9" height="18" rx="3"/><text x="89" y="279" text-anchor="middle" dominant-baseline="central">实测29关节</text></g></g><g data-step="4"><path class="am-edge" d="M161.3,346 L161.3,362 Q161.3,378 161.3,394 L161.3,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="121.6" y="369" width="79.5" height="18" rx="3"/><text x="161.3" y="378" text-anchor="middle" dominant-baseline="central">掌基座与TCP</text></g></g><g data-step="5"><path class="am-edge" d="M161.3,445 L161.3,461 Q161.3,477 185.4,493 L209.6,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="104.6" y="468" width="113.5" height="18" rx="3"/><text x="161.3" y="477" text-anchor="middle" dominant-baseline="central">规划起点和末端反馈</text></g></g><g data-step="6"><path class="am-edge" d="M310.6,346 L310.6,362 Q310.6,378 310.6,394 L310.6,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="265.3" y="369" width="90.5" height="18" rx="3"/><text x="310.6" y="378" text-anchor="middle" dominant-baseline="central">重力对齐脚中点</text></g></g><g data-step="7"><path class="am-edge" d="M310.6,445 L310.6,461 Q310.6,477 286.5,493 L262.3,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="253.8" y="468" width="113.5" height="18" rx="3"/><text x="310.6" y="477" text-anchor="middle" dominant-baseline="central">捕获目标的局部搬运</text></g></g></g><g><g class="am-node am-node--rect" data-key="SDK反馈缓存" data-step="0"><rect class="am-node-shape" x="34.6" y="14" width="108.9" height="35" rx="3"/><text x="89" y="31.5" text-anchor="middle" dominant-baseline="central">SDK反馈缓存</text></g><g class="am-node am-node--rect" data-key="SensorAdapters" data-step="0"><rect class="am-node-shape" x="27.2" y="113" width="123.7" height="35" rx="3"/><text x="89" y="130.5" text-anchor="middle" dominant-baseline="central">SensorAdapters</text></g><g class="am-node am-node--rect" data-key="StateEstimation" data-step="1"><rect class="am-node-shape" x="26.3" y="212" width="125.5" height="35" rx="3"/><text x="89" y="229.5" text-anchor="middle" dominant-baseline="central">StateEstimation</text></g><g class="am-node am-node--rect" data-key="URDF模型" data-step="2"><rect class="am-node-shape" x="187.8" y="212" width="91.7" height="35" rx="3"/><text x="233.6" y="229.5" text-anchor="middle" dominant-baseline="central">URDF模型</text></g><g class="am-node am-node--rect" data-key="PinocchioFK" data-step="2"><rect class="am-node-shape" x="108" y="311" width="106.5" height="35" rx="3"/><text x="161.3" y="328.5" text-anchor="middle" dominant-baseline="central">PinocchioFK</text></g><g class="am-node am-node--rect" data-key="本体运动学快照" data-step="4"><rect class="am-node-shape" x="101.8" y="410" width="119" height="35" rx="3"/><text x="161.3" y="427.5" text-anchor="middle" dominant-baseline="central">本体运动学快照</text></g><g class="am-node am-node--rect" data-key="操作能力" data-step="5"><rect class="am-node-shape" x="195.9" y="509" width="80" height="35" rx="3"/><text x="235.9" y="526.5" text-anchor="middle" dominant-baseline="central">操作能力</text></g><g class="am-node am-node--rect" data-key="SDK关节与IMU" data-step="6"><rect class="am-node-shape" x="250.6" y="311" width="120" height="35" rx="3"/><text x="310.6" y="328.5" text-anchor="middle" dominant-baseline="central">SDK关节与IMU</text></g><g class="am-node am-node--rect" data-key="站立局部参考" data-step="6"><rect class="am-node-shape" x="257.6" y="410" width="106" height="35" rx="3"/><text x="310.6" y="427.5" text-anchor="middle" dominant-baseline="central">站立局部参考</text></g></g></svg></figure>
+<div class="am-panel-body"><figure class="am-diagram am-flow"><svg viewBox="0 0 385 558" width="385" height="558" role="img" aria-label="流程图：SDK反馈缓存、SensorAdapters、StateEstimation、URDF模型、PinocchioFK、本体运动学快照、操作能力、SDK关节与IMU" xmlns="http://www.w3.org/2000/svg"><defs><marker id="am1-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="am-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs><g></g><g><g data-step="0"><path class="am-edge" d="M89,49 L89,65 Q89,81 89,97 L89,113" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="38" y="72" width="102" height="18" rx="3"/><text x="89" y="81" text-anchor="middle" dominant-baseline="central">本体历史和手部帧</text></g></g><g data-step="1"><path class="am-edge" d="M89,148 L89,164 Q89,180 89,196 L89,212" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="15" y="171" width="148" height="18" rx="3"/><text x="89" y="180" text-anchor="middle" dominant-baseline="central">目标源时刻之前的有效样本</text></g></g><g data-step="2"><path class="am-edge" d="M233.6,247 L233.6,263 Q233.6,279 210.2,295 L186.9,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="194.1" y="270" width="79" height="18" rx="3"/><text x="233.6" y="279" text-anchor="middle" dominant-baseline="central">完整关节映射</text></g></g><g data-step="3"><path class="am-edge" d="M89,247 L89,263 Q89,279 112.4,295 L135.7,311" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="26.5" y="270" width="125" height="18" rx="3"/><text x="89" y="279" text-anchor="middle" dominant-baseline="central">按名称关联的实测关节</text></g></g><g data-step="4"><path class="am-edge" d="M161.3,346 L161.3,362 Q161.3,378 161.3,394 L161.3,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="121.6" y="369" width="79.5" height="18" rx="3"/><text x="161.3" y="378" text-anchor="middle" dominant-baseline="central">掌基座与TCP</text></g></g><g data-step="5"><path class="am-edge" d="M161.3,445 L161.3,461 Q161.3,477 185.4,493 L209.6,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="104.6" y="468" width="113.5" height="18" rx="3"/><text x="161.3" y="477" text-anchor="middle" dominant-baseline="central">规划起点和末端反馈</text></g></g><g data-step="6"><path class="am-edge" d="M310.6,346 L310.6,362 Q310.6,378 310.6,394 L310.6,410" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="265.3" y="369" width="90.5" height="18" rx="3"/><text x="310.6" y="378" text-anchor="middle" dominant-baseline="central">重力对齐脚中点</text></g></g><g data-step="7"><path class="am-edge" d="M310.6,445 L310.6,461 Q310.6,477 286.5,493 L262.3,509" marker-end="url(#am1-arrow)"/><g class="am-edge-label"><rect x="253.8" y="468" width="113.5" height="18" rx="3"/><text x="310.6" y="477" text-anchor="middle" dominant-baseline="central">捕获目标的局部搬运</text></g></g></g><g><g class="am-node am-node--rect" data-key="SDK反馈缓存" data-step="0"><rect class="am-node-shape" x="34.6" y="14" width="108.9" height="35" rx="3"/><text x="89" y="31.5" text-anchor="middle" dominant-baseline="central">SDK反馈缓存</text></g><g class="am-node am-node--rect" data-key="SensorAdapters" data-step="0"><rect class="am-node-shape" x="27.2" y="113" width="123.7" height="35" rx="3"/><text x="89" y="130.5" text-anchor="middle" dominant-baseline="central">SensorAdapters</text></g><g class="am-node am-node--rect" data-key="StateEstimation" data-step="1"><rect class="am-node-shape" x="26.3" y="212" width="125.5" height="35" rx="3"/><text x="89" y="229.5" text-anchor="middle" dominant-baseline="central">StateEstimation</text></g><g class="am-node am-node--rect" data-key="URDF模型" data-step="2"><rect class="am-node-shape" x="187.8" y="212" width="91.7" height="35" rx="3"/><text x="233.6" y="229.5" text-anchor="middle" dominant-baseline="central">URDF模型</text></g><g class="am-node am-node--rect" data-key="PinocchioFK" data-step="2"><rect class="am-node-shape" x="108" y="311" width="106.5" height="35" rx="3"/><text x="161.3" y="328.5" text-anchor="middle" dominant-baseline="central">PinocchioFK</text></g><g class="am-node am-node--rect" data-key="本体运动学快照" data-step="4"><rect class="am-node-shape" x="101.8" y="410" width="119" height="35" rx="3"/><text x="161.3" y="427.5" text-anchor="middle" dominant-baseline="central">本体运动学快照</text></g><g class="am-node am-node--rect" data-key="操作能力" data-step="5"><rect class="am-node-shape" x="195.9" y="509" width="80" height="35" rx="3"/><text x="235.9" y="526.5" text-anchor="middle" dominant-baseline="central">操作能力</text></g><g class="am-node am-node--rect" data-key="SDK关节与IMU" data-step="6"><rect class="am-node-shape" x="250.6" y="311" width="120" height="35" rx="3"/><text x="310.6" y="328.5" text-anchor="middle" dominant-baseline="central">SDK关节与IMU</text></g><g class="am-node am-node--rect" data-key="站立局部参考" data-step="6"><rect class="am-node-shape" x="257.6" y="410" width="106" height="35" rx="3"/><text x="310.6" y="427.5" text-anchor="middle" dominant-baseline="central">站立局部参考</text></g></g></svg></figure>
 <div class="am-md"><p>掌基座与抓取TCP是不同frame。
 TCP使用已安装的手部标定。
 关节读取选择不晚于请求时刻的有效历史样本。
@@ -805,8 +805,18 @@ F是重力对齐双脚中点参考，B是pelvis。</p>
 </tr>
 <tr>
 <td>hand_state.py</td>
-<td>共享标定手部事实与EMPTY判定</td>
-<td>REVO2反馈及既有张开持续判定</td>
+<td>选择本体已声明的工具反馈与持物责任</td>
+<td>ToolBinding、源时间及epoch</td>
+</tr>
+<tr>
+<td>backends/unitree_g1/hand_feedback.py</td>
+<td>G1标定手部事实与EMPTY判定</td>
+<td>原REVO2触觉及张开持续判定</td>
+</tr>
+<tr>
+<td>backends/unitree_g1/state_kinematics.py</td>
+<td>G1标定TCP读取</td>
+<td>原XR运动学与偏移</td>
 </tr>
 <tr>
 <td>backends/unitree_g1/full_fk.py</td>
@@ -832,7 +842,7 @@ StateEstimation 查询它的结果与站立区间。</p>
 <p>判稳比较1秒窗口内质心与姿态相对变化。
 同时要求新鲜SDK反馈和已发速度为零。
 这与导航最终位置误差、操作IK误差分别判断。</p>
-<p>EMPTY直接读取两只手的实际编码器和标定触觉，再检查张开容差与持续时间。
+<p>G1的EMPTY直接读取两只手的实际编码器和标定触觉，再检查张开容差与持续时间。
 它保留各手的源时戳、新鲜度和接触门限，不依赖手部与本体关节恰好同时到达。
 完整模型规划仍要求本体与手部反馈的因果时间关联；EMPTY通过不补造缺失的模型关节。</p>
 <p><a href="algo-body-state.html">相对判稳公式与参数</a> · <a href="module-robot-body_gateway.html">本体适配</a></p>
@@ -846,6 +856,13 @@ StateEstimation 查询它的结果与站立区间。</p>
 <p>预测关节的规划运动学属于操作规划器。
 实测状态转换应由本模块统一提供。
 <a href="files-robot-state_estimation.html">文件索引</a> · <a href="module-robot-spatial_runtime.html">空间模块</a></p>
+</div></div>
+</section>
+<section class="am-panel" id="panel-G">
+<header class="am-panel-head"><span class="am-panel-id">G</span><h2>独立状态开发</h2></header>
+<div class="am-panel-body"><div class="am-md"><p><code>state replay</code>通过生产ModelFK处理命名关节输入，记录模型身份、输入哈希和逐帧计算时间。没有惯量时拒绝计算质心；无操作器模型不生成虚构双手。G1保持原XR标定TCP，其他本体的URDF安装帧不自动视为标定接触点。</p>
+<p>通用工具状态通过已有ToolBinding与实测反馈读取，缺失、陈旧、错epoch和理想约束状态均不签夹持事实。已有持物责任不会因一次反馈缺失消失。禁用外部传感输入时不导入ROS传感类型。</p>
+<p><a href="https://github.com/gao377/agentic-embodied-system/blob/refactor/robot-app-model-driven/docs/development/state-and-sensors.md">状态与传感开发指南</a>给出JSONL字段及命令。回放只验证算法，不启动物理或设备；物理环境ID为 <code>dev-state-sensors</code>，查询其describe获取可用范围。</p>
 </div></div>
 </section>
 </div>
@@ -866,7 +883,7 @@ StateEstimation 查询它的结果与站立区间。</p>
 <div class="am-lightbox-canvas am-diagram"></div>
 </div>
 </div>
-<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-25 12:30</footer>
+<footer class="am-colophon">Generated by <a href="https://github.com/QingYunA/answer-me-with-html" target="_blank" rel="noopener">Answer me with HTML</a> 0.4.14 · 2026-10-25 13:45</footer>
 <textarea id="am-source" hidden readonly aria-hidden="true">---
 template: doc
 theme: paper
@@ -874,7 +891,7 @@ title: 本体状态 · state_estimation
 subtitle: SW-14 / RB-01：实测关节、FK、时间关联与站立局部参考
 lang: zh
 doc_id: module-robot-state_estimation
-implementation: 70d79570cc44ef4b
+implementation: b4977dcc5d59c4e4
 ---
 
 [首页](index.html) · [系统架构](architecture.html) · [软件映射](architecture-map.html) · [运行时图册](runtime-internals.html) · [算法架构图](algorithms.html#panel-A) · [软件模块](modules.html) · [能力接口](interfaces.html) · [仿真系统](simulation.html) · [运动响应专题](navigation-response-model.html) · [场景启动](scenarios.html) · [实验结果](experiments.html) · [成功录像](experiment-recordings.html) · [编写规范](authoring.html)
@@ -911,7 +928,7 @@ G1固定双脚参考保留为专用适配器。
 SDK反馈缓存 -&gt; SensorAdapters: 本体历史和手部帧
 SensorAdapters -&gt; StateEstimation: 目标源时刻之前的有效样本
 URDF模型 -&gt; PinocchioFK: 完整关节映射
-StateEstimation -&gt; PinocchioFK: 实测29关节
+StateEstimation -&gt; PinocchioFK: 按名称关联的实测关节
 PinocchioFK -&gt; 本体运动学快照: 掌基座与TCP
 本体运动学快照 -&gt; 操作能力: 规划起点和末端反馈
 SDK关节与IMU -&gt; 站立局部参考: 重力对齐脚中点
@@ -951,7 +968,9 @@ StateEstimation --&gt; 操作能力: 当前pelvis下的目标
 | standing_reference.py | capture和transport | Pinocchio SE3 |
 | frame_store.py | 标定与动态frame查询 | 有界缓存 |
 | frame_transforms.py | 变换组合、逆与无效结果 | 明确frame/时间/revision检查 |
-| hand_state.py | 共享标定手部事实与EMPTY判定 | REVO2反馈及既有张开持续判定 |
+| hand_state.py | 选择本体已声明的工具反馈与持物责任 | ToolBinding、源时间及epoch |
+| backends/unitree_g1/hand_feedback.py | G1标定手部事实与EMPTY判定 | 原REVO2触觉及张开持续判定 |
+| backends/unitree_g1/state_kinematics.py | G1标定TCP读取 | 原XR运动学与偏移 |
 | backends/unitree_g1/full_fk.py | 全本体FK与脚中点变换 | Pinocchio |
 | backends/unitree_g1/body_centroid.py | 完整惯量模型质心 | Pinocchio centerOfMass |
 
@@ -970,7 +989,7 @@ StateEstimation 查询它的结果与站立区间。
 同时要求新鲜SDK反馈和已发速度为零。
 这与导航最终位置误差、操作IK误差分别判断。
 
-EMPTY直接读取两只手的实际编码器和标定触觉，再检查张开容差与持续时间。
+G1的EMPTY直接读取两只手的实际编码器和标定触觉，再检查张开容差与持续时间。
 它保留各手的源时戳、新鲜度和接触门限，不依赖手部与本体关节恰好同时到达。
 完整模型规划仍要求本体与手部反馈的因果时间关联；EMPTY通过不补造缺失的模型关节。
 
@@ -985,6 +1004,14 @@ EMPTY直接读取两只手的实际编码器和标定触觉，再检查张开容
 预测关节的规划运动学属于操作规划器。
 实测状态转换应由本模块统一提供。
 [文件索引](files-robot-state_estimation.html) · [空间模块](module-robot-spatial_runtime.html)
+
+## G 独立状态开发
+
+`state replay`通过生产ModelFK处理命名关节输入，记录模型身份、输入哈希和逐帧计算时间。没有惯量时拒绝计算质心；无操作器模型不生成虚构双手。G1保持原XR标定TCP，其他本体的URDF安装帧不自动视为标定接触点。
+
+通用工具状态通过已有ToolBinding与实测反馈读取，缺失、陈旧、错epoch和理想约束状态均不签夹持事实。已有持物责任不会因一次反馈缺失消失。禁用外部传感输入时不导入ROS传感类型。
+
+[状态与传感开发指南](https://github.com/gao377/agentic-embodied-system/blob/refactor/robot-app-model-driven/docs/development/state-and-sensors.md)给出JSONL字段及命令。回放只验证算法，不启动物理或设备；物理环境ID为 `dev-state-sensors`，查询其describe获取可用范围。
 </textarea>
 <script>
 (() => {
