@@ -342,8 +342,8 @@
     },
     {
       "file": "module-robot-local_task_runtime.html",
-      "source_sha256": "ce1c97d4898b5c02ddf798c652c3a08bad1251e5971128e7f7fbbe63e854791b",
-      "implementation_sha256": "bdeb947a15cd632dbdd87bfe878ef4185b79baddebe01fd053d91186e4ab294d"
+      "source_sha256": "e87e6638eb8f8ab3915804af1e3ac46baa6242e3444073421cdfac990942b31a",
+      "implementation_sha256": "afdf731975b8a82d7d034f47c8a8a33a4c61867b2485c74d1467be6bfa7757a4"
     },
     {
       "file": "module-robot-manipulation_runtime.html",
@@ -391,8 +391,8 @@
     },
     {
       "file": "module-system-capability_registry.html",
-      "source_sha256": "c87cc60af2d6e24409b4e8cc45944a419a4172e78cbb88207219b4af601f82fe",
-      "implementation_sha256": "fc066ce4b547e37228c4bc3e431cc31fa15233ebba2571d10b68b73a23058750"
+      "source_sha256": "a653642711dd4abe8565bb042b4fc5700a219dd87fbba6d3212273bb900957bd",
+      "implementation_sha256": "afdf731975b8a82d7d034f47c8a8a33a4c61867b2485c74d1467be6bfa7757a4"
     },
     {
       "file": "module-system-config_manager.html",
