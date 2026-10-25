@@ -323,8 +323,8 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "e52c01fad38ee3e8b3c97f119f67efc3557cbd08e729f763d78e2fb3a196fdb0",
-      "implementation_sha256": "2db59f939329b2370673a6f83175b546d567d8506dfe9ebabfcd33cf828d97b2"
+      "source_sha256": "2ad4903f02c669821c6ece19f576334372aea93e63525a74201d71f811b7116d",
+      "implementation_sha256": "a29f0188f181a785fe8d94f1f8dc5f4f9a2b38927679369a6608669d2c62c0d1"
     },
     {
       "file": "module-robot-config_client.html",
@@ -380,8 +380,8 @@
     },
     {
       "file": "module-robot-state_estimation.html",
-      "source_sha256": "579688e654932bf876a351378d0d511845fb854dbbeb804c4ea2cc5c32236286",
-      "implementation_sha256": "9ea59ec8919035a45ab92c79df3e957f3f80adf97a39cad064a763a8893ad5d3"
+      "source_sha256": "7d72fb8c79508df2a2ecab209fb2b1fb85431b072ad9df72311277a30f11983f",
+      "implementation_sha256": "a29f0188f181a785fe8d94f1f8dc5f4f9a2b38927679369a6608669d2c62c0d1"
     },
     {
       "file": "module-system-candidate_builder.html",
