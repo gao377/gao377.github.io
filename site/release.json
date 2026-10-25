@@ -323,8 +323,8 @@
     },
     {
       "file": "module-robot-body_gateway.html",
-      "source_sha256": "f9c6ec3476e34cde5eee40fc44dbd442219e9d13210487d1fbc22af9a2f7c024",
-      "implementation_sha256": "78dcfdfbca317afbb8450ede45e8be43a244db2738f5027dff5127546810f02c"
+      "source_sha256": "71e26f8c50201eb45572e85697f61fa5f29de365af7c9cc8eaec5ce1536dfcc7",
+      "implementation_sha256": "2de32b98357cc68a5d24d9ad351cfb827b8cf66440841300c3c079cb7f3f3c58"
     },
     {
       "file": "module-robot-config_client.html",
