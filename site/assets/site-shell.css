@@ -569,6 +569,261 @@ figure.doc-video--pending {
   margin-bottom: 0;
 }
 
+/* ---------- Editorial Diagram Figure & Native Lightbox Modal ---------- */
+
+figure.diagram-figure {
+  margin: 1.75rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--shell-rule);
+  background: var(--shell-surface);
+}
+
+.diagram-canvas {
+  background: #FAFAF7;
+  border: 1px solid #D8D3C8;
+  padding: 0.35rem;
+}
+
+.doc-article .diagram-canvas img,
+.diagram-canvas img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+  border: 0;
+}
+
+figure.diagram-figure figcaption {
+  margin-top: 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  font-family: var(--shell-font-sans);
+  font-size: 0.86rem;
+  color: var(--shell-ink-soft);
+}
+
+.diagram-zoom-btn,
+.diagram-lightbox-zoom,
+.diagram-lightbox-close {
+  flex-shrink: 0;
+  font-family: var(--shell-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.28rem 0.68rem;
+  border: 1px solid var(--shell-rule);
+  background: var(--shell-bg);
+  color: var(--shell-ink);
+  cursor: pointer;
+}
+
+.diagram-zoom-btn:hover,
+.diagram-zoom-btn:focus-visible,
+.diagram-lightbox-zoom:hover,
+.diagram-lightbox-zoom:focus-visible,
+.diagram-lightbox-close:hover,
+.diagram-lightbox-close:focus-visible {
+  border-color: var(--shell-accent);
+  color: var(--shell-accent);
+}
+
+.diagram-lightbox-zoom[aria-pressed="true"] {
+  border-color: var(--shell-accent);
+  background: var(--shell-surface);
+  color: var(--shell-accent);
+}
+
+/* Native <dialog> modal: NO unconditional display, scroll containment via overscroll-behavior */
+dialog:modal {
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: rgba(22, 24, 29, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+dialog.diagram-lightbox {
+  margin: auto;
+  padding: 0;
+  width: min(95vw, 1340px);
+  max-width: min(95vw, 1480px);
+  max-height: 92dvh;
+  border: 1px solid var(--shell-rule);
+  background: var(--shell-bg);
+  color: var(--shell-ink);
+  font-family: var(--shell-font-sans);
+}
+
+dialog.diagram-lightbox[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.diagram-lightbox-frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 92dvh;
+}
+
+.diagram-lightbox-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--shell-rule);
+  background: var(--shell-bg);
+}
+
+.diagram-lightbox-title {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--shell-ink);
+}
+
+.diagram-lightbox-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.diagram-lightbox-actions form {
+  margin: 0;
+}
+
+.diagram-lightbox-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 1rem;
+  background: var(--shell-surface);
+}
+
+.diagram-lightbox-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #FAFAF7;
+  border: 1px solid #D8D3C8;
+}
+
+dialog.diagram-lightbox[data-zoom="actual"] .diagram-lightbox-stage img {
+  width: max(100%, 1200px);
+  max-width: none;
+}
+
+/* ---------- Collapsible Technical Disclosure (<details class="tech-details">) ---------- */
+
+.doc-article details.tech-details,
+.portal-block details.tech-details {
+  margin: 1.45rem 0;
+  padding: 0;
+  border: 1px solid var(--shell-rule);
+  background: var(--shell-surface);
+  font-family: var(--shell-font-sans);
+}
+
+.doc-article details.tech-details[open],
+.portal-block details.tech-details[open] {
+  background: var(--shell-bg);
+}
+
+.doc-article details.tech-details > summary,
+.portal-block details.tech-details > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.72rem 1rem;
+  font-weight: 600;
+  font-size: 0.94rem;
+  color: var(--shell-ink);
+  cursor: pointer;
+}
+
+.doc-article details.tech-details > summary::-webkit-details-marker,
+.portal-block details.tech-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.doc-article details.tech-details > summary::before,
+.portal-block details.tech-details > summary::before {
+  content: "";
+  inline-size: 0.85em;
+  block-size: 0.85em;
+  flex-shrink: 0;
+  background-color: var(--shell-accent);
+  clip-path: polygon(18% 28%, 50% 68%, 82% 28%, 92% 38%, 50% 84%, 8% 38%);
+  rotate: -90deg;
+}
+
+.doc-article details.tech-details[open] > summary::before,
+.portal-block details.tech-details[open] > summary::before {
+  rotate: 0deg;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .doc-article details.tech-details > summary::before,
+  .portal-block details.tech-details > summary::before {
+    transition: rotate 0.2s ease;
+  }
+}
+
+.doc-article details.tech-details[open] > summary,
+.portal-block details.tech-details[open] > summary {
+  border-bottom: 1px solid var(--shell-rule);
+  background: var(--shell-surface);
+}
+
+.doc-article details.tech-details > summary:hover,
+.doc-article details.tech-details > summary:focus-visible,
+.portal-block details.tech-details > summary:hover,
+.portal-block details.tech-details > summary:focus-visible {
+  color: var(--shell-accent);
+}
+
+.doc-article details.tech-details > :not(summary),
+.portal-block details.tech-details > :not(summary) {
+  margin-inline: 1rem;
+}
+
+.doc-article details.tech-details > :nth-child(2),
+.portal-block details.tech-details > :nth-child(2) {
+  margin-top: 0.85rem;
+}
+
+.doc-article details.tech-details > :last-child,
+.portal-block details.tech-details > :last-child {
+  margin-bottom: 0.9rem;
+}
+
+details.tech-details::details-content {
+  interpolate-size: allow-keywords;
+  overflow: clip;
+  contain: layout;
+}
+
+details.tech-details:not([open])::details-content {
+  block-size: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  details.tech-details::details-content {
+    transition: block-size 0.26s ease-in-out, content-visibility 0.26s ease-in-out;
+    transition-behavior: allow-discrete;
+  }
+}
+
 /* ---------- Footer ---------- */
 
 .site-footer {

@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 670" width="1200" height="670" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">FastDDS Domain 126 真机 robot_r1 四阶段对称锁步（0 -&gt; 1 -&gt; 2 -&gt; 3）</title>
+  <desc id="diagram-desc">展示仅 robot_r1 通过 FastDDS Domain 126 与外部实物真机对等同步，及 0-&gt;1-&gt;2-&gt;3 四阶段对称锁步与双伴生发布清单机制。</desc>
+  <defs>
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="670" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="670" fill="url(#dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="668.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="90.0" width="528.0" height="170.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">IMMUTABLE COMPANION RELEASE · prepare_real_peer_release.py</text>
+  <text x="50.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双伴生发布清单隔离与启动门禁</text>
+  <rect x="588.0" y="90.0" width="576.0" height="170.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="602.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONCURRENT FLEET SCOPE</text>
+  <text x="602.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">四机产线并发隔离范围（仅 R1 接真机）</text>
+  <rect x="36.0" y="276.0" width="1128.0" height="94.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="295.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">HOST &lt;-&gt; PEER BRIDGE</text>
+  <text x="50.0" y="312.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">peer-link 网桥与对称状态镜像（192.168.123.76 · FastDDS Domain 126）</text>
+  <rect x="36.0" y="386.0" width="1128.0" height="224.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="405.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">FOUR-STAGE SYMMETRIC LOCKSTEP · 0 -&gt; 1 -&gt; 2 -&gt; 3</text>
+  <text x="50.0" y="422.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">工件转运四阶段对称锁步协议（双方完成且归 0 才推进下一周期）</text>
+  <rect x="52.0" y="134.0" width="240.0" height="112.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">Mock 清单 (--mock 默认)</text>
+  <text x="64.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">peer_origin: &quot;MOCK&quot;</text>
+  <text x="64.0" y="185.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">/validation/&lt;robot_id&gt;/facri/*</text>
+  <text x="64.0" y="201.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">禁止暴露外部真机地址</text>
+  <rect x="308.0" y="134.0" width="240.0" height="112.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
+  <text x="320.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">Real-Peer 清单 (--real)</text>
+  <text x="320.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">peer_origin: &quot;REAL&quot; + IP</text>
+  <text x="320.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">仅限 --setup factory 生效</text>
+  <text x="320.0" y="201.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">混用 c919/冲突立即报错拦截</text>
+  <rect x="604.0" y="134.0" width="174.0" height="112.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
+  <text x="616.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">robot_r1 (外部真机)</text>
+  <text x="616.0" y="170.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">Domain 126 对等同步</text>
+  <text x="616.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">不占用运动/持物租约</text>
+  <text x="616.0" y="201.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">真实物理动作闭环</text>
+  <rect x="792.0" y="134.0" width="356.0" height="112.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="804.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">robot_r2 · robot_r3 · robot_r4 (容器并发)</text>
+  <text x="804.0" y="170.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">保持容器内独立并发执行，互不干扰</text>
+  <text x="804.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">单台机器失败仅影响本机，不触发全队停机</text>
+  <text x="804.0" y="201.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">话题映射: /facri/auto_cmd(_rep) &amp; upper_body/state</text>
+  <rect x="52.0" y="316.0" width="330.0" height="42.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="336.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">系统侧指令 (/facri/auto_cmd)</text>
+  <text x="64.0" y="352.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">grasp.attached · auto.auto_cmd · session</text>
+  <rect x="410.0" y="316.0" width="356.0" height="42.0" rx="2.5" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.25"/>
+  <text x="422.0" y="336.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">peer-link 网桥 (auto-task-link-status.json)</text>
+  <text x="422.0" y="352.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">rmw_fastrtps_cpp · 不自动重发 · 不猜工位</text>
+  <rect x="794.0" y="316.0" width="354.0" height="42.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="806.0" y="336.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">对端回执 (/facri/auto_cmd_rep &amp; sim_observer)</text>
+  <text x="806.0" y="352.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">grasp.placed · auto.stage · reset_count</text>
+  <rect x="52.0" y="434.0" width="256.0" height="108.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
+  <text x="64.0" y="454.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">Stage 0 · 就绪等抓</text>
+  <rect x="244.9" y="441.0" width="51.1" height="17.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.00"/>
+  <text x="270.5" y="452.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#B04A1A" text-anchor="middle">STAGE 0</text>
+  <text x="64.0" y="470.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">skill: manipulation.pick</text>
+  <text x="64.0" y="485.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">下发 0 动作命令</text>
+  <text x="64.0" y="501.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">等待双方确认进入抓取</text>
+  <rect x="330.0" y="434.0" width="256.0" height="108.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="342.0" y="454.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">Stage 1 · 抓取完成</text>
+  <rect x="522.9" y="441.0" width="51.1" height="17.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.00"/>
+  <text x="548.5" y="452.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#2C5E3F" text-anchor="middle">STAGE 1</text>
+  <text x="342.0" y="470.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">grasp.attached = true</text>
+  <text x="342.0" y="485.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">进入持物移位阶段</text>
+  <text x="342.0" y="501.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">严格核验同源手持身份</text>
+  <rect x="608.0" y="434.0" width="256.0" height="108.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
+  <text x="620.0" y="454.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">Stage 2 · 到位等放</text>
+  <rect x="800.9" y="441.0" width="51.1" height="17.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.00"/>
+  <text x="826.5" y="452.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#B04A1A" text-anchor="middle">STAGE 2</text>
+  <text x="620.0" y="470.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">skill: manipulation.place</text>
+  <text x="620.0" y="485.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">对准目标工位工装</text>
+  <text x="620.0" y="501.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">等待双方同步释放条件</text>
+  <rect x="886.0" y="434.0" width="256.0" height="108.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="898.0" y="454.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">Stage 3 · 放置完成</text>
+  <rect x="1078.9" y="441.0" width="51.1" height="17.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.00"/>
+  <text x="1104.5" y="452.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#2C5E3F" text-anchor="middle">STAGE 3</text>
+  <text x="898.0" y="470.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">grasp.placed = true</text>
+  <text x="898.0" y="485.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">空手返回并归 0 复位</text>
+  <text x="898.0" y="501.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">回执 0 != 空闲 · 需双端归零</text>
+  <rect x="52.0" y="554.0" width="1096.0" height="46.0" rx="2.5" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="1.25" stroke-dasharray="4 3"/>
+  <text x="64.0" y="574.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">协议铁律 · configs/skills/workpiece-processing/contract.yaml</text>
+  <text x="64.0" y="590.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#16181D">0 是有效动作指令而非无操作；必须等待本端与对端真机均完成当前阶段并同步归零后方可推进，严禁超时盲目重发</text>
+  <path d="M 382.0 337.0 L 410.0 337.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
+  <path d="M 794.0 337.0 L 766.0 337.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
+  <path d="M 308.0 488.0 L 330.0 488.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <path d="M 586.0 488.0 L 608.0 488.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <path d="M 864.0 488.0 L 886.0 488.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <line x1="36.0" y1="624.0" x2="1164.0" y2="624.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="646.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="635.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="645.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">动作触发阶段 (0 / 2) 与真机边界</text>
+  <rect x="285.5" y="635.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="307.5" y="645.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">状态确认阶段 (1 / 3) 与并发容器</text>
+  <rect x="486.9" y="635.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="508.9" y="645.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Domain 126 网桥通道</text>
+  <text x="1164.0" y="645.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">Mock 测试使用隔离命名空间 /validation/&lt;robot_id&gt;/facri/*</text>
+  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">REAL-PEER SYNC · DOMAIN 126 &amp; FOUR-STAGE LOCKSTEP</text>
+  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">FastDDS Domain 126 真机 robot_r1 四阶段对称锁步（0 -&gt; 1 -&gt; 2 -&gt; 3）</text>
+  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">rmw_fastrtps_cpp · v0-whole-robot-authority · facri.operation.sync.v1</text>
+  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

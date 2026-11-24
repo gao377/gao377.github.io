@@ -68,14 +68,24 @@ HAL ∧ L2 单调能力收敛与表面边界约束</p>
       </header>
 
       <article class="doc-article">
-<p>传统多机器人框架往往将关节索引、末端夹爪类型或底盘运动学公式散落硬编码于控制节点中，每新增一型硬件就不得不复制一份分支逻辑。FACRI
-以
-<code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code>
-中定义的 <code>EmbodimentSpecPod</code>
-作为全单机的唯一结构化规格真源，配合
-<code>configs/robots/*/description.yaml</code> 声明式描述文件，实现了
-<code>9</code> 类跨形态异构机器人在同一套 <code>4+1</code>
-二进制下的零源码改写复用。</p>
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p>声明式具身规格层以
+<code>EmbodimentSpecPod</code>（<code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code>）作为单机结构与能力判定的唯一权威真源：上游从
+<code>configs/robots/*/description.yaml</code>
+解析静态构型定义（<code>L1</code>），在启动期叠加
+<code>IHalDriver</code>
+硬件实测能力（<code>HAL</code>）与场景清单策略开关（<code>L2</code>），向下游
+<code>4+1</code> 实时进程与上层规划器输出统一能力掩码。平台现役
+<code>9</code>
+类跨形态机器人借此共用同一套原生二进制程序，无需为新增构型复制控制分支。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/sub-embodiment-synthesis.svg"
+alt="声明式具身规格合成与 L1 ∧ HAL ∧ L2 单调收敛架构" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>声明式具身规格合成与 L1 ∧ HAL ∧ L2
+单调收敛架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
 <h2 id="embodimentspecpod-二进制契约结构"><code>EmbodimentSpecPod</code>
 二进制契约结构</h2>
 <p><code>EmbodimentSpecPod</code> 在编译期强制通过
@@ -86,23 +96,88 @@ HAL ∧ L2 单调能力收敛与表面边界约束</p>
 <code>1</code>），供所有子进程只读映射使用：</p>
 <ul>
 <li><strong>四维构型枚举</strong>：通过
-<code>LocomotionArchetype</code>（<code>kNone</code>、<code>kBipedPolicy</code>、<code>kWheelLegHybrid</code>、<code>kSwerve4WS</code>、<code>kChassisTwist</code>）、<code>KinematicsModelKind</code>（<code>kHolonomic</code>、<code>kDifferential</code>、<code>kAckermann</code>）、<code>ManipulatorArchetype</code>（<code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code>）与
-<code>EffectorArchetype</code>（<code>kNone</code>、<code>kParallelJaw2Dof</code>、<code>kDexhand12Dof</code>、<code>kMechanism1Dof</code>）精确刻画任意本体形态。</li>
-<li><strong>九组动态关节切片（<code>JointGroupSlice</code>）</strong>：显式映射
-<code>legs</code>、<code>steering</code>、<code>wheels</code>、<code>torso</code>、<code>head</code>、<code>left_arm</code>、<code>right_arm</code>、<code>left_tool</code>、<code>right_tool</code>
-九大关节组在全局 <code>48</code>
+<code>LocomotionArchetype</code>、<code>KinematicsModelKind</code>、<code>ManipulatorArchetype</code>
+与 <code>EffectorArchetype</code>
+精确刻画双足、轮腿、全向四轮转向、纯底盘与多臂/灵巧手等任意本体形态。</li>
+<li><strong>九组动态关节切片（<code>JointGroupSlice</code>）</strong>：显式映射九大关节组在全局
+<code>48</code>
 轴数组中的实际索引下标、默认控制模式（<code>1=PositionPd</code>、<code>2=VelocityPd</code>）与
 PD 增益（每组上限 <code>kMaxGroupDofs = 16</code>，联合受控组上限
 <code>kMaxControlledGroupDofs = 32</code>）。</li>
-<li><strong>物理几何与可操作能力位掩码</strong>：封装
+<li><strong>物理几何与位掩码</strong>：封装
 <code>ChassisGeometrySpec</code>（轴距、轮距、最小转弯半径、安全包络半径与限速）、<code>ArrivalSpecPod</code>（常规到点与靠泊停稳容差）、额定负载、作业高度范围
-<code>[reach_z_min_m, reach_z_max_m]</code> 以及两套关键位掩码：
-<ul>
-<li><code>AffordanceBit</code>：标识抓持箱体/把手（<code>kPinchBoxOrHandle</code>）、灵巧手包络（<code>kDexhandLightEnvelop</code>）、圆柱插头（<code>kCylindricalPowerPlug</code>）、双臂推车把手（<code>kBimanualCartHandle</code>）、欧标叉孔（<code>kEuroForkPocket</code>）、牵引销钩（<code>kTowHitchPin</code>）及按钮/舱门锁扣（<code>kLatchButtonOrDoor</code>）。</li>
-<li><code>HalCapBit</code>：标识 IMU、3D 雷达、RGB
-相机、左右腕六维力（<code>kWristFtLeft</code>/<code>Right</code>）、灵巧手触觉（<code>kDexhandTactile</code>）、执行机构（<code>kMechanism</code>）、传送带（<code>kConveyorBelt</code>）与原生速度底盘（<code>kNativeTwistChassis</code>）。</li>
-</ul></li>
+<code>[reach_z_min_m, reach_z_max_m]</code>，以及操作可用性位掩码
+<code>AffordanceBit</code> 与硬件能力位掩码
+<code>HalCapBit</code>。</li>
 </ul>
+<details class="tech-details">
+<summary>
+查看 EmbodimentSpecPod 枚举值、9 组关节切片与位掩码全量字典
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>结构维度</th>
+<th>字段 / 枚举类型</th>
+<th>全量枚举成员与含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>移动构型</td>
+<td><code>LocomotionArchetype</code></td>
+<td><code>kNone</code>、<code>kBipedPolicy</code>、<code>kWheelLegHybrid</code>、<code>kSwerve4WS</code>、<code>kChassisTwist</code></td>
+</tr>
+<tr>
+<td>底盘运动学</td>
+<td><code>KinematicsModelKind</code></td>
+<td><code>kHolonomic</code>（全向）、<code>kDifferential</code>（差速）、<code>kAckermann</code>（阿克曼）</td>
+</tr>
+<tr>
+<td>操作机构</td>
+<td><code>ManipulatorArchetype</code></td>
+<td><code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code></td>
+</tr>
+<tr>
+<td>末端执行器</td>
+<td><code>EffectorArchetype</code></td>
+<td><code>kNone</code>、<code>kParallelJaw2Dof</code>、<code>kDexhand12Dof</code>、<code>kMechanism1Dof</code></td>
+</tr>
+<tr>
+<td>九组关节切片</td>
+<td><code>JointGroupSlice</code></td>
+<td><code>legs</code>、<code>steering</code>、<code>wheels</code>、<code>torso</code>、<code>head</code>、<code>left_arm</code>、<code>right_arm</code>、<code>left_tool</code>、<code>right_tool</code></td>
+</tr>
+<tr>
+<td>操作能力掩码</td>
+<td><code>AffordanceBit</code></td>
+<td><code>kPinchBoxOrHandle</code>、灵巧手包络
+<code>kDexhandLightEnvelop</code>、圆柱插头
+<code>kCylindricalPowerPlug</code>、双臂推车
+<code>kBimanualCartHandle</code>、欧标叉孔
+<code>kEuroForkPocket</code>、牵引销钩
+<code>kTowHitchPin</code>、按钮/舱门锁扣
+<code>kLatchButtonOrDoor</code></td>
+</tr>
+<tr>
+<td>硬件实测掩码</td>
+<td><code>HalCapBit</code></td>
+<td>IMU、3D 雷达、RGB 相机、左右腕六维力 <code>kWristFtLeft</code> /
+<code>kWristFtRight</code>、灵巧手触觉
+<code>kDexhandTactile</code>、特装机构 <code>kMechanism</code>、传送带
+<code>kConveyorBelt</code>、原生速度底盘
+<code>kNativeTwistChassis</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
 <h2 id="全仓-9-类机器人构型一览">全仓 <code>9</code>
 类机器人构型一览</h2>
 <p>经对仓库 <code>configs/robots/*/description.yaml</code>
@@ -244,6 +319,8 @@ id="作业表面几何与窄走廊约束surfaceconstraintspec">作业表面几�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#embodimentspecpod-二进制契约结构"
 id="toc-embodimentspecpod-二进制契约结构"><code>EmbodimentSpecPod</code>
 二进制契约结构</a></li>
@@ -265,5 +342,22 @@ id="toc-作业表面几何与窄走廊约束surfaceconstraintspec">作业表面�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

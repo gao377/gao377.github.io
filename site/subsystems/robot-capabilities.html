@@ -68,23 +68,25 @@ C++20 算法内核，覆盖三维点云定位、全构型导航、冻结合拢�
       </header>
 
       <article class="doc-article">
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
 <p>在 <code>EmbodimentSpecPod</code> 与 <code>4+1</code>
-进程边界内，FACRI
-将所有高频感知、定位、导航规划、全身动作执行与单机安全防线全部构建为纯
-<code>C++20</code> 原生算法库（位于
-<code>src/robot_app/algorithms/</code>），各运行域（<code>src/robot_app/modules/</code>）只负责按规定节拍驱动算法内核并将结果写回共享内存槽位。</p>
-<figure>
-<img src="../assets/diagrams/algorithm-map.svg"
-alt="单机全算法内核总览图" />
-<figcaption aria-hidden="true">单机全算法内核总览图</figcaption>
+进程边界内，单机能力层将高频空间定位、全身移动导航、上肢操作规划与实时安全保护全部构建为纯
+<code>C++20</code> 算法内核（位于
+<code>src/robot_app/algorithms/</code>）。上游由 <code>P1</code> 与
+<code>P2</code> 运行域按固定节拍读取 <code>SalWire</code> 观测与
+<code>LocalTaskRuntime</code> 能力指令，下游向
+<code>motion_cmd.shm</code> 与 <code>traj_slot.shm</code>
+写出连续控制量并交由 <code>P0</code> 进程在激光防碰护栏内安全执行。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/algo-full-stack-map.svg"
+alt="单机 C++20 算法内核与全栈能力数据流图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>单机 C++20
+算法内核与全栈能力数据流图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2
 id="空间定位与视觉跟踪p1robot_spatial_perc">空间定位与视觉跟踪（P1：<code>robot_spatial_perc</code>）</h2>
-<figure>
-<img src="../assets/diagrams/spatial-runtime.svg"
-alt="空间定位运行架构" />
-<figcaption aria-hidden="true">空间定位运行架构</figcaption>
-</figure>
 <p>P1 进程以 <code>10 Hz</code> 周期并行运转两大核心感知子域：</p>
 <ul>
 <li><strong>体素 ICP 先验地图定位（<code>spatial_runtime</code> /
@@ -103,11 +105,6 @@ alt="空间定位运行架构" />
 </ul>
 <h2
 id="全构型移动导航与精确靠泊调节p2navigation_runtime">全构型移动导航与精确靠泊调节（P2：<code>navigation_runtime</code>）</h2>
-<figure>
-<img src="../assets/diagrams/navigation-runtime.svg"
-alt="导航与局部调整架构图" />
-<figcaption aria-hidden="true">导航与局部调整架构图</figcaption>
-</figure>
 <figure class="doc-video" data-media-id="MED-LOCO-02">
 <video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-LOCO-02.webp">
 <source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-chest-carry-conveyor.mp4" type="video/mp4" />
@@ -164,11 +161,6 @@ class="doc-media-badge">PHYSICAL_SIM</span>
 </div>
 <h2 id="全身协调17-轴操作规划与柔顺执行p2-p0">全身协调、17
 轴操作规划与柔顺执行（P2 + P0）</h2>
-<figure>
-<img src="../assets/diagrams/manipulation-runtime.svg"
-alt="上肢与双臂操作架构图" />
-<figcaption aria-hidden="true">上肢与双臂操作架构图</figcaption>
-</figure>
 <figure class="doc-video" data-media-id="MED-MANIP-01">
 <video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-01.webp">
 <source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-manip-pipeline-cycle.mp4" type="video/mp4" />
@@ -179,60 +171,62 @@ SHA256:86896da199）</span><span
 class="doc-media-badge">PHYSICAL_SIM</span>
 </figcaption>
 </figure>
-<p>上肢作业能力同时跨越规划进程（P2
+<p>上身作业能力同时跨越规划进程（P2
 <code>manipulation_runtime</code>）与实时执行进程（P0
 <code>action_executor</code> + <code>body_gateway</code>）：</p>
 <ul>
 <li><strong>17 轴加权 DLS
 上肢规划（<code>UpperBodyPlanner</code>）</strong>：针对
-<code>kUpperBodyDofs = 17</code>（3 轴腰部 + 双 7
-轴机械臂），强制腰部冻结角度限幅（偏航 <code>±40°</code>、俯仰
-<code>-10°..+30°</code>、滚转
-<code>±25°</code>）并设定阶梯惩罚权重（<code>yaw=1.0</code>、<code>pitch=10.0</code>、<code>roll=100.0</code>）优先释放手臂自由度；支持单双臂逆解与围绕目标点的
+<code>kUpperBodyDofs = 17</code>（<code>3</code> 轴腰部 + 双
+<code>7</code> 轴机械臂），强制腰部冻结角度限幅（偏航
+<code>±40°</code>、俯仰 <code>-10°..+30°</code>、滚转
+<code>±25°</code>）并设定阶梯惩罚权重（<code>yaw=1.0</code>、<code>pitch=10.0</code>、<code>roll=100.0</code>）优先释放手臂自由度。</li>
+<li><strong>49 候选搜索与姿态生成</strong>：支持围绕目标点的
 <code>49</code> 候选 <code>±30 mm</code> 微扰采样（要求段残差不超过
 <code>20 mm</code>），集成最小加加速度（Minimum-Jerk）插补及靠站后单次底盘漂移补偿（位移超过
-<code>2 cm</code> 或转角超过 <code>3°</code> 自动触发），同时内建
+<code>2 cm</code> 或转角超过 <code>3°</code> 自动触发），并内建
 <code>chest_carry_posture()</code>（抱物行进姿态）与
 <code>empty_stow_posture()</code>（空手收臂姿态）。</li>
 <li><strong>多模态纯接触轨迹执行与异常回退（<code>TrajectorySlotPod</code>
 &amp; <code>ActionExecutor</code>）</strong>：单机共享槽位支持
-<code>SINGLE_ARM_PLUG_MATE</code>（单臂电源插头力控对接）与
-<code>DUAL_ARM_CART_PUSH_PULL</code>（双臂推车导纳推拉）以及异常情况下的
-<code>REVERSE_PREFIX_REPLAY</code> 安全原路前缀回退，轨迹路点上限
+<code>SINGLE_ARM_PLUG_MATE</code>（单臂电源插头力控对接）、<code>DUAL_ARM_CART_PUSH_PULL</code>（双臂推车导纳推拉）及异常情况下的
+<code>REVERSE_PREFIX_REPLAY</code> 原路前缀回退，轨迹路点上限
 <code>128</code> 点。</li>
-<li><strong>双足策略推理与关节安全防线（<code>PolicyRunner</code>）</strong>：对双足类构型按签名校验
-SHA-256 加载 ONNX 策略包（<code>card</code> / <code>onnx</code> /
-<code>manifest</code> 三重指纹核验），输出腿部目标位置与
+<li><strong>双足策略推理与关节安全防线（<code>PolicyRunner</code>）</strong>：对双足构型按
+SHA-256（<code>card</code> / <code>onnx</code> / <code>manifest</code>
+三重指纹核验）加载 ONNX 策略包，输出腿部目标位置与
 <code>kp</code>/<code>kd</code> 刚度增益；同时通过
 <code>SimPositionExcursionGuard</code>
-持续监测非策略自由度超限时间，任意关节超幅持续超过
+监测非策略自由度超限时间，任意关节超幅持续超过
 <code>100 ms</code>（<code>kSimPositionExcursionNs</code>）即立刻触发报错拦截。</li>
 <li><strong>全身协调仲裁（<code>MotionCoordinator</code> &amp;
 <code>LocalTaskRuntime</code>）</strong>：以 <code>50 Hz</code> 统一向
 <code>motion_cmd.shm</code>
 下发底盘扭转速度、<code>torso_relock_active</code>
 行进锁腰标志、机构行程及夹爪动作标志；并由 P3 进程中的
-<code>LocalTaskRuntime</code> 充当本地执行总管，衔接上层
-<code>ExecuteAssignment</code> / <code>ExecuteCapability</code>
-契约与底层无锁命令/回执环形队列。</li>
+<code>LocalTaskRuntime</code> 衔接上层 <code>ExecuteAssignment</code> /
+<code>ExecuteCapability</code> 契约与底层无锁命令/回执环形队列。</li>
 </ul>
 <h2
 id="主动防碰与接近锥掩蔽机制lidarreflexring">主动防碰与接近锥掩蔽机制（<code>LidarReflexRing</code>）</h2>
-<p>在机器人日常贴近工台按键、插拔地面电源插头或对准托盘货箱的瞬间，传统固定半径急停圈极易误将目标物体本身识别为障碍物导致僵死。为此，P0
+<p>在机器人贴近工台按键、插拔地面电源插头或对准托盘货箱的瞬间，固定半径急停圈极易误将目标物体识别为障碍物导致僵死。P0
 进程内的 <code>protection_runtime</code> 集成
 <code>src/robot_app/algorithms/safety/lidar_reflex_ring.hpp</code>
-定义的 <code>LidarReflexRing</code>：常态下当激光点进入
-<code>1.20 m</code>
+定义的
+<code>LidarReflexRing</code>，通过分向阈值兼顾贴近作业可完成性与全向防碰安全：</p>
+<ul>
+<li><strong>常态全向保护</strong>：当激光点进入 <code>1.20 m</code>
 减速环（<code>slow_radius_m</code>）内执行线性降速，进入
 <code>0.45 m</code>
-硬停环（<code>hard_stop_radius_m</code>）内立即切断速度；而当
-<code>PlanarAdjustment</code>
-或操作协调器激活朝向目标的前向<strong>接近锥掩蔽</strong>（<code>approach_cone_active</code>，半锥角
-<code>25.0°</code>）时，仅对锥面正前方限速至 <code>0.15 m/s</code>
+硬停环（<code>hard_stop_radius_m</code>）内立即切断速度。</li>
+<li><strong>前向接近锥掩蔽（<code>approach_cone_active</code>）</strong>：当
+<code>PlanarAdjustment</code> 或操作协调器激活半锥角 <code>25.0°</code>
+的前向接近锥掩蔽时，仅对锥面正前方限速至 <code>0.15 m/s</code>
 并把前向硬停阈值收窄至
-<code>0.08 m</code>（<code>cone_hard_stop_radius_m</code>），而在其余
+<code>0.08 m</code>（<code>cone_hard_stop_radius_m</code>），其余
 <code>310°</code> 侧后方保持原有 <code>0.45 m</code>
-安全环防撞不变，兼顾贴近作业可完成性与全向防碰安全。</p>
+安全环防撞不变。</li>
+</ul>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -244,6 +238,8 @@ id="主动防碰与接近锥掩蔽机制lidarreflexring">主动防碰与接近�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#空间定位与视觉跟踪p1robot_spatial_perc"
 id="toc-空间定位与视觉跟踪p1robot_spatial_perc">空间定位与视觉跟踪（P1：<code>robot_spatial_perc</code>）</a></li>
 <li><a href="#全构型移动导航与精确靠泊调节p2navigation_runtime"
@@ -264,5 +260,22 @@ id="toc-主动防碰与接近锥掩蔽机制lidarreflexring">主动防碰与接�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

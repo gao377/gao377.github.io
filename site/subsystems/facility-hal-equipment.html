@@ -68,20 +68,29 @@
       </header>
 
       <article class="doc-article">
-<p>在物理产线与机场保障场景中，机器人操作的对象不仅包括被动工件，还包括具备独立运动机构、传感器反馈与工业总线协议的主动环境设备——如智能工厂里的上料机、压装机、检测台、箱式输送线，以及
-C919 机坪上的货舱门、地面电源插座、行李传送带、称重台与登机桥。FACRI
-将这些非机器人固定或移动基础设施统称为「设施（Facility）」，并通过独立模块
-<code>src/facility_hal/</code> 加以抽象隔离。</p>
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p><code>FacilityHAL</code>（<code>src/facility_hal/</code>）将产线工装与机场地勤设施抽象为独立于机器人本体的外部受控硬件边界，上游承接
+<code>SystemApp</code> 内 <code>equipment_runtime</code> 经 HTTP
+<code>:18642</code> 下发的离散设施操作指令，下游调度 <code>MuJoCo</code>
+场景机构、工业 <code>Modbus PLC</code>
+或展陈半实物模拟驱动。外部设施动作周期通常持续数秒且依赖离散状态字，因此物理上完全剥离出机器人
+<code>200 Hz</code> <code>SalWire</code> v2
+实时内存总线，不占用单机运动伺服槽位。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/sub-hal-sal-facility.svg"
+alt="FacilityHAL 工装网关、EquipmentRuntime 与 AckJournal 架构" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FacilityHAL 工装网关、EquipmentRuntime 与
+AckJournal 架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
 <h2
 id="为什么将工装与地勤设备剥离出-salwire">为什么将工装与地勤设备剥离出
 <code>SalWire</code></h2>
-<p>机器人关节高频伺服（<code>200 Hz</code> 定长 48
-轴）与外部设施的离散指令响应存在本质差异：压机加压、登机桥对接或货舱门开合往往持续数秒且依赖工业
-PLC
-离散状态字，不应也不必塞入机器人的毫秒级实时内存槽。因此，系统在物理层面上确立双向边界：</p>
+<p>在物理产线与机场保障场景中，机器人操作对象涵盖上料机、压装机、检测台、箱式输送线、货舱门、地面电源插座、行李传送带、称重台与登机桥等主动基础设施。系统通过双向隔离保证高频伺服与慢速外设互不干扰：</p>
 <ul>
 <li>机器人本体仅经 <code>SalWire</code> v2 与 <code>IHalDriver</code>
-交互；</li>
+交互，维持定长 <code>48</code> 轴关节节拍；</li>
 <li>外部环境设施一律由 <code>FacilityHAL</code> 驱动网关（默认绑定
 <code>:18642</code>）托管；</li>
 <li>上层 <code>SystemApp</code> 中的 <code>equipment_runtime</code>
@@ -205,18 +214,84 @@ Modbus 寄存器读写对接真实 PLC 控制器。</li>
 而绝不伪造成功完成，强制上层调度显式复检设备真实物理状态。</li>
 </ul>
 <h2 id="双场景接入设备拓扑对照">双场景接入设备拓扑对照</h2>
-<ul>
-<li><strong>Smart Factory（<code>16</code>
-台产线设备）</strong>：沿四条并行产线部署
-<code>A1</code>–<code>D1</code>、<code>A2</code>–<code>D2</code>、<code>A3</code>–<code>D3</code>、<code>A4</code>–<code>D4</code>
-共 <code>16</code> 个独立工业单元格，分别由
+<p>平台在两大核心场景中共纳管 <code>24</code>
+台工业与地勤设施，其中智能工厂按 <code>4</code> 条产线部署
+<code>16</code> 个单元格，C919 机坪接入 <code>8</code> 台保障设备。</p>
+<details class="tech-details">
+<summary>
+查看双场景全量接入设施清单（16 台产线设备 + 8 台地勤设施）
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>场景名称</th>
+<th>设备标识 / 编号范围</th>
+<th>设施类型与业务职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Smart Factory</td>
+<td><code>A1</code>–<code>D1</code>、<code>A2</code>–<code>D2</code>、<code>A3</code>–<code>D3</code>、<code>A4</code>–<code>D4</code>（共
+<code>16</code> 台）</td>
+<td>四条并行产线单元格，分别覆盖
 <code>FEEDER</code>、<code>PRESS_CELL</code>、<code>INSPECTOR</code> 与
-<code>CONVEYOR_BOX</code> 四类设备构成。</li>
-<li><strong>C919 Ground Turnaround（<code>8</code>
-台地面/飞机保障设施）</strong>：覆盖
-<code>AC09_GPU_RECEPTACLE</code>（机首电源插座）、<code>AC06_FWD_CARGO_DOOR</code>（前货舱门）、<code>GS02_BELT_CONVEYOR</code>（行李传送带）、<code>ZN11_CARGO_SCALE</code>（称重台）、<code>ZN07_BAGGAGE_SORTER</code>（分拣线）、<code>ZN05_GATE_DOOR</code>（安检联锁门）、<code>GS09_CATERING_LIFT</code>（配餐升降平台）及
-<code>GS01_JETBRIDGE</code>（旅客登机桥），无缝串接机场五大业务支线。</li>
-</ul>
+<code>CONVEYOR_BOX</code></td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>AC09_GPU_RECEPTACLE</code></td>
+<td>机首地面电源插座（<code>verify_plug_seated</code> /
+<code>verify_plug_removed</code>）</td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>AC06_FWD_CARGO_DOOR</code></td>
+<td>前货舱门（<code>open_door</code> / <code>close_door</code>）</td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>GS02_BELT_CONVEYOR</code></td>
+<td>行李传送带（<code>dock_bridge</code> / <code>retract_bridge</code> /
+<code>convey_transfer</code>）</td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>ZN11_CARGO_SCALE</code></td>
+<td>行李与货物称重台（<code>weigh_verify</code>）</td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>ZN07_BAGGAGE_SORTER</code></td>
+<td>行李分拣线（<code>convey_transfer</code> /
+<code>inspect</code>）</td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>ZN05_GATE_DOOR</code></td>
+<td>安检联锁门（<code>open_door</code> / <code>close_door</code>）</td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>GS09_CATERING_LIFT</code></td>
+<td>客舱配餐剪叉升降车（<code>lift_to_level</code>）</td>
+</tr>
+<tr>
+<td>C919 Ground Turnaround</td>
+<td><code>GS01_JETBRIDGE</code></td>
+<td>旅客登机桥（<code>dock_bridge</code> / <code>retract_bridge</code> /
+<code>open_door</code>）</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -228,6 +303,8 @@ Modbus 寄存器读写对接真实 PLC 控制器。</li>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#为什么将工装与地勤设备剥离出-salwire"
 id="toc-为什么将工装与地勤设备剥离出-salwire">为什么将工装与地勤设备剥离出
 <code>SalWire</code></a></li>
@@ -250,5 +327,22 @@ id="toc-双场景接入设备拓扑对照">双场景接入设备拓扑对照</a>
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

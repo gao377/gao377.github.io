@@ -65,96 +65,37 @@ Ground Turnaround 场景对照</p>
       </header>
 
       <article class="doc-article">
-<p>FACRI 平台采用「单一用户入口 <code>facrictl</code> +
-三条场景后端路由」的 CLI 架构。用户在终端调用 <code>./facrictl</code>
-后，<code>deployment/system_entry.py</code> 会依据
-<code>--setup</code>、<code>--scene</code> 与
-<code>--mock</code>/<code>--real</code>
-参数自动分派至对应的专项生命周期脚本。</p>
+<p>FACRI 采用「单一用户入口 +
+三条场景后端路由」的命令行设计，自动依据场景参数与同步标志将请求分派至对应生命周期控制器。本页梳理命令路由逻辑与
+Smart Factory、C919 Ground Turnaround 两大旗舰场景的核心配置差异。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/portal-dual-scenes-map.svg"
+alt="双旗舰场景空间与设备拓扑图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>双旗舰场景空间与设备拓扑图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
 <h2 id="统一入口路由机制">统一入口路由机制</h2>
+<p>在仓库根目录调用 <code>./facrictl</code>
+后，宿主机入口自动按目标场景分派至对应脚本；对于计划生成、静态体检、状态查询、停车与清理等非运行时指令，入口直接在宿主机原地完成，无需拉起执行容器：</p>
 <pre class="text"><code>./facrictl
-  ├── ui ...                        -&gt; deployment/collaboration_launcher.py
-  ├── --setup factory | --scene factory (含 start/stop/close/review/--full-process)
-  │                                 -&gt; deployment/factory_system.py
-  ├── --setup cell ...              -&gt; deployment/factory_cell_cli.py
-  └── --setup c919 | --scene &lt;id&gt;   -&gt; deployment/embodied_system.py (及 c919_system.py 专检)</code></pre>
-<p>在默认工厂发布清单已绑定且未显式指定 <code>--setup c919</code>
-时，<code>facrictl</code> 亦会自动向
-<code>deployment/factory_system.py</code> 追加
-<code>--full-process</code> 以确保全流程交互工件负载就绪。对于
-<code>plan</code>、<code>check</code>、<code>status</code>、<code>prepare</code>、<code>stop</code>、<code>close</code>
-等非容器运行时命令（以及 <code>factory_cell_cli.py</code>
-本地单工位诊断），<code>system_entry.py</code>
-直接在宿主机原地执行而无需额外拉起执行容器。</p>
-<h2 id="三大底层部署-cli-子命令详解">三大底层部署 CLI 子命令详解</h2>
-<h3
-id="智能工厂全流程入口factory_system.py">智能工厂全流程入口（<code>factory_system.py</code>）</h3>
-<p><code>deployment/factory_system.py</code>
-专用于四机智能工厂产线的完整调度与评审，核心命令形态为
-<code>./facrictl --setup factory &lt;operation&gt; [options]</code>：</p>
-<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
-<table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<thead>
-<tr>
-<th>参数 / 子命令</th>
-<th>取值范围与默认行为</th>
-<th>工程用途</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>&lt;operation&gt;</code></td>
-<td><code>plan</code>、<code>check</code>、<code>start</code>、<code>status</code>、<code>stop</code>、<code>close</code>、<code>review</code></td>
-<td>分别对应计划生成、静态体检、服务启动、状态查询、停车、清理与关闭评审</td>
-</tr>
-<tr>
-<td><code>--mode</code></td>
-<td><code>daily</code>（默认）、<code>validation</code></td>
-<td><code>daily</code>
-模式启用操作员完整长周期交互；<code>validation</code>
-用于有界离线验证</td>
-</tr>
-<tr>
-<td><code>--full-process</code></td>
-<td>布尔开关</td>
-<td>激活 <code>4</code> 台 <code>FACRI</code> 机器人在 <code>16</code>
-工位产线的端到端工件转运流程</td>
-</tr>
-<tr>
-<td><code>--circuit</code></td>
-<td>布尔开关</td>
-<td>启用闭合循环巡检运行形态</td>
-</tr>
-<tr>
-<td><code>--performance-motion</code></td>
-<td>布尔开关</td>
-<td>启用高性能运动调试预设</td>
-</tr>
-<tr>
-<td><code>--cell</code> / <code>--cell-pose</code></td>
-<td><code>--cell A1..D4</code>、<code>--cell-pose P00..P10</code></td>
-<td>锁定单个工位与预设姿态进行局部隔离复现（单工位独立登记病例）</td>
-</tr>
-<tr>
-<td><code>--mock</code> / <code>--real</code></td>
-<td>与 <code>--peer-mode {mock,real}</code> 等价</td>
-<td>切换 <code>robot_r1</code> 对接容器内 Mock 仿真或
-<code>Domain 126</code> 外部实物真机</td>
-</tr>
-<tr>
-<td><code>--wait</code></td>
-<td>布尔开关</td>
-<td>在 <code>start</code> 时阻塞等待系统进入 <code>READY</code>；在
-<code>close</code> 时等待容器与锁彻底销毁</td>
-</tr>
-</tbody>
-</table>
-</div>
+  ├── ui ...                      -&gt; deployment/collaboration_launcher.py
+  ├── --setup factory | 默认工厂   -&gt; deployment/factory_system.py
+  ├── --setup cell ...            -&gt; deployment/factory_cell_cli.py
+  └── --setup c919 | --scene &lt;id&gt; -&gt; deployment/embodied_system.py（及 c919_system.py 专检）</code></pre>
+<p>在默认工厂发布清单已绑定且未显式指定其他场景时，入口会自动附加全流程交互参数，确保四机工件转运负载完整就绪。</p>
+<h2 id="常用启动与检查工作流">常用启动与检查工作流</h2>
+<p>针对工厂产线与机场保障两大旗舰场景，日常操作统一复用计划、体检、启动、状态、停车与关闭六项动词：</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Smart Factory：日常全流程仿真、单工位隔离复现、真机联调</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> <span class="at">--setup</span> factory start <span class="at">--mode</span> daily <span class="at">--full-process</span> <span class="at">--wait</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> <span class="at">--setup</span> factory start <span class="at">--cell</span> B1 <span class="at">--cell-pose</span> P02 <span class="at">--wait</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> <span class="at">--setup</span> factory start <span class="at">--real</span> <span class="at">--wait</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># C919 Ground Turnaround：全仿真模式、半实物展陈场地、MJCF 零步专检</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> <span class="at">--setup</span> c919 check <span class="at">--site</span> sim</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> <span class="at">--setup</span> c919 start <span class="at">--site</span> lab <span class="at">--wait</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> deployment/c919_system.py check <span class="at">--site</span> sim <span class="at">--strict-mjcf</span></span></code></pre></div>
 <figure class="doc-video" data-media-id="MED-SYS-01">
 <video controls playsinline loading="lazy" preload="none" width="1152" height="720" poster="../assets/posters/MED-SYS-01.webp">
 <source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-4robot-factory-live.mp4" type="video/mp4" />
@@ -165,47 +106,8 @@ SHA256:623b3ba3f6）</span><span
 class="doc-media-badge">PHYSICAL_SIM</span>
 </figcaption>
 </figure>
-<h3
-id="统一具身场景编排入口embodied_system.py-与-c919_system.py">统一具身场景编排入口（<code>embodied_system.py</code>
-与 <code>c919_system.py</code>）</h3>
-<p><code>deployment/embodied_system.py</code>
-面向遵循统一场景清单（<code>configs/scenes/manifests/&lt;scene&gt;.json</code>）的场景生命周期管理，而
-<code>deployment/c919_system.py</code> 额外提供针对大飞机机坪世界 MJCF
-的零步编译专检：</p>
-<ul>
-<li><strong>通用编排命令</strong>：<code>./facrictl --setup c919 &lt;command&gt;</code>
-支持
-<code>plan</code>、<code>check</code>、<code>prepare</code>、<code>start</code>、<code>stop</code>、<code>close</code>、<code>status</code>
-七项操作，输出结构化 JSON 状态摘要并强制校验统一端口 <code>18640</code>
-与 <code>no_rtf_auto_stop: true</code>。</li>
-<li><strong>关键定制参数</strong>：支持
-<code>--site {sim,lab,real}</code> 选择站点配置档案（如 <code>sim</code>
-对应全仿真 <code>SIM_SAL</code>，<code>lab</code> 对应展陈半实物
-<code>REAL_HAL</code> 与受限子网 CIDR），<code>--active-robots</code>
-限定活跃机器人子集（逗号分隔 ID 列表），<code>--synthetic-cpus</code> 与
-<code>--synthetic-mem-mib</code> 在测试阶段注入合成硬件拓扑以预演
-<code>4+1</code> 资源分配器，以及 <code>--config</code>
-指定自定义场景清单路径。</li>
-<li><strong>C919 MJCF
-专项检查</strong>：<code>python3 deployment/c919_system.py check --site sim --strict-mjcf</code>
-将在零物理步数下校验场景资产哈希、全部 9 类机器人 MJCF 存在性及
-<code>5_000_000 ns</code>（<code>200 Hz</code>）物理步长约束。</li>
-</ul>
-<figure class="doc-video" data-media-id="MED-SYS-02">
-<video controls playsinline loading="lazy" preload="none" width="1868" height="978" poster="../assets/posters/MED-SYS-02.webp">
-<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/c919-apron-turnaround-webgl.mp4" type="video/mp4" />
-</video>
-<figcaption>
-<span>C919 机坪 9 机异构保障三维视口（4x 加速）（4x · 21.5 s / 原片 85.9
-s · SHA256:ee66c8895d）</span><span
-class="doc-media-badge">SCENE_AND_KINEMATIC_T3</span>
-</figcaption>
-</figure>
-<h2 id="双场景清单一览对比">双场景清单一览对比</h2>
-<p>平台所有核心运行参数均固化于结构化声明清单
-<code>configs/scenes/manifests/factory.json</code> 与
-<code>configs/scenes/manifests/c919.json</code>
-中，二者核心配置对照如下：</p>
+<h2 id="双场景核心规格对比">双场景核心规格对比</h2>
+<p>平台所有核心运行参数均固化在场景声明清单中，两大旗舰场景在机器人编队规模、物理节拍、作业空间与设施接入上的核心设计对照如下：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -216,91 +118,166 @@ class="doc-media-badge">SCENE_AND_KINEMATIC_T3</span>
 <thead>
 <tr>
 <th>配置维度</th>
-<th>Smart Factory（<code>factory.json</code>）</th>
-<th>C919 Ground Turnaround（<code>c919.json</code>）</th>
+<th>Smart Factory</th>
+<th>C919 Ground Turnaround</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>场景名称</td>
-<td><code>Electromechanical LVDT Four-Line Factory</code></td>
-<td><code>C919 Ground Turnaround Apron &amp; Cabin</code></td>
+<td>场景定位</td>
+<td>机电 LVDT 四条并行产线连续加工</td>
+<td>C919 大飞机机坪与客舱双层地面保障</td>
 </tr>
 <tr>
-<td>统一端口与子网</td>
-<td><code>18640</code> / <code>172.29.18.0/27</code></td>
-<td><code>18640</code> / <code>172.29.19.0/27</code></td>
+<td>统一入口与端口</td>
+<td>主入口 18640 端口（独立私有子网）</td>
+<td>主入口 18640 端口（独立私有子网）</td>
 </tr>
 <tr>
-<td>辅助端口分配</td>
-<td>总线 <code>18641</code> / 工装网关 <code>18642</code> / 安全脉搏
-<code>18749</code></td>
-<td>总线 <code>18641</code> / 工装网关 <code>18642</code> / 安全脉搏
-<code>18749</code></td>
+<td>物理与控制节拍</td>
+<td>MuJoCo 500 Hz 物理 / 50 Hz 控制</td>
+<td>MuJoCo 200 Hz 物理 / 50 Hz 控制</td>
 </tr>
 <tr>
-<td>物理与控制频率</td>
-<td>MuJoCo <code>500 Hz</code> 物理 / <code>50 Hz</code> 控制</td>
-<td>MuJoCo <code>200 Hz</code> 物理 / <code>50 Hz</code> 控制</td>
+<td>机器人编队规模</td>
+<td>4 台同构 FACRI 双足人形机器人</td>
+<td>9 台跨构型异构（双足、四足轮腿、复合臂、4 型特种车）</td>
 </tr>
 <tr>
-<td>机器人编制</td>
-<td><code>4</code> 台同构
-<code>FACRI</code>（<code>robot_r1</code>..<code>robot_r4</code>，停靠
-<code>CH1</code>..<code>CH4</code>）</td>
-<td><code>9</code>
-台跨构型异构（2×<code>FACRI</code>、<code>M20</code>、<code>G2</code>、<code>RP1</code>
-与 4 型特种车辆）</td>
+<td>工作空间拓扑</td>
+<td>16 个工位（A1 至 D4）与 4 座充电桩</td>
+<td>160 m × 120 m 机坪主平面与 z = 3.47 m 客舱通道</td>
 </tr>
 <tr>
-<td>工作区与地形</td>
-<td><code>16</code> 工位（<code>A1..D4</code>）+ <code>4</code>
-充电桩</td>
-<td><code>map_apron</code>（<code>160 m × 120 m</code>，<code>z = 0 m</code>）+
-<code>map_cabin</code>（<code>z = 3.47 m</code>，通道半宽
-<code>0.25 m</code>）</td>
+<td>外部设施接入</td>
+<td>16 台产线设备（上料、压装、检测、输送）</td>
+<td>8 台机场地勤设备（电源插座、舱门、传送带、登机桥等）</td>
 </tr>
 <tr>
-<td>共享资源通道</td>
-<td><code>factory.ch_corridor</code>、<code>factory.workcell_aisle</code></td>
-<td><code>c919.road.zn03</code> 及机首供电、前货舱、R1 停机点、L1
-登机口四处泊位</td>
+<td>站点与运行模式</td>
+<td>全仿真模式 / 1 号机对等真机同步模式</td>
+<td>全仿真模式 / 半实物展陈模式</td>
 </tr>
 <tr>
-<td>设施接入（FacilityHAL）</td>
-<td><code>16</code>
-台产线设备（<code>FEEDER</code>、<code>PRESS_CELL</code>、<code>INSPECTOR</code>、<code>CONVEYOR_BOX</code>）</td>
-<td><code>8</code>
-台机场设施（地面电源插座、前货舱门、传送带、称重台、分拣线、安检门、升降平台、登机桥）</td>
-</tr>
-<tr>
-<td>技能契约</td>
-<td><code>configs/skills/workpiece-processing/contract.yaml</code></td>
-<td><code>configs/skills/c919-turnaround/contract.yaml</code></td>
-</tr>
-<tr>
-<td>站点切换</td>
-<td><code>sim</code>（<code>SIM_SAL</code>）、<code>real</code>（<code>REAL_HAL</code>）</td>
-<td><code>sim</code>（<code>SIM_SAL</code>）、<code>lab</code>（<code>REAL_HAL</code>
-半实物展陈，CIDR 白名单限域）</td>
-</tr>
-<tr>
-<td>治权与限流策略</td>
-<td><code>no_rtf_auto_stop: true</code>、<code>max_active_video_streams: 2</code></td>
-<td><code>no_rtf_auto_stop: true</code>、<code>max_active_video_streams: 2</code></td>
+<td>运维治权策略</td>
+<td>废除实时率自动停机，最多 2 路视频流</td>
+<td>废除实时率自动停机，最多 2 路视频流</td>
 </tr>
 </tbody>
 </table>
 </div>
+<figure class="doc-video" data-media-id="MED-SYS-02">
+<video controls playsinline loading="lazy" preload="none" width="1868" height="978" poster="../assets/posters/MED-SYS-02.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/c919-apron-turnaround-webgl.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>C919 机坪 9 机异构保障三维视口（4x 加速）（4x · 21.5 s / 原片 85.9
+s · SHA256:ee66c8895d）</span><span
+class="doc-media-badge">SCENE_AND_KINEMATIC_T3</span>
+</figcaption>
+</figure>
 <aside class="doc-callout doc-callout--note" role="note">
   <div class="doc-callout-title">NOTE · 实现注记</div>
-  <p>查看当前活跃会话运行参数与分配给各机器人的 CPU
-核组规划时，可执行 <code>./facrictl --setup c919 plan --site sim</code>
-或
-<code>./facrictl --setup factory plan</code>，两项操作均可在零容器启动开销下输出完整
-JSON 计划清单。</p>
+  <p>查看当前场景各机器人的 CPU 核组规划与活跃配置快照时，可执行
+<code>./facrictl --setup c919 plan --site sim</code> 或
+<code>./facrictl --setup factory plan</code>，两项指令均可在零容器开销下输出完整结构化
+JSON 计划。</p>
   
 </aside>
+<details class="tech-details">
+<summary>
+展开参数矩阵与双场景清单配置详情
+</summary>
+<h3 id="智能工厂与单工位-cli-选项deploymentfactory_system.py">1.
+智能工厂与单工位 CLI
+选项（<code>deployment/factory_system.py</code>）</h3>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>参数或子命令</th>
+<th>取值范围与默认行为</th>
+<th>工程用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作动词</td>
+<td><code>plan / check / start / status / stop / close / review</code></td>
+<td>计划生成、静态体检、服务启动、状态查询、停车、清理与关闭评审</td>
+</tr>
+<tr>
+<td>运行模式</td>
+<td><code>--mode daily</code>（默认）或 <code>validation</code></td>
+<td>日常模式启用操作员长周期交互；验证模式用于有界离线验证</td>
+</tr>
+<tr>
+<td>负载预设开关</td>
+<td><code>--full-process</code>、<code>--circuit</code>、<code>--performance-motion</code></td>
+<td>分别激活 16 工位端到端转运、闭合循环巡检与高性能运动调试</td>
+</tr>
+<tr>
+<td>单工位复现</td>
+<td><code>--cell A1..D4</code> 与 <code>--cell-pose P00..P10</code></td>
+<td>锁定单个工位与预设姿态执行局部隔离复现</td>
+</tr>
+<tr>
+<td>对等真机模式</td>
+<td><code>--mock</code> / <code>--real</code>（等价
+<code>--peer-mode</code>）</td>
+<td>切换 1 号机对接容器内受控 Mock 或 Domain 126 外部真机</td>
+</tr>
+<tr>
+<td>阻塞等待标志</td>
+<td><code>--wait</code></td>
+<td>启动时阻塞等待 READY 信号；关闭时等待容器与锁彻底销毁</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3
+id="统一具身场景编排选项deploymentembodied_system.py-与-deploymentc919_system.py">2.
+统一具身场景编排选项（<code>deployment/embodied_system.py</code> 与
+<code>deployment/c919_system.py</code>）</h3>
+<p><code>deployment/embodied_system.py</code> 支持
+<code>plan / check / prepare / start / stop / close / status</code>
+七项通用操作并强制校验统一端口 18640 与
+<code>no_rtf_auto_stop: true</code>；常用定制参数包括
+<code>--site {sim,lab,real}</code>（切换全仿 <code>SIM_SAL</code>
+与受限子网半实物
+<code>REAL_HAL</code>）、<code>--active-robots</code>（逗号分隔活跃机器人子集）、<code>--synthetic-cpus</code>
+与 <code>--synthetic-mem-mib</code>（注入合成拓扑预演核组分配器）以及
+<code>--config</code>（指定自定义清单）。运行
+<code>deployment/c919_system.py</code> 附带 <code>--strict-mjcf</code>
+时，将在零物理步数下校验场景资产哈希、全部 9 类机器人 MJCF 模型与
+5_000_000 ns（200 Hz）步长约束。</p>
+<h3 id="场景清单文件与内部资源标识对照">3.
+场景清单文件与内部资源标识对照</h3>
+<ul>
+<li><strong>Smart
+Factory（<code>configs/scenes/manifests/factory.json</code>）</strong>：名称为
+Electromechanical LVDT Four-Line Factory，绑定子网
+172.29.18.0/27、总线端口 18641、工装网关端口 18642、安全脉搏基址端口
+18749；仲裁共享通道 <code>factory.ch_corridor</code> 与
+<code>factory.workcell_aisle</code>；接入上料机、压装单元、检测台、箱式输送线四类工装并绑定技能契约
+<code>configs/skills/workpiece-processing/contract.yaml</code>。</li>
+<li><strong>C919 Ground
+Turnaround（<code>configs/scenes/manifests/c919.json</code>）</strong>：名称为
+C919 Ground Turnaround Apron &amp; Cabin，绑定子网 172.29.19.0/27
+与统一辅助端口；覆盖地面工作面 <code>map_apron</code> 与客舱通道
+<code>map_cabin</code>（半宽 0.25 m）；仲裁道路与泊位互斥资源
+<code>c919.road.zn03</code> 及机首供电、前货舱、R1 停机点、L1
+登机口四处泊位；接入地面电源插座、前货舱门、传送带、称重台、分拣线、安检门、升降平台与登机桥
+8 台设施，绑定技能契约
+<code>configs/skills/c919-turnaround/contract.yaml</code>；并发视频流上限固定为
+2 路。</li>
+</ul>
+</details>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -314,17 +291,24 @@ JSON 计划清单。</p>
 <ul>
 <li><a href="#统一入口路由机制"
 id="toc-统一入口路由机制">统一入口路由机制</a></li>
-<li><a href="#三大底层部署-cli-子命令详解"
-id="toc-三大底层部署-cli-子命令详解">三大底层部署 CLI 子命令详解</a>
+<li><a href="#常用启动与检查工作流"
+id="toc-常用启动与检查工作流">常用启动与检查工作流</a></li>
+<li><a href="#双场景核心规格对比"
+id="toc-双场景核心规格对比">双场景核心规格对比</a>
 <ul>
-<li><a href="#智能工厂全流程入口factory_system.py"
-id="toc-智能工厂全流程入口factory_system.py">智能工厂全流程入口（<code>factory_system.py</code>）</a></li>
-<li><a href="#统一具身场景编排入口embodied_system.py-与-c919_system.py"
-id="toc-统一具身场景编排入口embodied_system.py-与-c919_system.py">统一具身场景编排入口（<code>embodied_system.py</code>
-与 <code>c919_system.py</code>）</a></li>
+<li><a href="#智能工厂与单工位-cli-选项deploymentfactory_system.py"
+id="toc-智能工厂与单工位-cli-选项deploymentfactory_system.py">1.
+智能工厂与单工位 CLI
+选项（<code>deployment/factory_system.py</code>）</a></li>
+<li><a
+href="#统一具身场景编排选项deploymentembodied_system.py-与-deploymentc919_system.py"
+id="toc-统一具身场景编排选项deploymentembodied_system.py-与-deploymentc919_system.py">2.
+统一具身场景编排选项（<code>deployment/embodied_system.py</code> 与
+<code>deployment/c919_system.py</code>）</a></li>
+<li><a href="#场景清单文件与内部资源标识对照"
+id="toc-场景清单文件与内部资源标识对照">3.
+场景清单文件与内部资源标识对照</a></li>
 </ul></li>
-<li><a href="#双场景清单一览对比"
-id="toc-双场景清单一览对比">双场景清单一览对比</a></li>
 </ul>
       </nav>
     </aside>
@@ -336,5 +320,22 @@ id="toc-双场景清单一览对比">双场景清单一览对比</a></li>
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

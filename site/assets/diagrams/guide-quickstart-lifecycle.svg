@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">facrictl 单会话生命周期与五步启停状态流转</title>
+  <desc id="diagram-desc">展示 facrictl 统一 CLI 路由至三条部署后端，以及五步标准启停和 stop 与 close --wait 的资源锁状态差异。</desc>
+  <defs>
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="660" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="660" fill="url(#dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="658.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="90.0" width="1128.0" height="122.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CLI ROUTING · deployment/system_entry.py</text>
+  <text x="50.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单一用户入口 ./facrictl 与后端脚本分派</text>
+  <rect x="36.0" y="228.0" width="1128.0" height="182.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="247.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">FIVE-STEP STANDARD BOOT &amp; VERIFY</text>
+  <text x="50.0" y="264.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">标准五步启停状态机（无仿真步数 / RTF 自动中断门限）</text>
+  <rect x="36.0" y="426.0" width="1128.0" height="174.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="445.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">OPERATOR EXIT SOVEREIGNTY</text>
+  <text x="50.0" y="462.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">操作员显式停机两条路径（严禁强杀或擅自恢复自动停机）</text>
+  <rect x="52.0" y="134.0" width="210.0" height="64.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
+  <text x="64.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">./facrictl &lt;args&gt;</text>
+  <text x="64.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">清除外部 DOCKER_CONTEXT</text>
+  <text x="64.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">强制单一物理会话所有者锁</text>
+  <rect x="304.0" y="134.0" width="202.0" height="64.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="316.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">--setup factory</text>
+  <text x="316.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">factory_system.py</text>
+  <text x="316.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">默认追加 --full-process</text>
+  <rect x="518.0" y="134.0" width="202.0" height="64.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="530.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">--setup cell</text>
+  <text x="530.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">factory_cell_cli.py</text>
+  <text x="530.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">单工位 A1..D4 隔离调试</text>
+  <rect x="732.0" y="134.0" width="202.0" height="64.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="744.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">--setup c919 / --scene</text>
+  <text x="744.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">embodied_system.py</text>
+  <text x="744.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">含 c919_system.py 零步检查</text>
+  <rect x="946.0" y="134.0" width="202.0" height="64.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="958.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">ui ...</text>
+  <text x="958.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">collaboration_launcher.py</text>
+  <text x="958.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">复用已有只读浏览器窗口</text>
+  <rect x="52.0" y="278.0" width="202.0" height="114.0" rx="2.5" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.25"/>
+  <text x="64.0" y="298.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">1. CHECK</text>
+  <rect x="196.5" y="285.0" width="45.5" height="17.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.00"/>
+  <text x="219.3" y="296.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#1E4D8C" text-anchor="middle">STEP 1</text>
+  <text x="64.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">facrictl check</text>
+  <text x="64.0" y="329.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">0 物理步长静态体检</text>
+  <text x="64.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">校验清单 / 端口 / 权限</text>
+  <rect x="274.0" y="278.0" width="202.0" height="114.0" rx="2.5" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.25"/>
+  <text x="286.0" y="298.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">2. BASELINE</text>
+  <rect x="418.5" y="285.0" width="45.5" height="17.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.00"/>
+  <text x="441.3" y="296.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#1E4D8C" text-anchor="middle">STEP 2</text>
+  <text x="286.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">check_factory_runtime</text>
+  <text x="286.0" y="329.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">GIL 0.0002 s 指纹核验</text>
+  <text x="286.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">漂移仅核查不凑 PASS</text>
+  <rect x="496.0" y="278.0" width="202.0" height="114.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="508.0" y="298.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">3. START</text>
+  <rect x="640.5" y="285.0" width="45.5" height="17.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.00"/>
+  <text x="663.3" y="296.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#2C5E3F" text-anchor="middle">STEP 3</text>
+  <text x="508.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">start --full-process</text>
+  <text x="508.0" y="329.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">拉起 4+1 与网关容器</text>
+  <text x="508.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">绑定 :18640/:18641/:18642</text>
+  <rect x="718.0" y="278.0" width="202.0" height="114.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="730.0" y="298.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">4. READY</text>
+  <rect x="862.5" y="285.0" width="45.5" height="17.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.00"/>
+  <text x="885.3" y="296.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#2C5E3F" text-anchor="middle">STEP 4</text>
+  <text x="730.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">facrictl status</text>
+  <text x="730.0" y="329.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">轮询 HEALTH &amp; READY</text>
+  <text x="730.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">确认所有者锁与容器就绪</text>
+  <rect x="940.0" y="278.0" width="202.0" height="114.0" rx="2.5" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.25"/>
+  <text x="952.0" y="298.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">5. OBSERVE</text>
+  <rect x="1084.5" y="285.0" width="45.5" height="17.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.00"/>
+  <text x="1107.3" y="296.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#8A5A19" text-anchor="middle">STEP 5</text>
+  <text x="952.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">facrictl ui</text>
+  <text x="952.0" y="329.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">打开 :18640/#global</text>
+  <text x="952.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">只读视图 + C01 对话下发</text>
+  <rect x="52.0" y="474.0" width="344.0" height="110.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
+  <text x="64.0" y="494.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">端口冲突防护 · FACTORY_ALREADY_RUNNING</text>
+  <text x="64.0" y="510.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">一次仅运行一个物理仿真 case</text>
+  <text x="64.0" y="525.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">遇 :18640 占用先跑 status 检查残留锁</text>
+  <text x="64.0" y="541.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">按真实失败保留计数，不重跑篡改旧 case</text>
+  <rect x="416.0" y="474.0" width="356.0" height="110.0" rx="2.5" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.25"/>
+  <text x="428.0" y="494.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">路径 A · ./facrictl stop（安全停车）</text>
+  <text x="428.0" y="510.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">下发安全停车信号，中止运动与任务派发</text>
+  <text x="428.0" y="525.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">容器保留 · :18640 只读视图与日志可查</text>
+  <text x="428.0" y="541.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">适用: 临时暂停检查实时轨迹与证据</text>
+  <rect x="792.0" y="474.0" width="356.0" height="110.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="804.0" y="494.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">路径 B · ./facrictl close --wait（完整释放）</text>
+  <text x="804.0" y="510.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">完成会话结算，销毁并发容器与 /dev/shm</text>
+  <text x="804.0" y="525.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">等待物理所有者锁与端口完全释放</text>
+  <text x="804.0" y="541.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">切换 factory &lt;-&gt; c919 或 mock &lt;-&gt; real 必经</text>
+  <path d="M 262.0 166.0 L 282.0 166.0 L 282.0 166.0 L 304.0 166.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <path d="M 262.0 166.0 L 277.0 166.0 Q 282.0 166.0 282.0 161.0 L 282.0 131.0 Q 282.0 126.0 287.0 126.0 L 615.4 126.0 Q 619.0 126.0 619.0 129.6 L 619.0 134.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <path d="M 262.0 166.0 L 277.0 166.0 Q 282.0 166.0 282.0 161.0 L 282.0 131.0 Q 282.0 126.0 287.0 126.0 L 829.4 126.0 Q 833.0 126.0 833.0 129.6 L 833.0 134.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <path d="M 262.0 166.0 L 277.0 166.0 Q 282.0 166.0 282.0 161.0 L 282.0 131.0 Q 282.0 126.0 287.0 126.0 L 1043.4 126.0 Q 1047.0 126.0 1047.0 129.6 L 1047.0 134.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <path d="M 254.0 335.0 L 274.0 335.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 476.0 335.0 L 496.0 335.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 698.0 335.0 L 718.0 335.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 920.0 335.0 L 940.0 335.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 950.0 392.0 L 950.0 411.0 Q 950.0 416.0 945.0 416.0 L 599.0 416.0 Q 594.0 416.0 594.0 421.0 L 594.0 474.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 1040.0 392.0 L 1040.0 411.0 Q 1040.0 416.0 1035.0 416.0 L 975.0 416.0 Q 970.0 416.0 970.0 421.0 L 970.0 474.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <line x1="36.0" y1="614.0" x2="1164.0" y2="614.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="636.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="625.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="635.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">零物理代价预检</text>
+  <rect x="197.7" y="625.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="219.7" y="635.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">活动会话与完整清理</text>
+  <rect x="335.0" y="625.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="357.0" y="635.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">只读交互与安全暂停</text>
+  <rect x="472.4" y="625.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="494.4" y="635.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">锁冲突与入口边界</text>
+  <text x="1164.0" y="635.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">日常独立前端调试可运行 hybridctl serve --port 8110 (不启动后台物理仿真)</text>
+  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">QUICKSTART LIFECYCLE · SINGLE-CASE OWNER LOCK</text>
+  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">facrictl 单会话生命周期与五步启停状态流转</text>
+  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">DOCKER_HOST=unix:///var/run/docker.sock · Ports 18640–18642 / 18749</text>
+  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

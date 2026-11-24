@@ -68,15 +68,22 @@ state_cmd.shm 与 128 KiB lidar.shm</p>
       </header>
 
       <article class="doc-article">
-<p>单机控制器能够在「宿主机 MuJoCo 物理仿真」与「实机关节 CAN/EtherCAT
-总线」之间无缝切换而无需重新编译核心算法进程，完全归功于两道严格冻结的硬件解耦境界：上承控制器逻辑的
-C++ 插件接口
-<code>IHalDriver</code>，以及下接仿真/真机桥接通道的二进制线协议
-<code>SalWire</code> v2。</p>
-<figure>
-<img src="../assets/diagrams/body-adapter.svg"
-alt="本体硬件适配与共享内存边界" />
-<figcaption aria-hidden="true">本体硬件适配与共享内存边界</figcaption>
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p><code>IHalDriver</code> 与 <code>SalWire</code> v2 共同构成端侧
+<code>robot_body_rt</code>
+控制进程与外部物理世界之间的唯一双边解耦境界：上游承接
+<code>200 Hz</code> 全身参考指令与带外 <code>SafetyFrame</code>
+急停覆盖信号，下游对接 MuJoCo
+物理仿真共享内存（<code>SIM_SAL</code>）或五型真机硬件总线动态库（<code>REAL_HAL</code>）。通过定长零拷贝线协议、编译期字节断言与单调代际
+<code>epoch</code>
+校验，端侧核心算法可在仿真与真机硬件之间切换而无需重新编译。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/sub-hal-sal-facility.svg"
+alt="HAL 插件抽象边界、SalWire v2 与 FacilityHAL 双边隔离架构" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>HAL 插件抽象边界、SalWire v2 与
+FacilityHAL 双边隔离架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="ihaldriver-抽象边界与-6-大动态库插件"><code>IHalDriver</code>
 抽象边界与 <code>6</code> 大动态库插件</h2>
@@ -95,10 +102,11 @@ alt="本体硬件适配与共享内存边界" />
 <code>start(epoch, out_error)</code> 拉起控制循环前，强制核查预期 URDF
 SHA-256
 摘要与现场标定文件是否完整匹配，校验失败则拒绝激活驱动输出。</li>
-<li><strong>五种标准控制模式（<code>JointCtrlMode</code>）</strong>：<code>kDisabled</code>（失能）、<code>kPositionPd</code>（位置
-PD 伺服）、<code>kVelocityPd</code>（速度 PD
+<li><strong>五种标准控制模式（<code>JointCtrlMode</code>）</strong>：支持
+<code>kDisabled</code>（失能）、<code>kPositionPd</code>（位置 PD
+伺服）、<code>kVelocityPd</code>（速度 PD
 伺服）、<code>kTorque</code>（纯力矩前馈）与
-<code>kDampingHold</code>（高阻尼安全保持）；配合紧急保护入口
+<code>kDampingHold</code>（高阻尼安全保持），并统一暴露紧急保护入口
 <code>engage_safe_stop()</code>。</li>
 </ul>
 <p>依据 <code>src/robot_app/CMakeLists.txt</code>
@@ -170,51 +178,103 @@ PD 伺服）、<code>kVelocityPd</code>（速度 PD
 <code>src/embodied_core/include/embodied_core/sal_wire.hpp</code> 中均以
 <code>#pragma pack(push, 1)</code> 紧密排列并附带编译期
 <code>static_assert</code> 字节核查与末端 CRC32 IEEE 校验：</p>
-<h3 id="关节与控制指令通道state_cmd.shm总容量-8192-b">1.
-关节与控制指令通道：<code>state_cmd.shm</code>（总容量
-<code>8192 B</code>）</h3>
-<ul>
-<li><strong>上半区观测槽位（偏移 <code>0</code> 处序列锁，偏移
-<code>8 B</code> 写入 <code>SalSampleWire</code>，精确长度
-<code>1472 B</code>）</strong>：魔数
-<code>0x454D5341</code>（<code>"EMSA"</code>），承载
-<code>epoch</code>、<code>active_dofs</code>（上限
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>共享内存文件与总容量</th>
+<th>结构体与魔数</th>
+<th>写入偏移与精确大小</th>
+<th>承载数据语义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>state_cmd.shm</code>（<code>8192 B</code>）上半区</td>
+<td><code>SalSampleWire</code>（<code>0x454D5341</code>
+<code>"EMSA"</code>）</td>
+<td>偏移 <code>8 B</code>（<code>0</code>
+处序列锁），<code>1472 B</code></td>
+<td>关节反馈、IMU、六维腕力、物理夹持验证位与故障字</td>
+</tr>
+<tr>
+<td><code>state_cmd.shm</code>（<code>8192 B</code>）下半区</td>
+<td><code>SalCommandWire</code>（<code>0x454D5343</code>
+<code>"EMSC"</code>）</td>
+<td>偏移 <code>4104 B</code>（<code>4096</code>
+处序列锁），<code>2052 B</code></td>
+<td>逐轴参考指令、PD 增益、底盘扭转速度、特装机构与急停控制位</td>
+</tr>
+<tr>
+<td><code>lidar.shm</code>（<code>131072 B</code> /
+<code>128 KiB</code>）</td>
+<td><code>SalLidarWire</code>（<code>0x454D4C44</code>
+<code>"EMLD"</code>）</td>
+<td>偏移 <code>8 B</code>，<code>96068 B</code></td>
+<td>单帧最多 <code>6000</code> 个 <code>16 B</code>
+<code>SalLidarPointXYZI</code> 点云（供 <code>VoxelIcpLocalizer</code>
+读取）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="tech-details">
+<summary>
+查看 SalWire v2 结构体全量字段与标志位字典
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>结构体</th>
+<th>核心字段集合</th>
+<th>关键标志位与上限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SalSampleWire</code>（<code>1472 B</code>）</td>
+<td><code>epoch</code>、<code>active_dofs</code>（上限
 <code>48</code>）、单调帧序
-<code>seq</code>、<code>sim_time_ns</code>、全部关节
-<code>q/dq/tau_est[48]</code>、底盘六自由度与速度、IMU
+<code>seq</code>、<code>sim_time_ns</code>、<code>q/dq/tau_est[48]</code>、底盘六自由度与速度、IMU
 四元数/角速度/加速度、左右腕六维力
-<code>wrist_wrench_{l,r}[6]</code>、机构行程与限位标志
-<code>mech_flags</code>（上下限位、锁栓吸合、IMU/腕力有效位）、抓取真实物理状态
-<code>grasp_state_flags</code>（左右闭爪、防滑持握确认
-<code>kGraspStateHeldVerified</code>、接触支撑位）、<code>held_object_hash</code>
-与故障字 <code>fault_word</code>。</li>
-<li><strong>下半区控制槽位（偏移 <code>4096</code> 处序列锁，偏移
-<code>4104 B</code> 写入 <code>SalCommandWire</code>，精确长度
-<code>2052 B</code>）</strong>：魔数
-<code>0x454D5343</code>（<code>"EMSC"</code>），承载
-<code>epoch</code>、<code>seq</code>、<code>host_monotonic_ns</code>、逐关节模式
+<code>wrist_wrench_{l,r}[6]</code>、<code>mech_flags</code>、<code>grasp_state_flags</code>、<code>held_object_hash</code>、<code>fault_word</code></td>
+<td><code>mech_flags</code> 含上下限位/锁栓吸合/IMU
+与腕力有效位；<code>grasp_state_flags</code> 含左右闭爪、防滑持握确认
+<code>kGraspStateHeldVerified</code>、接触支撑位</td>
+</tr>
+<tr>
+<td><code>SalCommandWire</code>（<code>2052 B</code>）</td>
+<td><code>epoch</code>、<code>seq</code>、<code>host_monotonic_ns</code>、逐关节模式
 <code>modes[48]</code>、参考量
 <code>q_ref/dq_ref/kp/kd/tau_ff[48]</code>、底盘目标速度
 <code>base_twist[3]</code>、特装机构位置
 <code>mechanism_target</code>、传送带速度
-<code>belt_speed_mps</code>、夹爪动作 <code>grasp_cmd_flags</code>
-以及模式控制位
-<code>cmd_flags</code>（<code>kCmdFlagUseBaseTwist</code>、<code>kCmdFlagMechanismActive</code>、<code>kCmdFlagEstopHold</code>、<code>kCmdFlagOperationActive</code>）。</li>
-</ul>
-<h3 id="三维激光雷达点云通道lidar.shm总容量-131072-b-128-kib">2.
-三维激光雷达点云通道：<code>lidar.shm</code>（总容量
-<code>131072 B</code> / <code>128 KiB</code>）</h3>
-<ul>
-<li><strong>单帧定长雷达包（偏移 <code>8 B</code> 写入
-<code>SalLidarWire</code>，精确长度
-<code>96068 B</code>）</strong>：魔数
-<code>0x454D4C44</code>（<code>"EMLD"</code>），包含
-<code>epoch</code>、<code>point_count</code>、<code>seq</code>、<code>sim_time_ns</code>、<code>frame_id[32]</code>
-以及最多 <code>6000</code> 个 <code>16 B</code> 的
-<code>SalLidarPointXYZI</code> 点（<code>x/y/z/intensity</code> 均为
-<code>float32</code>），由仿真渲染/传感器线程直接写入并供 P1 进程中的
-<code>VoxelIcpLocalizer</code> 零拷贝读取。</li>
-</ul>
+<code>belt_speed_mps</code>、<code>grasp_cmd_flags</code>、<code>cmd_flags</code></td>
+<td><code>cmd_flags</code> 含
+<code>kCmdFlagUseBaseTwist</code>、<code>kCmdFlagMechanismActive</code>、<code>kCmdFlagEstopHold</code>、<code>kCmdFlagOperationActive</code></td>
+</tr>
+<tr>
+<td><code>SalLidarWire</code>（<code>96068 B</code>）</td>
+<td><code>epoch</code>、<code>point_count</code>、<code>seq</code>、<code>sim_time_ns</code>、<code>frame_id[32]</code>、<code>SalLidarPointXYZI[6000]</code></td>
+<td>每个点占 <code>16 B</code>（<code>x/y/z/intensity</code> 均为
+<code>float32</code>），点云总数上限 <code>6000</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
 <h2
 id="输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新鲜度门禁与双层安全防线</h2>
 <p><code>src/robot_app/modules/sensor_adapters/domain.hpp</code> 中的
@@ -248,22 +308,14 @@ id="输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#ihaldriver-抽象边界与-6-大动态库插件"
 id="toc-ihaldriver-抽象边界与-6-大动态库插件"><code>IHalDriver</code>
 抽象边界与 <code>6</code> 大动态库插件</a></li>
 <li><a href="#salwire-v2-定长零拷贝共享内存协议"
 id="toc-salwire-v2-定长零拷贝共享内存协议"><code>SalWire</code> v2
-定长零拷贝共享内存协议</a>
-<ul>
-<li><a href="#关节与控制指令通道state_cmd.shm总容量-8192-b"
-id="toc-关节与控制指令通道state_cmd.shm总容量-8192-b">1.
-关节与控制指令通道：<code>state_cmd.shm</code>（总容量
-<code>8192 B</code>）</a></li>
-<li><a href="#三维激光雷达点云通道lidar.shm总容量-131072-b-128-kib"
-id="toc-三维激光雷达点云通道lidar.shm总容量-131072-b-128-kib">2.
-三维激光雷达点云通道：<code>lidar.shm</code>（总容量
-<code>131072 B</code> / <code>128 KiB</code>）</a></li>
-</ul></li>
+定长零拷贝共享内存协议</a></li>
 <li><a href="#输入验证帧新鲜度门禁与双层安全防线"
 id="toc-输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新鲜度门禁与双层安全防线</a></li>
 </ul>
@@ -277,5 +329,22 @@ id="toc-输入验证帧新鲜度门禁与双层安全防线">输入验证、帧�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

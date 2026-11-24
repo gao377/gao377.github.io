@@ -66,15 +66,22 @@ SLAM、全局-局部规划链及零先验收敛终端伺服</p>
       </header>
 
       <article class="doc-article">
-<p>FACRI 的自主移动与精确停靠由 <code>spatial_runtime</code> 与
-<code>navigation_runtime</code>
-两套运行域共同驱动，前者解决机器人行走、弯腰时的激光点云畸变与全局重定位问题，后者串联全局无碰撞路径搜索、高频局部轨迹优化以及工位前毫米级收敛停靠。模块图与接口映射参考
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p>自主定位与移动导航由
+<code>spatial_runtime</code>（<code>P1</code>，<code>10 Hz</code>）与
+<code>navigation_runtime</code>（<code>P2</code>，<code>20 Hz</code>）两套运行域联合驱动：上游承接
+<code>SalLidarWire</code> 三维点云、腰部关节编码器与工位目标坐标，下游向
+<code>motion_coordinator</code>
+输出无碰撞底盘速度及精确停靠状态。<code>spatial_runtime</code>
+先行补偿弯腰作业引起的雷达姿态倾角畸变，使下游全局搜索、局部避障与毫米级终端伺服可统一运行在水平参考基准系上。模块图与接口映射参考
 <a href="../architecture/component-map.html">组件地图</a> 与 <a
-href="../subsystems/robot-capabilities.html">机器人本体能力总览</a>。</p>
-<figure>
-<img src="../assets/diagrams/spatial-runtime.svg"
-alt="空间定位模块架构图" />
-<figcaption aria-hidden="true">空间定位模块架构图</figcaption>
+href="../subsystems/robot-capabilities.html">单机能力总览</a>。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/algo-full-stack-map.svg"
+alt="空间定位与分层导航在全栈算法中的位置" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>空间定位与分层导航在全栈算法中的位置</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2
 id="一空间定位与动态腰部运动学补偿spatial_runtime">一、空间定位与动态腰部运动学补偿（<code>spatial_runtime</code>）</h2>
@@ -114,13 +121,8 @@ id="一空间定位与动态腰部运动学补偿spatial_runtime">一、空间�
 算法即可无感知复用常规水平点云流，避免弯腰抓取或抬头观察时地图垂直撕裂或定位漂移。</li>
 </ol>
 <h2
-id="二多层联动规划管线hybridastarmppiboxroute-与-responsesampling">二、多层联动规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
+id="二多层接力规划管线hybridastarmppiboxroute-与-responsesampling">二、多层接力规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
 与 <code>ResponseSampling</code></h2>
-<figure>
-<img src="../assets/diagrams/navigation-runtime.svg"
-alt="导航运行时管线" />
-<figcaption aria-hidden="true">导航运行时管线</figcaption>
-</figure>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -158,7 +160,7 @@ alt="导航运行时管线" />
 <td><code>plan_box</code>（<code>src/robot_app/modules/navigation_runtime/infrastructure/geometry/box_route.py</code>）</td>
 <td>在 <code>0.05 m</code> 分辨率占据栅格联合 <code>PctProvider</code>
 规划出站-入站轨迹；首轮（Pass
-0）优先尝试原地单向调头；受阻时依序激活三层靠泊拉出回退（<code>goal_inplace</code>、<code>start_inplace</code>、<code>both_pull</code>）</td>
+<code>0</code>）优先尝试原地单向调头；受阻时依序激活三层靠泊拉出回退（<code>goal_inplace</code>、<code>start_inplace</code>、<code>both_pull</code>）</td>
 </tr>
 <tr>
 <td>走廊速度护栏与前向模拟</td>
@@ -183,19 +185,17 @@ rollout（保持步长 <code>hold_step = 0.02 s</code>、持续
 <h2
 id="三零先验终端收敛伺服convergentterminalservo">三、零先验终端收敛伺服：<code>ConvergentTerminalServo</code></h2>
 <p>工位操作前的最后 <code>0.3 m</code>
-精停极易受地面摩擦不均、鞋底弹性形变与步态稳态漂移影响，产生系统性跟踪偏置。<code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code>
+精停易受地面摩擦不均、鞋底弹性形变与步态稳态漂移影响而产生系统性偏置。<code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code>
 中的 <code>ConvergentTerminalServo</code>
 采用同心圆三态切换机制与零先验在线学习解决终段抖动问题：</p>
 <ol type="1">
 <li><strong>三状态同心收敛机（<code>IDLE_IN_BAND</code> /
-<code>APPROACH</code> / <code>SETTLE</code>）</strong>：
-<ul>
-<li>当位置偏差落入核心停靠区
-<code>R_core = min(0.015, 0.30 * r_accept, r_entry_cap)</code>（m）以内且偏航收敛后进入
-<code>IDLE_IN_BAND</code>（输出零速），避免微幅量化噪声引起反复微步踩踏。</li>
-<li>仅当外溢超出公开验收阈值 <code>r_accept</code> 时重入
-<code>APPROACH</code> 或 <code>SETTLE</code> 平滑归位。</li>
-</ul></li>
+<code>APPROACH</code> /
+<code>SETTLE</code>）</strong>：当位置偏差落入核心停靠区
+<code>R_core = min(0.015, 0.30 * r_accept, r_entry_cap)</code>（<code>m</code>）以内且偏航收敛后进入
+<code>IDLE_IN_BAND</code>（输出零速），避免微幅量化噪声引起反复微步踩踏；仅当外溢超出公开验收阈值
+<code>r_accept</code> 时重入 <code>APPROACH</code> 或
+<code>SETTLE</code> 平滑归位。</li>
 <li><strong>零先验阻尼割线偏置估计（<code>b_xy</code>）</strong>：初始化偏置严格为零（不假设任何硬件固定漂移），在近距
 <code>SETTLE</code>
 过程中根据实发参考速度与实际机体系位移增量做阻尼割线更新，并将估计偏置总量硬性限幅在
@@ -232,6 +232,8 @@ class="doc-media-badge">PHYSICAL_SIM</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#一空间定位与动态腰部运动学补偿spatial_runtime"
 id="toc-一空间定位与动态腰部运动学补偿spatial_runtime">一、空间定位与动态腰部运动学补偿（<code>spatial_runtime</code>）</a>
 <ul>
@@ -243,8 +245,8 @@ id="toc-弯腰倾斜工况下的激光外参实时补偿">1.2
 弯腰倾斜工况下的激光外参实时补偿</a></li>
 </ul></li>
 <li><a
-href="#二多层联动规划管线hybridastarmppiboxroute-与-responsesampling"
-id="toc-二多层联动规划管线hybridastarmppiboxroute-与-responsesampling">二、多层联动规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
+href="#二多层接力规划管线hybridastarmppiboxroute-与-responsesampling"
+id="toc-二多层接力规划管线hybridastarmppiboxroute-与-responsesampling">二、多层接力规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
 与 <code>ResponseSampling</code></a></li>
 <li><a href="#三零先验终端收敛伺服convergentterminalservo"
 id="toc-三零先验终端收敛伺服convergentterminalservo">三、零先验终端收敛伺服：<code>ConvergentTerminalServo</code></a></li>
@@ -261,5 +263,22 @@ id="toc-四三维激光回环定位与导航避障录像">四、三维激光回�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

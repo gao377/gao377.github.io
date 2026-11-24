@@ -65,11 +65,16 @@ HAL 动态库的精确映射</p>
       </header>
 
       <article class="doc-article">
-<p>本页记录经过代码库实测核对的真实目录归属与进程拓扑映射，用于帮助研发人员精确定位功能实现、排查模块边界，并避免因历史文档残余路径产生的误引。</p>
-<figure>
-<img src="../assets/diagrams/agent-architecture.svg"
-alt="平台多智能体协作模块图" />
-<figcaption aria-hidden="true">平台多智能体协作模块图</figcaption>
+<p>本页以当前工作树实际目录为依据，建立从顶层源码目录到系统编排模块与端侧
+<code>C++20</code>
+多进程二进制的映射关系，帮助开发者快速定位功能归属与跨层边界。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/arch-software-stack.svg"
+alt="FACRI 统一软件栈与跨层部署拓扑图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FACRI
+统一软件栈与跨层部署拓扑图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="顶层工作区源码总览">顶层工作区源码总览</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
@@ -83,84 +88,92 @@ alt="平台多智能体协作模块图" />
 <thead>
 <tr>
 <th>顶层目录</th>
-<th>语言 / 构建栈</th>
+<th>语言与构建栈</th>
 <th>运行进程形态</th>
-<th>核心功能范围</th>
+<th>核心职责范围</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>apps/collaboration_platform/</code></td>
-<td>TypeScript (React/Vite) + Python FastAPI</td>
-<td>前端静态资源 + 只读展示服务（<code>:8110</code> /
-<code>:18640</code>）</td>
-<td><code>Three.js</code> 双精度渲染、<code>17+</code>
-个前端工作台、观测回放与交互入口代理</td>
+<td>TypeScript 与 Python FastAPI</td>
+<td>前端静态资源与只读展示服务</td>
+<td>三维只读视口、17+ 个操作诊断面板与只读回放代理</td>
 </tr>
 <tr>
 <td><code>apps/model_gateway/</code></td>
-<td>Python FastAPI + WebSocket + vLLM/ASR/TTS Worker</td>
-<td>独立推理网关进程（<code>:18080</code>）</td>
-<td>文本、语音流、向量与视觉模型的并发上限控制、鉴权与本地资产摘要校验</td>
+<td>Python FastAPI 与异步推理工作进程</td>
+<td>独立模型推理网关进程</td>
+<td>文本、语音与视觉模型并发上限控制、鉴权与摘要校验</td>
 </tr>
 <tr>
 <td><code>src/system_app/</code></td>
-<td>Python 3 + <code>rclpy</code> + FastAPI + SQLite/FTS5</td>
-<td>系统节点 + 交互网关（<code>:8090</code>）+
-舰队总线（<code>:18641</code>）</td>
-<td>12 大智能体规划/运行时/验证/记忆/离线进化模块与交互运行时</td>
+<td>Python 3、<code>rclpy</code>、FastAPI 与 SQLite</td>
+<td>系统节点、交互网关与车队总线</td>
+<td>12 大规划、运行时、核验、记忆与离线演化模块</td>
 </tr>
 <tr>
 <td><code>src/facility_hal/</code></td>
-<td>Python 3 FastAPI + WAL 日志</td>
-<td>独立工装网关进程（<code>:18642</code>）</td>
-<td><code>MuJoCo</code> 物理设备、<code>Modbus</code> PLC 与
-<code>Mockup</code> 设施的统一控制接口</td>
+<td>Python 3 FastAPI 与预写日志</td>
+<td>独立工装设施网关进程</td>
+<td>仿真物理设备、Modbus PLC 与展陈模拟驱动统一控制</td>
 </tr>
 <tr>
 <td><code>src/embodied_core/</code></td>
-<td><code>C++20</code> Header-only + Python ROS 映射库</td>
-<td>跨层公共基础库（编译期 / 运行期共享）</td>
-<td><code>EmbodimentSpecPod</code>、<code>SalWire</code>
-v2、<code>SafetyFrame</code>、无锁 SHM 原语与契约映射</td>
+<td><code>C++20</code> 头文件库与 Python 映射</td>
+<td>跨层编译与运行期共享基础库</td>
+<td>具身规格载荷、定长共享内存线协议、安全帧与无锁原语</td>
 </tr>
 <tr>
 <td><code>src/robot_app/</code></td>
-<td><code>C++20</code> (CMake) + Python ROS 边界包装</td>
-<td><code>4+1</code> 多进程二进制 + <code>6</code> 个 <code>.so</code>
-HAL/SAL 插件</td>
-<td><code>robot_supervisor</code> 及 4
-个孤立子进程、核心运动/定位/安全/操作算法与 ROS 适配</td>
+<td><code>C++20</code> CMake 与 Python 边界包装</td>
+<td><code>4+1</code> 实时多进程与 6 个 <code>.so</code> 插件</td>
+<td>守护监管、4 个孤立子进程、核心导航操作算法与 ROS 适配</td>
 </tr>
 <tr>
 <td><code>src/embodied_interfaces/</code></td>
-<td>ROS 2 IDL (CMake/ament)</td>
-<td>接口定义包（共 <code>84</code> 份 IDL 文件）</td>
-<td>跨节点强类型 <code>.msg</code>、<code>.srv</code> 与
-<code>.action</code> 通信契约定义</td>
+<td>ROS 2 IDL 接口包</td>
+<td>编译期接口定义（共 84 份契约）</td>
+<td>跨节点强类型话题、服务与动作消息定义</td>
 </tr>
 <tr>
 <td><code>configs/</code></td>
-<td>YAML / JSON</td>
+<td>YAML 与 JSON</td>
 <td>只读声明式配置中心</td>
-<td>9
-类机器人本体描述、双场景清单、技能契约、工位档案与进程资源权重</td>
+<td>9 类机器人本体描述、双场景清单、技能契约与算力权重</td>
 </tr>
 <tr>
 <td><code>deployment/</code> 与 <code>facrictl</code></td>
-<td>Shell + Python CLI</td>
-<td>宿主控制入口</td>
-<td>容器与本地系统装配、发布清单制备、零积分静态预检与全流程生命周期管理</td>
+<td>Shell 与 Python CLI</td>
+<td>宿主机统一控制入口</td>
+<td>容器装配、发布清单制备、零步预检与会话生命周期控制</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="systemapp-十二大核心模块srcsystem_app"><code>SystemApp</code>
-十二大核心模块（<code>src/system_app/</code>）</h2>
-<p>系统层主体采用清晰的分域目录架构，其中
-<code>src/system_app/modules/</code> 下稳定维护以下 <code>12</code>
-个核心模块，配合外围 ROS
-适配器（<code>adapters/ros/</code>）、舰队总线（<code>fleet_bus/</code>）及交互网关（<code>interaction_gateway/</code>）共同运转：</p>
+<h2 id="系统层与端侧-41-运行拓扑">系统层与端侧 <code>4+1</code>
+运行拓扑</h2>
+<p>系统层以 <code>src/system_app/</code>
+为核心，由动态规划、任务图执行、独立谓词核验、记忆与离线反思等 12
+个模块配合车队总线与交互网关运转（架构详述见<a
+href="../subsystems/system-agent-and-rsi.html">系统智能体与受约束离线演化</a>）。单机端侧则编译为
+1 个守护主进程与 4 个按实时优先级隔离的 <code>C++20</code>
+工作进程，并按需加载 6 个硬件或仿真动态库插件（进程与线程机制见<a
+href="../subsystems/robot-multiprocess-cpp.html">单机 C++20 4+1
+多进程实时架构</a>及 <a href="../subsystems/robot-hal-sal-wire.html">HAL
+硬件抽象层与 SalWire v2 协议</a>）。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/sub-robot-multiprocess-4plus1.svg"
+alt="单机 C++20 4+1 多进程实时隔离架构图" loading="lazy" decoding="async" />
+  </div>
+  <figcaption><span>单机 C++20 4+1
+多进程实时隔离架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
+<details class="tech-details">
+<summary>
+展开 SystemApp 十二大核心模块清单
+</summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -171,161 +184,129 @@ HAL/SAL 插件</td>
 <thead>
 <tr>
 <th>目录路径</th>
-<th>核心类 / 职责定位</th>
+<th>核心类与职责定位</th>
 <th>上下游接口边界</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>modules/team_planner/</code></td>
+<td><code>src/system_app/modules/team_planner/</code></td>
 <td><code>DynamicCapabilityPlanner</code>：融合能力档案、记忆与设备状态编译规划</td>
-<td>产出澄清请求、宏技能计划或拓扑 DAG，经
-<code>/system/compile_plan</code> 提供编译</td>
+<td>产出澄清请求、宏技能或任务图，提供 <code>/system/compile_plan</code>
+编译入口</td>
 </tr>
 <tr>
-<td><code>modules/team_runtime/</code></td>
-<td><code>TeamRuntime</code>：DAG
-节点推进、依赖检查、任务下发与回执归集</td>
-<td>经 <code>/system/execute_assignment</code> 与
-<code>StarFleetBus</code> 协调机器人及工装进度</td>
+<td><code>src/system_app/modules/team_runtime/</code></td>
+<td><code>TeamRuntime</code>：任务图节点推进、依赖检查、派发与回执归集</td>
+<td>经 <code>/system/execute_assignment</code>
+与车队总线协调机器人及工装进度</td>
 </tr>
 <tr>
-<td><code>modules/team_verifier/</code></td>
-<td><code>TeamVerifier</code>：执行与观测来源匹配、多臂归属、空间地图来源与持股守恒验证</td>
-<td>评估返回 <code>SATISFIED</code>、<code>UNSATISFIED</code> 或
-<code>UNKNOWN</code>，拦截未完成核验的虚假通过</td>
+<td><code>src/system_app/modules/team_verifier/</code></td>
+<td><code>TeamVerifier</code>：执行与观测来源匹配、多臂归属、地图与持股守恒校验</td>
+<td>返回 <code>SATISFIED</code>、<code>UNSATISFIED</code> 或
+<code>UNKNOWN</code>，拦截虚假完成</td>
 </tr>
 <tr>
-<td><code>modules/reflection_engine/</code></td>
-<td><code>ReflectionEngine</code>：消费真实失败包并剖析根因（仅用于离线实验与诊断）</td>
-<td>连接 <code>EvidenceStore</code> 与
-<code>EvolutionManager</code>，不直接写入在线控制路径</td>
+<td><code>src/system_app/modules/reflection_engine/</code></td>
+<td><code>ReflectionEngine</code>：消费真实失败包并剖析根因（仅限离线诊断）</td>
+<td>连接证据仓与演化管理器，不直接写入在线控制路径</td>
 </tr>
 <tr>
-<td><code>modules/evolution_manager/</code></td>
-<td><code>EvolutionManager</code>：管理离线进化候选生成、沙箱对照验证、采纳与版本回滚</td>
-<td>服务平台
-<code>RsiLab</code>（<code>/api/rsi/*</code>）并受场景门禁严格审查</td>
+<td><code>src/system_app/modules/evolution_manager/</code></td>
+<td><code>EvolutionManager</code>：管理离线候选生成、沙箱对照验证、采纳与回滚</td>
+<td>服务平台离线演化工作区并受门禁审查</td>
 </tr>
 <tr>
-<td><code>modules/equipment_runtime/</code></td>
-<td>设施运行客户端：将抽象工装动作分派至 <code>FacilityHAL</code>
-网关并追踪异步完成状态</td>
-<td>经 <code>:18642</code> HTTP + Bearer 鉴权调用工业外设或地勤设施</td>
+<td><code>src/system_app/modules/equipment_runtime/</code></td>
+<td>设施运行客户端：将抽象工装动作分派至网关并追踪异步完成状态</td>
+<td>经 18642 端口 HTTP 与 Bearer 鉴权调用工业外设或地勤设施</td>
 </tr>
 <tr>
-<td><code>modules/capability_registry/</code></td>
-<td><code>SkillCatalog</code>：预载技能契约模板、前置条件与效果声明与参数校验</td>
-<td>为 <code>team_planner</code> 和 <code>P05</code>
-技能库界面提供只读权威目录</td>
+<td><code>src/system_app/modules/capability_registry/</code></td>
+<td><code>SkillCatalog</code>：预载技能契约模板、前置条件与参数校验</td>
+<td>为规划器与前端技能库视图提供只读权威目录</td>
 </tr>
 <tr>
-<td><code>modules/knowledge_memory/</code></td>
-<td>基于 SQLite/FTS5
-的分层记忆库（<code>spatial_annotation</code>、<code>procedure</code>、<code>episode</code>、<code>knowledge</code>）</td>
+<td><code>src/system_app/modules/knowledge_memory/</code></td>
+<td>基于 SQLite/FTS5 的分层记忆库（空间标注、流程、经历与知识表）</td>
 <td>导入场景静态知识种子包并支撑混合语义规划检索</td>
 </tr>
 <tr>
-<td><code>modules/context_store/</code></td>
+<td><code>src/system_app/modules/context_store/</code></td>
 <td>单机上下文快照存储：维护在线机器人状态、能力与坐标参考快照</td>
-<td>供 <code>CompilerEndpoint</code> 与多机协作视图读取原子快照</td>
+<td>供编译器端点与协作视图读取原子快照</td>
 </tr>
 <tr>
-<td><code>modules/evidence_store/</code></td>
+<td><code>src/system_app/modules/evidence_store/</code></td>
 <td>结构化审计证据仓：归集步骤进展、失败样本与运行摘要</td>
-<td>为离线反思与历史复查留存不可篡改证据记录</td>
+<td>为离线反思与历史复查留存完整证据记录</td>
 </tr>
 <tr>
-<td><code>modules/config_manager/</code></td>
+<td><code>src/system_app/modules/config_manager/</code></td>
 <td>运行时规划与系统配置参数管理与读取接口</td>
 <td>对接交互网关 <code>/configuration</code> 路由</td>
 </tr>
 <tr>
-<td><code>modules/interaction_runtime/</code></td>
-<td>语音 VAD/ASR/TTS 对话意图解析、短时记忆、<code>TourEngine</code> 与
-<code>LiveHub</code> SSE 推送</td>
-<td>通过 <code>:8088</code> 交互控制台与 <code>:8090</code>
-网关承接人机多轮协作指令</td>
+<td><code>src/system_app/modules/interaction_runtime/</code></td>
+<td>语音 VAD/ASR/TTS 对话意图解析、短时记忆与实时 SSE 推送</td>
+<td>通过 8088 端口控制台与 8090 端口网关承接人机多轮协作指令</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="单机-c20-41-进程与插件目录映射srcrobot_app">单机
-<code>C++20</code> <code>4+1</code>
-进程与插件目录映射（<code>src/robot_app/</code>）</h2>
-<p>单机控制端在 <code>src/robot_app/CMakeLists.txt</code> 中明确编译出
-<code>5</code> 个独立可执行程序与 <code>6</code>
-个动态加载共享库插件，其内部模块化组织如下：</p>
-<figure>
-<img src="../assets/diagrams/body-adapter.svg"
-alt="单机本体适配与多进程分层架构图" />
-<figcaption
-aria-hidden="true">单机本体适配与多进程分层架构图</figcaption>
-</figure>
+</details>
+<details class="tech-details">
+<summary>
+展开单机 4+1 进程入口、六大 HAL 插件与配置目录清单
+</summary>
 <ul>
-<li><strong>守护总控进程（<code>robot_supervisor</code>）</strong>：位于
-<code>src/robot_app/supervisor/</code>，包含
-<code>SupervisorRuntime</code>、<code>TopologyProbe</code> 与
-<code>ProportionalResourceAllocator</code>，负责硬件核组探测、共享内存创建、<code>EmbodimentSpecPod</code>
-下发、25 ms 心跳监管及 <code>P1</code>–<code>P3</code> 子进程
-<code>80 ms</code> 退避重启。</li>
+<li><strong>守护总控进程（<code>robot_supervisor</code>）</strong>：源码位于
+<code>src/robot_app/supervisor/</code>，包含拓扑探测
+<code>TopologyProbe</code> 与比例分配器
+<code>ProportionalResourceAllocator</code>，负责核组探测、共享内存创建、构型载荷下发、25
+ms 心跳监管及 P1–P3 子进程 80 ms 退避重启。</li>
 <li><strong>P0
 硬实时控制进程（<code>robot_body_rt</code>）</strong>：入口
-<code>processes/body_rt_main.cpp</code>，内部聚合
-<code>sensor_adapters</code>（硬件读样与帧检验）、<code>state_estimation</code>（里程计与正运动学
-TCP
-位姿）、<code>action_executor</code>（轨迹插补与导纳控制）、<code>body_gateway</code>（指令打包写入
-HAL）四个 <code>200 Hz</code> 线程以及
-<code>protection_runtime</code>（<code>50 Hz</code> 带外
-<code>SafetyFrame</code> 与激光避障反射保护）线程，通过进程内无锁
-<code>BodyRtBus</code> 交换样本。</li>
+<code>src/robot_app/processes/body_rt_main.cpp</code>，内含
+<code>sensor_adapters</code>、<code>state_estimation</code>、<code>action_executor</code>、<code>body_gateway</code>
+四个 200 Hz 线程及 <code>protection_runtime</code> 50 Hz
+带外安全脉冲与避障保护线程，通过进程内无锁总线交换数据。</li>
 <li><strong>P1
 感知与定位进程（<code>robot_spatial_perc</code>）</strong>：入口
-<code>processes/spatial_perc_main.cpp</code>，在 <code>10 Hz</code>
-周期内驱动 <code>spatial_runtime</code>（<code>VoxelIcpLocalizer</code>
-点云定位）与
-<code>perception_runtime</code>（<code>AprilTagTracker</code> 与
-<code>RoiGatewayClient</code> ROI 受限上传）。</li>
+<code>src/robot_app/processes/spatial_perc_main.cpp</code>，以 10 Hz
+驱动 <code>spatial_runtime</code>（点云 ICP 定位）与
+<code>perception_runtime</code>（基准标签跟踪与受限 ROI 上传）。</li>
 <li><strong>P2
 规划协调进程（<code>robot_motion_plan</code>）</strong>：入口
-<code>processes/motion_plan_main.cpp</code>，以 <code>50 Hz</code> 运行
-<code>motion_coordinator</code>（协调全身扭转锁定、接近锥面屏蔽与末端标志），配合
-<code>20 Hz</code> 运行的
-<code>navigation_runtime</code>（<code>HybridAStar</code> +
-<code>MPPI</code> + <code>PlanarAdjustment</code>）及按需/20 Hz 运行的
-<code>manipulation_runtime</code>（<code>UpperBodyPlanner</code> 17
-轴加权 DLS 逆解与 49 候选搜索）。</li>
+<code>src/robot_app/processes/motion_plan_main.cpp</code>，以 50 Hz 运行
+<code>motion_coordinator</code>，并驱动 20 Hz
+<code>navigation_runtime</code>（全局混合 A*、MPPI 避障与精密调节）及
+<code>manipulation_runtime</code>（17 轴加权 DLS 逆解与 49
+候选搜索）。</li>
 <li><strong>P3
 本地任务与审计进程（<code>robot_task_agent</code>）</strong>：入口
-<code>processes/task_agent_main.cpp</code>，运行
-<code>config_client</code>（启动期 URDF/策略 SHA-256
-校验）、<code>local_task_runtime</code>（<code>10 Hz</code> 消费
-<code>task_cmd_ring.shm</code> 与回报
-<code>task_receipt_ring.shm</code>）及
-<code>evidence_buffer</code>（将无锁 <code>evidence_ring*.shm</code>
-批量写回本地 JSONL 日志）。</li>
+<code>src/robot_app/processes/task_agent_main.cpp</code>，运行
+<code>config_client</code>（启动期 URDF 与策略 SHA-256
+校验）、<code>local_task_runtime</code>（10 Hz
+消费任务命令环并回报回执环）及
+<code>evidence_buffer</code>（将无锁事件环写入本地 JSONL）。</li>
 <li><strong>六大 HAL/SAL
-动态库插件（<code>src/robot_app/backends/</code>）</strong>：运行时由
-<code>algorithms/hal/plugin_loader.cpp</code> 动态加载
+动态库插件（<code>src/robot_app/backends/</code>）</strong>：由
+<code>src/robot_app/algorithms/hal/plugin_loader.cpp</code> 动态加载
 <code>libsal_shm.so</code>（<code>SIM_SAL</code>
-仿真共享内存驱动）或五型真机插件（<code>libhal_facri.so</code>、<code>libhal_g2.so</code>、<code>libhal_m20.so</code>、<code>libhal_rp1.so</code>、<code>libhal_ugv_can.so</code>，均返回
-<code>HalOrigin::REAL_HAL</code>）。</li>
+仿真共享内存驱动）或五型真机插件（<code>libhal_facri.so</code>、<code>libhal_g2.so</code>、<code>libhal_m20.so</code>、<code>libhal_rp1.so</code>、<code>libhal_ugv_can.so</code>，均报告
+<code>REAL_HAL</code>）。</li>
 <li><strong>Python ROS 2
-边界适配器（<code>src/robot_app/*.py</code>）</strong>：<code>ros_node.py</code>、<code>capability_ros_node.py</code>（及
-<code>v3</code>–<code>v5</code>
-版本包装）、<code>embodiment_ros.py</code>、<code>manipulation_context_ros.py</code>
-等文件仅负责将 <code>4+1</code> 本机运行时状态桥接为 ROS 2 话题、服务与
-Action 端点。</li>
+边界适配器与配置资产</strong>：<code>src/robot_app/ros_node.py</code>、<code>src/robot_app/capability_ros_node.py</code>
+与 <code>src/robot_app/embodiment_ros.py</code> 仅负责将本机状态桥接为
+ROS 2 服务端点；<code>configs/robots/</code> 存放 9 型本体
+<code>description.yaml</code>，<code>configs/scenes/manifests/</code> 与
+<code>configs/skills/</code>
+存放双场景清单与强约束技能契约，<code>configs/runtime/process_resource_weights.yaml</code>
+定义默认进程资源权重。</li>
 </ul>
-<h2 id="核心配置与部署目录索引">核心配置与部署目录索引</h2>
-<ul>
-<li><strong>本体描述清单（<code>configs/robots/*/description.yaml</code>）</strong>：精确维护
-<code>facri</code>、<code>rp1</code>、<code>g2</code>、<code>m20</code>、<code>c919_ugv_tractor</code>、<code>c919_ugv_forklift</code>、<code>c919_ugv_belt</code>、<code>c919_ugv_shuttle</code>
-与历史参考 <code>g1</code> 共 9 型构型 YAML。</li>
-<li><strong>场景与工位清单</strong>：<code>configs/scenes/manifests/{factory,c919}.json</code>、<code>configs/planning/factory-full-cycle-horizontal.json</code>、<code>configs/workstations/c919-{apron,lab-mockup}-v1.json</code>、<code>configs/fleets/c919-heterogeneous-v1.json</code>、<code>configs/runtime/process_resource_weights.yaml</code>。</li>
-<li><strong>技能合同目录（<code>configs/skills/*/contract.yaml</code>）</strong>：集中保存工作站循环（<code>workpiece-processing</code>）、机坪保障主
-DAG（<code>c919-turnaround</code>）及五条业务支线等数十份强约束原子与复合技能契约。</li>
-</ul>
+</details>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -339,15 +320,9 @@ DAG（<code>c919-turnaround</code>）及五条业务支线等数十份强约束�
 <ul>
 <li><a href="#顶层工作区源码总览"
 id="toc-顶层工作区源码总览">顶层工作区源码总览</a></li>
-<li><a href="#systemapp-十二大核心模块srcsystem_app"
-id="toc-systemapp-十二大核心模块srcsystem_app"><code>SystemApp</code>
-十二大核心模块（<code>src/system_app/</code>）</a></li>
-<li><a href="#单机-c20-41-进程与插件目录映射srcrobot_app"
-id="toc-单机-c20-41-进程与插件目录映射srcrobot_app">单机
-<code>C++20</code> <code>4+1</code>
-进程与插件目录映射（<code>src/robot_app/</code>）</a></li>
-<li><a href="#核心配置与部署目录索引"
-id="toc-核心配置与部署目录索引">核心配置与部署目录索引</a></li>
+<li><a href="#系统层与端侧-41-运行拓扑"
+id="toc-系统层与端侧-41-运行拓扑">系统层与端侧 <code>4+1</code>
+运行拓扑</a></li>
 </ul>
       </nav>
     </aside>
@@ -359,5 +334,22 @@ id="toc-核心配置与部署目录索引">核心配置与部署目录索引</a>
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

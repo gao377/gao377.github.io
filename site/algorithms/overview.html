@@ -64,19 +64,29 @@ FACRI、C919 与历史 G1 AMO 原型的验证口径与边界。" />
       </header>
 
       <article class="doc-article">
-<p>本页汇整仓库内现役算法模块的职责边界、代码落点与资格状态，避免将实验室原型或历史机型结论混入当前工厂生产口径。整体架构与模块边界见
-<a href="../architecture/overview.html">架构总览</a> 与 <a
-href="../architecture/component-map.html">组件地图</a>，操作运行基线见
-<a
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p>算法核层位于单机 <code>4+1</code> 实时运行时的
+<code>P0</code>、<code>P1</code> 与 <code>P2</code>
+进程内部（<code>src/robot_app/algorithms/</code>
+与各模块域目录），上游消费经 <code>SensorAdaptersDomain</code>
+帧新鲜度校验的传感样本及 <code>LocalTaskRuntime</code>
+下发的原子能力目标，下游向 <code>ActionExecutor</code> 与
+<code>body_gateway</code>
+输出受限的关节位置、底盘速度及导纳修正指令。所有算法单元均禁止越权读取仿真真值或跨本体继承历史机型资格，完整架构与冻结运行基线见
+<a href="../architecture/overview.html">架构总览</a>、<a
+href="../architecture/component-map.html">组件地图</a> 与 <a
 href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>。</p>
-<figure>
-<img src="../assets/diagrams/algorithm-map.svg"
-alt="算法模块与数据流全景" />
-<figcaption aria-hidden="true">算法模块与数据流全景</figcaption>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/algo-full-stack-map.svg"
+alt="FACRI 全栈算法矩阵与跨层数据流总图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FACRI
+全栈算法矩阵与跨层数据流总图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="一现役生产算法台账">一、现役生产算法台账</h2>
-<p>下表列出当前默认装配、持续经受离线与仿真检验的 11
-类核心算法单元与运行模块，全部遵循「传感器观测归感知与状态估计、规划与控制不越权读取仿真真值、下肢资格不跨本体继承」的基本原则。</p>
+<p>下表列出当前默认装配、持续经受离线与仿真检验的 <code>11</code>
+类核心算法单元与运行模块，全部遵循「传感器观测归感知与状态估计、规划与控制不越权读取仿真真值、下肢资格不跨本体继承」的基本原则：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -98,15 +108,17 @@ alt="算法模块与数据流全景" />
 <tbody>
 <tr>
 <td>下肢步态</td>
-<td><code>FacriMjlabPolicy</code>（47 维观测至 12 维腿部控制）</td>
+<td><code>FacriMjlabPolicy</code>（<code>47</code> 维观测至
+<code>12</code> 维腿部控制）</td>
 <td><code>src/robot_app/backends/facri/mjlab_policy.py</code></td>
 <td>仅限 SIM 现役</td>
-<td>50 Hz 推理、<code>0.8 s</code> 步态相位；REAL 模式显式阻断</td>
+<td><code>50 Hz</code> 推理、<code>0.8 s</code>
+步态相位；<code>REAL</code> 模式显式阻断</td>
 </tr>
 <tr>
 <td>在线推理内核</td>
 <td><code>PolicyRunner</code> 与
-<code>ObservationEncoder</code>（C++20）</td>
+<code>ObservationEncoder</code>（<code>C++20</code>）</td>
 <td><code>src/robot_app/algorithms/policy_infer/policy_runner.hpp</code></td>
 <td>多进程常驻现役</td>
 <td><code>10</code> 帧 × <code>100</code> 维历史栈，支持
@@ -145,10 +157,11 @@ alt="算法模块与数据流全景" />
 <tr>
 <td>双臂与腰部规划</td>
 <td><code>UpperBodyPlanner</code> 与
-<code>DlsIkSolver</code>（C++20）</td>
+<code>DlsIkSolver</code>（<code>C++20</code>）</td>
 <td><code>src/robot_app/algorithms/planning_core/upper_body_planner.hpp</code></td>
 <td>生产现役</td>
-<td><code>17</code> 维上身阻尼最小二乘、49 组双手/单手 TCP 偏移搜索</td>
+<td><code>17</code> 维上身阻尼最小二乘、<code>49</code> 组双手/单手 TCP
+偏移搜索</td>
 </tr>
 <tr>
 <td>力矩观测与柔顺</td>
@@ -186,7 +199,7 @@ alt="算法模块与数据流全景" />
 </div>
 <h2
 id="二条件启用规划路线与历史原型界线">二、条件启用、规划路线与历史原型界线</h2>
-<p>仓库明确隔离当前生产主线与跨机种实验配置，下表列出四类非普适路径的生效条件及不可跨越的资格约束。</p>
+<p>仓库明确隔离当前生产主线与跨机种实验配置，下表列出非普适路径的生效条件及不可跨越的资格约束：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -218,7 +231,7 @@ href="../algorithms/manipulation-and-ik.html">双臂规划与柔顺操作</a></t
 <tr>
 <td>条件受控路径</td>
 <td><code>N02 / N03_DIAGNOSTIC_SIM_ONLY</code> 原生站立配置</td>
-<td>绑定诊断参数文件但仅限 4 组 × <code>6000</code>
+<td>绑定诊断参数文件但仅限 <code>4</code> 组 × <code>6000</code>
 步离线诊断验证，未赋予应用级任务资格</td>
 <td>见 <code>src/robot_app/backends/facri/control_config.py</code></td>
 </tr>
@@ -239,7 +252,7 @@ href="../subsystems/interaction-and-gateway.html">交互网关与终端</a></td>
 <td>C919 机坪 <code>T3</code> 零物理运动学引擎与异构 SAL</td>
 <td>支撑
 <code>FACRI</code>、<code>RP1</code>、<code>G2</code>、<code>M20</code>
-与 4 台 UGV
+与 <code>4</code> 台 UGV
 车体联合演练，纯运动学回路不可外推为动力学接触或真机验收</td>
 <td>见 <a href="../evidence/simulation-engine.html">MuJoCo 4.0.1
 仿真引擎</a> 与 <a
@@ -288,6 +301,8 @@ href="../algorithms/workpiece-perception.html">工件视觉感知</a>，厘清
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#一现役生产算法台账"
 id="toc-一现役生产算法台账">一、现役生产算法台账</a></li>
 <li><a href="#二条件启用规划路线与历史原型界线"
@@ -305,5 +320,22 @@ id="toc-三跨章节阅读导引">三、跨章节阅读导引</a></li>
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

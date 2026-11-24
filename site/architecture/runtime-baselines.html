@@ -64,119 +64,56 @@
       </header>
 
       <article class="doc-article">
-<p>在多线程、多物理引擎与分布式网络并存的工业具身平台上，随手修改底层调度间隔或暗自加入运行时停机阈值往往会掩盖真实性能瓶颈，甚至破坏硬件接口与高层规划间的同步时序。因此，平台将关键调度参数与运行主权收口为受基线审计工具监督的冻结规则（见
+<p>在多线程与多物理引擎并存的系统中，擅自修改调度间隔或增加自动停机阈值会掩盖真实瓶颈并破坏硬件时序。平台将核心调度参数、时钟隔离边界与停机主权收口为受工具监督的四大冻结治理规则（见
 <code>docs/development/factory-runtime-baseline.md</code> 与
 <code>docs/development/factory-rd-frozen-features.md</code>）。</p>
-<figure>
-<img src="../assets/diagrams/simulation-rtf-20261012.svg"
-alt="仿真实时率对比与历史调优轨迹" />
-<figcaption aria-hidden="true">仿真实时率对比与历史调优轨迹</figcaption>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/arch-clock-and-governance.svg"
+alt="FACRI 双时钟隔离与运行时治理架构图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FACRI
+双时钟隔离与运行时治理架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
-<h2 id="核心冻结运行基线参数">核心冻结运行基线参数</h2>
-<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
-<table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
-<thead>
-<tr>
-<th>基线配置项</th>
-<th>当前授权取值</th>
-<th>否决 / 禁止变更项</th>
-<th>源码与清单约束</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Python GIL 调度间隔</strong></td>
-<td><code>0.0002 s</code>（<code>200 µs</code>）</td>
-<td>明确否决 <code>50 µs</code> 激进候选方案，禁止私自调低</td>
-<td><code>docs/development/factory-runtime-baseline.md</code></td>
-</tr>
-<tr>
-<td><strong>Smart Factory 清单仿真步长</strong></td>
-<td><code>physics_hz: 500</code>、<code>control_hz: 50</code>、<code>sal_transport: shm_v2</code></td>
-<td>保持统一异步 SAL、快照与配置生成逻辑不变</td>
-<td><code>configs/scenes/manifests/factory.json</code></td>
-</tr>
-<tr>
-<td><strong>C919 清单仿真步长</strong></td>
-<td><code>physics_hz: 200</code>（<code>5_000_000 ns</code>）、<code>control_hz: 50</code></td>
-<td><code>c919_system.py</code> 启动前硬检验步长必须等于
-<code>5_000_000 ns</code></td>
-<td><code>configs/scenes/manifests/c919.json</code>、<code>deployment/c919_system.py</code></td>
-</tr>
-<tr>
-<td><strong>单机 <code>body_rt</code> 控制与保护</strong></td>
-<td><code>200 Hz</code>（<code>5 ms</code>）HAL
-采样/下发；<code>50 Hz</code>（<code>20 ms</code>）局部安全评估</td>
-<td><code>robot_body_rt</code> 设置
-<code>restart_on_crash = false</code> 与
-<code>mlockall = true</code></td>
-<td><code>src/robot_app/processes/body_rt_main.cpp</code></td>
-</tr>
-<tr>
-<td><strong>带外安全心跳与局部超时</strong></td>
-<td><code>250 ms</code>
-遥操作死人开关（<code>teleop_deadman_ns</code>）；<code>1000 ms</code>
-心跳超时切 <code>LOCAL_HOLD</code></td>
-<td>超时仅置本机
-<code>LOCAL_HOLD</code>，<code>fleet_wide_estop_triggered</code> 恒为
-<code>false</code></td>
-<td><code>src/robot_app/algorithms/safety/protection_core.hpp</code></td>
-</tr>
-<tr>
-<td><strong>独立视觉流并发上限</strong></td>
-<td><code>max_active_video_streams: 2</code>，最大 ROI
-<code>640×480</code>，租约 <code>15.0 s</code></td>
-<td>禁止高分辨率全画幅无节制推流占满带宽</td>
-<td><code>configs/scenes/manifests/*.json</code>、<code>roi_gateway_guard.py</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2
-id="治权裁定废除-rtf-0.5-自动停机与操作员停止唯一主权">治权裁定：废除
-<code>RTF 0.5</code> 自动停机与操作员停止唯一主权</h2>
-<p>平台历史上曾探讨过以实时率阈值自动中断仿真会话的策略（例如早期关于
-<code>RTF 0.5</code>
-准入/停止的记录），但在最新工程治权裁定下已作明确废止，任何新增代码不得变相恢复：</p>
-<ol type="1">
-<li><strong>废除运行时自动停机门禁</strong>：禁止在运行调用链中新增基于实时率的运行时校验器、停机门限或会话级终态
-<code>STOP</code> 自动切断模块；双场景清单均显式固定
-<code>"no_rtf_auto_stop": true</code> 与
-<code>"independent_operation_failures": true</code>。</li>
-<li><strong>区分研发目标与强制停机规则</strong>：平均
-<code>RTF &gt; 1</code>、最低 <code>RTF &gt; 0.8</code>
-仅作为算法优化与调度性能改进的<strong>研发追求目标</strong>，绝对不能写成触发停机的自动开关。</li>
-<li><strong>操作员手动停止唯一主权</strong>：常规长周期完整仿真不恢复历史
-600 秒或固定步数上限；仿真会话只能由运行方或操作员经
+<h2 id="四项核心运行时治理规则">四项核心运行时治理规则</h2>
+<h3 id="冻结调度基线与分层控制频率">1. 冻结调度基线与分层控制频率</h3>
+<p>Python 宿主侧 GIL 调度间隔严格锁定为 <code>0.0002 s</code>（明确否决
+50 µs 激进候选，禁止私自调低）。场景与端侧运行频率按既定基线冻结：Smart
+Factory 为 500 Hz 物理与 50 Hz 控制；C919 为 200 Hz（5_000_000
+ns）物理与 50 Hz 控制；单机 <code>robot_body_rt</code> 保持 200 Hz
+采样下发与 50 Hz
+局部保护，并强制锁定内存且崩溃不静默重启；视觉观测流上限固定为最多 2
+路并发流与 <code>640×480</code> ROI。</p>
+<h3 id="双时钟域隔离与代际防错">2. 双时钟域隔离与代际防错</h3>
+<p>系统在共享内存线协议与状态槽内严格并列隔离仿真物理时钟（<code>sim_time_ns</code>）与宿主机单调时钟（<code>host_monotonic_ns</code>）。上游推理与规划节点在消费状态快照时必须同时验证时间差与单调代际号
+<code>epoch</code>；一旦仿真复位、硬件重连或控制进程重建，递增后的
+<code>epoch</code> 会立即令 <code>robot_body_rt</code>
+丢弃一切旧代际轨迹与任务指令。</p>
+<h3 id="废除-rtf-0.5-自动停机与操作员停止唯一主权">3. 废除
+<code>RTF 0.5</code> 自动停机与操作员停止唯一主权</h3>
+<p>依据最新工程治权裁定，早期关于 <code>RTF 0.5</code>
+自动准入或中断会话的策略已完全废止：双场景清单均固化
+<code>no_rtf_auto_stop: true</code>，严禁在运行链中新增实时率自动停机门禁或恢复
+600 秒运行上限。平均 RTF &gt; 1 与最低 RTF &gt; 0.8
+仅作算法改进追求目标而非停机开关，仿真会话只能由操作员显式执行
 <code>./facrictl stop</code> 或 <code>./facrictl close</code>
-手动终止。</li>
-<li><strong>单机失败严格局部隔离</strong>：当某台机器人出现运动失稳、抓握脱离或局部保护超时时，故障仅影响本机并在统计账本中按真实计数保留，绝不牵连其余在线机器人执行全队停机。</li>
-</ol>
+手动终止。</p>
+<h3 id="单机-local_hold-局部故障隔离">4. 单机 <code>LOCAL_HOLD</code>
+局部故障隔离</h3>
+<p>遥控死人开关租约窗口为 250 ms，带外 <code>SafetyFrame</code>
+安全脉冲或规划心跳持续 1000 ms 超时后，单机保护状态机自动切入本机
+<code>LOCAL_HOLD</code> 悬停保持，且强制保证
+<code>fleet_wide_estop_triggered</code> 恒为
+<code>false</code>。单机运动失稳或保护触发仅影响本机并如实记入统计账本，绝不连带切断其余在线机器人。</p>
 <aside class="doc-callout doc-callout--important" role="note">
   <div class="doc-callout-title">IMPORTANT · 关键约束</div>
-  <p><strong>算法与系统调试前后的强制基线检查</strong>：在实施任何调度、传输、感知或规划代码改动前后，必须执行只读基线检查脚本
-<code>python3 tools/verification/check_factory_runtime_baseline.py</code>
-核对当前代码态是否相对基线摘要产生漂移。若检测到漂移，必须逐项核查实际版本与授权范围，<strong>严禁通过擅自改写
+  <p>算法与运行链修改前后，必须执行只读基线校验
+<code>python3 tools/verification/check_factory_runtime_baseline.py</code>（语音管线另行核验
+<code>resources/voice-input-baseline.json</code>）。若出现漂移须逐项追查授权来源，<strong>严禁通过擅自改写
 <code>resources/factory-runtime-baseline.json</code>
-摘要文件来伪造通过结论</strong>；同理，语音输入管线需单独执行基于
-<code>resources/voice-input-baseline.json</code> 的只读校验。</p>
+凑取通过结论</strong>。</p>
   
 </aside>
-<h2 id="时钟域分离与发布可信度原则">时钟域分离与发布可信度原则</h2>
-<p>为保障离线分析与真机同步的一致性，系统强制执行双时钟隔离规则：<code>SalSampleWire</code>
-与 <code>SpatialPosePod</code>
-明确分离仿真物理世界时钟（<code>sim_time_ns</code>）与宿主机单调挂钟（<code>host_monotonic_ns</code>）。上游推理与规划组件在消费感知观测或状态快照时，必须同时检验单调递增的会话代际号
-<code>epoch</code> 与采样时间戳差值；当硬件切换、仿真复位或
-<code>body_rt</code> 发生重连时，<code>epoch</code>
-自动递增，一切旧代际轨迹槽位（<code>TrajectorySlotPod</code>）与未完成的任务指令将被
-<code>robot_body_rt</code>
-立即丢弃，从根源上切断跨重启指令误执行风险。</p>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -188,13 +125,21 @@ id="治权裁定废除-rtf-0.5-自动停机与操作员停止唯一主权">治�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#核心冻结运行基线参数"
-id="toc-核心冻结运行基线参数">核心冻结运行基线参数</a></li>
-<li><a href="#治权裁定废除-rtf-0.5-自动停机与操作员停止唯一主权"
-id="toc-治权裁定废除-rtf-0.5-自动停机与操作员停止唯一主权">治权裁定：废除
+<li><a href="#四项核心运行时治理规则"
+id="toc-四项核心运行时治理规则">四项核心运行时治理规则</a>
+<ul>
+<li><a href="#冻结调度基线与分层控制频率"
+id="toc-冻结调度基线与分层控制频率">1.
+冻结调度基线与分层控制频率</a></li>
+<li><a href="#双时钟域隔离与代际防错" id="toc-双时钟域隔离与代际防错">2.
+双时钟域隔离与代际防错</a></li>
+<li><a href="#废除-rtf-0.5-自动停机与操作员停止唯一主权"
+id="toc-废除-rtf-0.5-自动停机与操作员停止唯一主权">3. 废除
 <code>RTF 0.5</code> 自动停机与操作员停止唯一主权</a></li>
-<li><a href="#时钟域分离与发布可信度原则"
-id="toc-时钟域分离与发布可信度原则">时钟域分离与发布可信度原则</a></li>
+<li><a href="#单机-local_hold-局部故障隔离"
+id="toc-单机-local_hold-局部故障隔离">4. 单机 <code>LOCAL_HOLD</code>
+局部故障隔离</a></li>
+</ul></li>
 </ul>
       </nav>
     </aside>
@@ -206,5 +151,22 @@ id="toc-时钟域分离与发布可信度原则">时钟域分离与发布可信�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

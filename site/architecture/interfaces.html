@@ -65,17 +65,81 @@ v2、SHM IPC 和 32 字节 SafetyFrame 线协议字段。" />
       </header>
 
       <article class="doc-article">
-<p>FACRI 平台采用「北向强类型语义契约 +
-南向定长零拷贝二进制总线」的混合通信体系：智能体之间及节点级协作调度依托
-ROS 2 IDL 与 REST/HTTP
-网关确保结构严谨；实时物理控制面则剥离序列化开销，全量运行于内存映射环形队列、顺序锁（SeqLock）及固定字节数
-UDP 安全帧。</p>
-<h2 id="ros-2-idl-全量清点srcembodied_interfaces">1. ROS 2 IDL
-全量清点（<code>src/embodied_interfaces/</code>）</h2>
-<p>经对仓库 <code>src/embodied_interfaces/</code>
-目录逐文件核验，系统层与单机层共享的公共接口包共计
-<strong><code>84</code> 份 IDL 定义文件</strong>（另有上肢运动规划组件
-<code>src/robot_app/manipulation_motion_planning/</code> 额外独立定义
+<p>FACRI 采用「北向强类型语义契约 +
+南向定长零拷贝二进制总线」的混合通信架构：系统编排、多机调度与交互应用依托
+ROS 2 IDL 及 HTTP/WebSocket
+网关维持结构严谨性；端侧物理控制面则剥离序列化与动态内存分配，全部运行于共享内存顺序锁、无锁环形队列以及定长
+UDP 安全脉冲之上。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/arch-communication-fabric.svg"
+alt="FACRI 跨层通信总线与二进制契约架构图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FACRI
+跨层通信总线与二进制契约架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
+<h2 id="北向契约与南向传输总览">北向契约与南向传输总览</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>通信通道</th>
+<th>覆盖边界</th>
+<th>传输机制与隔离属性</th>
+<th>权威参考位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ROS 2 V2–V5 IDL 契约</strong></td>
+<td><code>SystemApp</code> ↔︎ <code>RobotApp</code> 边界节点</td>
+<td>84 份强类型消息、服务与异步动作定义，支持版本演进与显式取消</td>
+<td>下方折叠清单与 <code>src/embodied_interfaces/</code></td>
+</tr>
+<tr>
+<td><strong>HTTP / WebSocket 网关平面</strong></td>
+<td>前端、模型推理、工装设备与车队调度</td>
+<td>有界排队、跨域来源拦截、Bearer Token 鉴权与预写日志防丢失</td>
+<td>下方折叠清单与<a
+href="../subsystems/facility-hal-equipment.html">工装与地勤设备接入</a></td>
+</tr>
+<tr>
+<td><strong>端侧 4+1 进程间 IPC</strong></td>
+<td><code>robot_supervisor</code> 与四个工作子进程</td>
+<td>共享内存无锁顺序锁槽位与单写单读环形队列</td>
+<td><a href="../subsystems/robot-multiprocess-cpp.html">单机 C++20 4+1
+多进程实时架构</a></td>
+</tr>
+<tr>
+<td><strong><code>SalWire</code> v2 共享内存</strong></td>
+<td><code>robot_body_rt</code> ↔︎ 物理仿真 / 硬件桥接</td>
+<td>定长紧缩结构体与 IEEE CRC32 校验</td>
+<td><a href="../subsystems/robot-hal-sal-wire.html">HAL 硬件抽象层与
+SalWire v2 协议</a></td>
+</tr>
+<tr>
+<td><strong>带外 <code>SafetyFrame</code> 脉搏</strong></td>
+<td>安全守护进程 ↔︎ 本机保护运行域</td>
+<td>18749 端口 32 字节 UDP 固定帧，旁路所有通用业务队列</td>
+<td><code>src/embodied_core/include/embodied_core/safety_frame.hpp</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="tech-details">
+<summary>
+展开 84 份 ROS 2 IDL 契约清点与服务端点映射
+</summary>
+<h3 id="接口定义分类统计srcembodied_interfaces">1.
+接口定义分类统计（<code>src/embodied_interfaces/</code>）</h3>
+<p>仓库公共接口包共维护 84 份 IDL 文件（此外
+<code>src/robot_app/manipulation_motion_planning/</code> 独立定义
 <code>PlanUpperBodyTrajectory.action</code> 与
 <code>PlanningReport.msg</code>）：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
@@ -88,58 +152,56 @@ UDP 安全帧。</p>
 <thead>
 <tr>
 <th>IDL 类型</th>
-<th>精确文件数量</th>
+<th>文件数量</th>
 <th>核心契约分组说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>.action</code></td>
-<td><code>6</code></td>
-<td><code>ExecuteAssignment</code>、<code>ExecuteAssignmentV5</code>、<code>ExecuteCapability</code>、<code>ExecuteCapabilityV3</code>、<code>ExecuteCapabilityV4</code>、<code>ExecuteCapabilityV5</code></td>
+<td>6</td>
+<td>任务分派 <code>ExecuteAssignment{,V5}</code>（2）、能力执行
+<code>ExecuteCapability{,V3,V4,V5}</code>（4）</td>
 </tr>
 <tr>
 <td><code>.srv</code></td>
-<td><code>22</code></td>
+<td>22</td>
 <td>能力评估 <code>AssessCapability{,V3,V4,V5}</code>（4）、执行查询
 <code>GetExecution{,V3,V4,V5}</code>（4）、能力目录
-<code>GetCapabilities</code>、规划/任务控制
-<code>CompilePlan</code>/<code>SubmitMission</code>/<code>GetMission</code>/<code>ControlMission</code>/<code>ListMissions</code>/<code>ControlAssignment</code>（6）、上下文与记忆
-<code>GetEmbodimentStatus</code>/<code>GetManipulationContext</code>/<code>GetRobotContext</code>/<code>GetRuntimeConfig</code>/<code>GetSystemCatalog</code>/<code>QueryMemory</code>/<code>QueryMemoryRecords</code>（7）</td>
+<code>GetCapabilities</code>（1）、规划任务控制
+<code>CompilePlan / SubmitMission / GetMission / ControlMission / ListMissions / ControlAssignment</code>（6）、上下文与记忆
+<code>GetEmbodimentStatus / GetManipulationContext / GetRobotContext / GetRuntimeConfig / GetSystemCatalog / QueryMemory / QueryMemoryRecords</code>（7）</td>
 </tr>
 <tr>
 <td><code>.msg</code></td>
-<td><code>56</code></td>
-<td>任务步骤与分派
-<code>TaskAssignment{,V5}</code>/<code>TaskStep{,V5}</code>/<code>AutoTaskGoalV5</code>；V2–V5
-能力请求/反馈/结果
-<code>CapabilityRequestV2..V5</code>/<code>CapabilityInfo{,V2}</code>/<code>CapabilityFeedbackV2..V3</code>/<code>CapabilityResultV2..V3</code>/<code>AssessmentV2</code>；本体状态与传感
-<code>EmbodimentStatus</code>/<code>RobotStatus</code>/<code>RobotCapabilities</code>/<code>BodyMeasurementsV1</code>/<code>RgbdFrameV1</code>/<code>GraspMechanismCommand</code>/<code>GraspMechanismState</code>；导航操作目标
-<code>NavigationGoal{,V2}</code>/<code>ManipulationGoal{,V2,V3,V4}</code>/<code>SpatialGoalV2</code>/<code>TimedCartesianTrajectory</code>/<code>CartesianTrajectoryPoint</code>；资源与证据
-<code>ResourceRequirement{,Group}</code>/<code>ResourceStatus</code>/<code>EvidencePacket</code>/<code>CalibrationIdentity</code>/<code>QualificationStatus</code>/<code>MemoryItem</code></td>
+<td>56</td>
+<td>任务步骤与同步
+<code>TaskAssignment{,V5} / TaskStep{,V5} / AutoTaskGoalV5</code>；V2–V5
+能力请求/反馈/结果；本体状态与传感
+<code>EmbodimentStatus / RobotStatus / RobotCapabilities / BodyMeasurementsV1 / RgbdFrameV1 / GraspMechanismCommand / GraspMechanismState</code>；导航操作目标
+<code>NavigationGoal{,V2} / ManipulationGoal{,V2,V3,V4} / SpatialGoalV2 / TimedCartesianTrajectory / CartesianTrajectoryPoint</code>；资源与证据
+<code>ResourceRequirement{,Group} / ResourceStatus / EvidencePacket / CalibrationIdentity / QualificationStatus / MemoryItem</code></td>
 </tr>
 </tbody>
 </table>
 </div>
-<h3 id="主要-ros-2-服务端点映射">主要 ROS 2 服务端点映射</h3>
+<h3 id="主要-ros-2-服务端点映射">2. 主要 ROS 2 服务端点映射</h3>
 <ul>
 <li><strong>系统层（<code>src/system_app/adapters/ros/</code>）</strong>：注册
-Action Server
-<code>/system/execute_assignment</code>（<code>ExecuteAssignment</code>，支持异步取消远端目标）；注册服务
-<code>/system/compile_plan</code>（<code>CompilePlan</code>，对任务草稿和能力快照执行只读校验与编译）、<code>/system/submit_mission</code>、<code>GetMission</code>
-对应 <code>/system/get_mission</code> 及
-<code>/system/control_mission</code>。</li>
-<li><strong>单机边界层（<code>src/robot_app/ros_node.py</code>、<code>capability_ros_node.py</code>、<code>embodiment_ros.py</code>）</strong>：按前缀
-<code>&lt;prefix&gt;</code>（如 <code>/&lt;robot_id&gt;</code>）暴露
 Action
-<code>/execute_assignment</code>、<code>/execute_assignment_v5</code> 与
-<code>/execute_capability{,_v3,_v4,_v5}</code>；暴露服务
-<code>/control_assignment</code>、<code>/get_capabilities</code>、<code>/assess_capability{,_v3,_v4,_v5}</code>、<code>/get_execution{,_v3,_v4,_v5}</code>
-与 <code>/get_embodiment_status</code>；周期发布
-<code>/status</code>、<code>/capabilities</code>、<code>/evidence</code>、<code>/embodiment_status</code>
-及关节/IMU/本体测量话题，并订阅全局仿真时钟 <code>/clock</code>。</li>
+<code>/system/execute_assignment</code>（支持异步取消远端目标），以及服务
+<code>/system/compile_plan</code>、<code>/system/submit_mission</code>、<code>/system/get_mission</code>
+与 <code>/system/control_mission</code>。</li>
+<li><strong>单机边界层（<code>src/robot_app/ros_node.py</code>、<code>src/robot_app/capability_ros_node.py</code>、<code>src/robot_app/embodiment_ros.py</code>）</strong>：按机器人前缀暴露任务与能力动作
+<code>/execute_assignment{,_v5}</code>、<code>/execute_capability{,_v3,_v4,_v5}</code>
+及评估、查询、控制与本体状态服务，周期发布状态、能力、证据、关节与 IMU
+测量并订阅 <code>/clock</code>。</li>
 </ul>
-<h2 id="http-与-websocket-网关平面">2. HTTP 与 WebSocket 网关平面</h2>
+</details>
+<details class="tech-details">
+<summary>
+展开五大 HTTP 与 WebSocket 网关平面参数表
+</summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -151,64 +213,65 @@ Action
 <thead>
 <tr>
 <th>服务名称与默认端口</th>
-<th>核心文件位置</th>
+<th>核心源码位置</th>
 <th>认证与流量控制机制</th>
 <th>核心端点清单</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>InteractionGateway</strong>（<code>127.0.0.1:8090</code>）</td>
+<td><strong>InteractionGateway</strong>（127.0.0.1:8090）</td>
 <td><code>src/system_app/interaction_gateway/</code></td>
-<td>拒绝跨源 <code>Origin</code>；内建 <code>Queue(maxsize=32)</code> 每
-<code>20 ms</code> 排空最多 <code>8</code> 条消息（<code>8 s</code>
+<td>拒绝跨源 Origin；内部队列上限 32，每 20 ms 排空最多 8 条（8 s
 超时）</td>
-<td><code>/requests</code>、<code>/configuration</code>、<code>/agent/{status,reset,plans*}</code>、<code>/missions*</code>、<code>/control</code>、<code>/planning-context</code>、<code>/plans*</code>、<code>/catalog</code>、<code>/context</code>、<code>/workpiece-progress</code>、<code>/memory/*</code>、<code>/library/*</code>、<code>/operator/*</code>、<code>/display/perception/*</code>、<code>/rsi/*</code></td>
+<td><code>/requests /configuration /agent/* /missions* /control /planning-context /plans* /catalog /context /workpiece-progress /memory/* /library/* /operator/* /display/perception/* /rsi/*</code></td>
 </tr>
 <tr>
-<td><strong>InteractionRuntime
-WebUI</strong>（<code>127.0.0.1:8088</code>）</td>
+<td><strong>InteractionRuntime WebUI</strong>（127.0.0.1:8088）</td>
 <td><code>src/system_app/modules/interaction_runtime/</code></td>
-<td>语音 VAD/ASR/TTS 与 SSE <code>LiveHub</code> 实时推送</td>
-<td><code>/api/audio/{transcribe,speak}</code>、<code>/api/live/{snapshot,recent,stream}</code>、<code>/api/say</code>、<code>/api/tour/{view,operation}</code>、<code>/api/task/cancel</code>、<code>/api/health</code></td>
+<td>语音 VAD/ASR/TTS 与 SSE LiveHub 实时推送</td>
+<td><code>/api/audio/{transcribe,speak} /api/live/{snapshot,recent,stream} /api/say /api/tour/{view,operation} /api/task/cancel /api/health</code></td>
 </tr>
 <tr>
-<td><strong>StarFleetBus</strong>（<code>:18641</code>）</td>
+<td><strong>StarFleetBus</strong>（18641 端口）</td>
 <td><code>src/system_app/fleet_bus/star_fleet_bus.py</code></td>
-<td><code>ResourceTokenMutexRegistry</code>
-互锁令牌；<code>RoiGatewayGuard</code> 默认上限 <code>2</code>
-路流、<code>640×480</code>、租约 TTL <code>15.0 s</code></td>
+<td>资源互斥令牌登记；ROI 护卫默认上限 2 路流、640×480、租约 TTL 15.0
+s</td>
 <td><code>/api/fleet/*</code> 与
-<code>/api/fleet/v1/*</code>：<code>health</code>、<code>agents</code>、<code>agents/register</code>、<code>assignments/{robot_id}/next</code>、<code>receipts</code>、<code>telemetry</code>、<code>resources/{id}/{acquire,release}</code>、<code>corridor/{acquire,release,status}</code>、<code>stream/{control,status}</code></td>
+<code>/api/fleet/v1/*</code>（<code>health / agents / assignments/{robot_id}/next / receipts / telemetry / resources/* / corridor/* / stream/*</code>）</td>
 </tr>
 <tr>
-<td><strong>FacilityHAL Gateway</strong>（<code>:18642</code>）</td>
+<td><strong>FacilityHAL Gateway</strong>（18642 端口）</td>
 <td><code>src/facility_hal/gateway/http_server.py</code></td>
-<td>要求 <code>&gt;= 32</code> 字符 Bearer Token 校验、拒绝跨源
-<code>Origin</code>、基于 <code>AckJournal</code> WAL 重放防丢指令</td>
+<td>要求不少于 32 字符 Bearer Token、拒绝跨源 Origin、基于 AckJournal
+WAL 重放防丢</td>
 <td><code>GET /state</code>、<code>POST /commands</code>、<code>GET /commands/{request_id}</code>、<code>POST /operator-inputs</code>（<code>SIM_EQUIPMENT_DEBUG_V1</code>）、<code>GET /operator-inputs/{event_id}</code></td>
 </tr>
 <tr>
-<td><strong>ModelGateway</strong>（<code>127.0.0.1:18080</code>）</td>
+<td><strong>ModelGateway</strong>（127.0.0.1:18080）</td>
 <td><code>apps/model_gateway/</code></td>
-<td>分调用方 Bearer Token 与并发限流（主文本 <code>2</code>、RSI
-<code>1</code>、ASR/TTS/Embedding 各 <code>1</code>，全队列
-<code>32</code>）；<code>media://</code> 强制 <code>O_NOFOLLOW</code> 与
-SHA-256 检验</td>
+<td>分调用方 Bearer Token 与并发限流（主文本 2、RSI 1、ASR/TTS/Embedding
+各 1，全队列 32）；<code>media://</code> 强制 <code>O_NOFOLLOW</code> 与
+SHA-256 核验</td>
 <td><code>GET /health/{live,ready}</code>、<code>/v1/{models,chat/completions,embeddings,audio/transcriptions}</code>、<code>WS /gateway/v1/speech</code>、<code>/gateway/v1/{capabilities,requests/*,workers/*/reconcile}</code></td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="二进制线协议与无锁共享内存契约">3.
-二进制线协议与无锁共享内存契约</h2>
-<h3 id="salwire-v2机器人控制器-物理仿真硬件后端"><code>SalWire</code>
-v2（机器人控制器 ↔︎ 物理仿真/硬件后端）</h3>
-<p>目录位于
-<code>/dev/shm/embodied_sal/&lt;run_id&gt;/&lt;robot_id&gt;/</code>，定义于
-<code>src/embodied_core/include/embodied_core/sal_wire.hpp</code>，全结构体强制
+</details>
+<details class="tech-details">
+<summary>
+展开 SalWire v2、SHM IPC 槽位与 32 字节 SafetyFrame 布局
+</summary>
+<h3
+id="salwire-v2-定长零拷贝线格式srcembodied_coreincludeembodied_coresal_wire.hpp">1.
+<code>SalWire</code> v2
+定长零拷贝线格式（<code>src/embodied_core/include/embodied_core/sal_wire.hpp</code>）</h3>
+<p>映射目录位于
+<code>/dev/shm/embodied_sal/&lt;run_id&gt;/&lt;robot_id&gt;/</code>，全结构体采用
 <code>#pragma pack(push, 1)</code>、<code>static_assert</code>
-编译期字节布局核验与末端 <code>crc32_ieee</code> 校验：</p>
+编译期核验与末端 <code>crc32_ieee</code> 校验，支持上限 48 轴自由度与
+6000 点雷达点云：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -221,70 +284,58 @@ v2（机器人控制器 ↔︎ 物理仿真/硬件后端）</h3>
 <tr>
 <th>文件名与总大小</th>
 <th>结构体名称与魔数</th>
-<th>精确大小（静态断言）</th>
-<th>核心承载字段（支持上限
-<code>kMaxDofs = 48</code>、<code>kMaxLidarPoints = 6000</code>）</th>
+<th>精确大小</th>
+<th>核心承载字段</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>state_cmd.shm</code>（<code>8192 B</code>）上半区（偏移
-<code>8 B</code>）</td>
-<td><code>SalSampleWire</code>（<code>0x454D5341</code>，<code>"EMSA"</code>，v2）</td>
-<td><code>1472 B</code>（CRC 偏移 <code>1468</code>）</td>
-<td><code>epoch</code>、<code>active_dofs</code>、<code>seq</code>、<code>sim_time_ns</code>、<code>q/dq/tau_est[48]</code>、底盘六自由度与速度
-<code>base_vel_vw[3]</code>、IMU、左右腕六维力
-<code>wrist_wrench_{l,r}[6]</code>、机构位置与限位
-<code>mech_flags</code>、<code>grasp_state_flags</code>、<code>held_object_hash</code>、<code>fault_word</code></td>
+<td><code>state_cmd.shm</code>（8192 B）上半区（偏移 8 B）</td>
+<td><code>SalSampleWire</code>（<code>0x454D5341</code>，v2）</td>
+<td>1472 B（CRC 偏移 1468）</td>
+<td><code>epoch / active_dofs / seq / sim_time_ns</code>、<code>q/dq/tau_est[48]</code>、底盘六自由度与速度、IMU、左右腕六维力
+<code>wrist_wrench_{l,r}[6]</code>、机构与抓取标志、持物哈希与故障字</td>
 </tr>
 <tr>
-<td><code>state_cmd.shm</code>（<code>8192 B</code>）下半区（偏移
-<code>4104 B</code>）</td>
-<td><code>SalCommandWire</code>（<code>0x454D5343</code>，<code>"EMSC"</code>，v2）</td>
-<td><code>2052 B</code>（CRC 偏移 <code>2048</code>）</td>
-<td><code>epoch</code>、<code>active_dofs</code>、<code>seq</code>、<code>host_monotonic_ns</code>、<code>modes[48]</code>、<code>q_ref/dq_ref/kp/kd/tau_ff[48]</code>、<code>base_twist[3]</code>、<code>mechanism_target</code>、<code>belt_speed_mps</code>、<code>grasp_cmd_flags</code>、<code>cmd_flags</code>（含
-<code>USE_BASE_TWIST</code>、<code>ESTOP_HOLD</code> 等）</td>
+<td><code>state_cmd.shm</code>（8192 B）下半区（偏移 4104 B）</td>
+<td><code>SalCommandWire</code>（<code>0x454D5343</code>，v2）</td>
+<td>2052 B（CRC 偏移 2048）</td>
+<td><code>epoch / active_dofs / seq / host_monotonic_ns</code>、<code>modes[48]</code>、<code>q_ref/dq_ref/kp/kd/tau_ff[48]</code>、底盘速度
+<code>base_twist[3]</code>、机构目标、传送带速度与控制标志位
+<code>cmd_flags</code></td>
 </tr>
 <tr>
-<td><code>lidar.shm</code>（<code>131072 B</code>，偏移
-<code>8 B</code>）</td>
-<td><code>SalLidarWire</code>（<code>0x454D4C44</code>，<code>"EMLD"</code>，v2）</td>
-<td><code>96068 B</code>（CRC 偏移 <code>96064</code>）</td>
-<td><code>epoch</code>、<code>point_count</code>、<code>seq</code>、<code>sim_time_ns</code>、<code>frame_id[32]</code>
-及最多 <code>6000</code> 组 <code>16 B</code>
-<code>SalLidarPointXYZI</code>（<code>x/y/z/intensity</code>）</td>
+<td><code>lidar.shm</code>（131072 B，偏移 8 B）</td>
+<td><code>SalLidarWire</code>（<code>0x454D4C44</code>，v2）</td>
+<td>96068 B（CRC 偏移 96064）</td>
+<td><code>epoch / point_count / seq / sim_time_ns / frame_id[32]</code>
+及最多 6000 组 16 B <code>SalLidarPointXYZI</code></td>
 </tr>
 </tbody>
 </table>
 </div>
-<h3 id="单机-41-进程内部共享内存devshmembodied_ipcrun_idrobot_id">单机
-<code>4+1</code>
-进程内部共享内存（<code>/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/</code>）</h3>
-<p>由 <code>robot_supervisor</code>
-在启动阶段创建并映射给四个孤立子进程，定义于
-<code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code> 与
-<code>src/robot_app/include/robot_app/common/ipc_channels.hpp</code>（<code>kIpcMagic = 0x454D4950</code>，<code>"EMIP"</code>）：</p>
-<ul>
-<li><strong>无锁顺序锁状态槽（<code>ShmSeqSlot&lt;PodT&gt;</code>）</strong>：<code>embodiment_spec.shm</code>（<code>EmbodimentSpecPod</code>，魔数
-<code>0x454D4553</code>
-<code>"EMES"</code>）、<code>body_state.shm</code>（<code>BodyStateSnapshot</code>）、<code>safety_status.shm</code>（<code>SafetyStatusPod</code>）、<code>spatial_pose.shm</code>（<code>SpatialPosePod</code>）、<code>perception_obs.shm</code>（<code>PerceptionObsPod</code>）、<code>motion_cmd.shm</code>（<code>MotionCmdPod</code>）、<code>traj_slot.shm</code>（<code>TrajectorySlotPod</code>，最多
-<code>128</code> 个路点与 <code>32</code>
-轴控制组索引）、<code>proc_health.shm</code>（<code>ProcessHealthSlot</code>）以及单进程心跳槽
-<code>health_&lt;proc&gt;.shm</code>。</li>
-<li><strong>单生产者单消费者环形队列（<code>ShmRingQueue&lt;PodT, N&gt;</code>）</strong>：<code>task_cmd_ring.shm</code>（容量
-<code>64</code>，承载最大 <code>3584 B</code> JSON
-任务步载荷）、<code>task_receipt_ring.shm</code>（容量
-<code>64</code>，回报执行进度与终态回执）及分进程审计通道
-<code>evidence_ring_&lt;proc&gt;.shm</code>（容量 <code>256</code>，承载
-<code>EvidenceMsg</code> 防止多进程写入冲突）。</li>
-</ul>
-<h3 id="带外-safetyframe-udp-安全脉冲18749-端口">带外
-<code>SafetyFrame</code> UDP 安全脉冲（<code>18749</code> 端口）</h3>
-<p>定义于
-<code>src/embodied_core/include/embodied_core/safety_frame.hpp</code>，Python
-侧由 <code>src/system_app/fleet_bus/safety_pulse.py</code> 按结构格式
-<code>&lt;IHHBBHIhhh6sI</code> 与 <code>C++20</code>
-逐字节精确匹配序列化，不绕行通用 ROS 队列：</p>
+<h3
+id="单机-41-进程内部共享内存srcembodied_coreincludeembodied_coreshm_ipc.hpp">2.
+单机 4+1
+进程内部共享内存（<code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code>）</h3>
+<p>映射路径
+<code>/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/</code>（魔数
+<code>0x454D4950</code>）：无锁顺序锁状态槽
+<code>ShmSeqSlot&lt;PodT&gt;</code> 包括
+<code>embodiment_spec.shm</code>（<code>EmbodimentSpecPod</code>，<code>0x454D4553</code>）、<code>body_state.shm</code>、<code>safety_status.shm</code>、<code>spatial_pose.shm</code>、<code>perception_obs.shm</code>、<code>motion_cmd.shm</code>、<code>traj_slot.shm</code>（最多
+128 路点与 32 轴控制组）、<code>proc_health.shm</code> 与
+<code>health_&lt;proc&gt;.shm</code>；单写单读环形队列
+<code>ShmRingQueue&lt;PodT, N&gt;</code> 包括容量 64 的
+<code>task_cmd_ring.shm</code>（单步载荷上限 3584 B）与
+<code>task_receipt_ring.shm</code>，以及容量 256 的分进程审计环
+<code>evidence_ring_&lt;proc&gt;.shm</code>。</p>
+<h3
+id="带外-safetyframe-32-字节布局srcembodied_coreincludeembodied_coresafety_frame.hpp">3.
+带外 <code>SafetyFrame</code> 32
+字节布局（<code>src/embodied_core/include/embodied_core/safety_frame.hpp</code>）</h3>
+<p>Python 侧通过 <code>src/system_app/fleet_bus/safety_pulse.py</code>
+按 <code>&lt;IHHBBHIhhh6sI</code> 小端序序列化发送至 18749 UDP
+端口：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -301,50 +352,49 @@ v2（机器人控制器 ↔︎ 物理仿真/硬件后端）</h3>
 </thead>
 <tbody>
 <tr>
-<td><code>0..3</code>（<code>uint32</code>）</td>
+<td>0..3（uint32）</td>
 <td><code>magic</code></td>
-<td>固定魔数 <code>0x454D5346</code>（<code>"EMSF"</code>）</td>
+<td>固定魔数 <code>0x454D5346</code></td>
 </tr>
 <tr>
-<td><code>4..5</code>（<code>uint16</code>）</td>
+<td>4..5（uint16）</td>
 <td><code>version_flags</code></td>
-<td>低 4 位为版本号 <code>0x0001</code>；标志位含心跳
-<code>0x0010</code>、遥操作接管 <code>0x0100</code>、清除故障
+<td>低 4 位为版本 <code>0x0001</code>；标志位含心跳
+<code>0x0010</code>、遥操作接管 <code>0x0100</code>、清故障
 <code>0x0200</code></td>
 </tr>
 <tr>
-<td><code>6..7</code>（<code>uint16</code>）</td>
+<td>6..7（uint16）</td>
 <td><code>estop_bitmask</code></td>
 <td>按机器人索引位隔离触发软急停；<code>0xFFFF</code>
 表示全队广播急停</td>
 </tr>
 <tr>
-<td><code>8</code> / <code>9</code>（<code>uint8</code>）</td>
-<td><code>target_robot_idx</code> / <code>lease_ttl_25ms</code></td>
-<td>遥操作目标序号（<code>0xFF</code> 为广播）与死人开关租约时长（以
-<code>25 ms</code> 为粒度）</td>
+<td>8 / 9（uint8）</td>
+<td><code>target_robot_idx / lease_ttl_25ms</code></td>
+<td>遥操作目标序号（<code>0xFF</code> 为广播）与死人开关租约时长（以 25
+ms 为粒度）</td>
 </tr>
 <tr>
-<td><code>12..15</code>（<code>uint32</code>）</td>
+<td>12..15（uint32）</td>
 <td><code>seq_u32</code></td>
 <td>单调递增序列号</td>
 </tr>
 <tr>
-<td><code>16..21</code>（<code>3 × int16</code>）</td>
-<td><code>cmd_vx_mmps</code> / <code>vy</code> /
-<code>wz_mradps</code></td>
+<td>16..21（3 × int16）</td>
+<td><code>cmd_vx_mmps / vy / wz_mradps</code></td>
 <td>定点数毫速度指令，解码后按 <code>1e-3</code> 还原为 <code>m/s</code>
 与 <code>rad/s</code></td>
 </tr>
 <tr>
-<td><code>22..27</code> / <code>28..31</code></td>
-<td><code>sender_epoch_tag[6]</code> / <code>crc32_ieee</code></td>
-<td>发送代际标签与前 <code>28</code> 字节 IEEE CRC32 校验，总包长严格为
-<code>32</code> 字节</td>
+<td>22..27 / 28..31</td>
+<td><code>sender_epoch_tag[6] / crc32_ieee</code></td>
+<td>发送代际标签与前 28 字节 IEEE CRC32 校验，总包长严格为 32 字节</td>
 </tr>
 </tbody>
 </table>
 </div>
+</details>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -356,31 +406,29 @@ v2（机器人控制器 ↔︎ 物理仿真/硬件后端）</h3>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#ros-2-idl-全量清点srcembodied_interfaces"
-id="toc-ros-2-idl-全量清点srcembodied_interfaces">1. ROS 2 IDL
-全量清点（<code>src/embodied_interfaces/</code>）</a>
+<li><a href="#北向契约与南向传输总览"
+id="toc-北向契约与南向传输总览">北向契约与南向传输总览</a>
 <ul>
+<li><a href="#接口定义分类统计srcembodied_interfaces"
+id="toc-接口定义分类统计srcembodied_interfaces">1.
+接口定义分类统计（<code>src/embodied_interfaces/</code>）</a></li>
 <li><a href="#主要-ros-2-服务端点映射"
-id="toc-主要-ros-2-服务端点映射">主要 ROS 2 服务端点映射</a></li>
-</ul></li>
-<li><a href="#http-与-websocket-网关平面"
-id="toc-http-与-websocket-网关平面">2. HTTP 与 WebSocket
-网关平面</a></li>
-<li><a href="#二进制线协议与无锁共享内存契约"
-id="toc-二进制线协议与无锁共享内存契约">3.
-二进制线协议与无锁共享内存契约</a>
-<ul>
-<li><a href="#salwire-v2机器人控制器-物理仿真硬件后端"
-id="toc-salwire-v2机器人控制器-物理仿真硬件后端"><code>SalWire</code>
-v2（机器人控制器 ↔︎ 物理仿真/硬件后端）</a></li>
-<li><a href="#单机-41-进程内部共享内存devshmembodied_ipcrun_idrobot_id"
-id="toc-单机-41-进程内部共享内存devshmembodied_ipcrun_idrobot_id">单机
-<code>4+1</code>
-进程内部共享内存（<code>/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/</code>）</a></li>
-<li><a href="#带外-safetyframe-udp-安全脉冲18749-端口"
-id="toc-带外-safetyframe-udp-安全脉冲18749-端口">带外
-<code>SafetyFrame</code> UDP 安全脉冲（<code>18749</code>
-端口）</a></li>
+id="toc-主要-ros-2-服务端点映射">2. 主要 ROS 2 服务端点映射</a></li>
+<li><a
+href="#salwire-v2-定长零拷贝线格式srcembodied_coreincludeembodied_coresal_wire.hpp"
+id="toc-salwire-v2-定长零拷贝线格式srcembodied_coreincludeembodied_coresal_wire.hpp">1.
+<code>SalWire</code> v2
+定长零拷贝线格式（<code>src/embodied_core/include/embodied_core/sal_wire.hpp</code>）</a></li>
+<li><a
+href="#单机-41-进程内部共享内存srcembodied_coreincludeembodied_coreshm_ipc.hpp"
+id="toc-单机-41-进程内部共享内存srcembodied_coreincludeembodied_coreshm_ipc.hpp">2.
+单机 4+1
+进程内部共享内存（<code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code>）</a></li>
+<li><a
+href="#带外-safetyframe-32-字节布局srcembodied_coreincludeembodied_coresafety_frame.hpp"
+id="toc-带外-safetyframe-32-字节布局srcembodied_coreincludeembodied_coresafety_frame.hpp">3.
+带外 <code>SafetyFrame</code> 32
+字节布局（<code>src/embodied_core/include/embodied_core/safety_frame.hpp</code>）</a></li>
 </ul></li>
 </ul>
       </nav>
@@ -393,5 +441,22 @@ id="toc-带外-safetyframe-udp-安全脉冲18749-端口">带外
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

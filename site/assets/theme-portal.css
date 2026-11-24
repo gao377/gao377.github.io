@@ -707,11 +707,30 @@ body.page-portal {
   margin: 0;
 }
 
+.blueprint-frame .diagram-figure {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
 .blueprint-frame figcaption {
-  margin-top: 0.6rem;
+  margin-top: 0.65rem;
   font-size: 0.85rem;
   color: var(--ink-mute);
-  text-align: center;
+}
+
+.portal-block--contrasts .diagram-figure,
+.portal-block--scenes .diagram-figure {
+  margin: 1.25rem 0;
+}
+
+.portal-block--contrasts .diagram-canvas img,
+.portal-block--scenes .diagram-canvas img,
+.portal-block--blueprint .diagram-canvas img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .portal-block--evidence .ladder-step .mono-chip,

@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690" width="1200" height="690" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">声明式具身规格流水线: description.yaml -&gt; EmbodimentSpecPod -&gt; CapabilitySynthesizer</title>
+  <desc id="diagram-desc">展示如何从 9 类机器人静态 YAML 描述、HAL 硬件探测与场景策略收窄三层输入单调合成有效能力契约。</desc>
+  <defs>
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="690" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="690" fill="url(#dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="688.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="90.0" width="388.0" height="540.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">THREE MONOTONIC INPUT LAYERS</text>
+  <text x="50.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">能力三源输入（仅可逐层收窄，严禁越权扩充）</text>
+  <rect x="456.0" y="90.0" width="344.0" height="540.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="470.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">SINGLE SOURCE OF TRUTH · embodied_core</text>
+  <text x="470.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">EmbodimentSpecPod 二进制契约</text>
+  <rect x="832.0" y="90.0" width="332.0" height="540.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="846.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">MONOTONIC SYNTHESIS</text>
+  <text x="846.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CapabilitySynthesizer &amp; 调度注册</text>
+  <rect x="52.0" y="138.0" width="356.0" height="214.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="158.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L1 · 静态构型 (description.yaml)</text>
+  <rect x="339.4" y="145.0" width="56.6" height="17.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.00"/>
+  <text x="367.7" y="156.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#1E4D8C" text-anchor="middle">LAYER L1</text>
+  <text x="64.0" y="174.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">facri(31) · rp1(40) · g2(32) · m20(16)</text>
+  <text x="64.0" y="189.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">c919_ugv_{tractor,forklift,belt,shuttle} (各 5)</text>
+  <text x="64.0" y="205.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">g1 (41 DOF, 仅历史参考 · 资格绝不跨代继承)</text>
+  <text x="64.0" y="220.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">ConfigClientDomain::validate 强制验证 URDF/策略 SHA-256</text>
+  <rect x="52.0" y="366.0" width="356.0" height="122.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="64.0" y="386.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">HAL · 硬件能力探测 (query_caps)</text>
+  <rect x="333.8" y="373.0" width="62.2" height="17.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.00"/>
+  <text x="364.9" y="384.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#2C5E3F" text-anchor="middle">LAYER HAL</text>
+  <text x="64.0" y="402.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">实测 active_dofs 与 HalCapBit 硬件到位标志</text>
+  <text x="64.0" y="417.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">IMU · LiDAR3D · RGB · WristFt · Dexhand · Belt</text>
+  <text x="64.0" y="433.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#2C5E3F">L1 声明而 HAL 缺失的传感器能力位自动清零</text>
+  <rect x="52.0" y="502.0" width="356.0" height="114.0" rx="2.5" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.25"/>
+  <text x="64.0" y="522.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L2 · 场景策略收窄 (factory / c919)</text>
+  <rect x="339.4" y="509.0" width="56.6" height="17.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.00"/>
+  <text x="367.7" y="520.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#8A5A19" text-anchor="middle">LAYER L2</text>
+  <text x="64.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">allow_{wrist_ft,fiducial,perception}</text>
+  <text x="64.0" y="553.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">disabled_cap_bits + SurfaceConstraintSpec</text>
+  <text x="64.0" y="569.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">例: factory 暂闭腕力柔顺; 无法开启 L1/HAL 未定义能力</text>
+  <rect x="472.0" y="138.0" width="312.0" height="116.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="484.0" y="158.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">魔数校验与 4D 形态分类</text>
+  <text x="484.0" y="174.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">magic: 0x454D4553 (&#x27;EMES&#x27;) · v1 · CRC32</text>
+  <text x="484.0" y="189.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">Locomotion: Biped/WheelLeg/Swerve/Twist</text>
+  <text x="484.0" y="205.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">Kinematics: Holonomic / Diff / Ackermann</text>
+  <text x="484.0" y="220.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">Manipulator &amp; Effector: 4×4 正交枚举组合</text>
+  <rect x="472.0" y="268.0" width="312.0" height="118.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="484.0" y="288.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">9 组动态关节切片 (JointGroupSlice)</text>
+  <text x="484.0" y="304.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">legs · steering · wheels · torso · head</text>
+  <text x="484.0" y="319.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">left/right_arm · left/right_tool</text>
+  <text x="484.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">映射至全局 kMaxDofs=48 槽位 (联合&lt;=32 轴)</text>
+  <text x="484.0" y="350.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">每组含 default_ctrl_mode 与 kp/kd 默认增益</text>
+  <rect x="472.0" y="400.0" width="312.0" height="114.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="484.0" y="420.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">操作可用性位掩码 (AffordanceBit)</text>
+  <text x="484.0" y="436.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">kPinchBoxOrHandle · kDexhandLightEnvelop</text>
+  <text x="484.0" y="451.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">kCylindricalPowerPlug · kBimanualCartHandle</text>
+  <text x="484.0" y="467.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">kEuroForkPocket · kTowHitchPin · kLatchBtn</text>
+  <rect x="472.0" y="528.0" width="312.0" height="88.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="484.0" y="548.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">SurfaceConstraintSpec 作业边界</text>
+  <text x="484.0" y="564.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">map_apron (160x120m) / map_cabin (z=3.47m)</text>
+  <text x="484.0" y="579.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">最多 8 段 CorridorSegmentPod 窄廊硬围栏</text>
+  <rect x="848.0" y="146.0" width="300.0" height="128.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="860.0" y="166.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">CapabilitySynthesizer::synthesize</text>
+  <text x="860.0" y="182.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">1. 校验 EmbodimentSpecPod CRC32 完整性</text>
+  <text x="860.0" y="197.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">2. 执行交集逻辑: EffCaps = L1 ∧ HAL ∧ L2</text>
+  <text x="860.0" y="213.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">3. 核算 effective_max_payload 与容差</text>
+  <text x="860.0" y="228.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">4. 注入 robot_supervisor 共享槽位</text>
+  <rect x="848.0" y="294.0" width="300.0" height="186.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="860.0" y="314.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">AgentRegistration 导出能力</text>
+  <rect x="1057.0" y="301.0" width="79.0" height="17.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.00"/>
+  <text x="1096.5" y="312.7" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.0" font-weight="600" fill="#1E4D8C" text-anchor="middle">CAPABILITIES</text>
+  <text x="860.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">navigation.{navigate_to,translate,dock...}</text>
+  <text x="860.0" y="345.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">perception.{locate,inspect,search}_target</text>
+  <text x="860.0" y="361.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">manipulation.{pick,place,press_button}</text>
+  <text x="860.0" y="376.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">manipulation.{plug_mate,cart_push_pull}</text>
+  <text x="860.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">manipulation.{actuate_mechanism,conveyor}</text>
+  <rect x="848.0" y="498.0" width="300.0" height="118.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25" stroke-dasharray="4 3"/>
+  <text x="860.0" y="518.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">零分叉收益</text>
+  <text x="860.0" y="534.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">写入 embodiment_spec.shm 供 P0–P3 共享</text>
+  <text x="860.0" y="549.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">同步注册至 StarFleetBus &amp; SystemApp</text>
+  <text x="860.0" y="565.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">新增 9 型异构载体无需修改核心控制引擎</text>
+  <path d="M 424.0 245.0 L 456.0 245.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
+  <path d="M 424.0 427.0 L 456.0 427.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 424.0 559.0 L 456.0 559.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 800.0 350.0 L 832.0 350.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <line x1="36.0" y1="644.0" x2="1164.0" y2="644.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="666.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="104.0" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L1 静态构型与核心结构</text>
+  <rect x="233.8" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="255.8" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">HAL 实测与单调合成</text>
+  <rect x="374.1" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="396.1" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L2 场景收窄标志</text>
+  <rect x="495.6" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="517.6" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">不可跨代 / 不可扩权红线</text>
+  <text x="1164.0" y="665.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">定义见 embodiment_spec.hpp &amp; capability_synthesizer.cpp</text>
+  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">EMBODIMENT SYNTHESIS · L1 ∧ HAL ∧ L2 MONOTONIC PIPELINE</text>
+  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">声明式具身规格流水线: description.yaml -&gt; EmbodimentSpecPod -&gt; CapabilitySynthesizer</text>
+  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">9 Archetypes · EmbodimentSpecPod (0x454D4553) · Zero Core Branching</text>
+  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

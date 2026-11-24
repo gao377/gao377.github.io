@@ -68,18 +68,23 @@ SHM IPC 机制</p>
       </header>
 
       <article class="doc-article">
-<p>单台机器人的稳定控制要求在极端负载下依然保持严格的时间确定性：点云
-ICP
-匹配或视觉推理即便发生数倍耗时抖动，也绝对不能阻塞双足平衡或底盘避障刹车回路。为此，FACRI
-在 <code>src/robot_app/</code>
-下舍弃传统单进程多线程大杂烩模式，采用原生的 <code>C++20</code>
-<strong><code>4+1</code>
-多进程隔离架构</strong>，将每台机器人的运行时拆分为 <code>1</code>
-个监护主进程与 <code>4</code> 个职责和优先级严格区分的子进程。</p>
-<figure>
-<img src="../assets/diagrams/agent-device.svg"
-alt="单机设备层多进程架构示意" />
-<figcaption aria-hidden="true">单机设备层多进程架构示意</figcaption>
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p><code>RobotApp</code>（<code>src/robot_app/</code>）是每台机器人的端侧
+<code>C++20</code> 实时运行时底座，上游承接 <code>SystemApp</code> 通过
+ROS 2 动作或 <code>StarFleetBus</code> 下发的原子能力请求与
+<code>EmbodimentSpecPod</code> 构型载荷，下游经 <code>IHalDriver</code>
+读写 <code>SalWire</code> v2 共享内存或真机总线驱动关节执行器。通过将
+<code>1</code> 个监护主进程与 <code>4</code>
+个职责和优先级严格隔离的工作进程解耦，端侧确保点云 ICP
+或视觉推理发生数倍耗时抖动时绝不阻塞 <code>200 Hz</code>
+身体控制与单机刹车回路。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/sub-robot-multiprocess-4plus1.svg"
+alt="单机 C++20 4+1 多进程隔离与无锁共享内存架构" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>单机 C++20 4+1
+多进程隔离与无锁共享内存架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="进程分工优先级与核心资源配额"><code>4+1</code>
 进程分工、优先级与核心资源配额</h2>
@@ -179,42 +184,80 @@ CPU 掩码。</li>
 <code>P0_CRITICAL</code> 优先独占高主频物理大核并强制剔除同核 SMT
 兄弟线程，消除缓存与流水线竞争；在多机同宿部署或异构机型场景下，函数
 <code>allocate_for_embodiment</code>
-还会依据本体构型动态重算权重——例如面对纯速度底盘控制（<code>LocomotionArchetype::kChassisTwist</code>）且无机械臂操作机构（<code>ManipulatorArchetype::kNone</code>）的牵引车或摆渡车，自动压缩
+依据本体构型动态重算权重——例如面对纯速度底盘控制（<code>LocomotionArchetype::kChassisTwist</code>）且无机械臂操作机构（<code>ManipulatorArchetype::kNone</code>）的牵引车或摆渡车，自动压缩
 <code>body_rt</code> 冗余核份额并回拨算力给系统与感知规划线程。</li>
 </ol>
-<figure>
-<img src="../assets/diagrams/runtime-sequences.svg"
-alt="单机内部多线程及 SHM 协作流" />
-<figcaption aria-hidden="true">单机内部多线程及 SHM 协作流</figcaption>
-</figure>
 <h2
 id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由总线与跨进程无锁共享内存</h2>
-<p>为实现真正的零动态堆分配（Zero-Allocation）高频执行，数据交换严格区分为进程内与进程间两级共享模型：</p>
+<p>为实现零动态堆分配（Zero-Allocation）高频执行，数据交换严格区分为进程内顺序锁总线与跨进程共享内存两级模型：</p>
 <ul>
 <li><strong>进程内
 <code>BodyRtBus</code>（<code>ipc_channels.hpp</code>）</strong>：<code>robot_body_rt</code>
-内部五个线程通过顺序锁封装
-<code>SeqLock&lt;hal::HalSample&gt;</code>、<code>SeqLock&lt;ActionExecOutPod&gt;</code>
-与 <code>SeqLock&lt;SafetyStatusPod&gt;</code>
-交换最新状态，配合原子开关
+内部五个线程通过顺序锁封装交换最新状态，配合原子开关
 <code>has_valid_sample</code>、<code>last_hal_sample_ns</code> 与
 <code>active_epoch</code>，确保高优控制线程零锁等待。</li>
-<li><strong>跨进程映射区（<code>/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/</code>）</strong>：
-<ul>
-<li><code>ShmSeqSlot&lt;PodT&gt;</code>
-负责「最新状态覆盖读」场景（单写多读或单写单读），涵盖
-<code>embodiment_spec.shm</code>、<code>body_state.shm</code>、<code>safety_status.shm</code>、<code>spatial_pose.shm</code>、<code>perception_obs.shm</code>、<code>motion_cmd.shm</code>、<code>traj_slot.shm</code>、<code>proc_health.shm</code>
-与 <code>health_&lt;proc&gt;.shm</code>；读取端在 <code>16</code>
-次自旋重试内获取原子快照，不阻塞写入端实时节拍。</li>
-<li><code>ShmRingQueue&lt;PodT, N&gt;</code>（带魔数
-<code>0x454D4950</code> <code>"EMIP"</code>
-与头尾原子指针）负责「无丢弃事件流」，涵盖容量 <code>64</code> 的
-<code>task_cmd_ring.shm</code>（<code>TaskCommandMsg</code>）与
-<code>task_receipt_ring.shm</code>（<code>TaskReceiptMsg</code>），以及按写入进程严格分区的
-<code>evidence_ring_&lt;proc&gt;.shm</code>（容量 <code>256</code>，承载
-<code>EvidenceMsg</code>），保证日志事件高吞吐不乱序。</li>
-</ul></li>
+<li><strong>跨进程映射区（<code>/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/</code>）</strong>：采用覆盖读槽位
+<code>ShmSeqSlot&lt;PodT&gt;</code>（读取端在 <code>16</code>
+次自旋重试内获取原子快照，不阻塞写入节拍）与无丢弃单生产者单消费者环形队列
+<code>ShmRingQueue&lt;PodT, N&gt;</code>（魔数 <code>0x454D4950</code>
+<code>"EMIP"</code>）承担全部跨进程通信。</li>
 </ul>
+<details class="tech-details">
+<summary>
+查看进程内 BodyRtBus 与跨进程无锁 SHM 文件全量清单
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>通信层级</th>
+<th>原语类型</th>
+<th>具体信道 / 映射文件名</th>
+<th>语义与容量约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>进程内 <code>BodyRtBus</code></td>
+<td><code>SeqLock&lt;PodT&gt;</code></td>
+<td><code>SeqLock&lt;hal::HalSample&gt;</code>、<code>SeqLock&lt;ActionExecOutPod&gt;</code>、<code>SeqLock&lt;SafetyStatusPod&gt;</code></td>
+<td>P0 线程内零锁原子更新与读取</td>
+</tr>
+<tr>
+<td>跨进程覆盖状态槽</td>
+<td><code>ShmSeqSlot&lt;PodT&gt;</code></td>
+<td><code>embodiment_spec.shm</code>、<code>body_state.shm</code>、<code>safety_status.shm</code>、<code>spatial_pose.shm</code>、<code>perception_obs.shm</code></td>
+<td>单写多读/单写单读，<code>16</code> 次自旋读取原子快照</td>
+</tr>
+<tr>
+<td>跨进程控制与健康槽</td>
+<td><code>ShmSeqSlot&lt;PodT&gt;</code></td>
+<td><code>motion_cmd.shm</code>、<code>traj_slot.shm</code>、<code>proc_health.shm</code>、<code>health_&lt;proc&gt;.shm</code></td>
+<td>承载运动命令、轨迹路点与各子进程状态</td>
+</tr>
+<tr>
+<td>跨进程任务队列</td>
+<td><code>ShmRingQueue&lt;PodT, 64&gt;</code></td>
+<td><code>task_cmd_ring.shm</code>（<code>TaskCommandMsg</code>）、<code>task_receipt_ring.shm</code>（<code>TaskReceiptMsg</code>）</td>
+<td>魔数 <code>0x454D4950</code>，容量
+<code>64</code>，保障指令与回执零丢弃</td>
+</tr>
+<tr>
+<td>跨进程审计事件流</td>
+<td><code>ShmRingQueue&lt;PodT, 256&gt;</code></td>
+<td><code>evidence_ring_&lt;proc&gt;.shm</code>（<code>EvidenceMsg</code>）</td>
+<td>按写入进程严格分区，容量 <code>256</code>，高吞吐不乱序</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
 <h2 id="监控心跳局部保护与-local_hold-状态机">监控心跳、局部保护与
 <code>LOCAL_HOLD</code> 状态机</h2>
 <p>守护进程每 <code>25 ms</code> 检查一次各子进程在
@@ -240,6 +283,8 @@ id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#进程分工优先级与核心资源配额"
 id="toc-进程分工优先级与核心资源配额"><code>4+1</code>
 进程分工、优先级与核心资源配额</a></li>
@@ -261,5 +306,22 @@ id="toc-监控心跳局部保护与-local_hold-状态机">监控心跳、局部�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

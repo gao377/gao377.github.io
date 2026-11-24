@@ -66,14 +66,27 @@
       </header>
 
       <article class="doc-article">
-<p>下肢运动控制由硬件抽象层策略后端、C++20
-在线推理内核以及状态估计判稳模块共同组成，面向双足稳定行走、原点站立保稳与载荷搬运下的动态重心补偿。本页聚焦核心控制链与已验证实验样本；完整多进程部署结构见
-<a href="../subsystems/robot-multiprocess-cpp.html">C++20 多进程
-<code>robot_app</code></a>。</p>
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p>下肢运动控制与状态估计运行于端侧 <code>P0</code>
+实时进程（<code>robot_body_rt</code>）与本体后端适配器之间：上游消费经时间戳同步的
+<code>IMU</code>、<code>29</code> 自由度关节角速反馈以及
+<code>100 ms</code> 内有效的上肢参考量，下游向 <code>SAL</code> /
+<code>HAL</code> 输出受斜率限幅与倾角抑制保护的双足关节目标，同时向上层
+<code>manipulation_runtime</code> 提供 <code>BodyStabilityMonitor</code>
+躯干停稳门禁信号。完整 <code>4+1</code> 进程隔离部署见 <a
+href="../subsystems/robot-multiprocess-cpp.html">单机 C++20 4+1
+多进程实时架构</a>。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/algo-full-stack-map.svg"
+alt="下肢强化学习策略与状态估计在全栈算法中的位置" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>下肢强化学习策略与状态估计在全栈算法中的位置</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
 <h2
 id="一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner">一、下肢强化学习策略推理：<code>FacriMjlabPolicy</code>
 与 <code>PolicyRunner</code></h2>
-<p>FACRI 在 Python 后端与 C++20
+<p>FACRI 在 Python 后端与 <code>C++20</code>
 实时控制进程中提供同一语义的策略执行路径：</p>
 <ol type="1">
 <li><strong>Python SIM
@@ -101,11 +114,11 @@ id="一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner">一、�
 与 <code>ObservationEncoder</code> 运行在实时进程
 <code>robot_body_rt</code> 内，维护
 <code>kPolicyJointCount = 29</code>（<code>kLegDofs = 12</code> 与
-<code>kUpperDofs = 17</code>）与 <code>kHistoryLength = 10</code> ×
+<code>kUpperDofs = 17</code>）及 <code>kHistoryLength = 10</code> ×
 <code>kFrameObsDim = 100</code> = <code>kTotalObsDim = 1000</code>
-维历史矩阵，并校验上肢参考数据时效
+维历史矩阵，并核验上肢参考数据时效
 <code>kUpperRefMaxAgeNs = 100 ms</code>。优先通过 <code>dlopen</code>
-调用 <code>onnxruntime</code>，若无加速库则回落到内置
+调用 <code>onnxruntime</code>，若无加速库则回落至内置
 <code>OnnxProtobufMlp</code> 或固定确定性核，并配合
 <code>SimPositionExcursionGuard</code>（连续超差 <code>100 ms</code>
 触发保护）防止关节失控漂移。</li>
@@ -171,7 +184,7 @@ id="二速度准入双向斜率控制与防倾覆抑制">二、速度准入、�
 <td><code>SIM_VELOCITY_RECOIL_TICKS = 4</code>，比例系数
 <code>2.5</code></td>
 <td>仿真下肢由强化学习策略轴承担跟随故跳过下肢静态位置报警；当发生速度越界或短暂失稳时执行
-4 个周期温和反冲制动</td>
+<code>4</code> 个周期温和反冲制动</td>
 </tr>
 </tbody>
 </table>
@@ -189,9 +202,9 @@ id="三多模态状态估计与躯干静止判稳">三、多模态状态估计�
 <code>src/robot_app/modules/state_estimation/domain/stability.py</code>
 中统一聚合高频传感器观测，向操作与导航层提供唯一权威坐标系：</p>
 <ol type="1">
-<li><strong>IMU 去偏斜与 17 自由度上身
+<li><strong>IMU 去偏斜与 <code>17</code> 自由度上身
 FK</strong>：<code>StateEstimationDomain</code> 使用时间戳对 IMU
-角速度与加速度缓存执行插值匹配，结合 17
+角速度与加速度缓存执行插值匹配，结合 <code>17</code>
 自由度上身运动学正解（FK）计算整机质心（CoM）偏移与躯干姿态角。</li>
 <li><strong>静止判稳窗口门禁（<code>BodyStabilityMonitor</code>）</strong>：双臂开始操作或交接前必须确认本体停稳。判稳条件在滑窗
 <code>window_s = 1.0 s</code> 内连续检查三项约束：最近采样延迟不超过
@@ -250,6 +263,8 @@ REAL 运行资格。</p>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner"
 id="toc-一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner">一、下肢强化学习策略推理：<code>FacriMjlabPolicy</code>
 与 <code>PolicyRunner</code></a></li>
@@ -270,5 +285,22 @@ id="toc-四仿真步态与胸前搬运实证录像">四、仿真步态与胸前�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

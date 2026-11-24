@@ -68,40 +68,92 @@ DAG，实施持股守恒与来源验证，并将自我反思与规则演化严�
       </header>
 
       <article class="doc-article">
-<p><code>SystemApp</code>（<code>src/system_app/</code>）位于平台编排与演化平面，承担将人类操作员高层意图转化为多机可执行任务拓扑、仲裁共享通道资源，以及在安全离线边界内持续改进策略规则的核心职责。它不参与毫秒级关节控制，却确保整个异构编队在语义正确性与物理可到达性之间保持一致。</p>
-<figure>
-<img src="../assets/diagrams/agent-global.svg" alt="全局协作架构图" />
-<figcaption aria-hidden="true">全局协作架构图</figcaption>
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p><code>SystemApp</code>（<code>src/system_app/</code>）位于平台编排与演化平面，上游承接
+<code>InteractionGateway</code> 转交的人机操作意图与
+<code>CapabilitySynthesizer</code> 汇总的单机能力快照，下游通过 ROS 2
+动作、<code>StarFleetBus</code> 舰队总线与 <code>FacilityHAL</code>
+驱动异构机器人及工装设施完成多机协作。它不参与毫秒级关节伺服与单机局部避障，而是将任务编译、编队互斥仲裁、来源核验与离线规则演化严格隔离在四层受控边界之内。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/sub-system-agent-rsi.svg"
+alt="SystemApp 编排、舰队仲裁与受约束离线演化架构" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>SystemApp
+编排、舰队仲裁与受约束离线演化架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2
 id="动态能力规划器dynamiccapabilityplanner">动态能力规划器（<code>DynamicCapabilityPlanner</code>）</h2>
 <p>位于
 <code>src/system_app/modules/team_planner/domain/compilation/dynamic_capability_planner.py</code>
 的 <code>DynamicCapabilityPlanner</code>
-不依赖写死的脚本路线，而是为每次编译请求动态组装上下文快照
-<code>DynamicPlanningContext</code>：</p>
+为每次编译请求动态组装上下文快照
+<code>DynamicPlanningContext</code>，不依赖硬编码脚本路线：</p>
 <ol type="1">
-<li><strong>三源上下文聚合</strong>：实时汇总场景静态知识包（<code>KnowledgePackContext</code>）、基于
+<li><strong>三源上下文聚合</strong>：汇总场景静态知识包（<code>KnowledgePackContext</code>）、基于
 SQLite/FTS5
-的分域记忆检索（<code>spatial_annotation</code>、<code>procedure</code>、<code>episode</code>、<code>knowledge</code>
-四张知识表）、各机器人在线技能目录就绪状态（<code>CapabilityContract</code>）以及
+的分域记忆检索、各机器人在线技能目录就绪状态（<code>CapabilityContract</code>）以及
 <code>FacilityHAL</code>
 设备实时状态（<code>FacilityDeviceState</code>）。</li>
-<li><strong>三类编译结果分流</strong>：面对缺参、歧义或目标不可达情形，明确输出
+<li><strong>三类编译结果分流</strong>：面对缺参、歧义或目标不可达情形，输出
 <code>NEEDS_CLARIFICATION</code>
-反问操作员而禁止盲目猜测；针对单一常规作业输出
+反问操作员并禁止盲目猜测；针对单一常规作业输出
 <code>MACRO_SKILL_PLAN</code>；针对跨工位或跨机协作输出带依赖边的
 <code>COMPOSITE_DAG_PLAN</code>。</li>
-<li><strong>跨机替补与共享资源互斥注入</strong>：当首选机器人能力下降或离线时，调用
+<li><strong>跨机替补与互斥窗口注入</strong>：首选机器人能力下降或离线时，调用
 <code>resolve_agent_fallback</code> 依据 <code>EmbodimentSpec</code>
-同级能力筛选备选载体；在生成拓扑前通过
+同级能力筛选备选载体；生成拓扑前通过
 <code>_inject_resource_intervals</code>
-为狭窄通道、停机泊位自动插入互斥锁窗口（如
-<code>factory.ch_corridor</code> 或
-<code>c919.dock.cargo_fwd</code>）。</li>
-<li><strong>持股守恒校验（<code>_verify_holding_conservation</code>）</strong>：在编译阶段即校验所有搬运与交接任务的
+为狭窄通道与泊位自动插入互斥锁窗口（如 <code>factory.ch_corridor</code>
+或 <code>c919.dock.cargo_fwd</code>）。</li>
+<li><strong>持股守恒校验（<code>_verify_holding_conservation</code>）</strong>：在编译阶段校验所有搬运与交接任务的
 <code>holding_context_ref</code>，确保同一工件在空间转运过程中不会在无交接节点的情况下被逻辑复制或凭空丢失。</li>
 </ol>
+<details class="tech-details">
+<summary>
+查看 DynamicPlanningContext 记忆表与编译输入细则
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>上下文来源</th>
+<th>内部结构 / 表名</th>
+<th>编译期消费职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分域知识记忆（SQLite/FTS5）</td>
+<td><code>spatial_annotation</code>、<code>procedure</code>、<code>episode</code>、<code>knowledge</code></td>
+<td>提供工位空间标注、工序先验、历史片段与静态知识条目</td>
+</tr>
+<tr>
+<td>静态知识种子包</td>
+<td><code>KnowledgePackContext</code></td>
+<td>提供工位几何边界、设备关联关系与通道拓扑约束</td>
+</tr>
+<tr>
+<td>机器人能力快照</td>
+<td><code>CapabilityContract</code>、<code>EmbodimentSpec</code></td>
+<td>过滤离线或受限机器人，支撑 <code>resolve_agent_fallback</code>
+同级替换</td>
+</tr>
+<tr>
+<td>工装设备状态</td>
+<td><code>FacilityDeviceState</code></td>
+<td>注入 <code>:18642</code> <code>FacilityHAL</code>
+当前就绪状态与锁止条件</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
 <figure class="doc-video" data-media-id="MED-INT-01">
 <video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-INT-01.webp">
 <source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-skill-reactflow-dag.mp4" type="video/mp4" />
@@ -115,23 +167,18 @@ class="doc-media-badge">SYSTEM_ORCHESTRATION_UI</span>
 <h2
 id="多机运行时与舰队总线teamruntime-starfleetbus">多机运行时与舰队总线（<code>TeamRuntime</code>
 &amp; <code>StarFleetBus</code>）</h2>
-<figure>
-<img src="../assets/diagrams/agent-team.svg"
-alt="编队级多智能体协作流程" />
-<figcaption aria-hidden="true">编队级多智能体协作流程</figcaption>
-</figure>
 <p>编译通过的 DAG 交由
 <code>src/system_app/modules/team_runtime/runtime.py</code>
-调度推进：</p>
+调度推进，并由运行于 <code>:18641</code> 的
+<code>StarFleetBusState</code> 统筹通道互斥：</p>
 <ul>
 <li><strong>异构节点统一派发</strong>：<code>TeamRuntime</code> 区分处理
 <code>RobotAssignmentNode</code>（通过 ROS 2
 <code>/system/execute_assignment</code> 或 HTTP 舰队总线派发给单机）与
 <code>EquipmentAssignmentNode</code>（经 <code>equipment_runtime</code>
 分派至 <code>:18642</code> <code>FacilityHAL</code> 网关）。</li>
-<li><strong>舰队互斥锁仲裁（<code>StarFleetBus</code>）</strong>：运行于
-<code>:18641</code> 的 <code>StarFleetBusState</code> 内建
-<code>ResourceTokenMutexRegistry</code>，通过
+<li><strong>舰队互斥锁仲裁（<code>StarFleetBus</code>）</strong>：<code>StarFleetBusState</code>
+内建 <code>ResourceTokenMutexRegistry</code>，通过
 <code>/api/fleet/resources/{id}/{acquire,release}</code> 与
 <code>/api/fleet/corridor/*</code>
 接口严格仲裁多机对充电走廊、工位过道及机场泊位的独占访问，防止通道相向死锁。</li>
@@ -151,7 +198,7 @@ id="严格来源与结果验证器teamverifier">严格来源与结果验证器�
 <ul>
 <li><strong>来源一致性硬门禁</strong>：严格比对任务执行回执来源（<code>origin</code>）与外部观测证明来源（例如同属
 <code>SIM_SAL</code> 或同属
-<code>REAL_HAL</code>），严禁将仿真渲染位姿或设计图假数据伪造为真实感知证据。</li>
+<code>REAL_HAL</code>），严禁将仿真渲染位姿或设计图数据伪造为真实感知证据。</li>
 <li><strong>空间地图与多臂归属核验</strong>：同步检查
 <code>spatial_runtime</code>
 报告的地图参考系归属、<code>selected_arms</code>
@@ -162,25 +209,20 @@ id="严格来源与结果验证器teamverifier">严格来源与结果验证器�
 <h2
 id="受约束的离线自我反思与演化reflectionengine-evolutionmanager">受约束的离线自我反思与演化（<code>ReflectionEngine</code>
 &amp; <code>EvolutionManager</code>）</h2>
-<figure>
-<img src="../assets/diagrams/agent-evolution.svg"
-alt="受约束离线自我演化流程图" />
-<figcaption aria-hidden="true">受约束离线自我演化流程图</figcaption>
-</figure>
 <p>FACRI
 将自我改进机制（RSI）严格限定在<strong>离线受约束实验与编译上下文规则层</strong>（对应前端
 <code>P07</code> <code>RsiLab</code> 与 <code>/api/rsi/*</code>
 路由），遵循以下三项安全铁律：</p>
 <ul>
 <li><strong>只读分析真实失败证据</strong>：<code>ReflectionEngine</code>
-消费 <code>EvidenceStore</code> 留存的历史失败数据包，例如在工厂
+消费 <code>EvidenceStore</code> 留存的历史失败数据包（例如工厂
 <code>robot_r4</code> <code>V0</code> 试验中因接料前置条件未覆写而触发的
 <code>RECEIVER_CONDITION_UNHANDLED</code>
-错误实录，结合结构化日志提炼失效上下文，而不隐藏或删改原始失败计数。</li>
+错误实录），结合结构化日志提炼失效上下文，绝不隐藏或删改原始失败计数。</li>
 <li><strong>候选生成与对照验证分离</strong>：<code>EvolutionManager</code>（<code>src/system_app/modules/evolution_manager/</code>）针对分析出的短板在隔离目录产出规则或能力补丁候选（如补齐接收端检测与位姿容差策略），并触发受控批量对照仿真测试；只有通过全部门禁对比（例如
 <code>robot_r4</code> <code>V1</code>
 全流程稳定通过），候选补丁才获得人类工程师审查采纳或版本回滚选项。</li>
-<li><strong>严禁在线绕行修改运行基线</strong>：任何离线反思与演化流程均不具备热更修改在线机器人控制器、绕过
+<li><strong>严禁绕过运行基线检查</strong>：任何离线反思与演化流程均不具备热更修改在线机器人控制器、绕过
 <code>check_factory_runtime_baseline.py</code>
 校验或改动实时保护阈值的权限。</li>
 </ul>
@@ -216,6 +258,8 @@ class="doc-media-badge">PHYSICAL_SIM</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#动态能力规划器dynamiccapabilityplanner"
 id="toc-动态能力规划器dynamiccapabilityplanner">动态能力规划器（<code>DynamicCapabilityPlanner</code>）</a></li>
 <li><a href="#多机运行时与舰队总线teamruntime-starfleetbus"
@@ -238,5 +282,22 @@ id="toc-受约束的离线自我反思与演化reflectionengine-evolutionmanager
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690" width="1200" height="690" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">全新软件架构总图: 源码目录依赖流向与零反向耦合边界</title>
+  <desc id="diagram-desc">展示扁平化仓库顶层源码目录的单向依赖关系、公共接口与无锁原语底座以及严格的零反向耦合门禁。</desc>
+  <defs>
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="690" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="690" fill="url(#dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="688.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="90.0" width="214.0" height="540.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">CONFIG &amp; LAUNCH</text>
+  <text x="50.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">只读权威配置中心</text>
+  <rect x="274.0" y="90.0" width="890.0" height="114.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="288.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">APPS LAYER · apps/</text>
+  <text x="288.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">应用与模型推理服务进程</text>
+  <rect x="274.0" y="214.0" width="588.0" height="116.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="288.0" y="233.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SYSTEM ORCHESTRATION · src/system_app/</text>
+  <text x="288.0" y="250.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">12 模块 + 网关 + 总线（Python 3）</text>
+  <rect x="878.0" y="214.0" width="286.0" height="116.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="892.0" y="233.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">FACILITY GATEWAY · src/facility_hal/</text>
+  <text x="892.0" y="250.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">独立设施网关（:18642）</text>
+  <rect x="274.0" y="344.0" width="890.0" height="102.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="288.0" y="363.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SHARED CONTRACT &amp; ZERO-COPY CORE (ZERO REVERSE COUPLING)</text>
+  <text x="288.0" y="380.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">跨层共享契约与公共 C++20 / Python 原语底座</text>
+  <rect x="274.0" y="460.0" width="890.0" height="170.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="288.0" y="479.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">ROBOT EDGE LAYER · src/robot_app/ (CMake C++20 4+1 + ROS Adapter)</text>
+  <text x="288.0" y="496.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单机多进程控制器、原生算法内核与双域后端插件</text>
+  <rect x="50.0" y="138.0" width="186.0" height="108.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="62.0" y="158.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">configs/robots/* (9 型)</text>
+  <text x="62.0" y="174.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">description.yaml</text>
+  <text x="62.0" y="189.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">URDF + 策略 SHA-256</text>
+  <text x="62.0" y="205.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">关节组与 Affordance</text>
+  <rect x="50.0" y="260.0" width="186.0" height="114.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="62.0" y="280.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">configs/{scenes,skills}</text>
+  <text x="62.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">factory.json / c919.json</text>
+  <text x="62.0" y="311.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">workpiece / c919 skills</text>
+  <text x="62.0" y="327.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">workstations + memory</text>
+  <rect x="50.0" y="388.0" width="186.0" height="104.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="62.0" y="408.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">configs/runtime/</text>
+  <text x="62.0" y="424.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">process_resource_weights</text>
+  <text x="62.0" y="439.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">0.35 / 0.25 / 0.30 / 0.10</text>
+  <rect x="50.0" y="506.0" width="186.0" height="110.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="62.0" y="526.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">facrictl &amp; deployment/</text>
+  <text x="62.0" y="542.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">system_entry.py</text>
+  <text x="62.0" y="557.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">factory / embodied / cell</text>
+  <text x="62.0" y="573.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">离线检查与发布清单</text>
+  <rect x="290.0" y="132.0" width="420.0" height="62.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="302.0" y="152.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">apps/collaboration_platform/</text>
+  <text x="302.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">web/ (React/Three.js) · hybridctl · modules/</text>
+  <text x="302.0" y="183.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">严禁反向导入 robot_app 或创建第二运行器</text>
+  <rect x="728.0" y="132.0" width="420.0" height="62.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="740.0" y="152.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">apps/model_gateway/</text>
+  <text x="740.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">model_gateway_service (:18080) · audio · vision</text>
+  <text x="740.0" y="183.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">分角色限流与 media:// SHA-256 检验</text>
+  <rect x="290.0" y="256.0" width="274.0" height="62.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="302.0" y="276.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">modules/ (12 个核心域)</text>
+  <text x="302.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">team_{planner,runtime,verifier}</text>
+  <text x="302.0" y="307.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">reflection / evolution / memory</text>
+  <rect x="576.0" y="256.0" width="272.0" height="62.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="588.0" y="276.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">adapters/ros · fleet_bus · gateway</text>
+  <text x="588.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">StarFleetBus :18641 · SafetyPulse</text>
+  <text x="588.0" y="307.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">InteractionGateway :8090 · Roi</text>
+  <rect x="894.0" y="256.0" width="254.0" height="62.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="906.0" y="276.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">http_server + AckJournal WAL</text>
+  <text x="906.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">drivers/{mujoco,modbus,mockup}</text>
+  <text x="906.0" y="307.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">与机器人 SalWire 完全物理隔离</text>
+  <rect x="290.0" y="384.0" width="420.0" height="50.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="302.0" y="404.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">src/embodied_interfaces/ (84 份 ROS 2 IDL)</text>
+  <text x="302.0" y="420.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">56 .msg · 22 .srv · 6 .action (V2–V5 强类型包)</text>
+  <rect x="728.0" y="384.0" width="420.0" height="50.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="740.0" y="404.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">src/embodied_core/ (Header-Only C++20 + SDK)</text>
+  <text x="740.0" y="420.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">sal_wire · embodiment_spec · safety_frame · shm_ipc</text>
+  <rect x="290.0" y="502.0" width="278.0" height="116.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="302.0" y="522.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">supervisor/ &amp; processes/</text>
+  <text x="302.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">5 个可执行二进制程序</text>
+  <text x="302.0" y="553.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">robot_supervisor + body_rt</text>
+  <text x="302.0" y="569.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">spatial_perc / motion_plan / task_agent</text>
+  <text x="302.0" y="584.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">*.py 仅作 ROS 2 边界适配桥</text>
+  <rect x="582.0" y="502.0" width="278.0" height="116.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="594.0" y="522.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">modules/ (14 域) &amp; algorithms/ (11)</text>
+  <text x="594.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">spatial / navigation / manipulation</text>
+  <text x="594.0" y="553.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">admittance / planning_core / pct_nav</text>
+  <text x="594.0" y="569.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">lightning_loc / policy_infer / safety</text>
+  <text x="594.0" y="584.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">仅消费 embodied_core，不依赖 system_app</text>
+  <rect x="874.0" y="502.0" width="274.0" height="116.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="886.0" y="522.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">backends/ (10 目录 · 6 .so)</text>
+  <text x="886.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">libsal_shm.so (SIM_SAL)</text>
+  <text x="886.0" y="553.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">hal_{facri,g2,m20,rp1,ugv_can}.so</text>
+  <text x="886.0" y="569.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">embodiment_runtime/ 构型加载辅助</text>
+  <path d="M 250.0 280.0 L 274.0 280.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 250.0 540.0 L 274.0 540.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 490.0 200.0 L 490.0 214.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
+  <path d="M 940.0 200.0 L 940.0 214.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arrow-slate)"/>
+  <path d="M 862.0 272.0 L 878.0 272.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 500.0 330.0 L 500.0 344.0" fill="none" stroke="#B04A1A" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-terracotta)"/>
+  <path d="M 500.0 460.0 L 500.0 446.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 940.0 460.0 L 940.0 446.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <line x1="36.0" y1="644.0" x2="1164.0" y2="644.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="666.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">apps/ 交互与模型服务</text>
+  <rect x="230.9" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="252.9" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">公共契约与 zero-copy 基础库</text>
+  <rect x="417.9" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="439.9" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">robot_app C++20 单机引擎</text>
+  <rect x="592.1" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="614.1" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">只读配置与 FacilityHAL</text>
+  <text x="1164.0" y="665.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">依赖门禁: system_app 与 robot_app 仅经由公共契约交互</text>
+  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">SOFTWARE ARCHITECTURE · REPOSITORY DEPENDENCY DAG</text>
+  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">全新软件架构总图: 源码目录依赖流向与零反向耦合边界</text>
+  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">configs/ · apps/ · src/system_app · src/embodied_{interfaces,core} · src/robot_app</text>
+  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

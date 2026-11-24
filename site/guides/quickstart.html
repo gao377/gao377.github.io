@@ -64,52 +64,49 @@
       </header>
 
       <article class="doc-article">
-<p>FACRI
-平台将复杂的多机物理仿真、真机联调与网页交互呈现统一收口至根目录脚本
-<code>facrictl</code>。开发者无需手工拼接环境变量或直接操作底层 Docker
-Compose
-模板，即可完成零积分静态预检、多进程实时系统拉起以及只读可视化观测。</p>
-<h2 id="前置条件与单会话原则">前置条件与单会话原则</h2>
-<p>在启动任何物理仿真或真机联调前，必须满足以下三项运行前提：</p>
+<p>FACRI 将多机物理仿真、真机联调与网页可视化观测收口至根目录统一脚本
+<code>facrictl</code>。开发者无需手动配置环境变量或操作底层容器模板，即可依次完成零步预检、系统拉起、页面核验与安全释放。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/guide-quickstart-lifecycle.svg"
+alt="FACRI 快速上手与会话生命周期图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FACRI
+快速上手与会话生命周期图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
+<h2 id="启动前检查三项前提">启动前检查三项前提</h2>
+<p>启动任何物理仿真或真机联调前，必须先确认以下三项宿主机运行边界：</p>
 <ol type="1">
-<li><strong>Docker 守护进程权限</strong>：<code>facrictl</code>
-会显式清除外部终端可能注入的 <code>DOCKER_CONTEXT</code> 与 TLS
-变量，固定将 <code>DOCKER_HOST</code> 指向
-<code>unix:///var/run/docker.sock</code>。若当前用户在非认证组，脚本底层
-<code>deployment/system_entry.py</code> 会自动检查套接字读写权限或通过
-<code>sg</code>
-刷新组权限，不具备权限时将立即报错终止，绝不绕过安全边界。</li>
-<li><strong>统一端口独占</strong>：平台核心服务固定占用主机回环地址端口
-<code>18640</code>（统一平台与交互主入口）、<code>18641</code>（<code>StarFleetBus</code>
-舰队总线）、<code>18642</code>（<code>FacilityHAL</code>
-工装设备网关）及 <code>18749</code>（<code>SafetyFrame</code> UDP
-带外安全脉冲基址端口），严禁同时复用已退役旧端口
-<code>18740</code>。</li>
-<li><strong>物理仿真一次一个</strong>：遵循系统物理所有者锁约定，宿主机同一时刻仅允许存在一个活跃物理仿真实例。启动新会话前若旧会话尚未彻底退出，必须先执行完全关闭与清理，严禁强制强杀容器破坏硬件或共享内存锁文件。</li>
+<li><strong>Docker 套接字可访问</strong>：<code>facrictl</code>
+会自动清除终端残留的外部 Docker
+上下文，固定连接本机守护套接字；若当前账户无读写权限且无法自动刷新认证组，命令会直接拒绝继续。</li>
+<li><strong>统一主端口 18640
+空闲</strong>：平台统一门户入口固定占用主机回环端口 18640（原旧端口
+18740 已彻底退役），启动前须确认无残留服务占用。</li>
+<li><strong>严格遵守「物理仿真一次一个」</strong>：宿主机同一时刻只允许存在一个活跃物理仿真实例；切换场景或重启前必须执行完整关闭等待所有者锁释放，严禁直接强杀容器破坏共享内存锁。</li>
 </ol>
 <h2 id="五步标准启动与核验">五步标准启动与核验</h2>
-<p>在仓库根目录执行以下命令，即可完成从静态配置体检到工厂四机全流程仿真拉起的完整过程：</p>
+<p>在仓库根目录依次执行以下五步命令，即可完成从静态配置体检到智能工厂四机全流程仿真拉起的完整过程：</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 第一步：执行零物理步长静态预检（不启动容器与物理引擎，0 physical steps）</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 执行零物理步长静态预检（0 physical steps，不启动容器）</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> <span class="at">--setup</span> factory check <span class="at">--mode</span> daily</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 第二步：核对运行时基线清单是否处于授权一致状态</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 核对运行时基线清单是否处于授权一致状态</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> tools/verification/check_factory_runtime_baseline.py</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 第三步：启动 Smart Factory 日常完整多进程模式并阻塞等待 READY 就绪信号</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 启动 Smart Factory 日常完整模式并等待 READY 就绪信号</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> <span class="at">--setup</span> factory start <span class="at">--mode</span> daily <span class="at">--full-process</span> <span class="at">--wait</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 第四步：查看当前运行会话状态与容器健康摘要</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 查看当前运行会话状态与容器健康摘要</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> status</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 第五步：打开或复用平台浏览器窗口</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 打开或复用平台浏览器窗口</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> ui</span></code></pre></div>
-<p>启动完成后，浏览器访问
-<code>http://127.0.0.1:18640/#global</code>（具体端口以平台或独立服务模式为准）即可查看场景模型、在线机器人状态以及
-<code>CollaborationBar</code> 对话输入栏。</p>
+<p>就绪后在浏览器访问
+<code>http://127.0.0.1:18640/#global</code>，即可在全局态势界面查看三维场景模型、在线机器人状态及底部的语音与文字交互栏。</p>
 <aside class="doc-callout doc-callout--important" role="note">
   <div class="doc-callout-title">IMPORTANT · 关键约束</div>
-  <p>日常完整仿真遵循「无仿真预算硬上限」策略：操作员在平台界面触发任务后，物理仿真默认持续运行且不因实时率波动自动中断。需要暂停或释放资源时，必须由操作员在终端显式执行安全停车或完整关闭命令。</p>
+  <p>日常完整仿真遵循「无仿真预算硬上限」治权裁定：物理仿真默认持续运行，不会因实时率波动自动中断。需要中止或释放资源时，必须由操作员显式执行停车或关闭命令。</p>
   
 </aside>
 <h2 id="安全停车与完全退出的区别">安全停车与完全退出的区别</h2>
@@ -132,55 +129,66 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 <tbody>
 <tr>
 <td><code>./facrictl stop</code></td>
-<td>下发安全停车信号并保持服务与前端页面在线</td>
-<td>临时中止当前运动与任务派发，方便继续查看实时日志与状态回放</td>
+<td>下发安全停车信号并保持服务与网页在线</td>
+<td>临时中止运动与任务派发，继续查阅实时日志与回放</td>
 <td>容器保留，端口与只读页面可继续访问</td>
 </tr>
 <tr>
 <td><code>./facrictl close --wait</code></td>
-<td>执行会话完整结算、清理并发容器并等待所有者锁彻底释放</td>
-<td>切换场景（如从 <code>factory</code> 切换至 <code>c919</code>）、切换
-<code>--mock</code> / <code>--real</code> 模式或结束工作前</td>
-<td>容器销毁，<code>/dev/shm</code> 共享内存与运行锁释放</td>
+<td>执行会话结算、销毁并发容器并等待锁释放</td>
+<td>切换场景、切换仿真/真机模式或结束本次工作</td>
+<td>容器销毁，共享内存与物理所有者锁释放</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>若执行 <code>./facrictl start</code> 时遇到
-<code>FACTORY_ALREADY_RUNNING</code> 或 <code>:18640</code>
-端口占用提示，先运行 <code>./facrictl status</code> 确认残留会话，再运行
-<code>./facrictl close --wait</code> 等待锁文件完整清理后重试。</p>
-<h2 id="独立前端构建与离线开发">独立前端构建与离线开发</h2>
+<h2 id="独立前端构建与只读离线开发">独立前端构建与只读离线开发</h2>
 <p>当仅需独立启动只读多机协作平台 Web
-服务（查看已录回放、<code>?demo=1</code> 设计预览，或通过
-<code>--observe</code>
-只读附加已运行系统）而不拉起完整物理仿真时，可执行以下开发命令（详见
-<code>apps/collaboration_platform/README.md</code>）：</p>
+服务（查看历史回放、设计预览或只读附加已运行系统）而不拉起后台物理仿真时，可直接构建前端静态资源并运行本地服务：</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv <span class="at">--system-site-packages</span> apps/collaboration_platform/.venv</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">apps/collaboration_platform/.venv/bin/python</span> <span class="at">-m</span> pip install <span class="at">-e</span> <span class="st">&#39;apps/collaboration_platform[dev]&#39;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> ci <span class="at">--prefix</span> apps/collaboration_platform/web</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build <span class="at">--prefix</span> apps/collaboration_platform/web</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">apps/collaboration_platform/hybridctl</span> serve <span class="at">--port</span> 8110</span></code></pre></div>
-<p>前端热更新开发可使用
-<code>npm run dev --prefix apps/collaboration_platform/web</code>，Vite
-开发服务器会自动代理至本地 <code>8110</code>
-端口。交互控制台服务则独立启动于 <code>8088</code>
-端口，两条前端网页进程互不干扰，通过 <code>Ctrl+C</code>
-停止网页并不会中断后台机器人进程。</p>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> ci <span class="at">--prefix</span> apps/collaboration_platform/web</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build <span class="at">--prefix</span> apps/collaboration_platform/web</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">apps/collaboration_platform/hybridctl</span> serve <span class="at">--port</span> 8110</span></code></pre></div>
+<p>前端热更新开发使用
+<code>npm run dev --prefix apps/collaboration_platform/web</code>，开发服务器会自动代理至本机
+8110 端口；交互控制台服务独立运行于 8088
+端口，两条前端进程互不干扰且停止网页不会中断机器人运行时。</p>
+<details class="tech-details">
+<summary>
+展开端口分配、环境细节与常见启动排查
+</summary>
+<ul>
+<li><strong>Docker 权限与底层入口</strong>：<code>facrictl</code>
+底层调用 <code>deployment/system_entry.py</code>，显式清空
+<code>DOCKER_CONTEXT</code> 与 TLS 变量并锁定 <code>DOCKER_HOST</code>
+指向本机 Unix 套接字，必要时通过 <code>sg</code>
+刷新组权限，绝不绕过安全边界。</li>
+<li><strong>平台固定端口矩阵</strong>：主入口与三维界面使用 18640
+端口，车队调度总线使用 18641 端口，工装硬件网关使用 18642
+端口，带外安全脉冲基址使用 18749 UDP 端口。</li>
+<li><strong>独立平台 Python
+虚拟环境初始化</strong>：首次离线搭建平台服务时，在仓库根目录运行
+<code>python3 -m venv --system-site-packages apps/collaboration_platform/.venv</code>
+与
+<code>apps/collaboration_platform/.venv/bin/python -m pip install -e 'apps/collaboration_platform[dev]'</code>（完整说明见
+<code>apps/collaboration_platform/README.md</code>）。</li>
+<li><strong>会话冲突故障处置</strong>：若启动遇到
+<code>FACTORY_ALREADY_RUNNING</code> 或 18640 端口占用报错，先运行
+<code>./facrictl status</code> 核查残留会话，再运行
+<code>./facrictl close --wait</code>
+等待锁文件与共享内存完全清理后重试。</li>
+</ul>
+</details>
 <h2 id="下一步阅读导航">下一步阅读导航</h2>
 <ul>
-<li>掌握 <code>factory</code>、<code>cell</code> 与 <code>c919</code>
-场景参数差异与单工位调试入口：参阅 <a
+<li>掌握工厂、单工位与 C919 场景命令参数差异：参阅 <a
 href="../guides/cli-and-scenes.html">CLI 与双场景运行指南</a>。</li>
-<li>熟悉 <code>17</code> 个可视化面板与 <code>Three.js</code>
-高精度场景操作细节：参阅 <a
+<li>熟悉可视化工作台、三态隔离与 WebGL 视图边界：参阅<a
 href="../guides/platform-ui.html">多机协作平台与 WebGL 视图</a>。</li>
-<li>配置 <code>robot_r1</code> <code>Domain 126</code>
-外部真机同步联调：参阅 <a
+<li>配置 1 号机对等真机同步联调流程：参阅<a
 href="../guides/real-peer-sync.html">真机同步联调指南</a>。</li>
-<li>理解平台整体四平面架构设计：参阅 <a
-href="../architecture/overview.html">架构总览</a>。</li>
+<li>理解平台四平面整体设计原则：参阅<a
+href="../architecture/overview.html">平台架构总览</a>。</li>
 </ul>
       </article>
 
@@ -193,14 +201,14 @@ href="../architecture/overview.html">架构总览</a>。</li>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#前置条件与单会话原则"
-id="toc-前置条件与单会话原则">前置条件与单会话原则</a></li>
+<li><a href="#启动前检查三项前提"
+id="toc-启动前检查三项前提">启动前检查三项前提</a></li>
 <li><a href="#五步标准启动与核验"
 id="toc-五步标准启动与核验">五步标准启动与核验</a></li>
 <li><a href="#安全停车与完全退出的区别"
 id="toc-安全停车与完全退出的区别">安全停车与完全退出的区别</a></li>
-<li><a href="#独立前端构建与离线开发"
-id="toc-独立前端构建与离线开发">独立前端构建与离线开发</a></li>
+<li><a href="#独立前端构建与只读离线开发"
+id="toc-独立前端构建与只读离线开发">独立前端构建与只读离线开发</a></li>
 <li><a href="#下一步阅读导航"
 id="toc-下一步阅读导航">下一步阅读导航</a></li>
 </ul>
@@ -214,5 +222,22 @@ id="toc-下一步阅读导航">下一步阅读导航</a></li>
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>
