@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-manip-admittance-touchdown" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-manip-admittance-touchdown-title" aria-describedby="algo-manip-admittance-touchdown-desc">
+  <title id="algo-manip-admittance-touchdown-title">Minkowski 扫掠检验、纯 7 轴臂雅可比力观测与 TouchdownGuard 触底状态机</title>
+  <desc id="algo-manip-admittance-touchdown-desc">拆解操作接触段几何扫掠筛查、纯 7 轴臂雅可比力估计、C++20 笛卡尔导纳与触底真实释放状态机。</desc>
+  <defs>
+    <pattern id="algo-manip-admittance-touchdown-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-manip-admittance-touchdown-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-manip-admittance-touchdown-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">PRE-CONTACT SWEEP &amp; FORCE ESTIMATION</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">扫掠避碰与纯 7 轴臂力估计</text>
+  <rect x="604.0" y="86.0" width="560.0" height="420.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">200 HZ ADMITTANCE &amp; TOUCHDOWN RELEASE</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">导纳顺应执行与触底释放闭环</text>
+  <g class="arch-edge" data-from="minkowski" data-to="admit_4" data-flow="sweep">
+    <path d="M 176.0 146.0 L 176.0 123.0 Q 176.0 118.0 181.0 118.0 L 744.0 118.0 Q 749.0 118.0 749.0 123.0 L 749.0 146.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-ink)"/>
+    <rect x="431.8" y="109.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="462.5" y="121.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">无穿插放行</text>
+  </g>
+  <g class="arch-edge" data-from="wrench_obs" data-to="deadband" data-flow="admittance">
+    <path d="M 436.0 218.0 L 436.0 261.0 Q 436.0 266.0 431.0 266.0 L 320.0 266.0 Q 315.0 266.0 315.0 271.0 L 315.0 314.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-slate)"/>
+    <rect x="354.6" y="257.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="375.5" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">7-DOF</text>
+  </g>
+  <g class="arch-edge" data-from="deadband" data-to="cart_admit" data-flow="admittance">
+    <path d="M 460.0 351.0 L 585.0 351.0 Q 590.0 351.0 590.0 346.0 L 590.0 187.0 Q 590.0 182.0 595.0 182.0 L 896.0 182.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-forest)"/>
+    <rect x="712.3" y="173.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="743.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">纯净力偏置</text>
+  </g>
+  <g class="arch-edge" data-from="admit_4" data-to="cart_admit" data-flow="admittance">
+    <path d="M 872.0 182.0 L 896.0 182.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-ochre)"/>
+  </g>
+  <g class="arch-edge" data-from="cart_admit" data-to="touchdown" data-flow="touchdown">
+    <path d="M 1019.0 218.0 L 1019.0 261.0 Q 1019.0 266.0 1014.0 266.0 L 754.0 266.0 Q 749.0 266.0 749.0 271.0 L 749.0 314.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-terracotta)"/>
+    <rect x="848.2" y="257.0" width="71.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="884.0" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">fz&gt;=0.90 N</text>
+  </g>
+  <g class="arch-edge" data-from="touchdown" data-to="jaw_release" data-flow="touchdown">
+    <path d="M 872.0 351.0 L 896.0 351.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-forest)"/>
+    <rect x="847.3" y="342.0" width="73.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="884.0" y="354.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.08 s 驻留</text>
+  </g>
+  <g class="arch-node-card" data-node-id="minkowski">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="minkowski" data-flows="all,sweep" aria-expanded="false" aria-label="Minkowski 扫掠检验（Bernstein 细分无穿插）">
+      <rect class="arch-node-box" x="60.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">Minkowski 扫掠检验</text>
+      <text class="arch-node-role" x="72.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Bernstein 细分无穿插</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/manipulation-and-ik.html#principles" aria-label="前往「Minkowski 扫掠检验」对应章节">
+      <rect x="264.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="276.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wrench_obs">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wrench_obs" data-flows="admittance,all" aria-expanded="false" aria-label="WrenchObserver 力观测（纯 7 轴臂雅可比投影）">
+      <rect class="arch-node-box" x="320.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="332.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">WrenchObserver 力观测</text>
+      <text class="arch-node-role" x="332.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">纯 7 轴臂雅可比投影</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/manipulation-and-ik.html#principles" aria-label="前往「WrenchObserver 力观测」对应章节">
+      <rect x="524.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="deadband">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="deadband" data-flows="admittance,all" aria-expanded="false" aria-label="0.12 Nm 死区与补偿器（滤除摩擦与模型残差）">
+      <rect class="arch-node-box" x="170.0" y="314.0" width="290.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="182.0" y="339.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">0.12 Nm 死区与补偿器</text>
+      <text class="arch-node-role" x="182.0" y="374.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">滤除摩擦与模型残差</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/manipulation-and-ik.html#paradigm" aria-label="前往「0.12 Nm 死区与补偿器」对应章节">
+      <rect x="432.0" y="318.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="444.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="admit_4">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="admit_4" data-flows="admittance,all,sweep" aria-expanded="false" aria-label="四套阶段导纳剖面（柔顺刚度阻尼矩阵）">
+      <rect class="arch-node-box" x="626.0" y="146.0" width="246.0" height="72.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">四套阶段导纳剖面</text>
+      <text class="arch-node-role" x="638.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">柔顺刚度阻尼矩阵</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/manipulation-and-ik.html#contracts" aria-label="前往「四套阶段导纳剖面」对应章节">
+      <rect x="844.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="856.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cart_admit">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cart_admit" data-flows="admittance,all,touchdown" aria-expanded="false" aria-label="CartesianAdmittance 核（P0 200 Hz 柔顺积分）">
+      <rect class="arch-node-box" x="896.0" y="146.0" width="246.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CartesianAdmittance 核</text>
+      <text class="arch-node-role" x="908.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">P0 200 Hz 柔顺积分</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/manipulation-and-ik.html#flow" aria-label="前往「CartesianAdmittance 核」对应章节">
+      <rect x="1114.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="touchdown">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="touchdown" data-flows="all,touchdown" aria-expanded="false" aria-label="TouchdownGuard 触底守卫（fz &gt;= 0.90 N · 0.08 s）">
+      <rect class="arch-node-box" x="626.0" y="314.0" width="246.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="339.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TouchdownGuard 触底守卫</text>
+      <text class="arch-node-role" x="638.0" y="374.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">fz &gt;= 0.90 N · 0.08 s</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/manipulation-and-ik.html#principles" aria-label="前往「TouchdownGuard 触底守卫」对应章节">
+      <rect x="844.0" y="318.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="856.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="jaw_release">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="jaw_release" data-flows="all,touchdown" aria-expanded="false" aria-label="JawForceLoop 夹持释放（Fn=1.5 N · 真实 OPEN）">
+      <rect class="arch-node-box" x="896.0" y="314.0" width="246.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="339.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">JawForceLoop 夹持释放</text>
+      <text class="arch-node-role" x="908.0" y="374.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">Fn=1.5 N · 真实 OPEN</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/manipulation-and-ik.html#evidence" aria-label="前往「JawForceLoop 夹持释放」对应章节">
+      <rect x="1114.0" y="318.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">纯 7 轴臂雅可比力观测</text>
+  <rect x="232.8" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="254.8" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">4 套阶段导纳剖面</text>
+  <rect x="358.1" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="380.1" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">TouchdownGuard 触底门禁</text>
+  <rect x="529.6" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="551.6" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">200 Hz 导纳与真实 OPEN 释放</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">剔除高惯量腰部雅可比后，末端静态接触阈值收敛至 sub-Newton 级</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 03B · SWEEP, 7-DOF WRENCH &amp; TOUCHDOWN GUARD</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">Minkowski 扫掠检验、纯 7 轴臂雅可比力观测与 TouchdownGuard 触底状态机</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">剔除腰部雅可比耦合 · 0.12 Nm 死区 · fz &gt;= 0.90 N (0.08 s)</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-system-offline-rsi" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="sub-system-offline-rsi-title" aria-describedby="sub-system-offline-rsi-desc">
+  <title id="sub-system-offline-rsi-title">SystemApp 离线 RSI 沙箱: 只读反思 -&gt; 候选演化 -&gt; 对照门禁 -&gt; 人工采纳</title>
+  <desc id="sub-system-offline-rsi-desc">独立呈现离线 RSI 演化四阶段安全沙箱与 ModelGateway 并发配额隔离及人类审查采纳门禁。</desc>
+  <defs>
+    <pattern id="sub-system-offline-rsi-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-system-offline-rsi-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#sub-system-offline-rsi-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="400.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONSTRAINED OFFLINE SANDBOX (NO ONLINE HOT-PATCHING)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">受约束离线自我演化安全回路</text>
+  <g class="arch-edge" data-from="rsi_evid" data-to="rsi_reflect" data-flow="diagnose">
+    <path d="M 374.0 197.0 L 444.0 197.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-terracotta)"/>
+    <rect x="383.2" y="188.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="409.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">失败切片</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_reflect" data-to="rsi_model" data-flow="diagnose">
+    <path d="M 754.0 197.0 L 824.0 197.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-system-offline-rsi-arrow-slate)"/>
+    <rect x="768.1" y="188.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="789.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">RSI=1</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_reflect" data-to="rsi_evol" data-flow="sandbox">
+    <path d="M 599.0 234.0 L 599.0 316.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-terracotta)"/>
+    <rect x="583.1" y="266.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="599.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">假设</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_evol" data-to="rsi_sandbox" data-flow="gate">
+    <path d="M 754.0 353.0 L 824.0 353.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-forest)"/>
+    <rect x="763.2" y="344.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="789.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">成对复验</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_sandbox" data-to="rsi_adopt" data-flow="gate">
+    <path d="M 979.0 390.0 L 979.0 429.0 Q 979.0 434.0 974.0 434.0 L 224.0 434.0 Q 219.0 434.0 219.0 429.0 L 219.0 390.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-terracotta)"/>
+    <rect x="568.2" y="425.0" width="61.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="599.0" y="437.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">PASS 提交</text>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_evid">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_evid" data-flows="all,diagnose" aria-expanded="false" aria-label="1. EvidenceStore 样本（真实失败包 (如 R4 V0)）">
+      <rect class="arch-node-box" x="64.0" y="160.0" width="310.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">1. EvidenceStore 样本</text>
+      <text class="arch-node-role" x="76.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">真实失败包 (如 R4 V0)</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#evidence" aria-label="前往「1. EvidenceStore 样本」对应章节">
+      <rect x="346.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_reflect">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_reflect" data-flows="all,diagnose,sandbox" aria-expanded="false" aria-label="2. ReflectionEngine（只读诊断反思引擎）">
+      <rect class="arch-node-box" x="444.0" y="160.0" width="310.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">2. ReflectionEngine</text>
+      <text class="arch-node-role" x="456.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">只读诊断反思引擎</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#principles" aria-label="前往「2. ReflectionEngine」对应章节">
+      <rect x="726.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="738.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_model">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_model" data-flows="all,diagnose" aria-expanded="false" aria-label="3. ModelGateway (RSI)（:18080 · 并发上限 1）">
+      <rect class="arch-node-box" x="824.0" y="160.0" width="310.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="836.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">3. ModelGateway (RSI)</text>
+      <text class="arch-node-role" x="836.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">:18080 · 并发上限 1</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#principles" aria-label="前往「3. ModelGateway (RSI)」对应章节">
+      <rect x="1106.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1118.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_evol">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_evol" data-flows="all,gate,sandbox" aria-expanded="false" aria-label="4. EvolutionManager（候选补丁生命周期）">
+      <rect class="arch-node-box" x="444.0" y="316.0" width="310.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">4. EvolutionManager</text>
+      <text class="arch-node-role" x="456.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">候选补丁生命周期</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#paradigm" aria-label="前往「4. EvolutionManager」对应章节">
+      <rect x="726.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="738.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_sandbox">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_sandbox" data-flows="all,gate" aria-expanded="false" aria-label="5. L0–L3 离线对照门禁（R4 V0 FAIL -&gt; V1 PASS）">
+      <rect class="arch-node-box" x="824.0" y="316.0" width="310.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="836.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">5. L0–L3 离线对照门禁</text>
+      <text class="arch-node-role" x="836.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">R4 V0 FAIL -&gt; V1 PASS</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#evidence" aria-label="前往「5. L0–L3 离线对照门禁」对应章节">
+      <rect x="1106.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1118.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_adopt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_adopt" data-flows="all,gate" aria-expanded="false" aria-label="6. 人类审查采纳/回滚（更新 SkillCatalog）">
+      <rect class="arch-node-box" x="64.0" y="316.0" width="310.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">6. 人类审查采纳/回滚</text>
+      <text class="arch-node-role" x="76.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">更新 SkillCatalog</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#contracts" aria-label="前往「6. 人类审查采纳/回滚」对应章节">
+      <rect x="346.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="358.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ModelGateway 独立配额 (RSI=1)</text>
+  <rect x="283.7" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="305.7" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L0–L3 离线基线与对照复验</text>
+  <rect x="456.3" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="478.3" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">真实失败保留与人工采纳门禁</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">R4 V0 FAIL 样本通过对照验证后方可演进为 V1 PASS，原失败记录永久保留</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 01B · CONSTRAINED OFFLINE RSI SANDBOX</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">SystemApp 离线 RSI 沙箱: 只读反思 -&gt; 候选演化 -&gt; 对照门禁 -&gt; 人工采纳</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">严禁绕过离线门禁 · 严禁热改在线电机或保护参数</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

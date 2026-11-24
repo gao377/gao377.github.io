@@ -68,28 +68,929 @@ SHM IPC 机制</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p><code>RobotApp</code>（<code>src/robot_app/</code>）是每台机器人的端侧
-<code>C++20</code> 实时运行时底座，上游承接 <code>SystemApp</code> 通过
-ROS 2 动作或 <code>StarFleetBus</code> 下发的原子能力请求与
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>单机端侧运行环境同时承担
+<code>200 Hz</code>（<code>5 ms</code>）双足关节伺服与实时保护、<code>50 Hz</code>
+步态推理与全身协调、<code>20 Hz</code> 运动规划，以及 <code>10 Hz</code>
+三维点云 ICP
+定位与视觉目标分割。若将所有线程塞入单一进程或依赖通用脚本解释器调度，会在工程上触发三类失效：</p>
+<ol type="1">
+<li><strong>高算力抖动击穿 <code>5 ms</code>
+控制节拍</strong>：<code>VoxelICP</code> 点云配准、<code>HybridA*</code>
+路径扩展或 <code>49</code> 候选 <code>DLS</code> 逆解发生
+<code>50</code>–<code>200 ms</code>
+耗时峰值时，锁竞争、页错误或内存垃圾回收会阻塞高频身体控制线程，导致双足机器人失去平衡。</li>
+<li><strong>异构硬件大小核与中断污染</strong>：机载平台（<code>aarch64_rk3588</code>、<code>aarch64_jetson_orin</code>）与多机仿真宿主机（<code>x86_64</code>）的大小核簇及硬件高中断（High-IRQ）核心分布迥异，静态写死核心编号极易把
+<code>P0</code> 控制线程绑到能效小核或高频网卡中断核心上。</li>
+<li><strong>跨进程锁阻塞与盲目自恢复危险</strong>：传统互斥锁或阻塞管道会使
+<code>P0</code>
+读取线程被崩溃中的规划进程拖死；而若对发生内存越界或驱动断言失败的
+<code>P0</code>
+身体控制进程静默自动重启，未知关节姿态下的重连指令会直接诱发负重倾覆。</li>
+</ol>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p><code>RobotApp</code>（<code>src/robot_app/</code>）位于平台单机端侧实时运行平面，上游承接
+<code>SystemApp</code> 下发的原子能力命令与
 <code>EmbodimentSpecPod</code> 构型载荷，下游经 <code>IHalDriver</code>
-读写 <code>SalWire</code> v2 共享内存或真机总线驱动关节执行器。通过将
-<code>1</code> 个监护主进程与 <code>4</code>
-个职责和优先级严格隔离的工作进程解耦，端侧确保点云 ICP
-或视觉推理发生数倍耗时抖动时绝不阻塞 <code>200 Hz</code>
-身体控制与单机刹车回路。</p>
-<figure class="diagram-figure">
+读写 <code>SalWire</code> v2
+共享内存或真机总线驱动执行器。系统将单机原生进程拆分为 <code>1</code>
+个监管主进程（<code>robot_supervisor</code>）与 <code>4</code>
+个按实时关键度严格隔离的工作进程（<code>P0</code>–<code>P3</code>）。</p>
+<figure class="diagram-figure" data-diagram-id="sub-robot-4plus1-topology" data-fig-uid="sub-robot-4plus1-topology-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/sub-robot-multiprocess-4plus1.svg"
-alt="单机 C++20 4+1 多进程隔离与无锁共享内存架构" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-robot-4plus1-topology" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="sub-robot-4plus1-topology-title-f0" aria-describedby="sub-robot-4plus1-topology-desc-f0">
+  <title id="sub-robot-4plus1-topology-title-f0">robot_supervisor 硬件核组探测与 P0–P3 进程隔离墙</title>
+  <desc id="sub-robot-4plus1-topology-desc-f0">剥离冗长 SHM 文件清单后，专注呈现拓扑探测、比例核组分配、P0 不静默重启策略及 P0–P3 实时边界。</desc>
+  <defs>
+    <pattern id="sub-robot-4plus1-topology-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-robot-4plus1-topology-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#sub-robot-4plus1-topology-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="134.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">+1 SUPERVISOR · src/robot_app/supervisor/</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">拓扑探测、比例分配与 25 ms 心跳监管</text>
+  <rect x="36.0" y="234.0" width="1128.0" height="304.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="253.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">4 ISOLATED WORKER PROCESSES · C++20</text>
+  <text x="50.0" y="270.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0–P3 独立进程与统一模块生命周期契约</text>
+  <g class="arch-edge" data-from="sup_probe" data-to="sup_alloc" data-flow="supervision">
+    <path d="M 398.0 170.0 L 430.0 170.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ink-f0)"/>
+    <rect x="393.2" y="161.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="414.0" y="173.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">核拓扑</text>
+  </g>
+  <g class="arch-edge" data-from="sup_alloc" data-to="sup_rt" data-flow="supervision">
+    <path d="M 770.0 170.0 L 802.0 170.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ink-f0)"/>
+    <rect x="765.2" y="161.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="786.0" y="173.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">绑核表</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p0" data-flow="supervision">
+    <path d="M 900.0 204.0 L 900.0 243.0 Q 900.0 248.0 895.0 248.0 L 192.0 248.0 Q 187.0 248.0 187.0 253.0 L 187.0 286.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-4plus1-topology-arrow-terracotta-f0)"/>
+    <rect x="512.8" y="239.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="543.5" y="251.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">禁静默重启</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p1" data-flow="workers">
+    <path d="M 930.0 204.0 L 930.0 249.0 Q 930.0 254.0 925.0 254.0 L 470.0 254.0 Q 465.0 254.0 465.0 259.0 L 465.0 286.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-slate-f0)"/>
+    <rect x="669.7" y="245.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="697.5" y="257.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">80ms拉起</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p2" data-flow="workers">
+    <path d="M 960.0 204.0 L 960.0 255.0 Q 960.0 260.0 955.0 260.0 L 748.0 260.0 Q 743.0 260.0 743.0 265.0 L 743.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ochre-f0)"/>
+    <rect x="823.7" y="251.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="851.5" y="263.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">80ms拉起</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p3" data-flow="workers">
+    <path d="M 1017.0 204.0 L 1017.0 286.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ink-f0)"/>
+    <rect x="989.2" y="236.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="1017.0" y="248.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">80ms拉起</text>
+  </g>
+  <g class="arch-edge" data-from="proc_p0" data-to="mod_tmpl" data-flow="workers">
+    <path d="M 187.0 362.0 L 187.0 447.0 Q 187.0 452.0 192.0 452.0 L 280.0 452.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-4plus1-topology-arrow-forest-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="proc_p2" data-to="mod_tmpl" data-flow="workers">
+    <path d="M 743.0 362.0 L 743.0 418.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-4plus1-topology-arrow-ochre-f0)"/>
+    <rect x="713.2" y="381.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="743.0" y="393.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">noexcept</text>
+  </g>
+  <g class="arch-node-card" data-node-id="sup_probe" aria-controls="sub-robot-4plus1-topology-f0-drawer-sup_probe">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sup_probe" data-flows="all,supervision" aria-expanded="false" aria-label="TopologyProbe（CPU / SMT / IRQ 探测）" aria-controls="sub-robot-4plus1-topology-f0-drawer-sup_probe">
+      <rect class="arch-node-box" x="58.0" y="136.0" width="340.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="161.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TopologyProbe</text>
+      <text class="arch-node-role" x="70.0" y="190.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">CPU / SMT / IRQ 探测</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true" aria-label="前往「TopologyProbe」对应章节">
+      <rect x="370.0" y="140.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="382.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sup_alloc" aria-controls="sub-robot-4plus1-topology-f0-drawer-sup_alloc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sup_alloc" data-flows="all,supervision" aria-expanded="false" aria-label="ProportionalAllocator（0.35 / 0.25 / 0.30 / 0.10）" aria-controls="sub-robot-4plus1-topology-f0-drawer-sup_alloc">
+      <rect class="arch-node-box" x="430.0" y="136.0" width="340.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="442.0" y="161.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ProportionalAllocator</text>
+      <text class="arch-node-role" x="442.0" y="190.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">0.35 / 0.25 / 0.30 / 0.10</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#principles" data-same-page="true" aria-label="前往「ProportionalAllocator」对应章节">
+      <rect x="742.0" y="140.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="754.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sup_rt" aria-controls="sub-robot-4plus1-topology-f0-drawer-sup_rt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sup_rt" data-flows="all,supervision,workers" aria-expanded="false" aria-label="SupervisorRuntime（25ms 心跳 · 80ms 退避）" aria-controls="sub-robot-4plus1-topology-f0-drawer-sup_rt">
+      <rect class="arch-node-box" x="802.0" y="136.0" width="340.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="814.0" y="161.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SupervisorRuntime</text>
+      <text class="arch-node-role" x="814.0" y="190.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">25ms 心跳 · 80ms 退避</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#paradigm" data-same-page="true" aria-label="前往「SupervisorRuntime」对应章节">
+      <rect x="1114.0" y="140.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p0" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p0">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p0" data-flows="all,supervision,workers" aria-expanded="false" aria-label="P0 · robot_body_rt（200 Hz FIFO · mlockall）" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p0">
+      <rect class="arch-node-box" x="58.0" y="286.0" width="258.0" height="76.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0 · robot_body_rt</text>
+      <text class="arch-node-role" x="70.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">200 Hz FIFO · mlockall</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true" aria-label="前往「P0 · robot_body_rt」对应章节">
+      <rect x="288.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="300.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p1" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p1">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p1" data-flows="all,workers" aria-expanded="false" aria-label="P1 · robot_spatial_perc（10 Hz · nice=-5 大核）" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p1">
+      <rect class="arch-node-box" x="336.0" y="286.0" width="258.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P1 · robot_spatial_perc</text>
+      <text class="arch-node-role" x="348.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">10 Hz · nice=-5 大核</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true" aria-label="前往「P1 · robot_spatial_perc」对应章节">
+      <rect x="566.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="578.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p2" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p2">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p2" data-flows="all,workers" aria-expanded="false" aria-label="P2 · robot_motion_plan（50/20 Hz 规划协调）" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p2">
+      <rect class="arch-node-box" x="614.0" y="286.0" width="258.0" height="76.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="626.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P2 · robot_motion_plan</text>
+      <text class="arch-node-role" x="626.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">50/20 Hz 规划协调</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true" aria-label="前往「P2 · robot_motion_plan」对应章节">
+      <rect x="844.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="856.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p3" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p3">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p3" data-flows="all,workers" aria-expanded="false" aria-label="P3 · robot_task_agent（10 Hz · ROS 2 边界）" aria-controls="sub-robot-4plus1-topology-f0-drawer-proc_p3">
+      <rect class="arch-node-box" x="892.0" y="286.0" width="250.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="904.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P3 · robot_task_agent</text>
+      <text class="arch-node-role" x="904.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">10 Hz · ROS 2 边界</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true" aria-label="前往「P3 · robot_task_agent」对应章节">
+      <rect x="1114.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1126.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mod_tmpl" aria-controls="sub-robot-4plus1-topology-f0-drawer-mod_tmpl">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mod_tmpl" data-flows="all,workers" aria-expanded="false" aria-label="IModuleThread 模板方法（configure-&gt;start-&gt;step）" aria-controls="sub-robot-4plus1-topology-f0-drawer-mod_tmpl">
+      <rect class="arch-node-box" x="280.0" y="418.0" width="640.0" height="68.0" rx="3.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="292.0" y="443.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">IModuleThread 模板方法</text>
+      <text class="arch-node-role" x="292.0" y="472.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#16181D">configure-&gt;start-&gt;step</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#paradigm" data-same-page="true" aria-label="前往「IModuleThread 模板方法」对应章节">
+      <rect x="892.0" y="422.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="904.0" y="438.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P0 200 Hz FIFO (不静默重启)</text>
+  <rect x="270.8" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="292.8" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P1 空间感知 (10 Hz)</text>
+  <rect x="410.3" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="432.3" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P2 规划协调 (50/20 Hz)</text>
+  <rect x="571.7" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="593.7" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">监管心跳与安全制动</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">跨进程无锁共享内存槽位与环形队列结构见本页下一幅《SHM 无锁通信信道》专图</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 04A · C++20 4+1 TOPOLOGY &amp; CORE BINDING</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">robot_supervisor 硬件核组探测与 P0–P3 进程隔离墙</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">1 Supervisor + 4 Workers · IModuleThread 模板方法</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="supervision" aria-pressed="false">守护探测与绑核监护</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="workers" aria-pressed="false">P0–P3 进程隔离域</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>单机 C++20 4+1
-多进程隔离与无锁共享内存架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+多进程拓扑与绑核隔离</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-robot-4plus1-topology.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-robot-4plus1-topology-f0-drawer-sup_probe" class="diagram-drawer-panel" data-node-drawer="sup_probe" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">TopologyProbe</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">+1 Supervisor · 探测 · 启动期一次性扫描</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「TopologyProbe」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">自动摸清边缘工控机真实物理核拓扑，避免硬编码核号导致性能劣化。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>硬件拓扑感知策略</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/supervisor/topology_probe.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>扫描 /sys/devices/system/cpu 与 /proc/interrupts，识别大核簇、SMT 兄弟核与高 IRQ 核</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f0-drawer-sup_alloc" class="diagram-drawer-panel" data-node-drawer="sup_alloc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ProportionalAllocator</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">+1 Supervisor · 绑核 · 按构型比例分配</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ProportionalAllocator」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">将稀缺无 SMT 大核优先留给 P0 硬实时控制，并按构型动态均衡四进程算力。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>比例算力治理解析器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/supervisor/resource_allocator.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>依据 configs/runtime/process_resource_weights.yaml 分配 CPU/MEM，纯底盘自动回拨 P0 冗余核</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f0-drawer-sup_rt" class="diagram-drawer-panel" data-node-drawer="sup_rt" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SupervisorRuntime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">+1 Supervisor · 监护 · 25 ms 巡检周期</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SupervisorRuntime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保持非实时分支高可用的同时，严守 P0 实时核崩溃绝不盲目自启的安全底线。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>差异化故障重启策略</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/supervisor/supervisor_runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>P1–P3 退出按 80 ms 退避自动拉起；P0_CRITICAL 禁止静默重启，立即安全制动</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f0-drawer-proc_p0" class="diagram-drawer-panel" data-node-drawer="proc_p0" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P0 · robot_body_rt</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P0 · 硬实时核 · 0.35 CPU / 0.20 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P0 · robot_body_rt」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">锁死物理内存页并独占无超线程大核，保证 5 ms 伺服控制确定性。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>isolated_no_smt · 禁静默重启</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/body_rt_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>承载 sensor_adapters、state_estimation、action_executor、body_gateway 与 50 Hz 保护</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-robot-shm-channels">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f0-drawer-proc_p1" class="diagram-drawer-panel" data-node-drawer="proc_p1" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P1 · robot_spatial_perc</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P1 · 空间感知 · 0.25 CPU / 0.35 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P1 · robot_spatial_perc」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">吸收点云配准与图像检测的内存与算力尖峰，不干扰 P0 周期。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>计算密集型进程隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/spatial_perc_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行 spatial_runtime (VoxelICP) 与 perception_runtime (AprilTag/ROI)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f0-drawer-proc_p2" class="diagram-drawer-panel" data-node-drawer="proc_p2" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P2 · robot_motion_plan</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P2 · 规划求解 · 0.30 CPU / 0.30 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P2 · robot_motion_plan」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">隔离 MPPI 采样与 49 候选逆解搜索的百毫秒级耗时波动。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>规划求解进程隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/motion_plan_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行 motion_coordinator (50 Hz)、navigation_runtime (20 Hz) 与 49-Cand IK</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f0-drawer-proc_p3" class="diagram-drawer-panel" data-node-drawer="proc_p3" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P3 · robot_task_agent</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P3 · 任务与审计 · 0.10 CPU / 0.15 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P3 · robot_task_agent」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把 ROS 2 通信与 JSONL 磁盘写入隔离在低优先级小核进程。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>网络与磁盘 IO 隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/task_agent_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行 config_client、local_task_runtime 与 evidence_buffer (JSONL 落盘)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f0-drawer-mod_tmpl" class="diagram-drawer-panel" data-node-drawer="mod_tmpl" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">IModuleThread 模板方法</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Core Pattern · 统一契约 · noexcept step_once</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「IModuleThread 模板方法」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">约束全部 C++20 模块生命周期，在运行期禁用堆分配与异常抛出。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 模板方法模式 + 值语义 Domain</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/module_thread.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>规范 configure -&gt; on_start(epoch) -&gt; step_once(now_ns) noexcept -&gt; on_stop()</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2 id="进程分工优先级与核心资源配额"><code>4+1</code>
-进程分工、优先级与核心资源配额</h2>
-<p>结合 <code>configs/runtime/process_resource_weights.yaml</code> 与
-<code>src/robot_app/supervisor/resource_allocator.cpp</code>，五个原生二进制可执行文件的契约定义如下：</p>
+<p>启动与运行期分工遵循硬件自适应拓扑绑定流程：</p>
+<ol type="1">
+<li><strong>硬件拓扑探测（<code>TopologyProbe</code>）</strong>：<code>src/robot_app/supervisor/topology_probe.cpp</code>
+扫描 <code>/sys/devices/system/cpu/</code> 与
+<code>/proc/interrupts</code>，提取性能大核、能效小核、超线程
+<code>SMT</code> 物理兄弟核配对与高硬件中断掩码。</li>
+<li><strong>比例核心与内存分配（<code>ProportionalResourceAllocator</code>）</strong>：结合
+<code>configs/runtime/process_resource_weights.yaml</code> 与
+<code>src/robot_app/supervisor/resource_allocator.cpp</code>，为
+<code>P0_CRITICAL</code>（<code>robot_body_rt</code>）优先独占物理大核并强制剔除同核
+<code>SMT</code> 兄弟线程、执行
+<code>mlockall(MCL_CURRENT | MCL_FUTURE)</code> 与
+<code>SCHED_FIFO [70, 90]</code>
+调度；面对纯底盘无臂构型（<code>LocomotionArchetype::kChassisTwist</code>
++
+<code>ManipulatorArchetype::kNone</code>），<code>allocate_for_embodiment</code>
+自动压缩冗余控制份额并回拨给感知与系统进程。</li>
+<li><strong>心跳监护与 <code>P0</code>
+不静默重启铁律</strong>：<code>robot_supervisor</code>（<code>src/robot_app/supervisor/supervisor_runtime.hpp</code>）每
+<code>25 ms</code> 轮询各子进程
+<code>ChildHeartbeatPod</code>；<code>P1</code>–<code>P3</code>
+崩溃后允许 <code>80 ms</code> 退避自动拉起，而
+<code>robot_body_rt</code> 强制锁定
+<code>restart_on_crash = false</code>，一旦异常立即切断下发并交由物理刹车与安全保持接管。</li>
+</ol>
+<h2 id="principles">03 · 核心原理与内部机制</h2>
+<figure class="diagram-figure" data-diagram-id="sub-robot-shm-channels" data-fig-uid="sub-robot-shm-channels-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-robot-shm-channels" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="sub-robot-shm-channels-title-f1" aria-describedby="sub-robot-shm-channels-desc-f1">
+  <title id="sub-robot-shm-channels-title-f1">端侧无锁交换原语: P0 进程内总线、ShmSeqSlot 与 SPSC ShmRingQueue</title>
+  <desc id="sub-robot-shm-channels-desc-f1">专注呈现 4+1 进程内与跨进程共享内存的三大交换机制：BodyRtBus、9 组顺序锁状态槽与 3 组无丢弃 SPSC 环形队列。</desc>
+  <defs>
+    <pattern id="sub-robot-shm-channels-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-robot-shm-channels-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-robot-shm-channels-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-robot-shm-channels-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-robot-shm-channels-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-robot-shm-channels-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-robot-shm-channels-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#sub-robot-shm-channels-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="450.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">INTRA-P0 &amp; PRIMITIVES</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0 内部总线与 16 次自旋顺序锁原语</text>
+  <rect x="414.0" y="86.0" width="376.0" height="450.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="428.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">SHMSEQSLOT&lt;PODT&gt; (9 槽)</text>
+  <text x="428.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">最新状态覆盖无锁槽</text>
+  <rect x="818.0" y="86.0" width="346.0" height="450.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="832.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">SHMRINGQUEUE&lt;PODT, N&gt; (3 环)</text>
+  <text x="832.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单写单读无丢弃事件流</text>
+  <g class="arch-edge" data-from="p0_bus" data-to="slot_state" data-flow="intra_p0">
+    <path d="M 364.0 191.0 L 395.0 191.0 Q 400.0 191.0 400.0 196.0 L 400.0 251.0 Q 400.0 256.0 405.0 256.0 L 436.0 256.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-shm-channels-arrow-forest-f1)"/>
+    <rect x="384.1" y="214.5" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="400.0" y="226.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">发布</text>
+  </g>
+  <g class="arch-edge" data-from="slot_motion" data-to="p0_bus" data-flow="seqslot">
+    <path d="M 436.0 432.0 L 393.0 432.0 Q 388.0 432.0 388.0 427.0 L 388.0 215.0 Q 388.0 210.0 383.0 210.0 L 364.0 210.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-shm-channels-arrow-forest-f1)"/>
+    <rect x="354.3" y="312.0" width="67.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="388.0" y="324.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">epoch 消费</text>
+  </g>
+  <g class="arch-edge" data-from="seqlock_op" data-to="slot_perc" data-flow="seqslot">
+    <path d="M 364.0 365.0 L 395.0 365.0 Q 400.0 365.0 400.0 360.0 L 400.0 349.0 Q 400.0 344.0 405.0 344.0 L 436.0 344.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-shm-channels-arrow-terracotta-f1)"/>
+    <rect x="357.2" y="356.0" width="49.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="382.0" y="368.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">16 自旋</text>
+  </g>
+  <g class="arch-edge" data-from="slot_spec" data-to="slot_state" data-flow="seqslot">
+    <path d="M 602.0 200.0 L 602.0 224.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-shm-channels-arrow-ink-f1)"/>
+    <rect x="576.2" y="203.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="602.0" y="215.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">只读约束</text>
+  </g>
+  <g class="arch-edge" data-from="ring_task" data-to="slot_motion" data-flow="ring">
+    <path d="M 840.0 217.0 L 801.0 217.0 Q 796.0 217.0 796.0 222.0 L 796.0 427.0 Q 796.0 432.0 791.0 432.0 L 768.0 432.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-shm-channels-arrow-slate-f1)"/>
+    <rect x="775.2" y="315.5" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="796.0" y="327.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">能力步</text>
+  </g>
+  <g class="arch-edge" data-from="p0_bus" data-to="ring_evid" data-flow="ring">
+    <path d="M 211.0 230.0 L 211.0 497.0 Q 211.0 502.0 216.0 502.0 L 986.0 502.0 Q 991.0 502.0 991.0 497.0 L 991.0 418.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-shm-channels-arrow-ochre-f1)"/>
+    <rect x="570.3" y="493.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="601.0" y="505.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">分进程审计</text>
+  </g>
+  <g class="arch-node-card" data-node-id="p0_bus" aria-controls="sub-robot-shm-channels-f1-drawer-p0_bus">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p0_bus" data-flows="all,intra_p0,ring,seqslot" aria-expanded="false" aria-label="BodyRtBus 进程内总线（P0 线程间 SeqLock）" aria-controls="sub-robot-shm-channels-f1-drawer-p0_bus">
+      <rect class="arch-node-box" x="58.0" y="152.0" width="306.0" height="78.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">BodyRtBus 进程内总线</text>
+      <text class="arch-node-role" x="70.0" y="216.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">P0 线程间 SeqLock</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#principles" data-same-page="true" aria-label="前往「BodyRtBus 进程内总线」对应章节">
+      <rect x="336.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="348.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="seqlock_op" aria-controls="sub-robot-shm-channels-f1-drawer-seqlock_op">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="seqlock_op" data-flows="all,seqslot" aria-expanded="false" aria-label="16 次自旋顺序锁原语（奇写偶读 · 写端不阻塞）" aria-controls="sub-robot-shm-channels-f1-drawer-seqlock_op">
+      <rect class="arch-node-box" x="58.0" y="326.0" width="306.0" height="78.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">16 次自旋顺序锁原语</text>
+      <text class="arch-node-role" x="70.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">奇写偶读 · 写端不阻塞</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#principles" data-same-page="true" aria-label="前往「16 次自旋顺序锁原语」对应章节">
+      <rect x="336.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="348.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="slot_spec" aria-controls="sub-robot-shm-channels-f1-drawer-slot_spec">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="slot_spec" data-flows="all,seqslot" aria-expanded="false" aria-label="embodiment_spec.shm（0x454D4553 · 只读契约）" aria-controls="sub-robot-shm-channels-f1-drawer-slot_spec">
+      <rect class="arch-node-box" x="436.0" y="136.0" width="332.0" height="64.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="161.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">embodiment_spec.shm</text>
+      <text class="arch-node-role" x="448.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">0x454D4553 · 只读契约</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#contracts" data-same-page="true" aria-label="前往「embodiment_spec.shm」对应章节">
+      <rect x="740.0" y="140.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="752.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="slot_state" aria-controls="sub-robot-shm-channels-f1-drawer-slot_state">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="slot_state" data-flows="all,intra_p0,seqslot" aria-expanded="false" aria-label="body_state &amp; safety_status（P0 -&gt; P1/P2/P3 状态）" aria-controls="sub-robot-shm-channels-f1-drawer-slot_state">
+      <rect class="arch-node-box" x="436.0" y="224.0" width="332.0" height="64.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="249.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">body_state &amp; safety_status</text>
+      <text class="arch-node-role" x="448.0" y="274.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P0 -&gt; P1/P2/P3 状态</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#contracts" data-same-page="true" aria-label="前往「body_state &amp; safety_status」对应章节">
+      <rect x="740.0" y="228.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="752.0" y="244.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="slot_perc" aria-controls="sub-robot-shm-channels-f1-drawer-slot_perc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="slot_perc" data-flows="all,seqslot" aria-expanded="false" aria-label="spatial_pose &amp; perception（P1 -&gt; P2/P3 观测）" aria-controls="sub-robot-shm-channels-f1-drawer-slot_perc">
+      <rect class="arch-node-box" x="436.0" y="312.0" width="332.0" height="64.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="337.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">spatial_pose &amp; perception</text>
+      <text class="arch-node-role" x="448.0" y="362.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P1 -&gt; P2/P3 观测</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true" aria-label="前往「spatial_pose &amp; perception」对应章节">
+      <rect x="740.0" y="316.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="752.0" y="332.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="slot_motion" aria-controls="sub-robot-shm-channels-f1-drawer-slot_motion">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="slot_motion" data-flows="all,ring,seqslot" aria-expanded="false" aria-label="motion_cmd &amp; traj_slot（P2 -&gt; P0 · &lt;=128 点）" aria-controls="sub-robot-shm-channels-f1-drawer-slot_motion">
+      <rect class="arch-node-box" x="436.0" y="400.0" width="332.0" height="64.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="425.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">motion_cmd &amp; traj_slot</text>
+      <text class="arch-node-role" x="448.0" y="450.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">P2 -&gt; P0 · &lt;=128 点</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true" aria-label="前往「motion_cmd &amp; traj_slot」对应章节">
+      <rect x="740.0" y="404.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="752.0" y="420.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="ring_task" aria-controls="sub-robot-shm-channels-f1-drawer-ring_task">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="ring_task" data-flows="all,ring" aria-expanded="false" aria-label="task_cmd &amp; receipt_ring（SPSC N=64 · &lt;=3584 B）" aria-controls="sub-robot-shm-channels-f1-drawer-ring_task">
+      <rect class="arch-node-box" x="840.0" y="176.0" width="302.0" height="82.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="201.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">task_cmd &amp; receipt_ring</text>
+      <text class="arch-node-role" x="852.0" y="244.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">SPSC N=64 · &lt;=3584 B</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#contracts" data-same-page="true" aria-label="前往「task_cmd &amp; receipt_ring」对应章节">
+      <rect x="1114.0" y="180.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1126.0" y="196.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="ring_evid" aria-controls="sub-robot-shm-channels-f1-drawer-ring_evid">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="ring_evid" data-flows="all,ring" aria-expanded="false" aria-label="evidence_ring_&lt;proc&gt;（SPSC N=256 · 分进程）" aria-controls="sub-robot-shm-channels-f1-drawer-ring_evid">
+      <rect class="arch-node-box" x="840.0" y="336.0" width="302.0" height="82.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="361.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">evidence_ring_&lt;proc&gt;</text>
+      <text class="arch-node-role" x="852.0" y="404.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">SPSC N=256 · 分进程</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#evidence" data-same-page="true" aria-label="前往「evidence_ring_&lt;proc&gt;」对应章节">
+      <rect x="1114.0" y="340.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1126.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P0 内部与运动参考槽</text>
+  <rect x="225.1" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="247.1" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">16 次自旋奇偶版本保护</text>
+  <rect x="375.9" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="397.9" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SPSC 无丢弃任务与审计环</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">每台机器人拥有独立 /dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/ 隔离目录</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 04B · LOCK-FREE IPC &amp; SHM CHANNELS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">端侧无锁交换原语: P0 进程内总线、ShmSeqSlot 与 SPSC ShmRingQueue</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/ · 0x454D4950</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="intra_p0" aria-pressed="false">P0 进程内无锁交换</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="seqslot" aria-pressed="false">跨进程 ShmSeqSlot 覆盖槽</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="ring" aria-pressed="false">跨进程 ShmRingQueue 事件环</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>进程内 SeqLock 与跨进程无锁 SHM
+通信通道</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-robot-shm-channels.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-robot-shm-channels-f1-drawer-p0_bus" class="diagram-drawer-panel" data-node-drawer="p0_bus" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">BodyRtBus 进程内总线</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Intra-P0 · 进程内 · 200 Hz 零拷贝</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「BodyRtBus 进程内总线」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在 P0 五个线程间实现亚微秒级状态分发，避免互斥锁优先级反转。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>进程内单写无锁槽位</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/body_rt_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>连接 sensor_adapters -&gt; state_estimation -&gt; action_executor -&gt; body_gateway</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-shm-channels-f1-drawer-slot_spec" class="diagram-drawer-panel" data-node-drawer="slot_spec" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">embodiment_spec.shm</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ShmSeqSlot · 启动配置 · 一次写入全局共享</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「embodiment_spec.shm」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">让四个工作进程对自由度切片、构型分类与走廊围栏保持唯一认知。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>不可变 POD 配置槽</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>由 supervisor 合成并写入，P0–P3 启动校验 CRC32 后只读映射</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-shm-channels-f1-drawer-slot_state" class="diagram-drawer-panel" data-node-drawer="slot_state" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">body_state &amp; safety_status</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ShmSeqSlot · 实时遥测 · 200 Hz 发布</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「body_state &amp; safety_status」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">向定位、规划与任务代理广播本机当前关节状态、TCP 位姿与安全保护状态。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>最新值覆盖无锁槽</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>同时分发 proc_health.shm 与 health_&lt;proc&gt;.shm 供监管巡检</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-shm-channels-f1-drawer-slot_perc" class="diagram-drawer-panel" data-node-drawer="slot_perc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">spatial_pose &amp; perception</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ShmSeqSlot · 空间感知 · 10 Hz 覆盖更新</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「spatial_pose &amp; perception」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为导航与操作规划提供无锁最新定位与工件坐标快照。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>带 sim_time_ns 观测槽</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>传递 SpatialPosePod (含 tracking_score 与净距) 及目标 6D 识别结果</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-shm-channels-f1-drawer-slot_motion" class="diagram-drawer-panel" data-node-drawer="slot_motion" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">motion_cmd &amp; traj_slot</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ShmSeqSlot · 运动参考 · 50/20 Hz 写入</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「motion_cmd &amp; traj_slot」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">安全地将 P2 规划器生成的分段轨迹移交给 P0 200 Hz 插值执行器。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>带 epoch 防串包参考槽</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>traj_slot.shm 最多容纳 128 路点与 32 轴控制组；epoch 不符即丢弃</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-shm-channels-f1-drawer-seqlock_op" class="diagram-drawer-panel" data-node-drawer="seqlock_op" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">16 次自旋顺序锁原语</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Core Primitive · SeqLock · 无锁原子序列</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「16 次自旋顺序锁原语」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保高频发布者永不被慢速读者阻塞，同时读者绝不会读到撕裂结构体。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II SeqLock&lt;PodT&gt;</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/seqlock.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>写端递增奇数版本号写入后再置偶数；读端前后核对序列号，最多重试 16 次</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-shm-channels-f1-drawer-ring_task" class="diagram-drawer-panel" data-node-drawer="ring_task" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">task_cmd &amp; receipt_ring</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ShmRingQueue · 任务流 · 无丢弃 FIFO 队列</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「task_cmd &amp; receipt_ring」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">避免任务命令和完成回执因覆盖写而丢失。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II SPSC 无锁环形队列</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/spsc_queue.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>在 P3 与 P2 之间传递不可丢失的能力步下发载荷与终态回执</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-shm-channels-f1-drawer-ring_evid" class="diagram-drawer-panel" data-node-drawer="ring_evid" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">evidence_ring_&lt;proc&gt;</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ShmRingQueue · 审计环 · P0/P1/P2 -&gt; P3</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「evidence_ring_&lt;proc&gt;」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">让 P0 硬实时进程无需触碰磁盘即可留下完整执行与保护事件记录。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>分进程独占写端防冲突</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/evidence_buffer/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>各子进程独占独立 evidence_ring_&lt;proc&gt;.shm (N=256)，由 P3 统一批量写 JSONL</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-robot-4plus1-topology">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<h3 id="无阻塞-seqlock-与-shmringqueue-原语">无阻塞 <code>SeqLock</code>
+与 <code>ShmRingQueue</code> 原语</h3>
+<p>为在高频回路中实现零动态堆分配与读写零等待，<code>embodied_core</code>
+定义了两类无锁通信原语：</p>
+<ul>
+<li><strong>进程内 <code>SeqLock&lt;T&gt;</code> 与跨进程
+<code>ShmSeqSlot&lt;PodT&gt;</code></strong>：定义于
+<code>src/embodied_core/include/embodied_core/seqlock.hpp</code> 与
+<code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code>，所有载荷必须在编译期通过
+<code>std::is_trivially_copyable_v&lt;PodT&gt;</code>
+静态断言。写入方在拷贝前将原子序列号
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
+置为奇数（<code>s + 1</code>）并插入 <code>acq_rel</code>
+内存栅栏，写入完毕后置为偶数（<code>s + 2</code>）；读取方在最多
+<code>16</code> 次跨进程自旋（进程内为 <code>32</code>
+次）内检查两次原子读序
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mn>1</mn></msub><annotation encoding="application/x-tex">s_1</annotation></semantics></math>
+与
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>s</mi><mn>2</mn></msub><annotation encoding="application/x-tex">s_2</annotation></semantics></math>，仅当同时满足下式时才采信拷贝快照：</li>
+</ul>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>s</mi><mn>1</mn></msub><mrow><mspace width="0.222em"></mspace><mrow><mi mathvariant="normal">mod</mi><mo>&#8289;</mo></mrow><mspace width="0.222em"></mspace><mn>2</mn></mrow><mo>=</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo><mo>∧</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>s</mi><mn>1</mn></msub><mo>=</mo><msub><mi>s</mi><mn>2</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(s_1 \bmod 2 = 0) \land (s_1 = s_2)</annotation></semantics></math></p>
+<p>该机制保证高频写者永远不会被慢速或卡死的读者阻塞。</p>
+<ul>
+<li><strong>零丢弃 SPSC
+环形队列（<code>ShmRingQueue&lt;PodT, Capacity&gt;</code>）</strong>：要求
+<code>Capacity</code> 为大于等于 <code>2</code> 的 <code>2</code>
+的幂次，头部携带魔数 <code>0x454D4950</code>（<code>"EMIP"</code>），以
+<code>64</code> 字节缓存行排布（<code>alignas(64)</code>）的独立
+<code>head</code> / <code>tail</code> 索引承载任务指令（容量
+<code>64</code>）、执行回执（容量
+<code>64</code>）与按写入进程分区的审计事件流（容量
+<code>256</code>）。</li>
+</ul>
+<h3 id="单机安全与-local_hold-状态机">单机安全与 <code>LOCAL_HOLD</code>
+状态机</h3>
+<p><code>robot_body_rt</code> 内的 <code>protection_runtime</code>
+线程（<code>50 Hz</code> / <code>20 ms</code>）运行
+<code>ProtectionCore</code>（<code>src/robot_app/algorithms/safety/protection_core.hpp</code>），独立监听
+<code>18749</code> UDP 端口
+<code>SafetyFrame</code>：遥控死人开关租约超时
+<code>250 ms</code>（<code>teleop_deadman_ns</code>）即终止接管，安全脉搏或规划进程
+<code>motion_plan</code> 心跳失联达
+<code>1000 ms</code>（<code>local_hold_timeout_ns</code>）则自动切入
+<code>LOCAL_HOLD</code> 并触发 HAL 安全停机，同时强制保证
+<code>fleet_wide_estop_triggered == false</code>（单机故障严格隔离在本机，不触发全队急停）。</p>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>端侧运行时遵循 <strong>P-II 原生 <code>C++20</code>
+零分配实时组件范式</strong>，同时在业务模块演进层客观存在 <strong>P-IV
+双栈受控演进过渡边界</strong>：</p>
+<ul>
+<li><strong>模板方法线程底座（<code>IModuleThread</code>）</strong>：<code>src/embodied_core/include/embodied_core/module_thread.hpp</code>
+统一规定所有端侧实时模块的生命周期钩子：<code>configure(ctx, err) -&gt; on_start(epoch, err) -&gt; step_once(now_ns) noexcept -&gt; on_stop()</code>；内置
+<code>std::jthread</code> 与 <code>std::stop_token</code>
+管理、<code>mod:&lt;short_name&gt;</code>（<code>&lt;= 15</code> 字符
+Linux 任务名上限）设置、绑核、<code>SCHED_FIFO</code>/<code>nice</code>
+调度以及精确到纳秒的周期漂移/超拍（<code>overrun_count_</code>）统计。</li>
+<li><strong>值语义纯域状态机</strong>：如
+<code>ActionExecutorDomain</code>、<code>BodyGatewayDomain</code>、<code>MotionCoordinatorDomain</code>
+与 <code>ProtectionDomain</code> 均为纯 <code>C++20</code>
+状态类，不持有线程或套接字，支持在 <code>robot_app_algo_test_lib</code>
+中脱离共享内存直接执行确定性单步回放测试。</li>
+<li><strong>双栈过渡边界的诚实披露（重要）</strong>：经核查
+<code>src/robot_app/modules/</code>
+目录，<code>src/robot_app/modules/{manipulation_runtime,navigation_runtime,spatial_runtime,perception_runtime,state_estimation,action_executor,local_task_runtime}</code>
+这 <code>7</code> 个模块当前<strong>同时存在</strong> <code>C++20</code>
+<code>domain.cpp</code> / <code>runtime.cpp</code>（服务
+<code>4+1</code> <code>SHM</code> 实时回路）与 <code>Python</code>
+<code>runtime.py</code> / <code>domain/*.py</code>（由
+<code>src/robot_app/assembly.py</code>
+调度）双栈实现；此外，<code>src/robot_app/modules/coordination_runtime</code>
+当前仅有 <code>Python</code>
+实现（<code>cpp_entry: null</code>）。双栈各自内部维持了领域与适配器隔离，但全栈向纯原生
+<code>C++20</code> 的收敛仍在持续推进中。</li>
+</ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>合规状态</th>
+<th>工程依据与审视说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 领域纯洁性与依赖倒置</td>
+<td><code>PASS</code></td>
+<td>各模块 <code>Domain</code> 类完全剥离
+<code>mmap</code>、<code>dlopen</code> 与 <code>UDP</code>
+系统调用，仅消费值语义 POD 结构体输入</td>
+</tr>
+<tr>
+<td>2. 契约完备性与边界防呆</td>
+<td><code>PASS</code></td>
+<td><code>ShmSeqSlot</code> 与 <code>ShmRingQueue</code> 编译期强制
+<code>is_trivially_copyable_v</code> 校验；<code>ProtectionCore</code>
+执行带外超时防呆与单机隔离</td>
+</tr>
+<tr>
+<td>3. 状态机与生命周期确定性</td>
+<td><code>PASS</code></td>
+<td><code>IModuleThread</code> 规范五步生命周期；<code>P0</code> 强制
+<code>restart_on_crash = false</code>；<code>P1</code>–<code>P3</code>
+按 <code>80 ms</code> 退避恢复</td>
+</tr>
+<tr>
+<td>4. 实时内存与并发安全性</td>
+<td><code>PASS</code></td>
+<td><code>P0</code> 启用 <code>mlockall</code> 与独立大核无
+<code>SMT</code> 隔离；<code>SeqLock</code> 与 <code>ShmRingQueue</code>
+实现无锁单写者实时交换</td>
+</tr>
+<tr>
+<td>5. 离线可测性与失败留痕</td>
+<td><code>PASS</code></td>
+<td><code>src/robot_app/CMakeLists.txt</code> 构建
+<code>robot_app_algo_test_lib</code> 支撑三套离线 CTest 套件；独立
+<code>evidence_ring_&lt;proc&gt;.shm</code> 保留全程事件</td>
+</tr>
+<tr>
+<td>6. 单真源约束与过渡债务透明度</td>
+<td><code>HYBRID</code></td>
+<td><code>7</code> 个核心运行模块同时存在 <code>C++20</code>
+<code>domain.cpp</code>（<code>4+1</code> <code>SHM</code> 实时回路）与
+<code>Python</code> <code>runtime.py</code>/<code>domain/*.py</code>
+双栈实现，<code>coordination_runtime</code> 仅保留 <code>Python</code>
+实现（<code>cpp_entry: null</code>）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -160,51 +1061,9 @@ alt="单机 C++20 4+1 多进程隔离与无锁共享内存架构" loading="eager
 </tbody>
 </table>
 </div>
-<aside class="doc-callout doc-callout--warning" role="note">
-  <div class="doc-callout-title">WARNING · 风险边界</div>
-  <p><strong><code>robot_body_rt</code>
-严禁静默重启</strong>：硬件与控制界面的 <code>P0_CRITICAL</code>
-进程一旦崩溃（如内存越界或驱动断言失败），系统绝不尝试后台无声拉起恢复运动控制，而是立即切断下发并允许物理刹车或安全停机接管，防止未知状态下的盲目重连导致机器人在站立或负重中倾覆。</p>
-  
-</aside>
-<h2
-id="硬件拓扑探测与自适应资源分配器">硬件拓扑探测与自适应资源分配器</h2>
-<p>不同部署硬件平台（从机载
-<code>aarch64_rk3588</code>、<code>aarch64_jetson_orin</code>
-到仿真宿主机高核数 <code>x86_64</code> 多机并发环境）CPU
-大小核架构与中断分布迥异。<code>robot_supervisor</code>
-在启动阶段执行两阶段核组绑定与配额计算：</p>
-<ol type="1">
-<li><strong>硬件拓扑探测（<code>TopologyProbe</code>）</strong>：扫描
-<code>/sys/devices/system/cpu/</code> 与
-<code>/proc/interrupts</code>，识别大核与能效小核簇、超线程 SMT
-物理核心对映射以及高硬件中断（High-IRQ）核心，生成排除高中断污染的可用
-CPU 掩码。</li>
-<li><strong>比例核组划分（<code>ProportionalResourceAllocator</code>）</strong>：针对
-<code>P0_CRITICAL</code> 优先独占高主频物理大核并强制剔除同核 SMT
-兄弟线程，消除缓存与流水线竞争；在多机同宿部署或异构机型场景下，函数
-<code>allocate_for_embodiment</code>
-依据本体构型动态重算权重——例如面对纯速度底盘控制（<code>LocomotionArchetype::kChassisTwist</code>）且无机械臂操作机构（<code>ManipulatorArchetype::kNone</code>）的牵引车或摆渡车，自动压缩
-<code>body_rt</code> 冗余核份额并回拨算力给系统与感知规划线程。</li>
-</ol>
-<h2
-id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由总线与跨进程无锁共享内存</h2>
-<p>为实现零动态堆分配（Zero-Allocation）高频执行，数据交换严格区分为进程内顺序锁总线与跨进程共享内存两级模型：</p>
-<ul>
-<li><strong>进程内
-<code>BodyRtBus</code>（<code>ipc_channels.hpp</code>）</strong>：<code>robot_body_rt</code>
-内部五个线程通过顺序锁封装交换最新状态，配合原子开关
-<code>has_valid_sample</code>、<code>last_hal_sample_ns</code> 与
-<code>active_epoch</code>，确保高优控制线程零锁等待。</li>
-<li><strong>跨进程映射区（<code>/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/</code>）</strong>：采用覆盖读槽位
-<code>ShmSeqSlot&lt;PodT&gt;</code>（读取端在 <code>16</code>
-次自旋重试内获取原子快照，不阻塞写入节拍）与无丢弃单生产者单消费者环形队列
-<code>ShmRingQueue&lt;PodT, N&gt;</code>（魔数 <code>0x454D4950</code>
-<code>"EMIP"</code>）承担全部跨进程通信。</li>
-</ul>
 <details class="tech-details">
 <summary>
-查看进程内 BodyRtBus 与跨进程无锁 SHM 文件全量清单
+查看进程内 BodyRtBus / MotionPlanBus 与跨进程无锁 SHM 文件全量清单
 </summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
@@ -227,7 +1086,14 @@ id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由�
 <td>进程内 <code>BodyRtBus</code></td>
 <td><code>SeqLock&lt;PodT&gt;</code></td>
 <td><code>SeqLock&lt;hal::HalSample&gt;</code>、<code>SeqLock&lt;ActionExecOutPod&gt;</code>、<code>SeqLock&lt;SafetyStatusPod&gt;</code></td>
-<td>P0 线程内零锁原子更新与读取</td>
+<td><code>P0</code>
+五线程内零锁原子更新与读取（<code>max_retries = 32</code>）</td>
+</tr>
+<tr>
+<td>进程内 <code>MotionPlanBus</code></td>
+<td><code>SeqLock&lt;PodT&gt;</code></td>
+<td><code>SeqLock&lt;ActiveStepGoalPod&gt;</code>、<code>SeqLock&lt;NavControlOutPod&gt;</code>、<code>SeqLock&lt;ManipControlOutPod&gt;</code></td>
+<td><code>P2</code> 三线程内交换导航/操作目标与输出状态</td>
 </tr>
 <tr>
 <td>跨进程覆盖状态槽</td>
@@ -239,7 +1105,7 @@ id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由�
 <td>跨进程控制与健康槽</td>
 <td><code>ShmSeqSlot&lt;PodT&gt;</code></td>
 <td><code>motion_cmd.shm</code>、<code>traj_slot.shm</code>、<code>proc_health.shm</code>、<code>health_&lt;proc&gt;.shm</code></td>
-<td>承载运动命令、轨迹路点与各子进程状态</td>
+<td>承载运动命令、轨迹路点（上限 <code>128</code> 点）与子进程状态</td>
 </tr>
 <tr>
 <td>跨进程任务队列</td>
@@ -258,20 +1124,22 @@ id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由�
 </table>
 </div>
 </details>
-<h2 id="监控心跳局部保护与-local_hold-状态机">监控心跳、局部保护与
-<code>LOCAL_HOLD</code> 状态机</h2>
-<p>守护进程每 <code>25 ms</code> 检查一次各子进程在
-<code>ChildHeartbeatPod</code> 中更新的心跳时间戳与状态码；当
-<code>P1</code>、<code>P2</code> 或 <code>P3</code> 意外退出时，监管器经
-<code>80 ms</code>
-退避后重新拉起子进程并推进或校验会话代际状态。同时，<code>robot_body_rt</code>
-内的 <code>protection_runtime</code> 线程独立监听 <code>18749</code> UDP
-端口（<code>SafetyFrame</code>），在 <code>250 ms</code>
-内未收悉活跃遥操作帧即终止接管输出，若持续 <code>1000 ms</code>
-失联安全脉搏心跳（或规划进程 <code>motion_plan</code> 心跳失效），状态机
-<code>ProtectionCore</code> 自动转入 <code>LOCAL_HOLD</code>
-安全悬停并通知 HAL 进入安全停机保持，且严格保证
-<code>fleet_wide_estop_triggered == false</code>（单机问题仅由本机承担隔离）。</p>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<ul>
+<li><strong>离线原语与四机物理工厂实证（<code>L1</code> /
+<code>L3</code>）</strong>：<code>L1</code> 层三套原生 CTest
+二进制（<code>test_core_hal_safety_ipc</code>、<code>test_algorithms_and_allocator</code>、<code>test_embodiment_decoupling</code>）验证了拓扑探测、比例核组划分与无锁
+<code>SHM</code> 一致性；<code>L3</code> 层
+<code>tests/integration/test_factory_4robot_multiprocess_closed_loop.py</code>（<code>SIT-F3</code>）同时拉起
+<code>robot_r1</code> 至 <code>robot_r4</code> 四套真实 <code>4+1</code>
+进程栈，完成 <code>16</code> 个工位周期并通过
+<code>trigger_r3_deadman_brake_check</code> 证实单机进入
+<code>LOCAL_HOLD</code> 不会连带拖垮其余三台产线进程，进程退出全部返回
+<code>rc == 0</code> 且零孤儿残留。</li>
+<li><strong>能力边界声明</strong>：当前部分高层调度与精算子仍依赖
+<code>Python</code> <code>assembly.py</code> 双栈衔接；<code>P0</code>
+进程主动禁止自动重启意味着硬件或内存致命故障需要人工介入或上层重新建立会话，不掩盖底层故障。</li>
+</ul>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -283,18 +1151,24 @@ id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#进程分工优先级与核心资源配额"
-id="toc-进程分工优先级与核心资源配额"><code>4+1</code>
-进程分工、优先级与核心资源配额</a></li>
-<li><a href="#硬件拓扑探测与自适应资源分配器"
-id="toc-硬件拓扑探测与自适应资源分配器">硬件拓扑探测与自适应资源分配器</a></li>
-<li><a href="#进程内锁自由总线与跨进程无锁共享内存"
-id="toc-进程内锁自由总线与跨进程无锁共享内存">进程内锁自由总线与跨进程无锁共享内存</a></li>
-<li><a href="#监控心跳局部保护与-local_hold-状态机"
-id="toc-监控心跳局部保护与-local_hold-状态机">监控心跳、局部保护与
-<code>LOCAL_HOLD</code> 状态机</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与内部机制</a>
+<ul>
+<li><a href="#无阻塞-seqlock-与-shmringqueue-原语"
+id="toc-无阻塞-seqlock-与-shmringqueue-原语">无阻塞 <code>SeqLock</code>
+与 <code>ShmRingQueue</code> 原语</a></li>
+<li><a href="#单机安全与-local_hold-状态机"
+id="toc-单机安全与-local_hold-状态机">单机安全与 <code>LOCAL_HOLD</code>
+状态机</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -307,20 +1181,21 @@ id="toc-监控心跳局部保护与-local_hold-状态机">监控心跳、局部�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

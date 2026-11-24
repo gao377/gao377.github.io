@@ -66,13 +66,413 @@
       <article class="doc-article">
 <p>FACRI 将多机物理仿真、真机联调与网页可视化观测收口至根目录统一脚本
 <code>facrictl</code>。开发者无需手动配置环境变量或操作底层容器模板，即可依次完成零步预检、系统拉起、页面核验与安全释放。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="guide-quickstart-lifecycle" data-fig-uid="guide-quickstart-lifecycle-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/guide-quickstart-lifecycle.svg"
-alt="FACRI 快速上手与会话生命周期图" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="guide-quickstart-lifecycle" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="guide-quickstart-lifecycle-title-f0" aria-describedby="guide-quickstart-lifecycle-desc-f0">
+  <title id="guide-quickstart-lifecycle-title-f0">facrictl 单会话所有者锁与五步标准启停状态流转</title>
+  <desc id="guide-quickstart-lifecycle-desc-f0">展示 facrictl 统一 CLI 分派路径、五步零代价预检到观测流程，以及 stop 与 close --wait 的所有者锁释放区别。</desc>
+  <defs>
+    <pattern id="guide-quickstart-lifecycle-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="guide-quickstart-lifecycle-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="guide-quickstart-lifecycle-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="guide-quickstart-lifecycle-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="guide-quickstart-lifecycle-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="guide-quickstart-lifecycle-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="guide-quickstart-lifecycle-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#guide-quickstart-lifecycle-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="126.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CLI ROUTING · system_entry.py</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">统一入口 ./facrictl 与三大场景后端分派</text>
+  <rect x="36.0" y="226.0" width="1128.0" height="134.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="245.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">STANDARD BOOT PIPELINE</text>
+  <text x="50.0" y="262.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">标准四阶启停校验流（废除 600 s 与 RTF 自动中断）</text>
+  <rect x="36.0" y="374.0" width="1128.0" height="160.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="393.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">OPERATOR EXIT SOVEREIGNTY</text>
+  <text x="50.0" y="410.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">操作员显式停机两条路径（仅运行方手动触发）</text>
+  <g class="arch-edge" data-from="cli_entry" data-to="route_factory" data-flow="dispatch">
+    <path d="M 358.0 166.0 L 418.0 166.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-ink-f0)"/>
+    <rect x="361.2" y="157.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="388.0" y="169.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">--setup</text>
+  </g>
+  <g class="arch-edge" data-from="cli_entry" data-to="route_c919" data-flow="dispatch">
+    <path d="M 208.0 134.0 L 208.0 121.0 Q 208.0 116.0 213.0 116.0 L 972.0 116.0 Q 977.0 116.0 977.0 121.0 L 977.0 134.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-ink-f0)"/>
+    <rect x="565.7" y="107.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="592.5" y="119.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">c919/ui</text>
+  </g>
+  <g class="arch-edge" data-from="route_factory" data-to="step_check" data-flow="boot">
+    <path d="M 588.0 198.0 L 588.0 209.0 Q 588.0 214.0 583.0 214.0 L 183.0 214.0 Q 178.0 214.0 178.0 219.0 L 178.0 276.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-slate-f0)"/>
+    <rect x="367.1" y="205.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="383.0" y="217.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">预检</text>
+  </g>
+  <g class="arch-edge" data-from="step_check" data-to="step_base" data-flow="boot">
+    <path d="M 298.0 310.0 L 336.0 310.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-slate-f0)"/>
+    <rect x="303.1" y="301.0" width="27.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="317.0" y="313.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">0步</text>
+  </g>
+  <g class="arch-edge" data-from="step_base" data-to="step_start" data-flow="boot">
+    <path d="M 576.0 310.0 L 614.0 310.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-forest-f0)"/>
+    <rect x="573.2" y="301.0" width="43.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="595.0" y="313.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">基线OK</text>
+  </g>
+  <g class="arch-edge" data-from="step_start" data-to="step_observe" data-flow="boot">
+    <path d="M 864.0 310.0 L 902.0 310.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-ochre-f0)"/>
+    <rect x="862.1" y="301.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="883.0" y="313.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">READY</text>
+  </g>
+  <g class="arch-edge" data-from="step_observe" data-to="exit_stop" data-flow="exit">
+    <path d="M 980.0 344.0 L 980.0 391.0 Q 980.0 396.0 975.0 396.0 L 340.0 396.0 Q 335.0 396.0 335.0 401.0 L 335.0 428.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-ochre-f0)"/>
+    <rect x="631.7" y="387.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="657.5" y="399.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">暂停检视</text>
+  </g>
+  <g class="arch-edge" data-from="step_observe" data-to="exit_close" data-flow="exit">
+    <path d="M 1060.0 344.0 L 1060.0 391.0 Q 1060.0 396.0 1055.0 396.0 L 870.0 396.0 Q 865.0 396.0 865.0 401.0 L 865.0 428.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-quickstart-lifecycle-arrow-forest-f0)"/>
+    <rect x="936.7" y="387.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="962.5" y="399.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">完整释放</text>
+  </g>
+  <g class="arch-node-card" data-node-id="cli_entry" aria-controls="guide-quickstart-lifecycle-f0-drawer-cli_entry">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cli_entry" data-flows="all,dispatch" aria-expanded="false" aria-label="./facrictl 统一入口（单一会话所有者锁）" aria-controls="guide-quickstart-lifecycle-f0-drawer-cli_entry">
+      <rect class="arch-node-box" x="58.0" y="134.0" width="300.0" height="64.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="159.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">./facrictl 统一入口</text>
+      <text class="arch-node-role" x="70.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">单一会话所有者锁</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/quickstart.html" data-same-page="true" aria-label="前往「./facrictl 统一入口」对应章节">
+      <rect x="330.0" y="138.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="342.0" y="154.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="route_factory" aria-controls="guide-quickstart-lifecycle-f0-drawer-route_factory">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="route_factory" data-flows="all,boot,dispatch" aria-expanded="false" aria-label="--setup factory / cell（factory_system / cell）" aria-controls="guide-quickstart-lifecycle-f0-drawer-route_factory">
+      <rect class="arch-node-box" x="418.0" y="134.0" width="340.0" height="64.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="430.0" y="159.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">--setup factory / cell</text>
+      <text class="arch-node-role" x="430.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">factory_system / cell</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/cli-and-scenes.html" aria-label="前往「--setup factory / cell」对应章节">
+      <rect x="730.0" y="138.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="742.0" y="154.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="route_c919" aria-controls="guide-quickstart-lifecycle-f0-drawer-route_c919">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="route_c919" data-flows="all,dispatch" aria-expanded="false" aria-label="--setup c919 / ui（embodied / launcher）" aria-controls="guide-quickstart-lifecycle-f0-drawer-route_c919">
+      <rect class="arch-node-box" x="812.0" y="134.0" width="330.0" height="64.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="824.0" y="159.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">--setup c919 / ui</text>
+      <text class="arch-node-role" x="824.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">embodied / launcher</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/cli-and-scenes.html" aria-label="前往「--setup c919 / ui」对应章节">
+      <rect x="1114.0" y="138.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1126.0" y="154.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="step_check" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_check">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="step_check" data-flows="all,boot" aria-expanded="false" aria-label="1. CHECK 静态体检（0 物理步长预检）" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_check">
+      <rect class="arch-node-box" x="58.0" y="276.0" width="240.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="301.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">1. CHECK 静态体检</text>
+      <text class="arch-node-role" x="70.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">0 物理步长预检</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/quickstart.html" data-same-page="true" aria-label="前往「1. CHECK 静态体检」对应章节">
+      <rect x="270.0" y="280.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="282.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="step_base" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_base">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="step_base" data-flows="all,boot" aria-expanded="false" aria-label="2. BASELINE 基线核验（GIL 0.0002 s 指纹）" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_base">
+      <rect class="arch-node-box" x="336.0" y="276.0" width="240.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="301.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">2. BASELINE 基线核验</text>
+      <text class="arch-node-role" x="348.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">GIL 0.0002 s 指纹</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/runtime-baselines.html" aria-label="前往「2. BASELINE 基线核验」对应章节">
+      <rect x="548.0" y="280.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="560.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="step_start" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_start">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="step_start" data-flows="all,boot" aria-expanded="false" aria-label="3. START &amp; READY（4+1 与网关容器就绪）" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_start">
+      <rect class="arch-node-box" x="614.0" y="276.0" width="250.0" height="68.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="626.0" y="301.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">3. START &amp; READY</text>
+      <text class="arch-node-role" x="626.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">4+1 与网关容器就绪</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/quickstart.html" data-same-page="true" aria-label="前往「3. START &amp; READY」对应章节">
+      <rect x="836.0" y="280.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="848.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="step_observe" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_observe">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="step_observe" data-flows="all,boot,exit" aria-expanded="false" aria-label="4. OBSERVE 只读观测（:18640/#global）" aria-controls="guide-quickstart-lifecycle-f0-drawer-step_observe">
+      <rect class="arch-node-box" x="902.0" y="276.0" width="240.0" height="68.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="914.0" y="301.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">4. OBSERVE 只读观测</text>
+      <text class="arch-node-role" x="914.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">:18640/#global</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" aria-label="前往「4. OBSERVE 只读观测」对应章节">
+      <rect x="1114.0" y="280.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1126.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="exit_stop" aria-controls="guide-quickstart-lifecycle-f0-drawer-exit_stop">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="exit_stop" data-flows="all,exit" aria-expanded="false" aria-label="路径 A · facrictl stop（安全停车 · 保留容器）" aria-controls="guide-quickstart-lifecycle-f0-drawer-exit_stop">
+      <rect class="arch-node-box" x="140.0" y="428.0" width="390.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="152.0" y="453.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">路径 A · facrictl stop</text>
+      <text class="arch-node-role" x="152.0" y="488.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">安全停车 · 保留容器</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/quickstart.html" data-same-page="true" aria-label="前往「路径 A · facrictl stop」对应章节">
+      <rect x="502.0" y="432.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="514.0" y="448.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="exit_close" aria-controls="guide-quickstart-lifecycle-f0-drawer-exit_close">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="exit_close" data-flows="all,exit" aria-expanded="false" aria-label="路径 B · close --wait（完整结算 · 释放锁）" aria-controls="guide-quickstart-lifecycle-f0-drawer-exit_close">
+      <rect class="arch-node-box" x="670.0" y="428.0" width="390.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="682.0" y="453.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">路径 B · close --wait</text>
+      <text class="arch-node-role" x="682.0" y="488.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">完整结算 · 释放锁</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/quickstart.html" data-same-page="true" aria-label="前往「路径 B · close --wait」对应章节">
+      <rect x="1032.0" y="432.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1044.0" y="448.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">零物理步长预检</text>
+  <rect x="197.7" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="219.7" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">活动会话与释放清理</text>
+  <rect x="335.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="357.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">只读观测与安全停车</text>
+  <rect x="472.4" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="494.4" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">所有者锁冲突拦截</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">独立前端调试可运行 hybridctl serve --port 8110（不启动后台物理仿真）</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">GUIDE 01 · QUICKSTART &amp; EXIT SOVEREIGNTY</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">facrictl 单会话所有者锁与五步标准启停状态流转</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">DOCKER_HOST=unix:///var/run/docker.sock · 无自动停机门限</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="dispatch" aria-pressed="false">CLI 分派路径</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="boot" aria-pressed="false">五步启停流水线</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="exit" aria-pressed="false">操作员显式停机</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>FACRI
-快速上手与会话生命周期图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+快速上手与会话生命周期图</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/guide-quickstart-lifecycle.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="guide-quickstart-lifecycle-f0-drawer-cli_entry" class="diagram-drawer-panel" data-node-drawer="cli_entry" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">./facrictl 统一入口</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">宿主机 CLI · 入口 · 清除外部 DOCKER_CONTEXT</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「./facrictl 统一入口」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">收口所有启动、检查、观测与关闭指令，保证宿主机一次仅运行一个物理仿真 case。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单入口调度门面 + 互斥锁守卫</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/system_entry.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>绑定 unix:///var/run/docker.sock；检测端口冲突直接报 FACTORY_ALREADY_RUNNING</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/quickstart.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-route_factory" class="diagram-drawer-panel" data-node-drawer="route_factory" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">--setup factory / cell</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">宿主机 CLI · 产线 · 默认 --full-process</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「--setup factory / cell」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">路由至 Smart Factory 四机产线或单工位调试 CLI，保持物理锁与真实计数。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>场景路由适配器</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/factory_system.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>factory 启用四机无步数上限完整服务；cell 启用单工位 A1..D4 隔离复现</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/cli-and-scenes.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-route_c919" class="diagram-drawer-panel" data-node-drawer="route_c919" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">--setup c919 / ui</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">宿主机 CLI · 机坪与 UI · 复用已有浏览器窗口</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「--setup c919 / ui」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">分派至 C919 机坪保障编排器或浏览器控制台复用启动器。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>场景与只读启动分离</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/embodied_system.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>包含 c919_system.py 零步 MJCF 检查；ui 子命令仅拉起或复用只读界面</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/cli-and-scenes.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-step_check" class="diagram-drawer-panel" data-node-drawer="step_check" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">1. CHECK 静态体检</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">五步流程 · Step 1 · 零容器代价</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「1. CHECK 静态体检」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在拉起任何容器前拦截配置与端口问题，避免污染活动会话账本。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>无副作用预检</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/c919_system.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>校验清单结构、端口空闲、MJCF 编译与权限，不推进物理步长</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/quickstart.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-step_base" class="diagram-drawer-panel" data-node-drawer="step_base" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">2. BASELINE 基线核验</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">五步流程 · Step 2 · 只读哈希审计</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「2. BASELINE 基线核验」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确认当前运行配置未发生未经授权的调度或时钟参数漂移。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>冻结基线只读检查</dd></div>
+      <div><dt>源码路径</dt><dd><code>tools/verification/check_factory_runtime_baseline.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>核对冻结调度参数与语音基线；严禁改写基线 JSON 凑 PASS</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/runtime-baselines.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-step_start" class="diagram-drawer-panel" data-node-drawer="step_start" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">3. START &amp; READY</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">五步流程 · Step 3–4 · 轮询 HEALTH &amp; READY</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「3. START &amp; READY」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">拉起系统与端侧容器并轮询健康端口，直到全链路处于可接收指令的 READY 状态。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>确定性就绪握手</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/factory_cell_cli.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>绑定 :18640/:18641/:18642；facrictl status 确认所有者锁与节点健康</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/quickstart.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-step_observe" class="diagram-drawer-panel" data-node-drawer="step_observe" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">4. OBSERVE 只读观测</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">五步流程 · Step 5 · 只读视口 + C01 对话</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「4. OBSERVE 只读观测」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在只读三维视口中观测产线或机坪运行，通过 C01 受控下发语义任务。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>显示与物理控制隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/collaboration_launcher.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>复用系统已打开窗口，不额外开启重型 Viewer；Ctrl+C 关闭前端不中断后台</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="guide-ui-readonly-separation">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-exit_stop" class="diagram-drawer-panel" data-node-drawer="exit_stop" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">路径 A · facrictl stop</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">停机主权 · 暂停 · 无 RTF 自动停机</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「路径 A · facrictl stop」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">用于临时暂停运动与检视轨迹证据，不销毁共享内存与容器现场。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>操作员显式停车</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/system_entry.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>中止运动与任务派发，保留容器与 :18640 只读日志供事后排查</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/quickstart.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-quickstart-lifecycle-f0-drawer-exit_close" class="diagram-drawer-panel" data-node-drawer="exit_close" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">路径 B · close --wait</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">停机主权 · 关闭 · 同步等待清理完成</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「路径 B · close --wait」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">安全结算会话并释放所有端口与物理锁，是切换运行场景或模式的必经步骤。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>确定性资源回收</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/system_entry.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>销毁并发容器与 /dev/shm，释放所有者锁后才可切换 factory/c919 或 mock/real</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/quickstart.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
 <h2 id="启动前检查三项前提">启动前检查三项前提</h2>
 <p>启动任何物理仿真或真机联调前，必须先确认以下三项宿主机运行边界：</p>
@@ -223,20 +623,21 @@ id="toc-下一步阅读导航">下一步阅读导航</a></li>
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

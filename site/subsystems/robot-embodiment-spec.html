@@ -68,52 +68,719 @@ HAL ∧ L2 单调能力收敛与表面边界约束</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>声明式具身规格层以
-<code>EmbodimentSpecPod</code>（<code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code>）作为单机结构与能力判定的唯一权威真源：上游从
-<code>configs/robots/*/description.yaml</code>
-解析静态构型定义（<code>L1</code>），在启动期叠加
-<code>IHalDriver</code>
-硬件实测能力（<code>HAL</code>）与场景清单策略开关（<code>L2</code>），向下游
-<code>4+1</code> 实时进程与上层规划器输出统一能力掩码。平台现役
-<code>9</code>
-类跨形态机器人借此共用同一套原生二进制程序，无需为新增构型复制控制分支。</p>
-<figure class="diagram-figure">
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>平台同时覆盖双足人形（<code>FACRI</code>、<code>RP1</code>）、全向四轮转向双臂（<code>G2</code>）、轮腿四足（<code>M20</code>）以及牵引车、叉车、传送带车与摆渡车
+<code>4</code>
+型特种地面车辆。若按传统机器人工程做法为每类本体复制独立控制节点或硬编码分支，会迅速陷入三项工程困境：</p>
+<ol type="1">
+<li><strong>构型分支组合爆炸与历史资格污染</strong>：在控制器内部散落
+<code>if model == ...</code> 分支不仅难以维护，更易发生「旧
+<code>G1</code> 机型标定或行走资格被静默继承给新
+<code>FACRI</code>」的危险越界。</li>
+<li><strong>配置文件宣称与硬件实际离线脱节</strong>：静态 YAML
+声明了腕部六维力传感器或 <code>40</code>
+轴自由度，但实机现场传感器未接通或被场景策略临时禁用时，若无单调收窄机制，规划器仍会下发力控或越界轴指令。</li>
+<li><strong>双高度复合场景几何跌落风险</strong>：在 C919
+保障场景中，开阔机坪 <code>map_apron</code> 占地
+<code>160 m × 120 m</code>（基准高程 <code>0.0 m</code>），而客舱作业面
+<code>map_cabin</code> 位于 <code>z = 3.47 m</code> 高空且通道半宽仅
+<code>0.25 m</code>；若作业面边界与走廊包络未写入单机核心契约，局部滚动采样随时可能引发越界碰撞或高空跌落。</li>
+</ol>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p>声明式具身规格层位于平台「配置声明 → 硬件实测 →
+运行时能力注册」的交汇枢纽，以
+<code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code>
+定义的 <code>EmbodimentSpecPod</code> 为唯一权威数据载体：上游解析
+<code>configs/robots/*/description.yaml</code>（<code>L1</code>），在
+<code>robot_body_rt</code> 与 <code>robot_task_agent</code> 启动阶段叠加
+<code>IHalDriver::query_hardware_caps()</code>（<code>HAL</code>）与场景策略开关（<code>L2</code>），经
+<code>CapabilitySynthesizer</code>（<code>src/robot_app/algorithms/common/capability_synthesizer.cpp</code>）输出只读二进制
+<code>embodiment_spec.shm</code> 与上行
+<code>AgentRegistrationContract</code> JSON，供 <code>4+1</code> 进程与
+<code>SystemApp</code> 统一消费。</p>
+<figure class="diagram-figure" data-diagram-id="sub-embodiment-monotonic" data-fig-uid="sub-embodiment-monotonic-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/sub-embodiment-synthesis.svg"
-alt="声明式具身规格合成与 L1 ∧ HAL ∧ L2 单调收敛架构" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-embodiment-monotonic" viewBox="0 0 1200 570" width="1200" height="570" role="group" aria-labelledby="sub-embodiment-monotonic-title-f0" aria-describedby="sub-embodiment-monotonic-desc-f0">
+  <title id="sub-embodiment-monotonic-title-f0">声明式具身规格与 L1 ∧ HAL ∧ L2 单调能力交集综合</title>
+  <desc id="sub-embodiment-monotonic-desc-f0">展示三层能力输入如何通过二进制不可变 Pod 与 CapabilitySynthesizer 单调收窄并导出标准化能力契约。</desc>
+  <defs>
+    <pattern id="sub-embodiment-monotonic-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-embodiment-monotonic-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-embodiment-monotonic-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-embodiment-monotonic-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-embodiment-monotonic-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-embodiment-monotonic-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-embodiment-monotonic-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="570" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="570" fill="url(#sub-embodiment-monotonic-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="568.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="430.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">THREE MONOTONIC INPUTS</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">三层输入（只可逐层收窄，严禁越权扩充）</text>
+  <rect x="418.0" y="86.0" width="364.0" height="430.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="432.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">IMMUTABLE BINARY POD</text>
+  <text x="432.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">compiled POD 与 9 组关节切片</text>
+  <rect x="814.0" y="86.0" width="350.0" height="430.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="828.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">SYNTHESIZER &amp; EXPORT</text>
+  <text x="828.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单调交集综合与调度注册</text>
+  <g class="arch-edge" data-from="l1_desc" data-to="spec_pod" data-flow="inputs">
+    <path d="M 364.0 182.0 L 440.0 182.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-monotonic-arrow-ink-f0)"/>
+    <rect x="384.1" y="173.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="402.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">YAML</text>
+  </g>
+  <g class="arch-edge" data-from="hal_caps" data-to="spec_pod" data-flow="inputs">
+    <path d="M 364.0 294.0 L 397.0 294.0 Q 402.0 294.0 402.0 289.0 L 402.0 220.0 Q 402.0 215.0 407.0 215.0 L 440.0 215.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-monotonic-arrow-forest-f0)"/>
+    <rect x="386.1" y="245.5" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="402.0" y="257.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">实测</text>
+  </g>
+  <g class="arch-edge" data-from="l2_policy" data-to="joint_slice" data-flow="inputs">
+    <path d="M 364.0 406.0 L 397.0 406.0 Q 402.0 406.0 402.0 401.0 L 402.0 370.0 Q 402.0 365.0 407.0 365.0 L 440.0 365.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-monotonic-arrow-ochre-f0)"/>
+    <rect x="386.1" y="376.5" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="402.0" y="388.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">收窄</text>
+  </g>
+  <g class="arch-edge" data-from="spec_pod" data-to="joint_slice" data-flow="synthesis">
+    <path d="M 600.0 254.0 L 600.0 326.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-embodiment-monotonic-arrow-slate-f0)"/>
+    <rect x="580.1" y="281.0" width="39.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="600.0" y="293.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">48 轴</text>
+  </g>
+  <g class="arch-edge" data-from="spec_pod" data-to="synth_core" data-flow="synthesis">
+    <path d="M 760.0 215.0 L 836.0 215.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-monotonic-arrow-forest-f0)"/>
+    <rect x="761.3" y="206.0" width="73.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="798.0" y="218.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">L1∧HAL∧L2</text>
+  </g>
+  <g class="arch-edge" data-from="synth_core" data-to="agent_reg" data-flow="synthesis">
+    <path d="M 989.0 254.0 L 989.0 326.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-monotonic-arrow-forest-f0)"/>
+    <rect x="963.2" y="281.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="989.0" y="293.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">导出契约</text>
+  </g>
+  <g class="arch-node-card" data-node-id="l1_desc" aria-controls="sub-embodiment-monotonic-f0-drawer-l1_desc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="l1_desc" data-flows="all,inputs" aria-expanded="false" aria-label="L1 · description.yaml（9 型构型 + SHA-256）" aria-controls="sub-embodiment-monotonic-f0-drawer-l1_desc">
+      <rect class="arch-node-box" x="58.0" y="146.0" width="306.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">L1 · description.yaml</text>
+      <text class="arch-node-role" x="70.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">9 型构型 + SHA-256</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#origins" data-same-page="true" aria-label="前往「L1 · description.yaml」对应章节">
+      <rect x="336.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="348.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="hal_caps" aria-controls="sub-embodiment-monotonic-f0-drawer-hal_caps">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="hal_caps" data-flows="all,inputs" aria-expanded="false" aria-label="HAL · query_caps 探测（实测 active_dofs 位）" aria-controls="sub-embodiment-monotonic-f0-drawer-hal_caps">
+      <rect class="arch-node-box" x="58.0" y="258.0" width="306.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="283.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">HAL · query_caps 探测</text>
+      <text class="arch-node-role" x="70.0" y="316.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">实测 active_dofs 位</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true" aria-label="前往「HAL · query_caps 探测」对应章节">
+      <rect x="336.0" y="262.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="348.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="l2_policy" aria-controls="sub-embodiment-monotonic-f0-drawer-l2_policy">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="l2_policy" data-flows="all,inputs" aria-expanded="false" aria-label="L2 · 场景策略收窄（disabled_cap_bits）" aria-controls="sub-embodiment-monotonic-f0-drawer-l2_policy">
+      <rect class="arch-node-box" x="58.0" y="370.0" width="306.0" height="72.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">L2 · 场景策略收窄</text>
+      <text class="arch-node-role" x="70.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">disabled_cap_bits</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#principles" data-same-page="true" aria-label="前往「L2 · 场景策略收窄」对应章节">
+      <rect x="336.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="348.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="spec_pod" aria-controls="sub-embodiment-monotonic-f0-drawer-spec_pod">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="spec_pod" data-flows="all,inputs,synthesis" aria-expanded="false" aria-label="EmbodimentSpecPod（0x454D4553 · CRC32）" aria-controls="sub-embodiment-monotonic-f0-drawer-spec_pod">
+      <rect class="arch-node-box" x="440.0" y="176.0" width="320.0" height="78.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="452.0" y="201.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">EmbodimentSpecPod</text>
+      <text class="arch-node-role" x="452.0" y="240.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">0x454D4553 · CRC32</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#contracts" data-same-page="true" aria-label="前往「EmbodimentSpecPod」对应章节">
+      <rect x="732.0" y="180.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="744.0" y="196.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="joint_slice" aria-controls="sub-embodiment-monotonic-f0-drawer-joint_slice">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="joint_slice" data-flows="all,inputs,synthesis" aria-expanded="false" aria-label="9 组 JointGroupSlice（映射 kMaxDofs=48）" aria-controls="sub-embodiment-monotonic-f0-drawer-joint_slice">
+      <rect class="arch-node-box" x="440.0" y="326.0" width="320.0" height="78.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="452.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">9 组 JointGroupSlice</text>
+      <text class="arch-node-role" x="452.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">映射 kMaxDofs=48</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#paradigm" data-same-page="true" aria-label="前往「9 组 JointGroupSlice」对应章节">
+      <rect x="732.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="744.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="synth_core" aria-controls="sub-embodiment-monotonic-f0-drawer-synth_core">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="synth_core" data-flows="all,synthesis" aria-expanded="false" aria-label="CapabilitySynthesizer（EffCaps = L1 ∧ HAL ∧ L2）" aria-controls="sub-embodiment-monotonic-f0-drawer-synth_core">
+      <rect class="arch-node-box" x="836.0" y="176.0" width="306.0" height="78.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="848.0" y="201.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CapabilitySynthesizer</text>
+      <text class="arch-node-role" x="848.0" y="240.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">EffCaps = L1 ∧ HAL ∧ L2</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#principles" data-same-page="true" aria-label="前往「CapabilitySynthesizer」对应章节">
+      <rect x="1114.0" y="180.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="196.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="agent_reg" aria-controls="sub-embodiment-monotonic-f0-drawer-agent_reg">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="agent_reg" data-flows="all,synthesis" aria-expanded="false" aria-label="AgentRegistration 导出（统一能力契约上报）" aria-controls="sub-embodiment-monotonic-f0-drawer-agent_reg">
+      <rect class="arch-node-box" x="836.0" y="326.0" width="306.0" height="78.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="848.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">AgentRegistration 导出</text>
+      <text class="arch-node-role" x="848.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">统一能力契约上报</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true" aria-label="前往「AgentRegistration 导出」对应章节">
+      <rect x="1114.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1126.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="526.0" x2="1164.0" y2="526.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="548.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">EmbodimentSpecPod 契约</text>
+  <rect x="248.4" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="270.4" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">HAL 探测与单调交集</text>
+  <rect x="388.7" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="410.7" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L2 场景只可收窄开关</text>
+  <text x="1164.0" y="547.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">9 组关节切片枚举与 AffordanceBit 详情见点击抽屉及专章折叠表</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 05A · MONOTONIC CAPABILITY SYNTHESIS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">声明式具身规格与 L1 ∧ HAL ∧ L2 单调能力交集综合</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">EmbodimentSpecPod (0x454D4553) · 9 型载体零源码分叉</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>声明式具身规格合成与 L1 ∧ HAL ∧ L2
-单调收敛架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="inputs" aria-pressed="false">三层单调能力输入</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="synthesis" aria-pressed="false">POD 规约与单调合成</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>L1 ∧ HAL ∧ L2 单调能力收敛格</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-embodiment-monotonic.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-embodiment-monotonic-f0-drawer-l1_desc" class="diagram-drawer-panel" data-node-drawer="l1_desc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">L1 · description.yaml</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Input L1 · 静态构型 · 启动校验哈希</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「L1 · description.yaml」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">锁定机器人的物理结构、极限运动学参数与标准抓握可供性。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>声明式规约源</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/facri/description.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>声明本体 4D 形态分类并强制核验 URDF 与策略文件 SHA-256</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-monotonic-f0-drawer-hal_caps" class="diagram-drawer-panel" data-node-drawer="hal_caps" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">HAL · query_caps 探测</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Input HAL · 硬件就绪 · 插件加载握手</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「HAL · query_caps 探测」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把缺失传感器的对应能力位自动清零，阻止上层盲目下发无硬件支撑的任务。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>真实硬件能力探测</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/hal/plugin_loader.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>校验 IMU / LiDAR3D / RGB / WristFt / Dexhand / Belt 等真实到位位掩码</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-monotonic-f0-drawer-l2_policy" class="diagram-drawer-panel" data-node-drawer="l2_policy" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">L2 · 场景策略收窄</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Input L2 · 场景策略 · 场景装配绑定</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「L2 · 场景策略收窄」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">允许同一台机器人在不同任务场景下关闭特定辅助特性而无需重编代码。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>只可收窄不可扩权</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/scenes/manifests/c919.json</code></dd></div>
+      <div><dt>核心契约</dt><dd>控制 allow_{wrist_ft,fiducial,perception}，如工厂暂闭腕力柔顺开关</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-monotonic-f0-drawer-spec_pod" class="diagram-drawer-panel" data-node-drawer="spec_pod" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">EmbodimentSpecPod</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Core Pod · 不可变契约 · trivially_copyable</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「EmbodimentSpecPod」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">跨进程共享内存中唯一合法的机器人构型二进制载体。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 编译期锁死二进制契约</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>通过 std::is_trivially_copyable_v 与 IEEE CRC32 校验，包含 4D 枚举与 AffordanceBit</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-monotonic-f0-drawer-joint_slice" class="diagram-drawer-panel" data-node-drawer="joint_slice" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">9 组 JointGroupSlice</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Core Pod · 关节切片 · 联合规划 &lt;=32 轴</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「9 组 JointGroupSlice」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">使同一规划与执行代码通过切片索引适配 5 轴 UGV 到 40 轴灵巧双足。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>正交轴切片表</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/common/config_loader.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>legs / steering / wheels / torso / head / left_arm / right_arm / left_tool / right_tool</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-monotonic-f0-drawer-synth_core" class="diagram-drawer-panel" data-node-drawer="synth_core" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">CapabilitySynthesizer</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Synthesis · 单调收敛 · 启动期计算</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「CapabilitySynthesizer」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保证最终对外宣称的可调度能力永远不超过静态、硬件与场景三者的最低上限。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单调格交集综合器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/common/capability_synthesizer.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>核验 POD CRC32、核算 effective_max_payload 与位置容差、注入共享槽</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-monotonic-f0-drawer-agent_reg" class="diagram-drawer-panel" data-node-drawer="agent_reg" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">AgentRegistration 导出</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Output · 调度注册 · 注册至 Bus &amp; SystemApp</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「AgentRegistration 导出」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">使 9 型异构装备无需修改核心控制引擎即可加入全局协同规划。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>零核心分叉能力导出</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/config_client/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>导出 navigation.*、perception.* 与 manipulation.* 标准化能力集合</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-embodiment-surface-corridor">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2 id="embodimentspecpod-二进制契约结构"><code>EmbodimentSpecPod</code>
-二进制契约结构</h2>
-<p><code>EmbodimentSpecPod</code> 在编译期强制通过
-<code>std::is_trivially_copyable_v</code> 断言，由
-<code>robot_supervisor</code> 在启动期解析后写入共享内存槽位
-<code>embodiment_spec.shm</code>，尾部携带 IEEE CRC32 校验码（魔数
-<code>0x454D4553</code> <code>"EMES"</code>，版本号
-<code>1</code>），供所有子进程只读映射使用：</p>
+<p>整条收敛流程保证平台 <code>9</code>
+类跨形态机器人共用同一套编译产物：新增构型只需补齐
+<code>description.yaml</code>
+与对应硬件插件，无需复制控制二进制或修改上层规划核心。</p>
+<h2 id="principles">03 · 核心原理与内部机制</h2>
+<h3 id="l1-hal-l2-单调半格收敛法则"><code>L1 ∧ HAL ∧ L2</code>
+单调半格收敛法则</h3>
+<p><code>CapabilitySynthesizer::synthesize</code>
+将单机最终对外暴露与内部可调用能力严格定义为三层交集（只可收窄、绝不凭空扩张）：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">eff</mtext></msub><mo>=</mo><msub><mi mathvariant="script">𝒞</mi><mrow><mi>L</mi><mn>1</mn></mrow></msub><mo>⊓</mo><msub><mi mathvariant="script">𝒞</mi><mtext mathvariant="normal">HAL</mtext></msub><mo>⊓</mo><mo>¬</mo><msub><mi mathvariant="script">𝒟</mi><mrow><mi>L</mi><mn>2</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\mathcal{C}_{\text{eff}} = \mathcal{C}_{L1} \sqcap \mathcal{C}_{\text{HAL}} \sqcap \neg \mathcal{D}_{L2}</annotation></semantics></math></p>
+<ol type="1">
+<li><strong>静态声明与防伪指纹校验（<code>L1</code>）</strong>：由
+<code>ConfigLoader</code> 解析对应 <code>description.yaml</code> 的
+<code>active_dofs</code>、四维构型枚举、<code>9</code>
+组关节切片（<code>JointGroupSlice</code>）及默认增益；<code>robot_task_agent</code>
+内的
+<code>ConfigClientDomain::validate()</code>（<code>src/robot_app/modules/config_client/domain.hpp</code>）在激活前强制比对
+URDF 与策略包真实 <code>SHA-256</code>
+摘要，任一不匹配直接拒绝上线。</li>
+<li><strong>硬件实测硬截断（<code>HAL</code>）</strong>：<code>robot_body_rt</code>
+启动时向所载入驱动查询 <code>HalHardwareCaps</code>；若 <code>L1</code>
+声明存在腕部六维力或 <code>active_dofs</code>，而 <code>HAL</code>
+实测返回缺失或数量不符（<code>hal_caps.active_dofs != spec.active_dofs</code>），驱动直接拒绝启动或由合成器清零对应能力位（<code>HalCapBit</code>）。</li>
+<li><strong>场景策略单向关闭开关（<code>L2</code>）</strong>：<code>EmbodimentSpecPod</code>
+显式携带
+<code>policy_allow_wrist_ft_admittance</code>、<code>policy_allow_fiducial_align</code>、<code>policy_allow_perception</code>
+与
+<code>disabled_cap_bits</code>，仅允许场景清单在安全或试验阶段收窄功能（例如关闭腕力导纳），绝不允许通过开关打开
+<code>L1</code> 或 <code>HAL</code> 不支持的硬件能力。</li>
+</ol>
+<h3
+id="作业表面几何与窄走廊包络约束surfaceconstraintspec">作业表面几何与窄走廊包络约束（<code>SurfaceConstraintSpec</code>）</h3>
+<figure class="diagram-figure" data-diagram-id="sub-embodiment-surface-corridor" data-fig-uid="sub-embodiment-surface-corridor-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-embodiment-surface-corridor" viewBox="0 0 1200 550" width="1200" height="550" role="group" aria-labelledby="sub-embodiment-surface-corridor-title-f1" aria-describedby="sub-embodiment-surface-corridor-desc-f1">
+  <title id="sub-embodiment-surface-corridor-title-f1">双高度作业面 SurfaceConstraintSpec 与窄走廊包络约束</title>
+  <desc id="sub-embodiment-surface-corridor-desc-f1">阐明 C919 等双高度作业面场景下的几何围栏规约、半宽包络校核及历史 G1 构型隔离红线。</desc>
+  <defs>
+    <pattern id="sub-embodiment-surface-corridor-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-embodiment-surface-corridor-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-embodiment-surface-corridor-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-embodiment-surface-corridor-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-embodiment-surface-corridor-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-embodiment-surface-corridor-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-embodiment-surface-corridor-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="550" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="550" fill="url(#sub-embodiment-surface-corridor-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="548.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="410.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">GEOMETRIC SPECIFICATION</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双高度作业面与定长窄道数组</text>
+  <rect x="604.0" y="86.0" width="560.0" height="410.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">ENVELOPE &amp; ISOLATION</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">通道半宽校验与代际隔离红线</text>
+  <g class="arch-edge" data-from="surf_spec" data-to="map_apron" data-flow="apron">
+    <path d="M 200.0 216.0 L 200.0 256.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-surface-corridor-arrow-forest-f1)"/>
+    <rect x="173.2" y="227.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="200.0" y="239.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">z=0.0 m</text>
+  </g>
+  <g class="arch-edge" data-from="surf_spec" data-to="map_cabin" data-flow="cabin">
+    <path d="M 434.0 216.0 L 434.0 256.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-surface-corridor-arrow-slate-f1)"/>
+    <rect x="404.2" y="227.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="434.0" y="239.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">z=3.47 m</text>
+  </g>
+  <g class="arch-edge" data-from="map_cabin" data-to="corridor_pod" data-flow="cabin">
+    <path d="M 434.0 330.0 L 434.0 345.0 Q 434.0 350.0 429.0 350.0 L 311.0 350.0 Q 306.0 350.0 306.0 355.0 L 306.0 370.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-surface-corridor-arrow-ink-f1)"/>
+    <rect x="347.2" y="341.0" width="45.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="370.0" y="353.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">&lt;=8 段</text>
+  </g>
+  <g class="arch-edge" data-from="corridor_pod" data-to="aisle_check" data-flow="cabin">
+    <path d="M 492.0 406.0 L 585.0 406.0 Q 590.0 406.0 590.0 401.0 L 590.0 221.0 Q 590.0 216.0 595.0 216.0 L 636.0 216.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-embodiment-surface-corridor-arrow-forest-f1)"/>
+    <rect x="564.2" y="302.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="590.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">包络核验</text>
+  </g>
+  <g class="arch-edge" data-from="map_apron" data-to="aisle_check" data-flow="apron">
+    <path d="M 296.0 293.0 L 300.4 293.0 Q 304.0 293.0 304.0 289.4 L 304.0 237.0 Q 304.0 232.0 309.0 232.0 L 636.0 232.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-embodiment-surface-corridor-arrow-ink-f1)"/>
+  </g>
+  <g class="arch-edge" data-from="aisle_check" data-to="g1_fence" data-flow="apron">
+    <path d="M 884.0 256.0 L 884.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-embodiment-surface-corridor-arrow-terracotta-f1)"/>
+    <rect x="846.3" y="282.0" width="75.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="884.0" y="294.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">严禁 G1 复用</text>
+  </g>
+  <g class="arch-node-card" data-node-id="surf_spec" aria-controls="sub-embodiment-surface-corridor-f1-drawer-surf_spec">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="surf_spec" data-flows="all,apron,cabin" aria-expanded="false" aria-label="SurfaceConstraintSpec（多高度工作面规约）" aria-controls="sub-embodiment-surface-corridor-f1-drawer-surf_spec">
+      <rect class="arch-node-box" x="60.0" y="148.0" width="492.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SurfaceConstraintSpec</text>
+      <text class="arch-node-role" x="72.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">多高度工作面规约</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#contracts" data-same-page="true" aria-label="前往「SurfaceConstraintSpec」对应章节">
+      <rect x="524.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="map_apron" aria-controls="sub-embodiment-surface-corridor-f1-drawer-map_apron">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="map_apron" data-flows="all,apron" aria-expanded="false" aria-label="map_apron 机坪作业面（160×120 m · z=0.0 m）" aria-controls="sub-embodiment-surface-corridor-f1-drawer-map_apron">
+      <rect class="arch-node-box" x="60.0" y="256.0" width="236.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="281.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">map_apron 机坪作业面</text>
+      <text class="arch-node-role" x="72.0" y="316.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">160×120 m · z=0.0 m</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true" aria-label="前往「map_apron 机坪作业面」对应章节">
+      <rect x="268.0" y="260.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="280.0" y="276.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="map_cabin" aria-controls="sub-embodiment-surface-corridor-f1-drawer-map_cabin">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="map_cabin" data-flows="all,cabin" aria-expanded="false" aria-label="map_cabin 客舱作业面（z=3.47 m · 独立地图）" aria-controls="sub-embodiment-surface-corridor-f1-drawer-map_cabin">
+      <rect class="arch-node-box" x="316.0" y="256.0" width="236.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="328.0" y="281.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">map_cabin 客舱作业面</text>
+      <text class="arch-node-role" x="328.0" y="316.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">z=3.47 m · 独立地图</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true" aria-label="前往「map_cabin 客舱作业面」对应章节">
+      <rect x="524.0" y="260.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="536.0" y="276.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="corridor_pod" aria-controls="sub-embodiment-surface-corridor-f1-drawer-corridor_pod">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="corridor_pod" data-flows="all,cabin" aria-expanded="false" aria-label="CorridorSegmentPod (&lt;=8)（窄廊硬围栏线段）" aria-controls="sub-embodiment-surface-corridor-f1-drawer-corridor_pod">
+      <rect class="arch-node-box" x="120.0" y="370.0" width="372.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="132.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CorridorSegmentPod (&lt;=8)</text>
+      <text class="arch-node-role" x="132.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">窄廊硬围栏线段</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#principles" data-same-page="true" aria-label="前往「CorridorSegmentPod (&lt;=8)」对应章节">
+      <rect x="464.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="476.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="aisle_check" aria-controls="sub-embodiment-surface-corridor-f1-drawer-aisle_check">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="aisle_check" data-flows="all,apron,cabin" aria-expanded="false" aria-label="窄道半宽包络校验（aisle_half = 0.25 m）" aria-controls="sub-embodiment-surface-corridor-f1-drawer-aisle_check">
+      <rect class="arch-node-box" x="636.0" y="176.0" width="496.0" height="80.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="648.0" y="201.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">窄道半宽包络校验</text>
+      <text class="arch-node-role" x="648.0" y="242.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">aisle_half = 0.25 m</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#evidence" data-same-page="true" aria-label="前往「窄道半宽包络校验」对应章节">
+      <rect x="1104.0" y="180.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1116.0" y="196.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="g1_fence" aria-controls="sub-embodiment-surface-corridor-f1-drawer-g1_fence">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="g1_fence" data-flows="all,apron" aria-expanded="false" aria-label="G1 历史构型隔离红线（41 DOF · 禁跨代继承）" aria-controls="sub-embodiment-surface-corridor-f1-drawer-g1_fence">
+      <rect class="arch-node-box" x="636.0" y="326.0" width="496.0" height="80.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="648.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">G1 历史构型隔离红线</text>
+      <text class="arch-node-role" x="648.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">41 DOF · 禁跨代继承</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#origins" data-same-page="true" aria-label="前往「G1 历史构型隔离红线」对应章节">
+      <rect x="1104.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1116.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="506.0" x2="1164.0" y2="506.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="528.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SurfaceConstraintSpec 规约</text>
+  <rect x="271.9" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="293.9" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">工作面与窄道可达校验</text>
+  <rect x="420.1" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="442.1" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">G1 历史构型绝对隔离红线</text>
+  <text x="1164.0" y="527.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">不同作业面绑定独立 map_version，防止机坪坐标串入客舱</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 05B · SURFACE &amp; CORRIDOR CONSTRAINTS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">双高度作业面 SurfaceConstraintSpec 与窄走廊包络约束</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">map_apron (0.0 m) / map_cabin (3.47 m) · &lt;=8 段走廊围栏</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="apron" aria-pressed="false">map_apron 机坪大平面约束</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="cabin" aria-pressed="false">map_cabin 窄走廊包络约束</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>双高度作业表面与窄走廊包络约束</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-embodiment-surface-corridor.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-embodiment-surface-corridor-f1-drawer-surf_spec" class="diagram-drawer-panel" data-node-drawer="surf_spec" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SurfaceConstraintSpec</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Spec · 工作面定义 · 随 Pod 下发</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SurfaceConstraintSpec」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把物理工作面切换与几何约束从场景脚本收敛到受校验的二进制 Pod 内。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>几何边界声明契约</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>绑定允许通行的 map_id、基准高程 z_m 与关联窄道段数组</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-surface-corridor-f1-drawer-map_apron" class="diagram-drawer-panel" data-node-drawer="map_apron" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">map_apron 机坪作业面</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Surface 01 · 机坪 · 异构编队主平面</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「map_apron 机坪作业面」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">界定大型机坪开放空间内异构车辆与双足装备的通行走廊与停靠边界。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>二维通行拓扑 + 互斥区</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/scenes/manifests/c919.json</code></dd></div>
+      <div><dt>核心契约</dt><dd>承载 FACRI、G2、M20 与 4 型 UGV；关联 c919.road.zn03 等 5 处互斥区</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-surface-corridor-f1-drawer-map_cabin" class="diagram-drawer-panel" data-node-drawer="map_cabin" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">map_cabin 客舱作业面</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Surface 02 · 客舱 · 按地图版本隔离</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「map_cabin 客舱作业面」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">阻止机坪平面轨迹或记忆坐标误匹配到 3.47 m 高的客舱内部。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>高程平面隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/rp1/description.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>专供 robot_rp1 通过登机桥与餐车口接入；定位与记忆检索均按地图 ID 隔离</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-surface-corridor-f1-drawer-corridor_pod" class="diagram-drawer-panel" data-node-drawer="corridor_pod" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">CorridorSegmentPod (&lt;=8)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Constraint · 走廊段 · 固定 8 段定长数组</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「CorridorSegmentPod (&lt;=8)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">以定长结构体向端侧导航与保护模块直接提供客舱窄道几何硬围栏。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>零分配几何围栏 POD</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>记录起止点坐标、通道半宽 aisle_half_width 与最高限速上限</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-surface-corridor-f1-drawer-aisle_check" class="diagram-drawer-panel" data-node-drawer="aisle_check" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">窄道半宽包络校验</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Runtime · 几何校核 · 规划与本地导航核验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「窄道半宽包络校验」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">从运动学几何上阻断宽体机器人误入客舱过道引起的卡死碰撞。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>包络可达性检查</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/spatial_runtime/domain/body_frame.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>在导航规划前核对本体包络半宽是否满足通道余量，超限直接拒绝进入</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-embodiment-surface-corridor-f1-drawer-g1_fence" class="diagram-drawer-panel" data-node-drawer="g1_fence" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">G1 历史构型隔离红线</strong>
+        <span class="diagram-drawer-badge is-partial">P · 部分/规划</span>
+        <span class="diagram-drawer-meta">Governance · 构型边界 · 静态归档参考</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「G1 历史构型隔离红线」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在配置与手册体系中清晰标明历史代际边界，防止误用过期参数。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>反跨代继承门禁</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/g1/description.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>旧版 G1 AMO / REVO2 标定与通过资格绝不转给 FACRI、RP1 或 G2</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-embodiment-monotonic">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<p>为将复合场景空间边界直接锁入共享内存，<code>EmbodimentSpecPod</code>
+内嵌定长结构 <code>SurfaceConstraintSpec</code>：记录
+<code>surface_id[32]</code>、二维包围盒
+<code>bounds_xy_m[4]</code>（<code>[xmin, xmax, ymin, ymax]</code>）、高程中心与容差
+<code>nominal_z_m ± z_tolerance_m</code>，以及最多
+<code>kMaxCorridorSegments = 8</code> 段
+<code>CorridorSegmentPod</code>（<code>x_min_m</code>、<code>x_max_m</code>、<code>y_half_width_m</code>）。在
+C919 <code>map_cabin</code> 工况中，客舱 <code>0.25 m</code>
+半宽走廊片段随 <code>embodiment_spec.shm</code>
+直接下沉至导航与规划进程，在采样前先行裁剪非法横移目标。</p>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>本子系统综合运用
+<strong>规约模式、不可变二进制契约与单调半格综合器</strong>：</p>
 <ul>
-<li><strong>四维构型枚举</strong>：通过
-<code>LocomotionArchetype</code>、<code>KinematicsModelKind</code>、<code>ManipulatorArchetype</code>
-与 <code>EffectorArchetype</code>
-精确刻画双足、轮腿、全向四轮转向、纯底盘与多臂/灵巧手等任意本体形态。</li>
-<li><strong>九组动态关节切片（<code>JointGroupSlice</code>）</strong>：显式映射九大关节组在全局
-<code>48</code>
-轴数组中的实际索引下标、默认控制模式（<code>1=PositionPd</code>、<code>2=VelocityPd</code>）与
-PD 增益（每组上限 <code>kMaxGroupDofs = 16</code>，联合受控组上限
-<code>kMaxControlledGroupDofs = 32</code>）。</li>
-<li><strong>物理几何与位掩码</strong>：封装
-<code>ChassisGeometrySpec</code>（轴距、轮距、最小转弯半径、安全包络半径与限速）、<code>ArrivalSpecPod</code>（常规到点与靠泊停稳容差）、额定负载、作业高度范围
-<code>[reach_z_min_m, reach_z_max_m]</code>，以及操作可用性位掩码
-<code>AffordanceBit</code> 与硬件能力位掩码
-<code>HalCapBit</code>。</li>
+<li><strong>规约与静态布局锁定（<code>EmbodimentSpecPod</code>）</strong>：<code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code>
+以编译期
+<code>static_assert(std::is_trivially_copyable_v&lt;EmbodimentSpecPod&gt;)</code>
+禁止任何动态指针或堆容器，结构体头部锁死魔数
+<code>0x454D4553</code>（<code>"EMES"</code>）、版本
+<code>1</code>，尾部附带 <code>crc32_ieee</code> 校验码；读取端通过
+<code>verify_embodiment_spec()</code> 实现零反序列化开销校验。</li>
+<li><strong>动态关节切片投影（<code>JointGroupSlice</code>）</strong>：将全局定长
+<code>48</code> 轴数组抽象为
+<code>legs</code>、<code>steering</code>、<code>wheels</code>、<code>torso</code>、<code>head</code>、<code>left_arm</code>、<code>right_arm</code>、<code>left_tool</code>、<code>right_tool</code>
+共 <code>9</code> 组切片（单组上限
+<code>kMaxGroupDofs = 16</code>，联合受控上限
+<code>kMaxControlledGroupDofs = 32</code>），消除不同本体自由度编号硬编码。</li>
+<li><strong>跨代历史资格隔离</strong>：仓库保留
+<code>configs/robots/g1/description.yaml</code>
+仅作为历史架构对照档案，在契约与合成器层严格按照 <code>robot_id</code> /
+<code>model_id</code> 与独立标定指纹隔离，旧 <code>G1</code>
+资格与标定绝不跨代转移至 <code>FACRI</code>。</li>
 </ul>
-<details class="tech-details">
-<summary>
-查看 EmbodimentSpecPod 枚举值、9 组关节切片与位掩码全量字典
-</summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -123,65 +790,56 @@ PD 增益（每组上限 <code>kMaxGroupDofs = 16</code>，联合受控组上限
 </colgroup>
 <thead>
 <tr>
-<th>结构维度</th>
-<th>字段 / 枚举类型</th>
-<th>全量枚举成员与含义</th>
+<th>评估维度</th>
+<th>合规状态</th>
+<th>工程依据与审视说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>移动构型</td>
-<td><code>LocomotionArchetype</code></td>
-<td><code>kNone</code>、<code>kBipedPolicy</code>、<code>kWheelLegHybrid</code>、<code>kSwerve4WS</code>、<code>kChassisTwist</code></td>
+<td>1. 领域纯洁性与依赖倒置</td>
+<td><code>PASS</code></td>
+<td><code>embodiment_spec.hpp</code> 与
+<code>CapabilitySynthesizer</code> 不依赖具体传输协议或仿真器对象</td>
 </tr>
 <tr>
-<td>底盘运动学</td>
-<td><code>KinematicsModelKind</code></td>
-<td><code>kHolonomic</code>（全向）、<code>kDifferential</code>（差速）、<code>kAckermann</code>（阿克曼）</td>
+<td>2. 契约完备性与边界防呆</td>
+<td><code>PASS</code></td>
+<td><code>EMES</code> 魔数、版本
+<code>1</code>、<code>crc32_ieee</code>、<code>URDF/Policy SHA-256</code>
+及 <code>active_dofs</code> 四重一致性核验</td>
 </tr>
 <tr>
-<td>操作机构</td>
-<td><code>ManipulatorArchetype</code></td>
-<td><code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code></td>
+<td>3. 状态机与生命周期确定性</td>
+<td><code>PASS</code></td>
+<td>启动期由 <code>robot_supervisor</code>
+写入共享槽，验证失败立即阻断激活，不允许降级猜测构型</td>
 </tr>
 <tr>
-<td>末端执行器</td>
-<td><code>EffectorArchetype</code></td>
-<td><code>kNone</code>、<code>kParallelJaw2Dof</code>、<code>kDexhand12Dof</code>、<code>kMechanism1Dof</code></td>
+<td>4. 实时内存与并发安全性</td>
+<td><code>PASS</code></td>
+<td><code>EmbodimentSpecPod</code> 为纯值语义 POD，通过
+<code>ShmSeqSlot</code> 无锁只读映射至全部子进程</td>
 </tr>
 <tr>
-<td>九组关节切片</td>
-<td><code>JointGroupSlice</code></td>
-<td><code>legs</code>、<code>steering</code>、<code>wheels</code>、<code>torso</code>、<code>head</code>、<code>left_arm</code>、<code>right_arm</code>、<code>left_tool</code>、<code>right_tool</code></td>
+<td>5. 离线可测性与失败留痕</td>
+<td><code>PASS</code></td>
+<td><code>test_embodiment_decoupling</code> 直接对
+<code>CapabilitySynthesizer</code> 执行单调收窄与多构型单元测试</td>
 </tr>
 <tr>
-<td>操作能力掩码</td>
-<td><code>AffordanceBit</code></td>
-<td><code>kPinchBoxOrHandle</code>、灵巧手包络
-<code>kDexhandLightEnvelop</code>、圆柱插头
-<code>kCylindricalPowerPlug</code>、双臂推车
-<code>kBimanualCartHandle</code>、欧标叉孔
-<code>kEuroForkPocket</code>、牵引销钩
-<code>kTowHitchPin</code>、按钮/舱门锁扣
-<code>kLatchButtonOrDoor</code></td>
-</tr>
-<tr>
-<td>硬件实测掩码</td>
-<td><code>HalCapBit</code></td>
-<td>IMU、3D 雷达、RGB 相机、左右腕六维力 <code>kWristFtLeft</code> /
-<code>kWristFtRight</code>、灵巧手触觉
-<code>kDexhandTactile</code>、特装机构 <code>kMechanism</code>、传送带
-<code>kConveyorBelt</code>、原生速度底盘
-<code>kNativeTwistChassis</code></td>
+<td>6. 单真源约束与过渡债务透明度</td>
+<td><code>PASS</code></td>
+<td>唯一结构定义收口于 <code>embodiment_spec.hpp</code>；明确标注
+<code>g1</code> 仅作历史参考档案，严禁跨代继承资格</td>
 </tr>
 </tbody>
 </table>
 </div>
-</details>
-<h2 id="全仓-9-类机器人构型一览">全仓 <code>9</code>
-类机器人构型一览</h2>
-<p>经对仓库 <code>configs/robots/*/description.yaml</code>
-逐一读取核对，平台当前完整建档的 <code>9</code> 型构型参数如下：</p>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<p>经逐一核对仓库
+<code>configs/robots/*/description.yaml</code>，全仓建档的
+<code>9</code> 型构型契约汇总如下：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -276,38 +934,90 @@ PD 增益（每组上限 <code>kMaxGroupDofs = 16</code>，联合受控组上限
 </tbody>
 </table>
 </div>
-<h2
-id="三层能力单调收敛l1-hal-l2与校验链">三层能力单调收敛（<code>L1 ∧ HAL ∧ L2</code>）与校验链</h2>
-<p>单机实际生效能力由
-<code>src/robot_app/algorithms/common/capability_synthesizer.cpp</code>
-与 <code>ConfigClientDomain</code> 按单调交集规则严格收敛生成：</p>
-<ol type="1">
-<li><strong>静态声明层（<code>L1</code>）</strong>：由
-<code>ConfigLoader</code> 解析对应 <code>description.yaml</code>
-的关节数、运动学链、夹爪形态与默认策略限位；<code>robot_task_agent</code>
-内部调用 <code>ConfigClientDomain::validate()</code> 复核实际加载 URDF
-与策略文件的 SHA-256 摘要是否与清单一致，不匹配即拒绝激活。</li>
-<li><strong>硬件实测层（<code>HAL</code>）</strong>：<code>robot_body_rt</code>
-向所加载驱动调用 <code>IHalDriver::query_hardware_caps()</code>
-获取物理实测能力位掩码（如腕部六维力传感器是否真正在线、自由度计数是否足额）；凡
-<code>L1</code> 声明而 <code>HAL</code> 实测缺失的能力位自动清零。</li>
-<li><strong>场景策略收窄层（<code>L2</code>）</strong>：由场景清单注入三项显式单向收窄标志：<code>policy_allow_wrist_ft_admittance</code>、<code>policy_allow_fiducial_align</code>
-与 <code>policy_allow_perception</code>（及保留禁用掩码
-<code>disabled_cap_bits</code>）。<code>L2</code> 仅可关闭特定功能（如在
-<code>factory.json</code> 中暂时关闭
-<code>wrist_ft_admittance_enabled</code>），<strong>绝对禁止凭空开启
-<code>L1</code> 或 <code>HAL</code> 不支持的物理能力</strong>。</li>
-</ol>
-<h2
-id="作业表面几何与窄走廊约束surfaceconstraintspec">作业表面几何与窄走廊约束（<code>SurfaceConstraintSpec</code>）</h2>
-<p>在 C919 等双高度复合场景中，同一个控制器既需要在开阔机坪
-<code>map_apron</code>（<code>160 m × 120 m</code>，<code>nominal_z_m = 0.0</code>）机动，又需要将客舱机器人限定在
-<code>z = 3.47 m</code>、走廊半宽仅 <code>0.25 m</code> 的客舱通道
-<code>map_cabin</code> 内移动。<code>EmbodimentSpecPod</code> 内嵌的
-<code>SurfaceConstraintSpec</code> 将作业表面 ID、二维边界
-<code>[xmin, xmax, ymin, ymax]</code>、高程容差
-<code>[nominal_z_m ± z_tolerance_m]</code> 以及最多 <code>8</code> 段
-<code>CorridorSegmentPod</code>（<code>x_min_m</code>、<code>x_max_m</code>、<code>y_half_width_m</code>）直接打包送入单机导航与规划进程，在局部路径采样前先期封堵越界或跌落风险。</p>
+<details class="tech-details">
+<summary>
+查看 EmbodimentSpecPod 枚举值、9 组关节切片与位掩码全量字典
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>结构维度</th>
+<th>字段 / 枚举类型</th>
+<th>全量枚举成员与含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>移动构型</td>
+<td><code>LocomotionArchetype</code></td>
+<td><code>kNone</code>、<code>kBipedPolicy</code>、<code>kWheelLegHybrid</code>、<code>kSwerve4WS</code>、<code>kChassisTwist</code></td>
+</tr>
+<tr>
+<td>底盘运动学</td>
+<td><code>KinematicsModelKind</code></td>
+<td><code>kHolonomic</code>（全向）、<code>kDifferential</code>（差速）、<code>kAckermann</code>（阿克曼）</td>
+</tr>
+<tr>
+<td>操作机构</td>
+<td><code>ManipulatorArchetype</code></td>
+<td><code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code></td>
+</tr>
+<tr>
+<td>末端执行器</td>
+<td><code>EffectorArchetype</code></td>
+<td><code>kNone</code>、<code>kParallelJaw2Dof</code>、<code>kDexhand12Dof</code>、<code>kMechanism1Dof</code></td>
+</tr>
+<tr>
+<td>九组关节切片</td>
+<td><code>JointGroupSlice</code></td>
+<td><code>legs</code>、<code>steering</code>、<code>wheels</code>、<code>torso</code>、<code>head</code>、<code>left_arm</code>、<code>right_arm</code>、<code>left_tool</code>、<code>right_tool</code></td>
+</tr>
+<tr>
+<td>操作能力掩码</td>
+<td><code>AffordanceBit</code></td>
+<td><code>kPinchBoxOrHandle</code>、灵巧手包络
+<code>kDexhandLightEnvelop</code>、圆柱插头
+<code>kCylindricalPowerPlug</code>、双臂推车
+<code>kBimanualCartHandle</code>、欧标叉孔
+<code>kEuroForkPocket</code>、牵引销钩
+<code>kTowHitchPin</code>、按钮/舱门锁扣
+<code>kLatchButtonOrDoor</code></td>
+</tr>
+<tr>
+<td>硬件实测掩码</td>
+<td><code>HalCapBit</code></td>
+<td>IMU、3D 雷达、RGB 相机、左右腕六维力 <code>kWristFtLeft</code> /
+<code>kWristFtRight</code>、灵巧手触觉
+<code>kDexhandTactile</code>、特装机构 <code>kMechanism</code>、传送带
+<code>kConveyorBelt</code>、原生速度底盘
+<code>kNativeTwistChassis</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<ul>
+<li><strong>单二进制跨形态解耦与场景覆盖（<code>L1</code> /
+<code>L2</code> / <code>L3</code>）</strong>：<code>L1</code>
+原生单元测试 <code>test_embodiment_decoupling</code> 验证了同一
+<code>robot_supervisor</code> 与模块二进制在多构型切换下的切片映射与
+<code>L2</code> 单向收敛；<code>L2</code> 级 C919 <code>T3</code>
+零物理演练验证了 <code>9</code> 台异构载体运动学边界（包含
+<code>UGV vy == 0.0</code>）；<code>L3</code> 级物理仿真验证了
+<code>FACRI</code> 在 <code>Smart Factory</code> 的连续执行能力。</li>
+<li><strong>能力边界声明</strong>：<code>EmbodimentSpecPod</code> 与
+<code>L1 ∧ HAL ∧ L2</code>
+收敛只保证构型定义合法性与开关只可收窄，不能替代实机逐台物理标定（<code>L4</code>）；<code>C919</code>
+机坪其余非 <code>FACRI</code> 机种当前处于 <code>T3</code>
+运动学演练层级，未经物理接触验证前不得签发动力学操作资格。</li>
+</ul>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -319,18 +1029,23 @@ id="作业表面几何与窄走廊约束surfaceconstraintspec">作业表面几�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#embodimentspecpod-二进制契约结构"
-id="toc-embodimentspecpod-二进制契约结构"><code>EmbodimentSpecPod</code>
-二进制契约结构</a></li>
-<li><a href="#全仓-9-类机器人构型一览"
-id="toc-全仓-9-类机器人构型一览">全仓 <code>9</code>
-类机器人构型一览</a></li>
-<li><a href="#三层能力单调收敛l1-hal-l2与校验链"
-id="toc-三层能力单调收敛l1-hal-l2与校验链">三层能力单调收敛（<code>L1 ∧ HAL ∧ L2</code>）与校验链</a></li>
-<li><a href="#作业表面几何与窄走廊约束surfaceconstraintspec"
-id="toc-作业表面几何与窄走廊约束surfaceconstraintspec">作业表面几何与窄走廊约束（<code>SurfaceConstraintSpec</code>）</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与内部机制</a>
+<ul>
+<li><a href="#l1-hal-l2-单调半格收敛法则"
+id="toc-l1-hal-l2-单调半格收敛法则"><code>L1 ∧ HAL ∧ L2</code>
+单调半格收敛法则</a></li>
+<li><a href="#作业表面几何与窄走廊包络约束surfaceconstraintspec"
+id="toc-作业表面几何与窄走廊包络约束surfaceconstraintspec">作业表面几何与窄走廊包络约束（<code>SurfaceConstraintSpec</code>）</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -343,20 +1058,21 @@ id="toc-作业表面几何与窄走廊约束surfaceconstraintspec">作业表面�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

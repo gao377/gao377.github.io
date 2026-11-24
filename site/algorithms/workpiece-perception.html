@@ -6,8 +6,8 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="generator" content="facri-docs · interactive theme" />
   <meta name="description" content="解析 perception_runtime
-实时开放词汇定位、ZED 2i 深度同步、FoundationPose CAD
-位姿配准及分支待合入超分检测边界。" />
+实时开放词汇定位网关、ZED 2i 深度同步恢复、YOLOv8-seg 与 FoundationPose
+单实例 6D 位姿配准及分支待合入超分检测边界。" />
   <title>工件视觉感知 · FACRI 文档</title>
   <link rel="stylesheet" href="../assets/site-shell.css" />
   <link rel="stylesheet" href="../assets/theme-interactive.css" />
@@ -61,58 +61,878 @@
       <header class="doc-title-block">
         <div class="eyebrow">核心算法手册</div>
         <h1 class="title">工件视觉感知</h1>
-        <p class="subtitle">LocateAnything-3B 开放词汇接地、ZED 2i
-相机恢复、FoundationPose 与待合并超分方案</p>
+        <p class="subtitle">LocateAnything-3B 沙箱网关、ZED 2i
+相机恢复、FoundationPose 单实例配准与待合入超分分支</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>视觉感知模块运行于端侧 <code>P1</code>
-进程（<code>perception_runtime</code>）与独立模型推理网关
-<code>apps/model_gateway/model_gateway_vision/</code>（<code>:18080</code>）之间，上游接收经过帧序和时钟校验的
-<code>ZED 2i</code> RGB-D 视频流与自然语言指代请求，下游向
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>现场工业工件（如 <code>LVDT</code>
+精密位移传感器组件与锁紧螺母）的视觉感知必须同时应对四重工程难题：</p>
+<ol type="1">
+<li><strong>大模型显存抢占与推理延迟冲击实时控制</strong>：多模态开放词汇大模型（如
+<code>LocateAnything-3B</code>）单次推理耗时常达 <code>1–5 s</code>
+且占用数 <code>GB</code> 显存；若直接嵌入机器人控制进程，不仅会抢占
+<code>200 Hz</code> 实时内存，还会因同步阻塞导致运动环路超时跌倒。</li>
+<li><strong>立体相机瞬时丢帧与跨流时戳撕裂</strong>：<code>ZED 2i</code>
+在高频取流过程中可能发生瞬时重复帧、时间倒退或图像与深度流微小异步，若不加配对校验直接送入
+<code>6D</code> 姿态估计，会瞬间算出错误的深度点云支撑面。</li>
+<li><strong>多目标视野模糊引发误抓</strong>：工台同时存在多个外形相近工件或反光干扰时，任何「默不作声猜选得分最高框」的策略都会引发物理错抓或碰撞事故。</li>
+<li><strong>远距微米级特征辨识率不足与前端状态混淆</strong>：在常规安全抓拍距离下，微小耳孔与防松螺母所占
+<code>ROI</code> 像素有限；同时 Web
+控制台若未对缓存与实时图做密码学与状态隔离，极易误将历史预览图当成实时真值。</li>
+</ol>
+<p>为此，视觉感知层明确建立「进程与显存隔离（<code>LocateAnythingGateway</code>
+走 <code>:18080</code> 独立服务）、<code>RGB-D</code> <code>20 ms</code>
+配对与 <code>0.2 s</code> 时效门禁、严格单实例输出与
+<code>SHA-256</code> 只读展示分离」的硬性架构防线，并将远距
+<code>4x</code> 超分螺母缺陷检测严格隔离在独立特性分支中演进。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p>视觉感知域跨端侧 <code>P1</code>
+进程（<code>perception_runtime</code> /
+<code>robot_spatial_perc</code>）与独立视觉模型网关
+<code>apps/model_gateway/model_gateway_vision/</code>（<code>:18080</code>）联合工作：上游接收
+<code>ZedRgbd</code> 校验后的 <code>rgb8</code> / <code>32FC1</code>
+深度流、真实 <code>CameraInfo</code> 内参及自然语言指代请求；下游向
 <code>manipulation_runtime</code> 输出唯一实例绑定的
-<code>ObjectObservation</code> 6D
-位姿并向前端提供只读鉴权图像资源。该模块严格恪守「感知仅在隔离网关与感知运行域实现、操作层只消费同帧绑定观测、交互层只作用于受鉴权像素句柄」的设计红线；接口与前端逻辑见
-<a href="../subsystems/interaction-and-gateway.html">交互网关与终端</a>
-与 <a href="../guides/platform-ui.html">Web 控制台指南</a>。</p>
-<figure class="diagram-figure">
+<code>ObjectObservation</code> 6D 位姿（或标准化无目标/模糊错误），并向
+<code>collaboration_platform</code> 控制台提供带 <code>SHA-256</code>
+摘要的只读预览像素句柄。网关限流与显示只读策略参见 <a
+href="../subsystems/interaction-and-gateway.html">交互网关与终端</a> 与
+<a href="../guides/platform-ui.html">Web 控制台指南</a>。</p>
+<figure class="diagram-figure" data-diagram-id="algo-perc-openvocab-sandbox" data-fig-uid="algo-perc-openvocab-sandbox-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/algo-full-stack-map.svg"
-alt="开放词汇接地与工件 6D 位姿感知在全栈算法中的位置" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-perc-openvocab-sandbox" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="algo-perc-openvocab-sandbox-title-f0" aria-describedby="algo-perc-openvocab-sandbox-desc-f0">
+  <title id="algo-perc-openvocab-sandbox-title-f0">LocateAnything-3B 开放词汇沙箱网关与只读显示 SHA-256 通道</title>
+  <desc id="algo-perc-openvocab-sandbox-desc-f0">说明开放词汇大模型视觉推理如何经 ROI 节流、安全路径防逃逸检验与逐块哈希校验投射至只读显示面板。</desc>
+  <defs>
+    <pattern id="algo-perc-openvocab-sandbox-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-perc-openvocab-sandbox-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#algo-perc-openvocab-sandbox-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="400.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">EDGE ROI &amp; QUOTA GUARD</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">端侧请求与车队带宽节流</text>
+  <rect x="414.0" y="86.0" width="376.0" height="400.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="428.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">MODELGATEWAY SANDBOX (:18080)</text>
+  <text x="428.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">路径防逃逸与开放词汇服务</text>
+  <rect x="818.0" y="86.0" width="346.0" height="400.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="832.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">READ-ONLY DISPLAY PROJECTION</text>
+  <text x="832.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SHA-256 检验与只读控制台</text>
+  <g class="arch-edge" data-from="perc_req" data-to="roi_gate" data-flow="inference">
+    <path d="M 211.0 234.0 L 211.0 320.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-ochre-f0)"/>
+    <rect x="183.2" y="268.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="211.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">ROI 切片</text>
+  </g>
+  <g class="arch-edge" data-from="roi_gate" data-to="art_ref" data-flow="security">
+    <path d="M 364.0 357.0 L 393.0 357.0 Q 398.0 357.0 398.0 352.0 L 398.0 202.0 Q 398.0 197.0 403.0 197.0 L 436.0 197.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-terracotta-f0)"/>
+    <rect x="368.2" y="268.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="398.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">media://</text>
+  </g>
+  <g class="arch-edge" data-from="art_ref" data-to="locate_3b" data-flow="inference">
+    <path d="M 602.0 234.0 L 602.0 320.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-ink-f0)"/>
+    <rect x="576.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="602.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">校验通过</text>
+  </g>
+  <g class="arch-edge" data-from="locate_3b" data-to="sha_verify" data-flow="security">
+    <path d="M 768.0 357.0 L 797.0 357.0 Q 802.0 357.0 802.0 352.0 L 802.0 202.0 Q 802.0 197.0 807.0 197.0 L 840.0 197.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-slate-f0)"/>
+    <rect x="781.2" y="268.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="802.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">候选框</text>
+  </g>
+  <g class="arch-edge" data-from="sha_verify" data-to="disp_panel" data-flow="security">
+    <path d="M 991.0 234.0 L 991.0 320.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-forest-f0)"/>
+    <rect x="965.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="991.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">只读叠加</text>
+  </g>
+  <g class="arch-node-card" data-node-id="perc_req" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-perc_req">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="perc_req" data-flows="all,inference" aria-expanded="false" aria-label="PerceptionRuntime 请求（端侧按需图像切片）" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-perc_req">
+      <rect class="arch-node-box" x="58.0" y="160.0" width="306.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">PerceptionRuntime 请求</text>
+      <text class="arch-node-role" x="70.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">端侧按需图像切片</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#flow" data-same-page="true" aria-label="前往「PerceptionRuntime 请求」对应章节">
+      <rect x="336.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="348.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="roi_gate" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-roi_gate">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="roi_gate" data-flows="all,inference,security" aria-expanded="false" aria-label="RoiGatewayGuard 节流（&lt;=2 流 · 640p · 15s）" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-roi_gate">
+      <rect class="arch-node-box" x="58.0" y="320.0" width="306.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">RoiGatewayGuard 节流</text>
+      <text class="arch-node-role" x="70.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">&lt;=2 流 · 640p · 15s</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#principles" data-same-page="true" aria-label="前往「RoiGatewayGuard 节流」对应章节">
+      <rect x="336.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="348.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="art_ref" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-art_ref">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="art_ref" data-flows="all,inference,security" aria-expanded="false" aria-label="ArtifactRef + O_NOFOLLOW（media:// 沙箱防逃逸）" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-art_ref">
+      <rect class="arch-node-box" x="436.0" y="160.0" width="332.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ArtifactRef + O_NOFOLLOW</text>
+      <text class="arch-node-role" x="448.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">media:// 沙箱防逃逸</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#paradigm" data-same-page="true" aria-label="前往「ArtifactRef + O_NOFOLLOW」对应章节">
+      <rect x="740.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="752.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="locate_3b" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-locate_3b">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="locate_3b" data-flows="all,inference,security" aria-expanded="false" aria-label="LocateAnything-3B 服务（:18080 开放词汇定位）" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-locate_3b">
+      <rect class="arch-node-box" x="436.0" y="320.0" width="332.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">LocateAnything-3B 服务</text>
+      <text class="arch-node-role" x="448.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18080 开放词汇定位</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#contracts" data-same-page="true" aria-label="前往「LocateAnything-3B 服务」对应章节">
+      <rect x="740.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="752.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sha_verify" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-sha_verify">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sha_verify" data-flows="all,security" aria-expanded="false" aria-label="只读显示 SHA-256 检验（readDisplayResource 逐块）" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-sha_verify">
+      <rect class="arch-node-box" x="840.0" y="160.0" width="302.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">只读显示 SHA-256 检验</text>
+      <text class="arch-node-role" x="852.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">readDisplayResource 逐块</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#principles" data-same-page="true" aria-label="前往「只读显示 SHA-256 检验」对应章节">
+      <rect x="1114.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1126.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="disp_panel" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-disp_panel">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="disp_panel" data-flows="all,security" aria-expanded="false" aria-label="平台 P03 感知只读面板（仅可视化观测）" aria-controls="algo-perc-openvocab-sandbox-f0-drawer-disp_panel">
+      <rect class="arch-node-box" x="840.0" y="320.0" width="302.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">平台 P03 感知只读面板</text>
+      <text class="arch-node-role" x="852.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">仅可视化观测</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#evidence" data-same-page="true" aria-label="前往「平台 P03 感知只读面板」对应章节">
+      <rect x="1114.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">&lt;=2 流 / 640p ROI 防火墙</text>
+  <rect x="248.8" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="270.8" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">O_NOFOLLOW 防符号链接逃逸</text>
+  <rect x="437.8" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="459.8" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SHA-256 逐块只读投影</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">视觉大模型仅运行在 :18080 隔离显存池，绝不阻塞端侧 10 Hz AprilTag 与 200 Hz 控制</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 04A · OPEN-VOCAB SANDBOX &amp; DISPLAY GATEWAY</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">LocateAnything-3B 开放词汇沙箱网关与只读显示 SHA-256 通道</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">RoiGatewayGuard (&lt;=2 流) · O_NOFOLLOW · readDisplayResource</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>开放词汇接地与工件 6D
-位姿感知在全栈算法中的位置</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="inference" aria-pressed="false">开放词汇推理请求路径</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="security" aria-pressed="false">沙箱防逃逸与只读投影</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>LocateAnything-3B
+安全沙箱网关与只读显示通道</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-perc-openvocab-sandbox.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-perc-openvocab-sandbox-f0-drawer-perc_req" class="diagram-drawer-panel" data-node-drawer="perc_req" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">PerceptionRuntime 请求</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P1 · 发起端 · 低频按需触发</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「PerceptionRuntime 请求」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把高带宽视觉推理请求收敛在可控单帧切片尺寸内。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>边缘 ROI 预裁剪</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/perception_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>避免向推理服务端推送全量原始视频，按任务目标封装 ROI 图像请求</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-openvocab-sandbox-f0-drawer-roi_gate" class="diagram-drawer-panel" data-node-drawer="roi_gate" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">RoiGatewayGuard 节流</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">StarFleetBus · 带宽防线 · 15.0 s 租约 TTL</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「RoiGatewayGuard 节流」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保障四机或九机并发场景下的回传总线稳定。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>租约并发配额守门</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/fleet_bus/roi_gateway_guard.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>全局限定最多 2 路并发视频流且分辨率 &lt;=640×480，超时自动收回租约</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-openvocab-sandbox-f0-drawer-art_ref" class="diagram-drawer-panel" data-node-drawer="art_ref" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ArtifactRef + O_NOFOLLOW</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ModelGateway · 安全边界 · 每帧文件校验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ArtifactRef + O_NOFOLLOW」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">封堵外部模型请求通过伪造本地路径读取敏感系统文件的攻击面。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III 安全路径校验代理</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/model_gateway/model_gateway_vision/server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>使用 O_NOFOLLOW 打开引用并检查 SHA-256 与魔数，严防符号链接越界读盘</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-openvocab-sandbox-f0-drawer-locate_3b" class="diagram-drawer-panel" data-node-drawer="locate_3b" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">LocateAnything-3B 服务</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ModelGateway Vision · 推理 · 独立信号量=1</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「LocateAnything-3B 服务」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">承担非标或新工装对象的零样本开放词汇语义定位。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>显存隔离独立推理服务</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/model_gateway/model_gateway_vision/server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行于独立显存池，响应语义提示词返回归一化候选框与置信分数</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-openvocab-sandbox-f0-drawer-sha_verify" class="diagram-drawer-panel" data-node-drawer="sha_verify" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">只读显示 SHA-256 检验</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">InteractionGateway · 投影 · 逐块长度与摘要验证</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「只读显示 SHA-256 检验」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为平台界面提供可审计的感知调试快照。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>不可篡改只读投影</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/display_routes.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>逐块核对载荷长度与 SHA-256，确保渲染面板收到的推理叠加框未被截断篡改</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-openvocab-sandbox-f0-drawer-disp_panel" class="diagram-drawer-panel" data-node-drawer="disp_panel" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">平台 P03 感知只读面板</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Collaboration UI · 展示 · 只读前端投影</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「平台 P03 感知只读面板」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">帮助研发人员在浏览器端实时查看视觉识别中间结果。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单向展示终端</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/web/index.html</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅呈现检测框与状态标签；严禁反向覆盖机器人实测抓取目标坐标</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-perc-6d-pipeline">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2
-id="一开放词汇视觉接地网关locateanything-3b-与-lensdetector">一、开放词汇视觉接地网关：<code>LocateAnything-3B</code>
-与 <code>LensDetector</code></h2>
-<p>面对非预设纹理目标或自然语言指代任务，系统将大模型推理隔离于独立模型网关进程
-<code>apps/model_gateway/model_gateway_vision/</code>
-中，杜绝大权重抢占实时控制内存：</p>
+<h2 id="principles">03 · 核心原理与机制推演</h2>
+<h3 id="开放词汇沙箱网关locateanything-3b-与-lensdetector">3.1
+开放词汇沙箱网关（<code>LocateAnything-3B</code> 与
+<code>LensDetector</code>）</h3>
+<p>在
+<code>src/robot_app/modules/perception_runtime/infrastructure/models/locateanything_gateway.py</code>
+与 <code>apps/model_gateway/README.md</code>
+规范下，大模型视觉接地被彻底限制在安全沙箱通道内：</p>
+<ol type="1">
+<li><strong>回环鉴权与防符号链接写入</strong>：<code>LocateAnythingGateway</code>
+强制校验网关地址仅限回环（<code>127.0.0.1</code> /
+<code>localhost</code> / <code>::1</code>
+或显式托管主机），从环境变量读取 Bearer 令牌；输入图像压缩为不超过
+<code>8 MiB</code> 的 PNG 后，使用
+<code>os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW</code>
+原语落入受限缓存目录并绑定
+<code>ArtifactRef</code>（<code>media://&lt;alias&gt;/&lt;file&gt;</code>
++ 实时 <code>SHA-256</code> 摘要），在请求结束或取消排空后立即
+<code>unlink</code>，彻底杜绝路径穿越与符号链接攻击。</li>
+<li><strong>有界令牌解码与来源一致核验</strong>：调用
+<code>nvidia/LocateAnything-3B</code> 时限制
+<code>max_output_tokens = 768</code>、温度为 <code>0</code>，输出
+<code>0..1000</code> 归一化像素边界框 <code>box</code> 与指代点
+<code>point</code>；返回体必须同时核对
+<code>request_id</code>、<code>revision</code>、<code>input_sha256</code>、<code>source_shape</code>
+与 <code>MAX_WINDOW_DETECTIONS</code> 上限，不匹配直接拒绝。</li>
+<li><strong>多框逆映射与前端密码学只读隔离</strong>：<code>LensDetector</code>（<code>src/robot_app/modules/perception_runtime/infrastructure/models/lens_gateway.py</code>
+与 <code>lens.py</code>）接入 <code>xiaomi</code> Lens 模型并通过
+<code>source_candidates</code>
+将裁剪区域预测坐标精确逆映射回源图像像素系；控制台前端（<code>apps/collaboration_platform/web/src/panels/Perception.tsx</code>
+与 <code>RealPerception.tsx</code>）通过
+<code>readDisplayResource</code> 逐块校验字节长度与客户端
+<code>SHA-256</code>，并显式标注 <code>LIVE</code>、<code>HISTORY</code>
+与 <code>STALE</code>
+标签，<strong>严禁将展示层图像或显示推理输出提升为物理仿真任务证据</strong>。</li>
+</ol>
+<h3
+id="zed-2i-两级恢复yolov8-seg---foundationpose-单实例配准与分支超分">3.2
+<code>ZED 2i</code>
+两级恢复、<code>YOLOv8-seg -&gt; FoundationPose</code>
+单实例配准与分支超分</h3>
+<figure class="diagram-figure" data-diagram-id="algo-perc-6d-pipeline" data-fig-uid="algo-perc-6d-pipeline-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-perc-6d-pipeline" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-perc-6d-pipeline-title-f1" aria-describedby="algo-perc-6d-pipeline-desc-f1">
+  <title id="algo-perc-6d-pipeline-title-f1">ZED 2i / RealSense -&gt; YOLOv8-seg + FoundationPose 单实例 6D 配准与分支标记</title>
+  <desc id="algo-perc-6d-pipeline-desc-f1">呈现主线 RGB-D 分割与 CAD 先验 6D 位姿配准、单实例防误抓门禁，以及仍在特性分支的超分检测隔离边界。</desc>
+  <defs>
+    <pattern id="algo-perc-6d-pipeline-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-perc-6d-pipeline-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-perc-6d-pipeline-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="800.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">MAINLINE 6D REGISTRATION PIPELINE (P1)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">主线双目 RGB-D、基准跟踪与单实例 6D 配准</text>
+  <rect x="864.0" y="86.0" width="300.0" height="420.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="878.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">BRANCH ISOLATION &amp; TARGET</text>
+  <text x="878.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">特性分支隔离与最终抓点绑定</text>
+  <g class="arch-edge" data-from="zed_rgbd" data-to="apriltag" data-flow="mainline">
+    <path d="M 290.0 182.0 L 320.0 182.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-forest-f1)"/>
+    <rect x="289.1" y="173.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="305.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">源帧</text>
+  </g>
+  <g class="arch-edge" data-from="zed_rgbd" data-to="yolo_seg" data-flow="mainline">
+    <path d="M 174.0 218.0 L 174.0 243.0 Q 174.0 248.0 179.0 248.0 L 691.0 248.0 Q 696.0 248.0 696.0 243.0 L 696.0 218.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-slate-f1)"/>
+    <rect x="414.1" y="239.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="435.0" y="251.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">RGB-D</text>
+  </g>
+  <g class="arch-edge" data-from="yolo_seg" data-to="fpose_6d" data-flow="mainline">
+    <path d="M 696.0 218.0 L 696.0 271.0 Q 696.0 276.0 691.0 276.0 L 285.0 276.0 Q 280.0 276.0 280.0 281.0 L 280.0 316.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-slate-f1)"/>
+    <rect x="472.1" y="267.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="488.0" y="279.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">掩膜</text>
+  </g>
+  <g class="arch-edge" data-from="fpose_6d" data-to="inst_guard" data-flow="mainline">
+    <path d="M 420.0 353.0 L 480.0 353.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-terracotta-f1)"/>
+    <rect x="422.2" y="344.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="450.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">5+2 配准</text>
+  </g>
+  <g class="arch-edge" data-from="inst_guard" data-to="manip_bind" data-flow="mainline">
+    <path d="M 760.0 353.0 L 884.0 353.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-forest-f1)"/>
+    <rect x="796.2" y="344.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="822.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">唯一实例</text>
+  </g>
+  <g class="arch-edge" data-from="sr_branch" data-to="manip_bind" data-flow="branch">
+    <path d="M 1014.0 220.0 L 1014.0 316.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-perc-6d-pipeline-arrow-ochre-f1)"/>
+    <rect x="972.3" y="259.0" width="83.3" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="1014.0" y="271.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">BRANCH 未并入</text>
+  </g>
+  <g class="arch-node-card" data-node-id="zed_rgbd" aria-controls="algo-perc-6d-pipeline-f1-drawer-zed_rgbd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zed_rgbd" data-flows="all,mainline" aria-expanded="false" aria-label="ZED 2i / RealSense RGB-D（双目深度 · 源时间戳）" aria-controls="algo-perc-6d-pipeline-f1-drawer-zed_rgbd">
+      <rect class="arch-node-box" x="58.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">ZED 2i / RealSense RGB-D</text>
+      <text class="arch-node-role" x="70.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双目深度 · 源时间戳</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#flow" data-same-page="true" aria-label="前往「ZED 2i / RealSense RGB-D」对应章节">
+      <rect x="262.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="274.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="apriltag" aria-controls="algo-perc-6d-pipeline-f1-drawer-apriltag">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="apriltag" data-flows="all,mainline" aria-expanded="false" aria-label="AprilTagTracker (P1)（C++20 10 Hz 基准跟踪）" aria-controls="algo-perc-6d-pipeline-f1-drawer-apriltag">
+      <rect class="arch-node-box" x="320.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="332.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">AprilTagTracker (P1)</text>
+      <text class="arch-node-role" x="332.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">C++20 10 Hz 基准跟踪</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#paradigm" data-same-page="true" aria-label="前往「AprilTagTracker (P1)」对应章节">
+      <rect x="524.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="536.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="yolo_seg" aria-controls="algo-perc-6d-pipeline-f1-drawer-yolo_seg">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="yolo_seg" data-flows="all,mainline" aria-expanded="false" aria-label="YOLOv8-seg 实例分割（目标掩膜提取）" aria-controls="algo-perc-6d-pipeline-f1-drawer-yolo_seg">
+      <rect class="arch-node-box" x="580.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="592.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">YOLOv8-seg 实例分割</text>
+      <text class="arch-node-role" x="592.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">目标掩膜提取</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#principles" data-same-page="true" aria-label="前往「YOLOv8-seg 实例分割」对应章节">
+      <rect x="784.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="796.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fpose_6d" aria-controls="algo-perc-6d-pipeline-f1-drawer-fpose_6d">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fpose_6d" data-flows="all,mainline" aria-expanded="false" aria-label="FoundationPose 6D 配准（5+2 候选姿态精配准）" aria-controls="algo-perc-6d-pipeline-f1-drawer-fpose_6d">
+      <rect class="arch-node-box" x="140.0" y="316.0" width="280.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="152.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FoundationPose 6D 配准</text>
+      <text class="arch-node-role" x="152.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">5+2 候选姿态精配准</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#contracts" data-same-page="true" aria-label="前往「FoundationPose 6D 配准」对应章节">
+      <rect x="392.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="404.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="inst_guard" aria-controls="algo-perc-6d-pipeline-f1-drawer-inst_guard">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="inst_guard" data-flows="all,mainline" aria-expanded="false" aria-label="单实例防误抓门禁（剔除多目标混淆）" aria-controls="algo-perc-6d-pipeline-f1-drawer-inst_guard">
+      <rect class="arch-node-box" x="480.0" y="316.0" width="280.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="492.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单实例防误抓门禁</text>
+      <text class="arch-node-role" x="492.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">剔除多目标混淆</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#principles" data-same-page="true" aria-label="前往「单实例防误抓门禁」对应章节">
+      <rect x="732.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="744.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sr_branch" aria-controls="algo-perc-6d-pipeline-f1-drawer-sr_branch">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sr_branch" data-flows="all,branch" aria-expanded="false" aria-label="pft_workpiece_sr (BRANCH)（五阶段超分待并入主线）" aria-controls="algo-perc-6d-pipeline-f1-drawer-sr_branch">
+      <rect class="arch-node-box" x="884.0" y="146.0" width="260.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="896.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">pft_workpiece_sr (BRANCH)</text>
+      <text class="arch-node-role" x="896.0" y="206.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">五阶段超分待并入主线</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#paradigm" data-same-page="true" aria-label="前往「pft_workpiece_sr (BRANCH)」对应章节">
+      <rect x="1116.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1128.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="manip_bind" aria-controls="algo-perc-6d-pipeline-f1-drawer-manip_bind">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="manip_bind" data-flows="all,branch,mainline" aria-expanded="false" aria-label="ManipulationTarget 输出（绑定真实双抓点）" aria-controls="algo-perc-6d-pipeline-f1-drawer-manip_bind">
+      <rect class="arch-node-box" x="884.0" y="316.0" width="260.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="896.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ManipulationTarget 输出</text>
+      <text class="arch-node-role" x="896.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">绑定真实双抓点</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#evidence" data-same-page="true" aria-label="前往「ManipulationTarget 输出」对应章节">
+      <rect x="1116.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1128.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">主线检测与 FoundationPose 6D</text>
+  <rect x="278.8" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="300.8" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">单实例防错抓校验门禁</text>
+  <rect x="426.9" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="448.9" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">pft_workpiece_sr (特性分支隔离)</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">主线明确区分已上线 6D 配准与特性分支螺母超分，绝不提前虚报合入状态</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 04B · SINGLE-INSTANCE 6D POSE PIPELINE</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">ZED 2i / RealSense -&gt; YOLOv8-seg + FoundationPose 单实例 6D 配准与分支标记</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">P1 AprilTag + 6D 配准 · 透明标注 pft_workpiece_sr (BRANCH)</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="mainline" aria-pressed="false">主线单实例 6D 配准管线</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="branch" aria-pressed="false">超分特性分支隔离边界</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>ZED 2i 取流恢复、YOLOv8-seg 与
+FoundationPose 单实例 6D 配准管线</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-perc-6d-pipeline.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-perc-6d-pipeline-f1-drawer-zed_rgbd" class="diagram-drawer-panel" data-node-drawer="zed_rgbd" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ZED 2i / RealSense RGB-D</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0/P1 · 图像传感接入 · 源时间硬件对齐</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ZED 2i / RealSense RGB-D」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为高精度几何配准提供低噪声 RGB-D 观测帧。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>防腐时间对齐适配器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/sensor_adapters/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>校验彩色图与深度图丢帧并绑定统一捕获时间与标定内参</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-6d-pipeline-f1-drawer-apriltag" class="diagram-drawer-panel" data-node-drawer="apriltag" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">AprilTagTracker (P1)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 C++20 · 基准标靶 · 10 Hz · C++20</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「AprilTagTracker (P1)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">支撑无先验终端视觉伺服与产线快速标定参考。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 原生 C++20 视觉核</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/perception/apriltag_tracker.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>对工位及 C919 机坪基准标靶输出毫米级与亚度级 6D 相对位姿</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-6d-pipeline-f1-drawer-yolo_seg" class="diagram-drawer-panel" data-node-drawer="yolo_seg" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">YOLOv8-seg 实例分割</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 Python · 检测分割 · 按任务请求触发</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「YOLOv8-seg 实例分割」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为 6D 位姿配准提供干净紧凑的目标点云区域。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>纯领域掩膜过滤</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/perception_runtime/domain/detection.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>提取目标精确像素掩膜并剔除背景工装桌面干扰点云</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-6d-pipeline-f1-drawer-fpose_6d" class="diagram-drawer-panel" data-node-drawer="fpose_6d" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">FoundationPose 6D 配准</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 Python · 6D 配准 · CAD 模型先验配准</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「FoundationPose 6D 配准」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在对称与部分遮挡条件下准确恢复工件三维朝向。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>几何位姿精估管道</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/perception_runtime/domain/frame_binding.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>融合 CAD 网格先验与 RGB-D 深度执行 5+2 候选迭代求解完整 6D 位姿</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-6d-pipeline-f1-drawer-inst_guard" class="diagram-drawer-panel" data-node-drawer="inst_guard" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">单实例防误抓门禁</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 Domain · 实例门禁 · 输出前强制校验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「单实例防误抓门禁」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保抓取点绑定到任务请求指定的唯一物理工件实例。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>确定性实例身份门禁</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/perception_runtime/domain/object_relation.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>校验目标空间归属、单一实例唯一性与尺寸包络，阻止错抓邻近工位件</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-6d-pipeline-f1-drawer-sr_branch" class="diagram-drawer-panel" data-node-drawer="sr_branch" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">pft_workpiece_sr (BRANCH)</strong>
+        <span class="diagram-drawer-badge is-partial">P · 部分/规划</span>
+        <span class="diagram-drawer-meta">Feature Branch · 演进边界 · 特性分支隔离</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「pft_workpiece_sr (BRANCH)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">诚实标注尚待合入主线的超分能力边界，便于审阅合规追踪。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>BRANCH 透明隔离标识</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/perception_runtime/domain/scene_geometry.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>远距微米级螺母五阶段超分缺陷检测目前位于特性分支，主线不虚报已启用</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-perc-6d-pipeline-f1-drawer-manip_bind" class="diagram-drawer-panel" data-node-drawer="manip_bind" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ManipulationTarget 输出</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 -&gt; P2 · 感知交付 · 写入 perception_obs.shm</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ManipulationTarget 输出」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">完成从像素与深度到可抓取 3D 目标坐标的端到端交付。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>带 HalOrigin 观测交付</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/perception_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>经 SHM 传递给操作规划器，严格保留观测源时间与实例身份</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-perc-openvocab-sandbox">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<p>面向已知 CAD 模型的精密工业工件，本地实时 <code>6D</code>
+感知与标签跟踪按如下机制运作：</p>
+<ol type="1">
+<li><strong>立体相机防倒退与两级恢复（<code>ZedRgbd</code>）</strong>：定义于
+<code>src/embodiment_runtime/adapters/camera/zed_rgbd.py</code> 与
+<code>zed_cli.py</code>，初始化即锁定序列号、内参并生成标定
+<code>SHA-256</code> 绑定指纹。取流时强制校验图像时间戳
+<code>stamp_ns</code> 严格单调递增；遇到瞬时重复帧进入 <code>5 ms</code>
+轮询短时等待，若超过 <code>timeout_ms</code>
+或发生时间倒退则抛出异常，交由上层执行进程内两级重绑定恢复。输出确保
+<code>RGB-D</code> 配对容差 <code>&lt;= 20 ms</code>，观测延迟上限
+<code>max_age_s = 0.2 s</code>。</li>
+<li><strong>颜色通道严格转换与单实例约束（<code>YOLOv8-seg -&gt; FoundationPose</code>）</strong>：<code>WorkpieceBackend</code>（<code>src/robot_app/modules/perception_runtime/infrastructure/native_bindings/workpiece.py</code>）通过
+<code>C</code> ABI 桥接原生推理库
+<code>workpiece_bridge.cpp</code>（<code>src/robot_app/modules/perception_runtime/native/workpiece_bridge.cpp</code>）：外部输入的
+<code>rgb8</code> 图像先显式经 <code>COLOR_RGB2BGR</code> 转为
+<code>BGR</code> 送入 <code>YOLOv8-seg</code>
+实例分割；<strong>严格执行唯一实例门禁——仅当
+<code>detections.size() == 1</code> 时放行，<code>0</code> 目标立即报
+<code>OBJECT_NOT_VISIBLE</code>，多目标立即报
+<code>WORKPIECE_INSTANCE_AMBIGUOUS</code>
+并重置跟踪态，绝不猜选</strong>。随后验证掩码内有效正深度像素不少于
+<code>30</code> 个（且覆盖横纵各至少 <code>3</code> 个离散坐标），再向
+<code>FoundationPose</code> 传入原生 <strong><code>RGB</code></strong>
+与 <code>32FC1</code> 米制深度执行首帧 <code>5</code>
+次迭代注册（<code>Register(..., 5)</code>）与后续帧 <code>2</code>
+次迭代跟踪（<code>Track(..., 2)</code>），首帧构建耗时如实计入端到端观测年龄。</li>
+<li><strong>亚毫秒基准标签跟踪（<code>AprilTagTracker</code>）</strong>：驻留于
+<code>P1</code> <code>C++20</code>
+进程（<code>src/robot_app/algorithms/perception/apriltag_tracker.hpp</code>），采用位置/旋转指数滤波系数
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mtext mathvariant="normal">pos</mtext></msub><mo>=</mo><msub><mi>α</mi><mtext mathvariant="normal">rot</mtext></msub><mo>=</mo><mn>0.35</mn></mrow><annotation encoding="application/x-tex">\alpha_{\text{pos}} = \alpha_{\text{rot}} = 0.35</annotation></semantics></math>、最大重投影误差
+<code>3.5 px</code> 与单帧防跳变阈值 <code>0.35 m</code>
+提供高速基座标定辅助；<code>RoiGatewayClient</code>
+则对上行图像切片强制限制 <code>&lt;= 512000 B</code>。</li>
+<li><strong>待合入特性边界（<code>pft_workpiece_sr</code>）</strong>：面向远距微米级耳孔与螺母缺陷检出的五阶段超分管道
+<code>pft_workpiece_sr</code>（结合 <code>CVPR 2025 PFT-SR</code>
+<code>4</code> 倍超分、<code>LAB-CLAHE</code> 与双边滤波增强及纯算子与
+<code>VLM</code> 双线核对）已完成研发并保存于相邻特性分支
+<code>feat/workpiece-detection-debug-20261124</code>（提交
+<code>d3cddf263</code>），<strong>当前尚未合入本
+<code>c919_ground_scene_modeling</code> 主线代码树</strong>。</li>
+</ol>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>视觉感知域采用<strong>「安全代理适配器 + <code>C</code> ABI
+原生引擎桥接 + 特性分支隔离」</strong>三元工程范式：</p>
 <ul>
-<li><strong>网关契约与安全校验（<code>locateanything_gateway.py</code>）</strong>：<code>LocateAnythingGateway</code>（位于
-<code>src/robot_app/modules/perception_runtime/infrastructure/models/locateanything_gateway.py</code>）仅限连接回环
-HTTP 端点并校验环境变量承载的 Bearer 令牌；输入图像通过
-<code>O_NOFOLLOW</code> 防符号链接注入写入隔离缓存目录，以带 SHA-256
-校验的 <code>ArtifactRef</code> 传递；默认使用模型
-<code>nvidia/LocateAnything-3B</code>，限制
-<code>max_output_tokens = 768</code>，返回 <code>0..1000</code>
-归一化像素边界框 <code>box</code> 与指代点 <code>point</code>。</li>
-<li><strong>多候选框与掩码映射（<code>LensDetector</code>）</strong>：在
-<code>src/robot_app/modules/perception_runtime/infrastructure/models/lens_gateway.py</code>
-与 <code>lens.py</code> 中，<code>LensDetector</code> 对接
-<code>xiaomi</code> Lens 模型，经 <code>source_candidates</code>
-函数将裁剪区域归一化预测准确重映射至源像素坐标系。</li>
-<li><strong>Web 端受限资源拉取与防污染</strong>：控制台面板通过
-<code>readDisplayResource</code> 按逐块长度与客户端 <code>SHA-256</code>
-校验拉取源帧与分割遮罩；前端显式区分
-<code>LIVE</code>、<code>HISTORY</code> 与
-<code>STALE</code>，并严禁把展示层渲染结果反推为物理仿真成功依据。</li>
+<li><strong>安全引用代理与可取消异步等待（<code>LocateAnythingGateway</code>）</strong>：通过
+<code>ArtifactRef</code> 替代内联图像数据传输、以
+<code>O_NOFOLLOW</code> 消除符号链接漏洞，并通过 <code>RLock</code> +
+<code>Event</code> 在推理工作线程内按 <code>50 ms</code>
+轮询排空远端取消状态。</li>
+<li><strong>确定性资源回滚与延迟初始化（<code>RegisteredObjectRos</code>
+&amp; <code>PerceptionRuntime</code>）</strong>：在
+<code>src/robot_app/modules/perception_runtime/lifecycle/registered.py</code>
+中，构造期任何步骤失败均在异常链内自动触发 <code>self.close()</code>
+回滚全部 ROS 订阅与 <code>TF</code>
+监听器；<code>WorkpieceBackend</code>
+延迟至工作线程收到首帧合法内参后构建推理句柄，绝不阻塞主控制环。</li>
+<li><strong>诚实分支债务隔离（<code>BRANCH</code>）</strong>：不在主线文档或路由契约中把尚在特性分支
+<code>feat/workpiece-detection-debug-20261124</code> 的
+<code>pft_workpiece_sr</code> 虚报为已在线投产能力。</li>
 </ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>审阅结论</th>
+<th>客观工程依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 领域纯洁性与依赖倒置</strong></td>
+<td><code>PASS</code></td>
+<td><code>domain/</code> 仅包含纯像素几何与支撑校验；模型网关、相机 SDK
+与 ROS <code>TF</code> 全部分离在 <code>infrastructure/</code> 与
+<code>lifecycle/</code></td>
+</tr>
+<tr>
+<td><strong>2. 契约完备性与边界防呆</strong></td>
+<td><code>PASS</code></td>
+<td>强制
+<code>O_NOFOLLOW</code>、<code>SHA-256</code>、<code>BGR/RGB</code>
+显式区分、单实例门禁及 <code>&gt;= 30</code> 有效深度像素支持校验</td>
+</tr>
+<tr>
+<td><strong>3. 状态机与生命周期确定性</strong></td>
+<td><code>PASS</code></td>
+<td><code>ZedRgbd</code>
+单次启动约束与重绑定、<code>FoundationPose</code> 失败自动退回未跟踪
+<code>Register</code> 态、<code>CLOSING</code> 状态可重试清理</td>
+</tr>
+<tr>
+<td><strong>4. 实时内存与并发安全性</strong></td>
+<td><code>PASS</code></td>
+<td>大模型显存完全驻留外部 <code>:18080</code>
+网关进程；<code>AprilTagTracker</code> 居于 <code>C++20</code>
+<code>P1</code> 进程无锁隔离</td>
+</tr>
+<tr>
+<td><strong>5. 离线可测性与失败留痕</strong></td>
+<td><code>PASS</code></td>
+<td><code>tests/unit/test_zed_rgbd.py</code>
+与感知单元测试支持注入合成相机帧/模拟网关验证状态迁移与错误码</td>
+</tr>
+<tr>
+<td><strong>6. 单真源约束与过渡债务透明度</strong></td>
+<td><code>BRANCH</code></td>
+<td>主线 <code>LocateAnything-3B</code> 与 <code>FoundationPose</code>
+完整清晰；诚实标注 <code>pft_workpiece_sr</code> 尚在特性分支未并入</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<p>下表汇总视觉感知关键组件契约；锁定模型版本哈希及前端只读组件路径见折叠清单。</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>组件接口</th>
+<th>源码路径</th>
+<th>核心输入/输出契约</th>
+<th>冻结关键限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LocateAnythingGateway.__call__</code></td>
+<td><code>src/robot_app/modules/perception_runtime/infrastructure/models/locateanything_gateway.py</code></td>
+<td><code>CameraFrame</code> + 文本提示 -&gt; 归一化检测列表</td>
+<td>回环 HTTP +
+Bearer；<code>O_NOFOLLOW</code>；<code>max_output_tokens = 768</code></td>
+</tr>
+<tr>
+<td><code>ZedRgbd.read</code></td>
+<td><code>src/embodiment_runtime/adapters/camera/zed_rgbd.py</code></td>
+<td>硬件 SDK -&gt; <code>rgb8</code> + <code>32FC1</code> +
+<code>CameraInfo</code></td>
+<td>单调 <code>stamp_ns</code>；标定 <code>SHA-256</code>
+绑定；<code>timeout_ms &lt;= 5000</code></td>
+</tr>
+<tr>
+<td><code>WorkpieceBackend.infer</code></td>
+<td><code>src/robot_app/modules/perception_runtime/infrastructure/native_bindings/workpiece.py</code></td>
+<td><code>RGB</code> + <code>depth_m</code> + 内参 -&gt;
+<code>4×4</code> 齐次位姿 + 掩码</td>
+<td><code>YOLOv8-seg</code> (<code>BGR</code>) 仅限 <code>1</code>
+实例；<code>FoundationPose</code> (<code>RGB</code>, <code>5+2</code>
+iter)</td>
+</tr>
+<tr>
+<td><code>AprilTagTracker::update</code></td>
+<td><code>src/robot_app/algorithms/perception/apriltag_tracker.hpp</code></td>
+<td><code>TagObservation</code> -&gt; <code>TrackedTagPose</code></td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0.35</mn></mrow><annotation encoding="application/x-tex">\alpha = 0.35</annotation></semantics></math>；<code>max_reproj_err_px = 3.5</code>；<code>max_jump_m = 0.35 m</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 <details class="tech-details">
 <summary>
-查看视觉模型修订哈希与前端只读鉴权组件路径清单
+查看视觉模型锁定修订哈希与前端只读鉴权组件路径清单
 </summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
@@ -132,19 +952,19 @@ HTTP 端点并校验环境变量承载的 Bearer 令牌；输入图像通过
 <tr>
 <td><code>nvidia/LocateAnything-3B</code></td>
 <td><code>c32291ca5e996f5a7a485845b4f57a233936bba0</code></td>
-<td>通过回环 HTTP 网关与 Bearer Token
+<td>通过 <code>:18080</code> 回环 HTTP 网关与环境变量 Bearer Token
 隔离调用，<code>max_output_tokens = 768</code></td>
 </tr>
 <tr>
 <td><code>xiaomi</code> Lens 模型</td>
 <td><code>68f57cdde1a19f751e78b18af04efa8ca8bd7fce</code></td>
 <td>经 <code>source_candidates</code>
-执行裁剪坐标向源像素坐标系逆映射</td>
+执行裁剪坐标向源像素坐标系精确逆映射</td>
 </tr>
 <tr>
 <td>前端感知展示面板</td>
 <td><code>apps/collaboration_platform/web/src/panels/Perception.tsx</code></td>
-<td>通过 <code>readDisplayResource</code> 逐块校验长度与客户端
+<td>通过 <code>readDisplayResource</code> 逐块校验字节长度与客户端
 <code>SHA-256</code></td>
 </tr>
 <tr>
@@ -157,81 +977,9 @@ HTTP 端点并校验环境变量承载的 Bearer 令牌；输入图像通过
 </table>
 </div>
 </details>
-<h2 id="二立体-rgb-d-自动识别与-6-dof-cad-位姿配准">二、立体 RGB-D
-自动识别与 6-DoF CAD 位姿配准</h2>
-<p>面向已知几何 CAD 模型的工业 LVDT
-工件与标准工装，系统提供基于立体视觉的高精度位姿配准管线：</p>
-<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
-<table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<thead>
-<tr>
-<th>环节</th>
-<th>核心技术与代码组件</th>
-<th>实时限制与关键规则</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>立体相机取流与韧性恢复</td>
-<td><code>ZedRgbd</code> 与 <code>zed_cli</code>（对应
-<code>tests/unit/test_zed_rgbd.py</code>）</td>
-<td>同步输出 <code>rgb8</code> / <code>bgra</code>、<code>32FC1</code>
-米制深度与真实 <code>CameraInfo</code> 内参；强制单调
-<code>stamp_ns</code>，遇到瞬时重复帧自动短时等待，流中断时执行两级进程内重绑定恢复</td>
-</tr>
-<tr>
-<td>目标检测与 6D 位姿跟踪</td>
-<td><code>workpiece_pipeline</code>（<code>YOLOv8-seg</code> +
-<code>FoundationPose</code>）</td>
-<td>首帧注册执行 <code>5</code> 次精炼迭代，持续跟踪每次仅需
-<code>2</code> 次迭代；内部严格区分 YOLOv8-seg 的 BGR 输入与
-FoundationPose 的 RGB 输入格式，并要求观测延迟不超过
-<code>max_age_s = 0.2 s</code>（RGB-D 双流配对容差
-<code>20 ms</code>）</td>
-</tr>
-<tr>
-<td>多线程与 C++ 标签加速</td>
-<td><code>PerceptionDomain</code>、<code>AprilTagTracker</code>、<code>RoiGatewayClient</code></td>
-<td><code>src/robot_app/algorithms/perception/apriltag_tracker.hpp</code>
-在独立 <code>robot_spatial_perc</code>
-进程内提供亚毫秒级基准标签跟踪；<code>PerceptionRuntime</code>
-确保模型延迟初始化在视觉工作线程收到首帧内参后完成，绝不阻塞控制主循环</td>
-</tr>
-<tr>
-<td>单一实例与时间严格性</td>
-<td><code>RegisteredObjectRos</code> 与
-<code>LatestObjectObservation</code></td>
-<td>仅当检测到唯一匹配目标实例时才发布位姿；多目标模糊或零命中立即上报异常状态而不静默猜选；首次注册耗时如实计入端到端观测年龄，不篡改时间戳</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2
-id="三待合入特性五阶段超分与螺母缺陷检测">三、待合入特性：五阶段超分与螺母缺陷检测</h2>
-<p>工程规划与部分前端展示接口已预留「五阶段工件超分与细微螺母缺陷检测」通道，用于解决远距抓拍时微米级工件耳孔与锁紧螺母在低像素
-ROI 下辨识率不足的问题：</p>
-<ul>
-<li><strong>分支实现状态说明</strong>：完整五阶段算法脚本
-<code>pft_workpiece_sr</code>（基于 CVPR 2025 PFT-SR <code>4</code>
-倍超分辨率、LAB-CLAHE 与双边滤波光学预处理及纯算子与 VLM 双线核对）以及
-<code>workpiece_defect</code> 规则已开发完成，当前保存在相邻特性分支
-<code>feat/workpiece-detection-debug-20261124</code>（提交
-<code>d3cddf263</code>）中，<strong>尚未并入当前
-<code>c919_ground_scene_modeling</code> 主线代码树</strong>。</li>
-<li><strong>主线现状</strong>：在未合入该分支前，当前工作区仅运行上述
-<code>LocateAnything-3B</code>、<code>LensDetector</code>、<code>AprilTagTracker</code>
-与 <code>YOLOv8-seg + FoundationPose</code>
-位姿管线，不对外声称已开启在线 <code>4x</code>
-超分或全自动螺母缺陷放行门槛。</li>
-</ul>
-<h2 id="四开放词汇视觉接地实证录像">四、开放词汇视觉接地实证录像</h2>
-<p>下面录像记录通过 <code>LocateAnything-3B</code>
-隔离网关接收自然语言工件描述并返回精准图像空间接地坐标的全过程（<code>SYSTEM_INTERACTION_AND_GROUNDING</code>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<p>下面录像记录系统通过 <code>LocateAnything-3B</code>
+独立安全网关接收自然语言工件指代请求并返回精准图像空间接地坐标的全过程（<code>SYSTEM_INTERACTION_AND_GROUNDING</code>
 证据分类，<code>1x</code> 真实耗时）。</p>
 <p><strong>MED-PERC-01 · <code>LocateAnything-3B</code>
 工件视觉开放词汇接地</strong>（<code>1600×1000</code>、<code>30 fps</code>、<code>16.0 s</code>、<code>1x</code>
@@ -246,6 +994,19 @@ SHA256:471e5bb387）</span><span
 class="doc-media-badge">SYSTEM_INTERACTION_AND_GROUNDING</span>
 </figcaption>
 </figure>
+<aside class="doc-callout doc-callout--important" role="note">
+  <div class="doc-callout-title">IMPORTANT · 关键约束</div>
+  <p><strong>实测口径与未合入能力边界</strong>： 1.
+当前工作区 <code>tests/unit/test_zed_rgbd.py</code> 与
+<code>perception_runtime</code>
+回归夹具采用注入相机源与隔离模型桩运行，验证取流单调性、配对窗口与状态回收，<strong>不替代真机立体相机标定或
+GPU 实机端到端验收</strong>。 2. 五阶段超分与微米螺母缺陷检测
+<code>pft_workpiece_sr</code> 当前仅存在于特性分支
+<code>feat/workpiece-detection-debug-20261124</code>（提交
+<code>d3cddf263</code>），在本分支合入并完成全栈检验前，不对外声明开启在线
+<code>4x</code> 超分或自动螺母放行能力。</p>
+  
+</aside>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -257,18 +1018,28 @@ class="doc-media-badge">SYSTEM_INTERACTION_AND_GROUNDING</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#一开放词汇视觉接地网关locateanything-3b-与-lensdetector"
-id="toc-一开放词汇视觉接地网关locateanything-3b-与-lensdetector">一、开放词汇视觉接地网关：<code>LocateAnything-3B</code>
-与 <code>LensDetector</code></a></li>
-<li><a href="#二立体-rgb-d-自动识别与-6-dof-cad-位姿配准"
-id="toc-二立体-rgb-d-自动识别与-6-dof-cad-位姿配准">二、立体 RGB-D
-自动识别与 6-DoF CAD 位姿配准</a></li>
-<li><a href="#三待合入特性五阶段超分与螺母缺陷检测"
-id="toc-三待合入特性五阶段超分与螺母缺陷检测">三、待合入特性：五阶段超分与螺母缺陷检测</a></li>
-<li><a href="#四开放词汇视觉接地实证录像"
-id="toc-四开放词汇视觉接地实证录像">四、开放词汇视觉接地实证录像</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与机制推演</a>
+<ul>
+<li><a href="#开放词汇沙箱网关locateanything-3b-与-lensdetector"
+id="toc-开放词汇沙箱网关locateanything-3b-与-lensdetector">3.1
+开放词汇沙箱网关（<code>LocateAnything-3B</code> 与
+<code>LensDetector</code>）</a></li>
+<li><a
+href="#zed-2i-两级恢复yolov8-seg---foundationpose-单实例配准与分支超分"
+id="toc-zed-2i-两级恢复yolov8-seg---foundationpose-单实例配准与分支超分">3.2
+<code>ZED 2i</code>
+两级恢复、<code>YOLOv8-seg -&gt; FoundationPose</code>
+单实例配准与分支超分</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -281,20 +1052,21 @@ id="toc-四开放词汇视觉接地实证录像">四、开放词汇视觉接地�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

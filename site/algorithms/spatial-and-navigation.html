@@ -6,7 +6,8 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="generator" content="facri-docs · interactive theme" />
   <meta name="description" content="阐述 spatial_runtime
-激光体素定位与腰部运动学外参补偿，以及 HybridAStar、MPPI 和
+激光体素定位与腰部运动学外参补偿，以及
+HybridAStar、MPPI、box_route、ResponseSampling 与
 ConvergentTerminalServo 导航管线。" />
   <title>空间定位与终端导航 · FACRI 文档</title>
   <link rel="stylesheet" href="../assets/site-shell.css" />
@@ -61,68 +62,1073 @@ ConvergentTerminalServo 导航管线。" />
       <header class="doc-title-block">
         <div class="eyebrow">核心算法手册</div>
         <h1 class="title">空间定位与终端导航</h1>
-        <p class="subtitle">动态腰部外参补偿
-SLAM、全局-局部规划链及零先验收敛终端伺服</p>
+        <p class="subtitle">腰部运动学外参补偿
+SLAM、全局-局部接力规划及零先验收敛终端伺服</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>自主定位与移动导航由
-<code>spatial_runtime</code>（<code>P1</code>，<code>10 Hz</code>）与
-<code>navigation_runtime</code>（<code>P2</code>，<code>20 Hz</code>）两套运行域联合驱动：上游承接
-<code>SalLidarWire</code> 三维点云、腰部关节编码器与工位目标坐标，下游向
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>双足机器人在工厂与机坪环境下的空间定位与终端靠泊面临三项与传统平地移动小车截然不同的物理难点：</p>
+<ol type="1">
+<li><strong>躯干俯仰/扭转引发的激光扫描平面畸变</strong>：<code>3D LiDAR</code>
+安装于受腰部三轴（偏航/俯仰/横滚）驱动的上身躯干上。当机器人弯腰抓料或侧身作业时，雷达扫描面相对水平地平面剧烈倾斜，直接输入固定外参体素定位器会导致地图垂直撕裂与瞬间定位漂移。</li>
+<li><strong>狭窄工位靠泊时的原地转向死锁</strong>：在货架、机台或走廊贴边工位中，机器人起点或目标点往往贴靠设备包络，常规全局搜索若强制先原地旋转再前进，极易因足底/躯干转动包络扫碰工位而报错锁死。</li>
+<li><strong>末段 <code>0.3 m</code>
+踏步稳态漂移与微振踩踏</strong>：受地面摩擦不均、鞋底弹性形变及步态周期偏置影响，常规开环减速停靠常在目标点外数厘米处形成系统性侧滑偏置，而在容差边缘反复启停微调又会引起双足原地高频踩踏。</li>
+</ol>
+<p>针对上述问题，空间定位与导航层明确要求：腰部倾斜工况下激光帧在
+<code>&lt;= 500 ms</code> 生命期内与 <code>IMU</code> / 关节外参完成
+<code>&lt;= 2 ms</code>
+同步水平投影；接力规划具备原地受阻后的拉出脱困能力，且终端伺服在无任何硬件先验假设前提下将系统性停靠偏置收敛至验收半径
+<code>r_accept</code> 以内并保持静止。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p>自主定位与移动导航由 <code>spatial_runtime</code>（<code>P1</code>
+进程，<code>10 Hz</code>）与
+<code>navigation_runtime</code>（<code>P2</code>
+进程，<code>20 Hz</code>）接力驱动：上游接收经 <code>SalLidarWire</code>
+校验的 <code>6000</code> 点云、<code>IMU</code>
+四元数、实测腰部编码器以及 <code>LocalTaskRuntime</code>
+下发的工位目标位姿；下游经激光保护环审核后向
 <code>motion_coordinator</code>
-输出无碰撞底盘速度及精确停靠状态。<code>spatial_runtime</code>
-先行补偿弯腰作业引起的雷达姿态倾角畸变，使下游全局搜索、局部避障与毫米级终端伺服可统一运行在水平参考基准系上。模块图与接口映射参考
+输出无碰撞底盘扭转速度指令与唯一站位交接回执。系统组件关系与能力提供者状态机参见
 <a href="../architecture/component-map.html">组件地图</a> 与 <a
 href="../subsystems/robot-capabilities.html">单机能力总览</a>。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="algo-spatial-waist-icp" data-fig-uid="algo-spatial-waist-icp-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/algo-full-stack-map.svg"
-alt="空间定位与分层导航在全栈算法中的位置" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-spatial-waist-icp" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="algo-spatial-waist-icp-title-f0" aria-describedby="algo-spatial-waist-icp-desc-f0">
+  <title id="algo-spatial-waist-icp-title-f0">动态腰部 FK 水平还原与 VoxelIcpLocalizer 10 Hz 定位流</title>
+  <desc id="algo-spatial-waist-icp-desc-f0">展示雷达点云经 IMU 去畸变、腰部正运动学水平反旋和 0.20 m 体素 ICP 输出带净距定位槽的完整过程。</desc>
+  <defs>
+    <pattern id="algo-spatial-waist-icp-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-spatial-waist-icp-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#algo-spatial-waist-icp-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="400.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">INGRESS &amp; DESKEW</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">零拷贝扫描接入与运动去畸变</text>
+  <rect x="414.0" y="86.0" width="376.0" height="400.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="428.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">WAIST FK LEVELING &amp; VOXEL ICP</text>
+  <text x="428.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">弯腰俯仰角反旋与点面体素配准</text>
+  <rect x="818.0" y="86.0" width="346.0" height="400.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="832.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">POSE POD &amp; MAP ISOLATION</text>
+  <text x="832.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">定位输出与多高度地图隔离</text>
+  <g class="arch-edge" data-from="lidar_raw" data-to="imu_deskew" data-flow="deskew">
+    <path d="M 211.0 234.0 L 211.0 320.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-slate-f0)"/>
+    <rect x="184.2" y="268.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="211.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">&lt;=500ms</text>
+  </g>
+  <g class="arch-edge" data-from="imu_deskew" data-to="waist_fk" data-flow="deskew">
+    <path d="M 364.0 357.0 L 393.0 357.0 Q 398.0 357.0 398.0 352.0 L 398.0 202.0 Q 398.0 197.0 403.0 197.0 L 436.0 197.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-ochre-f0)"/>
+    <rect x="377.2" y="268.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="398.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">去畸变</text>
+  </g>
+  <g class="arch-edge" data-from="waist_fk" data-to="voxel_icp" data-flow="icp">
+    <path d="M 602.0 234.0 L 602.0 320.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-forest-f0)"/>
+    <rect x="576.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="602.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">水平点云</text>
+  </g>
+  <g class="arch-edge" data-from="voxel_icp" data-to="pose_pod" data-flow="icp">
+    <path d="M 768.0 357.0 L 797.0 357.0 Q 802.0 357.0 802.0 352.0 L 802.0 202.0 Q 802.0 197.0 807.0 197.0 L 840.0 197.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-forest-f0)"/>
+    <rect x="769.2" y="268.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="802.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.20m ICP</text>
+  </g>
+  <g class="arch-edge" data-from="pose_pod" data-to="reloc_srv" data-flow="icp">
+    <path d="M 991.0 234.0 L 991.0 320.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-spatial-waist-icp-arrow-terracotta-f0)"/>
+    <rect x="965.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="991.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">地图版本</text>
+  </g>
+  <g class="arch-node-card" data-node-id="lidar_raw" aria-controls="algo-spatial-waist-icp-f0-drawer-lidar_raw">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="lidar_raw" data-flows="all,deskew" aria-expanded="false" aria-label="SalLidarWire 原始点云（6000 点 · &lt;=500 ms 龄）" aria-controls="algo-spatial-waist-icp-f0-drawer-lidar_raw">
+      <rect class="arch-node-box" x="58.0" y="160.0" width="306.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalLidarWire 原始点云</text>
+      <text class="arch-node-role" x="70.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">6000 点 · &lt;=500 ms 龄</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#origins" data-same-page="true" aria-label="前往「SalLidarWire 原始点云」对应章节">
+      <rect x="336.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="348.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="imu_deskew" aria-controls="algo-spatial-waist-icp-f0-drawer-imu_deskew">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="imu_deskew" data-flows="all,deskew" aria-expanded="false" aria-label="ImuDeskewBuffer 去畸变（&lt;=2 ms IMU/TF 插值）" aria-controls="algo-spatial-waist-icp-f0-drawer-imu_deskew">
+      <rect class="arch-node-box" x="58.0" y="320.0" width="306.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ImuDeskewBuffer 去畸变</text>
+      <text class="arch-node-role" x="70.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">&lt;=2 ms IMU/TF 插值</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#flow" data-same-page="true" aria-label="前往「ImuDeskewBuffer 去畸变」对应章节">
+      <rect x="336.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="348.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="waist_fk" aria-controls="algo-spatial-waist-icp-f0-drawer-waist_fk">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="waist_fk" data-flows="all,deskew,icp" aria-expanded="false" aria-label="compensate_waist_for_livox（弯腰齐次水平还原）" aria-controls="algo-spatial-waist-icp-f0-drawer-waist_fk">
+      <rect class="arch-node-box" x="436.0" y="160.0" width="332.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">compensate_waist_for_livox</text>
+      <text class="arch-node-role" x="448.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">弯腰齐次水平还原</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true" aria-label="前往「compensate_waist_for_livox」对应章节">
+      <rect x="740.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="752.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="voxel_icp" aria-controls="algo-spatial-waist-icp-f0-drawer-voxel_icp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="voxel_icp" data-flows="all,icp" aria-expanded="false" aria-label="VoxelIcpLocalizer（0.20 m 体素配准）" aria-controls="algo-spatial-waist-icp-f0-drawer-voxel_icp">
+      <rect class="arch-node-box" x="436.0" y="320.0" width="332.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">VoxelIcpLocalizer</text>
+      <text class="arch-node-role" x="448.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">0.20 m 体素配准</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true" aria-label="前往「VoxelIcpLocalizer」对应章节">
+      <rect x="740.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="752.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="pose_pod" aria-controls="algo-spatial-waist-icp-f0-drawer-pose_pod">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="pose_pod" data-flows="all,icp" aria-expanded="false" aria-label="SpatialPosePod 输出（tracking 0..100 + 净距）" aria-controls="algo-spatial-waist-icp-f0-drawer-pose_pod">
+      <rect class="arch-node-box" x="840.0" y="160.0" width="302.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SpatialPosePod 输出</text>
+      <text class="arch-node-role" x="852.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">tracking 0..100 + 净距</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#contracts" data-same-page="true" aria-label="前往「SpatialPosePod 输出」对应章节">
+      <rect x="1114.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="reloc_srv" aria-controls="algo-spatial-waist-icp-f0-drawer-reloc_srv">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="reloc_srv" data-flows="all,icp" aria-expanded="false" aria-label="地图版本隔离与重定位（apron != cabin 隔离）" aria-controls="algo-spatial-waist-icp-f0-drawer-reloc_srv">
+      <rect class="arch-node-box" x="840.0" y="320.0" width="302.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">地图版本隔离与重定位</text>
+      <text class="arch-node-role" x="852.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">apron != cabin 隔离</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#evidence" data-same-page="true" aria-label="前往「地图版本隔离与重定位」对应章节">
+      <rect x="1114.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">C++20 去畸变接入</text>
+  <rect x="210.3" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="232.3" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Python 腰部 FK 水平还原</text>
+  <rect x="376.7" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="398.7" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">C++20 VoxelICP 与状态槽</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">双足前倾弯腰 30° 操作时，腰部水平还原可防止扫描地面投影抬升导致定位跳变</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 02A · WAIST-COMPENSATED LIDAR &amp; VOXEL ICP</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">动态腰部 FK 水平还原与 VoxelIcpLocalizer 10 Hz 定位流</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">compensate_waist_for_livox · 0.20 m 体素 · &lt;=2 ms TF</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>空间定位与分层导航在全栈算法中的位置</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="deskew" aria-pressed="false">去畸变与弯腰水平还原</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="icp" aria-pressed="false">VoxelICP 定位与地图隔离</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>腰部运动学外参补偿与体素 ICP
+定位功能流</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-spatial-waist-icp.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-spatial-waist-icp-f0-drawer-lidar_raw" class="diagram-drawer-panel" data-node-drawer="lidar_raw" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SalLidarWire 原始点云</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 Ingress · 传感输入 · 10 Hz 零拷贝</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SalLidarWire 原始点云」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">获取未经任何坐标倾斜修正的雷达本体三维扫描帧。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>定长共享内存输入</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/sal_wire.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>接收 96068 B SalLidarWire，核验 sim_time_ns 与 epoch 一致性</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-spatial-waist-icp-f0-drawer-imu_deskew" class="diagram-drawer-panel" data-node-drawer="imu_deskew" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ImuDeskewBuffer 去畸变</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 C++20 · 运动去畸变 · 按点时间戳插值</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ImuDeskewBuffer 去畸变」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把运动拖尾点云校正到统一参考帧时刻。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 环形时序插值缓冲</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/control/imu_deskew_buffer.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>依据 IMU 旋转积分消除单帧扫描周期内的机器人行进与转向畸变</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-spatial-waist-icp-f0-drawer-waist_fk" class="diagram-drawer-panel" data-node-drawer="waist_fk" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">compensate_waist_for_livox</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 Python · 腰部补偿 · 10 Hz 齐次变换</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「compensate_waist_for_livox」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">解决双足操作弯腰 30° 时地面雷达点云上翘或下扎导致定位飞跳的根因。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV Python 领域几何算子</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/spatial_runtime/domain/body_frame.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>读取腰部 pitch/roll 实测角正向运动学，将倾斜点云反旋至水平底座平面</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-spatial-waist-icp-f0-drawer-voxel_icp" class="diagram-drawer-panel" data-node-drawer="voxel_icp" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">VoxelIcpLocalizer</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 C++20 · 点云匹配 · 10 Hz · C++20 核</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「VoxelIcpLocalizer」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">高速收敛输出全局 6-DOF 位姿并实时评估匹配置信度。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 原生 C++20 定位核</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/lightning_loc/voxel_icp_localizer.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>在 0.20 m 体素栅格内执行点面 ICP，抗动态人员/工装局部遮挡</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-spatial-waist-icp-f0-drawer-pose_pod" class="diagram-drawer-panel" data-node-drawer="pose_pod" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SpatialPosePod 输出</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 -&gt; P2/P3 · 状态槽 · 写入 spatial_pose.shm</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SpatialPosePod 输出」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为下游规划与机身补偿提供高可信、低延迟的局部位姿与净空参照。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>SeqLock 无锁状态发布</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/spatial_runtime/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>同时输出 tracking_score、周边最近障碍净距与 map_version 标识</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-spatial-waist-icp-f0-drawer-reloc_srv" class="diagram-drawer-panel" data-node-drawer="reloc_srv" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">地图版本隔离与重定位</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 Spatial · 地图切换 · 作业面切换边沿</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「地图版本隔离与重定位」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保证跨高度或跨工区转移时检索与定位不会发生坐标错配。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>多地图版本隔离键</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/spatial_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>严格区分 map_apron、map_cabin 与产线地图版本，重定位时清除旧地图先验</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-nav-relay-pipeline">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2
-id="一空间定位与动态腰部运动学补偿spatial_runtime">一、空间定位与动态腰部运动学补偿（<code>spatial_runtime</code>）</h2>
-<h3 id="c20-体素-icp-定位器与激光接入新鲜度">1.1 C++20 体素 ICP
-定位器与激光接入新鲜度</h3>
-<ul>
-<li><strong>体素 ICP
-本地定位（<code>VoxelIcpLocalizer</code>）</strong>：定义于
-<code>src/robot_app/algorithms/lightning_loc/voxel_icp_localizer.hpp</code>，将实时接入的
-<code>SalLidarWire</code> 点云（单帧上限 <code>6000</code> 点）按
-<code>0.20 m</code> 体素网格降采样并与先验地图匹配，连续输出局部
-<code>tracking_quality</code>（<code>0</code> 至
-<code>100</code>）以及最近障碍安全净距
-<code>min_lidar_clearance_m</code>。</li>
-<li><strong>双路时间同步缓存（<code>FrameStore</code>）</strong>：实现于
-<code>src/robot_app/modules/spatial_runtime/infrastructure/ros/lightning.py</code>，强制激光帧最大允许年龄
-<code>max_age_ns = 500 ms</code>，激光扫描时刻与 IMU / 关节 TF
-插值时间差上限 <code>&lt;= 2 ms</code>；一旦发生时钟回退或
-<code>epoch</code> 跳变立即清空历史帧并重定位。</li>
-<li><strong>局部基准输出（<code>body_frame.py</code>）</strong>：通过
-<code>src/robot_app/modules/spatial_runtime/domain/body_frame.py</code>
-向导航与操作模块统一暴露 <code>localized_base</code> 标准位姿框架。</li>
-</ul>
-<h3 id="弯腰倾斜工况下的激光外参实时补偿">1.2
-弯腰倾斜工况下的激光外参实时补偿</h3>
-<p>由于 3D LiDAR
-安装在受腰部俯仰/横滚/偏航关节驱动的躯干上，作业姿态变化会导致扫描平面大幅偏离地平面。<code>SalLidarIngress</code>（<code>src/robot_app/modules/spatial_runtime/infrastructure/ros/sal_lidar.py</code>）引入
-<code>compensate_waist_for_livox</code> 补偿环节：</p>
+<h2 id="principles">03 · 核心原理与机制推演</h2>
+<h3 id="腰部运动学外参投影与体素-icp-定位spatial_runtime">3.1
+腰部运动学外参投影与体素 ICP 定位（<code>spatial_runtime</code>）</h3>
+<p>为使下游常规水平体素定位无需感知躯干姿态变化，<code>SalLidarIngress</code>（<code>src/robot_app/modules/spatial_runtime/infrastructure/ros/sal_lidar.py</code>）在接入
+<code>SalLidarWire</code>（20 字节点云布局经
+<code>unpack_sal_pointcloud2</code>
+校验有限值、<code>line &lt; 40</code> 与单调偏移时间）后，立即调用
+<code>compensate_waist_for_livox</code>
+执行实时齐次坐标水平还原。令名义零腰角时底座至雷达的固定外参为
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>T</mi><mrow><mtext mathvariant="normal">base</mtext><mo>→</mo><mtext mathvariant="normal">lidar</mtext></mrow><mtext mathvariant="normal">nom</mtext></msubsup><annotation encoding="application/x-tex">T_{\text{base}\to\text{lidar}}^{\text{nom}}</annotation></semantics></math>，当前采样时刻
+<code>stamp_ns</code> 通过实测腰部编码器正解得到的底座至躯干父系变换为
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>T</mi><mrow><mtext mathvariant="normal">base</mtext><mo>→</mo><mtext mathvariant="normal">parent</mtext></mrow><mtext mathvariant="normal">live</mtext></msubsup><mo stretchy="false" form="prefix">(</mo><msub><mi>q</mi><mtext mathvariant="normal">waist</mtext></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">T_{\text{base}\to\text{parent}}^{\text{live}}(q_{\text{waist}})</annotation></semantics></math>，则瞬时偏移修正矩阵与点云水平投影方程为：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi mathvariant="normal">Δ</mi></msub><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>T</mi><mrow><mtext mathvariant="normal">base</mtext><mo>→</mo><mtext mathvariant="normal">lidar</mtext></mrow><mtext mathvariant="normal">nom</mtext></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msubsup><mi>T</mi><mrow><mtext mathvariant="normal">base</mtext><mo>→</mo><mtext mathvariant="normal">parent</mtext></mrow><mtext mathvariant="normal">live</mtext></msubsup><mo stretchy="false" form="prefix">(</mo><msub><mi>q</mi><mtext mathvariant="normal">waist</mtext></msub><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>T</mi><mrow><mtext mathvariant="normal">head</mtext><mo>→</mo><mtext mathvariant="normal">lidar</mtext></mrow></msub><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>p</mi><mtext mathvariant="normal">nom</mtext></msub><mo>=</mo><msub><mi>R</mi><mi mathvariant="normal">Δ</mi></msub><mspace width="0.167em"></mspace><msub><mi>p</mi><mtext mathvariant="normal">raw</mtext></msub><mo>+</mo><msub><mi>t</mi><mi mathvariant="normal">Δ</mi></msub></mrow><annotation encoding="application/x-tex">T_{\Delta} = \left(T_{\text{base}\to\text{lidar}}^{\text{nom}}\right)^{-1} T_{\text{base}\to\text{parent}}^{\text{live}}(q_{\text{waist}})\, T_{\text{head}\to\text{lidar}}, \qquad p_{\text{nom}} = R_{\Delta}\, p_{\text{raw}} + t_{\Delta}</annotation></semantics></math></p>
+<p>投影后的水平点云送入
+<code>FrameStore</code>（<code>src/robot_app/modules/spatial_runtime/infrastructure/ros/lightning.py</code>）强制核验最大年龄
+<code>max_age_ns = 500 ms</code> 与 <code>IMU</code> / <code>TF</code>
+插值时差 <code>&lt;= 2 ms</code>（一旦时钟倒退或 <code>epoch</code>
+跳变立刻清空历史缓存触发重定位），随后进入 <code>C++20</code>
+<code>VoxelIcpLocalizer</code>（<code>src/robot_app/algorithms/lightning_loc/voxel_icp_localizer.hpp</code>），以
+<code>0.20 m</code> 体素降采样网格匹配先验地图，向
+<code>body_frame.py</code> 暴露标准局部参考系
+<code>localized_base</code>、<code>tracking_quality</code>（<code>0..100</code>）与最近障碍物安全净距
+<code>min_lidar_clearance_m</code>。</p>
+<h3 id="四级接力避障与三层拉出规划管线">3.2
+四级接力避障与三层拉出规划管线</h3>
+<figure class="diagram-figure" data-diagram-id="algo-nav-relay-pipeline" data-fig-uid="algo-nav-relay-pipeline-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-nav-relay-pipeline" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-nav-relay-pipeline-title-f1" aria-describedby="algo-nav-relay-pipeline-desc-f1">
+  <title id="algo-nav-relay-pipeline-title-f1">混合导航三层接力: HybridA* -&gt; MPPI -&gt; box_route -&gt; ResponseSampling</title>
+  <desc id="algo-nav-relay-pipeline-desc-f1">展示长距全局规划、局部采样避障、贴近工位三级拉出脱困与实测朝向绑定平移的接力流程。</desc>
+  <defs>
+    <pattern id="algo-nav-relay-pipeline-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-nav-relay-pipeline-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-nav-relay-pipeline-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="420.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">GLOBAL &amp; LOCAL C++20 KERNEL</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">HybridA* 全局搜索与 MPPI 滚动避障</text>
+  <rect x="604.0" y="86.0" width="560.0" height="420.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">ESCAPE, SAMPLING &amp; CHASSIS</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">box_route 脱困、响应采样与底盘适配</text>
+  <g class="arch-edge" data-from="nav_goal" data-to="hybrid_astar" data-flow="global">
+    <path d="M 290.0 181.0 L 320.0 181.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-ink-f1)"/>
+    <rect x="289.1" y="172.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="305.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">目标</text>
+  </g>
+  <g class="arch-edge" data-from="hybrid_astar" data-to="mppi_local" data-flow="global">
+    <path d="M 436.0 216.0 L 436.0 261.0 Q 436.0 266.0 431.0 266.0 L 320.0 266.0 Q 315.0 266.0 315.0 271.0 L 315.0 310.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-slate-f1)"/>
+    <rect x="349.7" y="257.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="375.5" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">引导路标</text>
+  </g>
+  <g class="arch-edge" data-from="mppi_local" data-to="box_route" data-flow="local">
+    <path d="M 460.0 347.0 L 585.0 347.0 Q 590.0 347.0 590.0 342.0 L 590.0 186.0 Q 590.0 181.0 595.0 181.0 L 626.0 181.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-ochre-f1)"/>
+    <rect x="564.2" y="255.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="590.0" y="267.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">工位脱离</text>
+  </g>
+  <g class="arch-edge" data-from="box_route" data-to="resp_samp" data-flow="local">
+    <path d="M 872.0 181.0 L 896.0 181.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-ochre-f1)"/>
+    <rect x="858.2" y="172.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="884.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">实测朝向</text>
+  </g>
+  <g class="arch-edge" data-from="resp_samp" data-to="planar_adj" data-flow="local">
+    <path d="M 1019.0 216.0 L 1019.0 310.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-forest-f1)"/>
+    <rect x="989.2" y="254.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="1019.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.10 m/s</text>
+  </g>
+  <g class="arch-edge" data-from="chassis_adapt" data-to="mppi_local" data-flow="kinematics">
+    <path d="M 626.0 362.0 L 460.0 362.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-nav-relay-pipeline-arrow-ink-f1)"/>
+    <rect x="522.1" y="353.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="543.0" y="365.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">vy==0</text>
+  </g>
+  <g class="arch-edge" data-from="chassis_adapt" data-to="planar_adj" data-flow="kinematics">
+    <path d="M 872.0 347.0 L 896.0 347.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-nav-relay-pipeline-arrow-ink-f1)"/>
+    <rect x="868.1" y="338.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="884.0" y="350.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">投影</text>
+  </g>
+  <g class="arch-node-card" data-node-id="nav_goal" aria-controls="algo-nav-relay-pipeline-f1-drawer-nav_goal">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="nav_goal" data-flows="all,global" aria-expanded="false" aria-label="NavigationGoalV2 接入（登记站位 / 自由后退）" aria-controls="algo-nav-relay-pipeline-f1-drawer-nav_goal">
+      <rect class="arch-node-box" x="60.0" y="146.0" width="230.0" height="70.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">NavigationGoalV2 接入</text>
+      <text class="arch-node-role" x="72.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">登记站位 / 自由后退</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#flow" data-same-page="true" aria-label="前往「NavigationGoalV2 接入」对应章节">
+      <rect x="262.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="274.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="hybrid_astar" aria-controls="algo-nav-relay-pipeline-f1-drawer-hybrid_astar">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="hybrid_astar" data-flows="all,global" aria-expanded="false" aria-label="HybridAStar 全局搜索（0.35 m 步 · 15000 节点）" aria-controls="algo-nav-relay-pipeline-f1-drawer-hybrid_astar">
+      <rect class="arch-node-box" x="320.0" y="146.0" width="232.0" height="70.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="332.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">HybridAStar 全局搜索</text>
+      <text class="arch-node-role" x="332.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">0.35 m 步 · 15000 节点</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true" aria-label="前往「HybridAStar 全局搜索」对应章节">
+      <rect x="524.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mppi_local" aria-controls="algo-nav-relay-pipeline-f1-drawer-mppi_local">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mppi_local" data-flows="all,global,kinematics,local" aria-expanded="false" aria-label="MppiLocalPlanner（128 采样 · 0.45 m ESDF）" aria-controls="algo-nav-relay-pipeline-f1-drawer-mppi_local">
+      <rect class="arch-node-box" x="170.0" y="310.0" width="290.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="182.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">MppiLocalPlanner</text>
+      <text class="arch-node-role" x="182.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">128 采样 · 0.45 m ESDF</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true" aria-label="前往「MppiLocalPlanner」对应章节">
+      <rect x="432.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="444.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="box_route" aria-controls="algo-nav-relay-pipeline-f1-drawer-box_route">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="box_route" data-flows="all,local" aria-expanded="false" aria-label="box_route 三级拉出（工位贴边脱困序列）" aria-controls="algo-nav-relay-pipeline-f1-drawer-box_route">
+      <rect class="arch-node-box" x="626.0" y="146.0" width="246.0" height="70.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">box_route 三级拉出</text>
+      <text class="arch-node-role" x="638.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">工位贴边脱困序列</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true" aria-label="前往「box_route 三级拉出」对应章节">
+      <rect x="844.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="856.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="resp_samp" aria-controls="algo-nav-relay-pipeline-f1-drawer-resp_samp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="resp_samp" data-flows="all,local" aria-expanded="false" aria-label="ResponseSampling 平移（translation_only 定向调节）" aria-controls="algo-nav-relay-pipeline-f1-drawer-resp_samp">
+      <rect class="arch-node-box" x="896.0" y="146.0" width="246.0" height="70.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ResponseSampling 平移</text>
+      <text class="arch-node-role" x="908.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">translation_only 定向调节</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true" aria-label="前往「ResponseSampling 平移」对应章节">
+      <rect x="1114.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1126.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="chassis_adapt" aria-controls="algo-nav-relay-pipeline-f1-drawer-chassis_adapt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="chassis_adapt" data-flows="all,kinematics" aria-expanded="false" aria-label="三类底盘运动学统一（全向 / 差速 / 阿克曼）" aria-controls="algo-nav-relay-pipeline-f1-drawer-chassis_adapt">
+      <rect class="arch-node-box" x="626.0" y="310.0" width="246.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">三类底盘运动学统一</text>
+      <text class="arch-node-role" x="638.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">全向 / 差速 / 阿克曼</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#contracts" data-same-page="true" aria-label="前往「三类底盘运动学统一」对应章节">
+      <rect x="844.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="856.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="planar_adj" aria-controls="algo-nav-relay-pipeline-f1-drawer-planar_adj">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="planar_adj" data-flows="all,kinematics,local" aria-expanded="false" aria-label="PlanarAdjustment 精停（0.10 m/s · 交接终端）" aria-controls="algo-nav-relay-pipeline-f1-drawer-planar_adj">
+      <rect class="arch-node-box" x="896.0" y="310.0" width="246.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">PlanarAdjustment 精停</text>
+      <text class="arch-node-role" x="908.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">0.10 m/s · 交接终端</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#evidence" data-same-page="true" aria-label="前往「PlanarAdjustment 精停」对应章节">
+      <rect x="1114.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">C++20 HybridA* 全局核</text>
+  <rect x="239.5" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="261.5" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Python box_route &amp; 响应采样</text>
+  <rect x="431.5" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="453.5" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">MPPI 避障与终端精停交接</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">导航自主确认停稳即可交接，不再读取 SIM 全局真值复判 5°</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 02B · RELAY NAVIGATION PIPELINE</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">混合导航三层接力: HybridA* -&gt; MPPI -&gt; box_route -&gt; ResponseSampling</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">C++20 pct_nav + Python 局部控制 · 全向/差速/阿克曼统一</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="global" aria-pressed="false">全局与局部接力规划</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="local" aria-pressed="false">工位脱困与受控平移</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="kinematics" aria-pressed="false">多构型底盘运动学统一</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>HybridA*、MPPI、BoxRoute 与
+ResponseSampling 接力规划管线</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-nav-relay-pipeline.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-nav-relay-pipeline-f1-drawer-nav_goal" class="diagram-drawer-panel" data-node-drawer="nav_goal" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">NavigationGoalV2 接入</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 Nav · 目标绑定 · 任务步驱动</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「NavigationGoalV2 接入」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">区分全局赶路、工位前调整与操作后撤离三类导航上下文。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>目标语义解析</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>有登记站位时绑定完整站位目标；自由后退保持动作开始实测朝向</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-relay-pipeline-f1-drawer-hybrid_astar" class="diagram-drawer-panel" data-node-drawer="hybrid_astar" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">HybridAStar 全局搜索</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 C++20 · 全局搜索 · 路径初始化/重规划</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「HybridAStar 全局搜索」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">跨越长距离机坪或产线走廊生成运动学可行的粗路径。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 原生 C++20 规划核</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/pct_nav/hybrid_astar.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>1.2 m 最小转弯半径、15000 节点预算，支持狭窄工位倒车出库</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-relay-pipeline-f1-drawer-mppi_local" class="diagram-drawer-panel" data-node-drawer="mppi_local" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">MppiLocalPlanner</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 C++20 · 局部采样 · 20 Hz 滚动优化</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「MppiLocalPlanner」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">实时绕过临时障碍物并严格服从走廊围栏边界约束。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 原生 C++20 采样规划</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/pct_nav/mppi_local_planner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>64/128 并发采样、15×0.1 s 时域、0.45 m ESDF 代价场避障</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-relay-pipeline-f1-drawer-box_route" class="diagram-drawer-panel" data-node-drawer="box_route" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">box_route 三级拉出</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 Python · 脱困规划 · 近距工位脱离</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「box_route 三级拉出」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">解决操作完成后贴近工装桌面直接转向极易扫碰机身的问题。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV Python 领域接力规划</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/adjustment_route.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>先沿安全法向退离工位包络箱，再交接 MPPI 与全局路径转向离开</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-relay-pipeline-f1-drawer-resp_samp" class="diagram-drawer-panel" data-node-drawer="resp_samp" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ResponseSampling 平移</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 Python · 响应采样 · 20 Hz · 0.20 m 后退</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ResponseSampling 平移」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">基于底盘真实响应历史预测候选速度轨迹，实现稳健横移与后退。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>实测朝向绑定采样</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/sampling_candidates.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>按动作开始实测朝向绑定位移，禁止交接时再读 SIM 全局真值复判 5°</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-relay-pipeline-f1-drawer-chassis_adapt" class="diagram-drawer-panel" data-node-drawer="chassis_adapt" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">三类底盘运动学统一</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 Python · 运动学适配 · 按 EmbodimentSpec 绑定</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「三类底盘运动学统一」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">使同一接力导航管道同时服务双足人形与 C919 特种无人车。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>运动学投影策略</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/motion_model.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>保证差速与阿克曼车辆严格满足 vy == 0 非完整约束</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-relay-pipeline-f1-drawer-planar_adj" class="diagram-drawer-panel" data-node-drawer="planar_adj" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">PlanarAdjustment 精停</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 Python · 精停准备 · 进入终端伺服前</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「PlanarAdjustment 精停」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">完成大尺度导航向毫米级终端视觉伺服的无冲击过渡。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>低速平动收敛</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/adjust_base.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>以 &lt;=0.10 m/s 消除中距残差后平滑移交 ConvergentTerminalServo</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-nav-terminal-servo">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<p>当接收到远距移动或工位靠泊请求时，<code>navigation_runtime</code>
+按从全局拓扑到局部动力学约束的顺序串联五级算子：</p>
 <ol type="1">
-<li>根据同源时间戳的实测腰部关节角，调用
-<code>base_to_parent_from_robot</code>
-正向运动学推算激光雷达相对名义零腰角基准系 <code>lidar_frame</code>
-的实时旋转与平移偏差。</li>
-<li>在进入体素 ICP
-或占据栅格构建前，将倾斜点云投影回名义水平零腰姿坐标系。</li>
-<li>下游固定外参 SLAM
-算法即可无感知复用常规水平点云流，避免弯腰抓取或抬头观察时地图垂直撕裂或定位漂移。</li>
+<li><strong>全局运动学搜索（<code>HybridAStar</code>）</strong>：位于
+<code>src/robot_app/algorithms/pct_nav/hybrid_astar.hpp</code>，以步长
+<code>0.35 m</code>、最小转弯半径 <code>1.2 m</code>、机身包络半径
+<code>0.35 m</code>（允许倒车，最大扩展 <code>15000</code>
+节点）生成初始无碰撞全局参考路径。</li>
+<li><strong>多构型 ESDF
+滚动优化（<code>MppiLocalPlanner</code>）</strong>：位于
+<code>src/robot_app/algorithms/pct_nav/mppi_local_planner.hpp</code>，基于最大
+<code>250k</code>
+栅格二维欧氏符号距离场（<code>EsdfMap2D</code>），并行采样
+<code>64</code> 条轨迹（上限 <code>128</code> 条）前瞻 <code>15</code>
+步 × <code>0.1 s</code>，均匀适配全向 <code>kHolonomic</code>、差速
+<code>kDifferential</code> 与阿克曼 <code>kAckermann</code>
+三种底盘，维持 <code>safety_clearance_m = 0.45 m</code> 安全净距。</li>
+<li><strong>工位框线对接与三级拉出回退（<code>box_route</code> /
+<code>plan_box</code>）</strong>：位于
+<code>src/robot_app/modules/navigation_runtime/infrastructure/geometry/box_route.py</code>，在
+<code>0.05 m</code> 分辨率旋转膨胀占据栅格上执行两轮求解：首轮（Pass
+<code>0</code>）优先尝试原地单向调头直连；若起止端点贴靠工台导致旋转净空受阻，则自动激活三级靠泊拉出策略（依序尝试
+<code>goal_inplace</code>、<code>start_inplace</code>、<code>both_pull</code>），在贴靠端先沿自由网格垂直拉出后再旋转入道。</li>
+<li><strong>响应模型前向模拟与完整几何准入（<code>ResponseSampling</code>）</strong>：位于
+<code>src/robot_app/modules/navigation_runtime/infrastructure/planners/response_sampling.py</code>，针对航向、平移与混合候选控制序列，结合运动响应模型（含
+<code>body_yaw_offset</code> 与制动斜率边界）开展滚动预测，并强制在
+<code>hold_step = 0.02 s</code> 粒度上附加 <code>0.5 s</code>
+保持加制动尾部扫掠检验（<code>holding</code>
+rollout），只有全程满足完整扫掠几何安全域的候选才被准入；同时
+<code>navigation_runtime/domain.cpp</code> 在 <code>C++20</code> 侧通过
+<code>guard_corridor_twist</code> 锁死走廊横向包络不越界。</li>
+<li><strong>粗精平动衔接（<code>PlanarAdjustment</code>）</strong>：位于
+<code>src/robot_app/algorithms/pct_nav/planar_adjustment.hpp</code>，提供
+<code>0.10 m/s</code> 低速 <code>translation_only</code>
+平调、沿当前朝向 <code>0.20 m</code>
+倒退脱离（<code>make_current_heading_retreat_target</code>）及
+<code>5 cm / 10°</code> 附带 <code>0.10 s</code> 停稳验证，并激活前向
+<code>25°</code> 接近锥掩蔽。</li>
 </ol>
-<h2
-id="二多层接力规划管线hybridastarmppiboxroute-与-responsesampling">二、多层接力规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
-与 <code>ResponseSampling</code></h2>
+<h3 id="零先验同心三态伺服与割线偏置学习convergentterminalservo">3.3
+零先验同心三态伺服与割线偏置学习（<code>ConvergentTerminalServo</code>）</h3>
+<figure class="diagram-figure" data-diagram-id="algo-nav-terminal-servo" data-fig-uid="algo-nav-terminal-servo-f2">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-nav-terminal-servo" viewBox="0 0 1200 550" width="1200" height="550" role="group" aria-labelledby="algo-nav-terminal-servo-title-f2" aria-describedby="algo-nav-terminal-servo-desc-f2">
+  <title id="algo-nav-terminal-servo-title-f2">ConvergentTerminalServo 同心三态滞回区与零先验割线偏置估计</title>
+  <desc id="algo-nav-terminal-servo-desc-f2">用几何同心三态示意图取代大段推演文字，阐明施密特滞回消抖、零先验割线偏置估计及停滞看门狗。</desc>
+  <defs>
+    <pattern id="algo-nav-terminal-servo-dot-grid-f2" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-nav-terminal-servo-arrow-ink-f2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-terracotta-f2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-forest-f2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-slate-f2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-ochre-f2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-mute-f2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="550" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="550" fill="url(#algo-nav-terminal-servo-dot-grid-f2)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="548.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="400.0" height="412.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONCENTRIC THREE-STATE HYSTERESIS</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">同心三态滞回收敛几何区</text>
+  <rect x="464.0" y="86.0" width="700.0" height="412.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="478.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">SECANT BIAS &amp; COMMAND SHAPING</text>
+  <text x="478.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">零先验割线偏置估计与整形控制律</text>
+  <circle cx="228.0" cy="294.0" r="132.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.3" stroke-dasharray="5 4"/>
+  <circle cx="228.0" cy="294.0" r="84.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.3"/>
+  <circle cx="228.0" cy="294.0" r="40.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.3"/>
+  <g class="arch-edge" data-from="zone_approach" data-to="zone_idle" data-flow="zones">
+    <path d="M 392.0 409.0 L 415.0 409.0 Q 420.0 409.0 420.0 404.0 L 420.0 154.0 Q 420.0 149.0 415.0 149.0 L 392.0 149.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-forest-f2)"/>
+    <rect x="394.2" y="270.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="420.0" y="282.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">滞回收敛</text>
+  </g>
+  <g class="arch-edge" data-from="zone_idle" data-to="zone_settle" data-flow="zones">
+    <path d="M 392.0 165.0 L 494.0 165.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-forest-f2)"/>
+    <rect x="417.2" y="156.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="443.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">驻留判稳</text>
+  </g>
+  <g class="arch-edge" data-from="secant_bias" data-to="vel_floor" data-flow="estimator">
+    <path d="M 982.0 222.0 L 982.0 320.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-slate-f2)"/>
+    <rect x="951.2" y="262.0" width="61.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="982.0" y="274.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">b_xy 偏置</text>
+  </g>
+  <g class="arch-edge" data-from="vel_floor" data-to="zone_approach" data-flow="estimator">
+    <path d="M 830.0 357.0 L 451.0 357.0 Q 446.0 357.0 446.0 362.0 L 446.0 404.0 Q 446.0 409.0 441.0 409.0 L 392.0 409.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-ochre-f2)"/>
+    <rect x="612.2" y="348.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="638.0" y="360.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">补偿下限</text>
+  </g>
+  <g class="arch-edge" data-from="rate_watch" data-to="zone_settle" data-flow="estimator">
+    <path d="M 644.0 320.0 L 644.0 222.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-nav-terminal-servo-arrow-terracotta-f2)"/>
+    <rect x="623.2" y="262.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="644.0" y="274.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">防卡滞</text>
+  </g>
+  <g class="arch-node-card" data-node-id="zone_idle" aria-controls="algo-nav-terminal-servo-f2-drawer-zone_idle">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zone_idle" data-flows="all,zones" aria-expanded="false" aria-label="IDLE_IN_BAND (内环死区)（滞回保持 · 防微震）" aria-controls="algo-nav-terminal-servo-f2-drawer-zone_idle">
+      <rect class="arch-node-box" x="76.0" y="118.0" width="316.0" height="62.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="88.0" y="141.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">IDLE_IN_BAND (内环死区)</text>
+      <text class="arch-node-role" x="88.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">滞回保持 · 防微震</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true" aria-label="前往「IDLE_IN_BAND (内环死区)」对应章节">
+      <rect x="364.0" y="122.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="376.0" y="138.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="zone_approach" aria-controls="algo-nav-terminal-servo-f2-drawer-zone_approach">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zone_approach" data-flows="all,estimator,zones" aria-expanded="false" aria-label="APPROACH (中距逼近)（零先验连续收敛）" aria-controls="algo-nav-terminal-servo-f2-drawer-zone_approach">
+      <rect class="arch-node-box" x="76.0" y="378.0" width="316.0" height="62.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="88.0" y="401.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">APPROACH (中距逼近)</text>
+      <text class="arch-node-role" x="88.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">零先验连续收敛</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#flow" data-same-page="true" aria-label="前往「APPROACH (中距逼近)」对应章节">
+      <rect x="364.0" y="382.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="376.0" y="398.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="zone_settle" aria-controls="algo-nav-terminal-servo-f2-drawer-zone_settle">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zone_settle" data-flows="all,estimator,zones" aria-expanded="false" aria-label="SETTLE (终段稳态判停)（到位确认 · 交接锁）" aria-controls="algo-nav-terminal-servo-f2-drawer-zone_settle">
+      <rect class="arch-node-box" x="494.0" y="148.0" width="300.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="506.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SETTLE (终段稳态判停)</text>
+      <text class="arch-node-role" x="506.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">到位确认 · 交接锁</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#evidence" data-same-page="true" aria-label="前往「SETTLE (终段稳态判停)」对应章节">
+      <rect x="766.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="778.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="secant_bias" aria-controls="algo-nav-terminal-servo-f2-drawer-secant_bias">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="secant_bias" data-flows="all,estimator" aria-expanded="false" aria-label="b_xy 割线偏置估计器（在线抵消底盘滑移偏置）" aria-controls="algo-nav-terminal-servo-f2-drawer-secant_bias">
+      <rect class="arch-node-box" x="830.0" y="148.0" width="304.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="842.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">b_xy 割线偏置估计器</text>
+      <text class="arch-node-role" x="842.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">在线抵消底盘滑移偏置</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true" aria-label="前往「b_xy 割线偏置估计器」对应章节">
+      <rect x="1106.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1118.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rate_watch" aria-controls="algo-nav-terminal-servo-f2-drawer-rate_watch">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rate_watch" data-flows="all,estimator" aria-expanded="false" aria-label="ProgressWatch 卡滞监测（收敛速率门控）" aria-controls="algo-nav-terminal-servo-f2-drawer-rate_watch">
+      <rect class="arch-node-box" x="494.0" y="320.0" width="300.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="506.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ProgressWatch 卡滞监测</text>
+      <text class="arch-node-role" x="506.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">收敛速率门控</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#contracts" data-same-page="true" aria-label="前往「ProgressWatch 卡滞监测」对应章节">
+      <rect x="766.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="778.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="vel_floor" aria-controls="algo-nav-terminal-servo-f2-drawer-vel_floor">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="vel_floor" data-flows="all,estimator" aria-expanded="false" aria-label="CommandFloor 死区补偿（静摩擦突破下限）" aria-controls="algo-nav-terminal-servo-f2-drawer-vel_floor">
+      <rect class="arch-node-box" x="830.0" y="320.0" width="304.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="842.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CommandFloor 死区补偿</text>
+      <text class="arch-node-role" x="842.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">静摩擦突破下限</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true" aria-label="前往「CommandFloor 死区补偿」对应章节">
+      <rect x="1106.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1118.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <circle cx="228.0" cy="294.0" r="4.5" fill="#16181D"/>
+  <text x="228.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.5" font-weight="700" fill="#16181D" text-anchor="middle">Target (0, 0)</text>
+  <line x1="36.0" y1="506.0" x2="1164.0" y2="506.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="528.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="104.0" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">内带滞回与 SETTLE 判停</text>
+  <rect x="246.8" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="268.8" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">中距逼近与速度下限</text>
+  <rect x="384.2" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="406.2" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">b_xy 割线滑移估计器</text>
+  <rect x="527.2" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="549.2" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ProgressWatch 收敛监测</text>
+  <text x="1164.0" y="527.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">无需离线摩擦标定，割线法利用连续两步实测位移差在线消除底盘侧滑偏置</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 02C · CONVERGENT TERMINAL SERVO</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">ConvergentTerminalServo 同心三态滞回区与零先验割线偏置估计</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">IDLE_IN_BAND / APPROACH / SETTLE · b_xy 割线估计</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="zones" aria-pressed="false">同心三态滞回状态机</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="estimator" aria-pressed="false">零先验 b_xy 割线偏置估计</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>ConvergentTerminalServo
+同心三态滞回区与零先验割线偏置估计</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-nav-terminal-servo.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-nav-terminal-servo-f2-drawer-zone_idle" class="diagram-drawer-panel" data-node-drawer="zone_idle" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">IDLE_IN_BAND (内环死区)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Terminal Servo · 状态 1 · 内带收敛稳态</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「IDLE_IN_BAND (内环死区)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">消除双足机器人在目标点附近反复踏步却始终无法停稳的抖动死循环。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>双阈值施密特滞回</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>误差落入内带后停止高频微调脚步，仅当外逸超过滞回外沿时才重激活</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-terminal-servo-f2-drawer-zone_approach" class="diagram-drawer-panel" data-node-drawer="zone_approach" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">APPROACH (中距逼近)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Terminal Servo · 状态 2 · 20 Hz 闭环控制</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「APPROACH (中距逼近)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">处理最后半米级的相对位姿消除并持续向偏置估计器喂入步进观测。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>前馈 + 比例阻尼逼近</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/approach_target.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>在不依赖先验站位地图的条件下直接向相对基准误差零点收敛</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-terminal-servo-f2-drawer-zone_settle" class="diagram-drawer-panel" data-node-drawer="zone_settle" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SETTLE (终段稳态判停)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Terminal Servo · 状态 3 · 连续驻留确认</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SETTLE (终段稳态判停)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确认双足静止稳定后向 MotionCoordinator 归还并释放运动写租约。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>驻留窗判停机</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/stop_verification.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>导航自主确认停稳即完成；上层交接不再读取 SIM 全局真值复判 5°</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-terminal-servo-f2-drawer-secant_bias" class="diagram-drawer-panel" data-node-drawer="secant_bias" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">b_xy 割线偏置估计器</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Terminal Servo · 估计律 · 每步差分更新</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「b_xy 割线偏置估计器」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">无需离线标定摩擦系数即可自动吸收足底或轮式侧滑稳态误差。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>离散割线法在线辨识</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>利用相邻步名义指令位移与实测位移差值迭代更新稳态补偿偏置 b_xy</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-terminal-servo-f2-drawer-rate_watch" class="diagram-drawer-panel" data-node-drawer="rate_watch" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ProgressWatch 卡滞监测</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Terminal Servo · 保护 · 每步净收敛检查</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ProgressWatch 卡滞监测」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在物理受阻无法继续逼近时及时中止并返回明确失败原因码。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>收敛停滞看门狗</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/progress_watch.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>检测持续未缩短误差或反向漂移，防止顶住障碍物无限输出推力</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-nav-terminal-servo-f2-drawer-vel_floor" class="diagram-drawer-panel" data-node-drawer="vel_floor" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">CommandFloor 死区补偿</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Terminal Servo · 整形 · 指令下发前整形</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「CommandFloor 死区补偿」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保极小残差阶段指令依然能有效驱动双足迈出精细步态。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>非零最小驱动下限</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/command_floor.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>在非 IDLE_IN_BAND 态对微小控制量施加上下限整形，克服步态启动死区</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-nav-relay-pipeline">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<p>针对终端最后 <code>0.3 m</code>
+的未知稳态侧滑，<code>ConvergentTerminalServo</code>（<code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code>）通过同心滞回环与在线割线偏置估计实现平滑无振停靠：</p>
+<ol type="1">
+<li><strong>同心三态滞回切换（<code>IDLE_IN_BAND</code> /
+<code>APPROACH</code> /
+<code>SETTLE</code>）</strong>：初始停于公开验收圆
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mtext mathvariant="normal">accept</mtext></msub><annotation encoding="application/x-tex">r_{\text{accept}}</annotation></semantics></math>
+内且未踏步时维持 <code>IDLE_IN_BAND</code>
+零速保持；一旦启动靠近（<code>APPROACH</code>），内部瞄准圆收紧至核心带半径：</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mtext mathvariant="normal">core</mtext></msub><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.015</mn><mo>,</mo><mspace width="0.278em"></mspace><mn>0.30</mn><mspace width="0.167em"></mspace><msub><mi>r</mi><mtext mathvariant="normal">accept</mtext></msub><mo>,</mo><mspace width="0.278em"></mspace><msub><mi>r</mi><mtext mathvariant="normal">entry_cap</mtext></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>r</mi><mtext mathvariant="normal">entry_cap</mtext></msub><mo>=</mo><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.001</mn><mo>,</mo><mspace width="0.278em"></mspace><msub><mi>r</mi><mtext mathvariant="normal">accept</mtext></msub><mo>−</mo><msub><mi>r</mi><mtext mathvariant="normal">reserve</mtext></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">R_{\text{core}} = \min\!\left(0.015,\; 0.30\,r_{\text{accept}},\; r_{\text{entry\_cap}}\right), \qquad r_{\text{entry\_cap}} = \max\!\left(0.001,\; r_{\text{accept}} - r_{\text{reserve}}\right)</annotation></semantics></math></p>
+<p>进入核心带并航向收敛后切入 <code>SETTLE</code>
+等待机身真正静止；仅当外部扰动将机身推离超过
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">max</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0.20</mn><mo>,</mo><mspace width="0.167em"></mspace><msub><mi>r</mi><mtext mathvariant="normal">accept</mtext></msub><mo>+</mo><mn>0.12</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\max(0.20,\, r_{\text{accept}} + 0.12)</annotation></semantics></math>
+时才退出 <code>SETTLE</code> 重新逼近，彻底消除在
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mtext mathvariant="normal">accept</mtext></msub><annotation encoding="application/x-tex">r_{\text{accept}}</annotation></semantics></math>
+边缘反复踏步的抖动。</p>
+<ol start="2" type="1">
+<li><strong>零先验阻尼割线偏置更新律（<code>b_xy</code>）</strong>：偏置向量初值严格置零（<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>b</mi><mrow><mi>x</mi><mi>y</mi></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">b_{xy}^{(0)} = (0, 0)</annotation></semantics></math>），若
+<code>SETTLE</code> 停稳后实测误差
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>=</mo><msub><mi>p</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>−</mo><msubsup><mi>p</mi><mrow><mi>x</mi><mi>y</mi></mrow><mo>⋆</mo></msubsup></mrow><annotation encoding="application/x-tex">e_{xy} = p_{xy} - p_{xy}^{\star}</annotation></semantics></math>
+仍超出
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mtext mathvariant="normal">accept</mtext></msub><annotation encoding="application/x-tex">r_{\text{accept}}</annotation></semantics></math>，则根据前后两次误差是否反向（过冲换号，即
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>e</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>⋅</mo><msubsup><mi>e</mi><mrow><mi>x</mi><mi>y</mi></mrow><mtext mathvariant="normal">prev</mtext></msubsup><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">e_{xy} \cdot e_{xy}^{\text{prev}} &lt; 0</annotation></semantics></math>）分支更新虚拟瞄准点
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mtext mathvariant="normal">aim</mtext></msub><mo>=</mo><msup><mi>p</mi><mo>⋆</mo></msup><mo>−</mo><msub><mi>b</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub></mrow><annotation encoding="application/x-tex">p_{\text{aim}} = p^{\star} - b_{xy}</annotation></semantics></math>：若已过冲则执行加权割线插值并将步长阻尼系数
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
+减半（下限 <code>0.25</code>）及缩放速度尺度（下限
+<code>0.65</code>），否则沿当前误差以
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
+步长累加，并对偏置模长施加硬界限：</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="postfix">∥</mo><msub><mi>b</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><msub><mo stretchy="false" form="postfix">∥</mo><mn>2</mn></msub><mo>≤</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>0.12</mn><mo>,</mo><mspace width="0.278em"></mspace><mn>2.5</mn><mspace width="0.167em"></mspace><msub><mi>r</mi><mtext mathvariant="normal">accept</mtext></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\|b_{xy}\|_2 \le \min\!\left(0.12,\; 2.5\,r_{\text{accept}}\right)</annotation></semantics></math></p>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>空间定位与导航子系统清晰体现了仓库的<strong>「<code>C++20</code>
+无状态局部内核 + <code>Python</code>
+整洁领域分域」双栈分离范式（<code>HYBRID</code>）</strong>：</p>
+<ul>
+<li><strong><code>C++20</code>
+实时/高频算子核</strong>：<code>VoxelIcpLocalizer</code>、<code>HybridAStar</code>、<code>MppiLocalPlanner</code>
+与 <code>PlanarAdjustment</code> 均驻留于
+<code>src/robot_app/algorithms/{lightning_loc,pct_nav}/</code> 及
+<code>navigation_runtime/domain.cpp</code>，使用 <code>std::array</code>
+定长缓冲与无异常 <code>noexcept</code> 接口，保证 <code>10 Hz</code> /
+<code>20 Hz</code> 周期内确定性内存行为。</li>
+<li><strong><code>Python</code>
+整洁分域与几何适配器</strong>：<code>ConvergentTerminalServo</code>
+置于纯无 <code>I/O</code> 的
+<code>domain/control/</code>（依赖倒置，可纯内存单元测试）；<code>box_route</code>
+与 <code>ResponseSampling</code> 置于 <code>infrastructure/</code>
+处理栅格旋转膨胀与并行前向轨迹采样；<code>SalLidarIngress</code>
+在基础设施入口完成协议解包与腰部运动学外参投影。</li>
+</ul>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -132,82 +1138,171 @@ id="二多层接力规划管线hybridastarmppiboxroute-与-responsesampling">二
 </colgroup>
 <thead>
 <tr>
-<th>规划层次</th>
-<th>核心模块与代码路径</th>
-<th>关键求解参数与搜索机制</th>
+<th>评估维度</th>
+<th>审阅结论</th>
+<th>客观工程依据</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>全局运动学搜索</td>
-<td><code>HybridAStar</code>（<code>src/robot_app/algorithms/pct_nav/hybrid_astar.hpp</code>）</td>
-<td>扩展步长 <code>0.35 m</code>、最小转弯半径
-<code>1.2 m</code>、节点扩展上限
-<code>15000</code>；针对窄通道与带弯角约束路径生成初始无碰撞轨迹</td>
+<td><strong>1. 领域纯洁性与依赖倒置</strong></td>
+<td><code>PASS</code></td>
+<td><code>ConvergentTerminalServo</code> 与 <code>C++20</code>
+<code>pct_nav</code> 核完全零 <code>ROS 2</code>
+耦合，仅消费位置/姿态数值结构</td>
 </tr>
 <tr>
-<td>多约束局部优化</td>
-<td><code>MppiLocalPlanner</code>（<code>src/robot_app/algorithms/pct_nav/mppi_local_planner.hpp</code>）</td>
-<td>默认并行采样 <code>64</code> 条轨迹（上限 <code>128</code>
-条），滚动预测 <code>15</code> 步 × <code>0.1 s</code>；内置全向
-<code>kHolonomic</code>、差速 <code>kDifferential</code>、阿克曼
-<code>kAckermann</code> 三种底盘模型，默认安全净距
-<code>safety_clearance_m = 0.45 m</code>，支持最大 <code>250k</code>
-栅格 ESDF 查询</td>
+<td><strong>2. 契约完备性与边界防呆</strong></td>
+<td><code>PASS</code></td>
+<td><code>SalLidarIngress</code> 严格校验 <code>20 B</code>
+点云布局与时间单调性；<code>FrameStore</code> 对超时 <code>500 ms</code>
+或 <code>epoch</code> 跳变强制清零重定位</td>
 </tr>
 <tr>
-<td>工位框线对接回退</td>
-<td><code>plan_box</code>（<code>src/robot_app/modules/navigation_runtime/infrastructure/geometry/box_route.py</code>）</td>
-<td>在 <code>0.05 m</code> 分辨率占据栅格联合 <code>PctProvider</code>
-规划出站-入站轨迹；首轮（Pass
-<code>0</code>）优先尝试原地单向调头；受阻时依序激活三层靠泊拉出回退（<code>goal_inplace</code>、<code>start_inplace</code>、<code>both_pull</code>）</td>
+<td><strong>3. 状态机与生命周期确定性</strong></td>
+<td><code>PASS</code></td>
+<td><code>ConvergentTerminalServo</code> 同心三态滞回与
+<code>box_route</code> 三层回退路线迁移清晰，无静默死循环</td>
 </tr>
 <tr>
-<td>走廊速度护栏与前向模拟</td>
-<td><code>SurfaceConstraintSpec</code> 与
-<code>ResponseSampling</code>（<code>src/robot_app/modules/navigation_runtime/infrastructure/planners/response_sampling.py</code>）</td>
-<td>C++ 端提供 <code>guard_corridor_twist</code> 保护窄道不超限；Python
-端对航向候选 <code>heading_candidates</code> 与平移候选
-<code>translation_candidates</code> 结合速度斜率制动边界做前向
-rollout（保持步长 <code>hold_step = 0.02 s</code>、持续
-<code>0.5 s</code> 保持后校核尾部净空）</td>
+<td><strong>4. 实时内存与并发安全性</strong></td>
+<td><code>PASS</code></td>
+<td><code>MppiLocalPlanner</code> 预分配 <code>128 × 32</code>
+噪声缓冲（零运行时堆分配）；<code>ResponseSampling</code>
+支持独立工作进程隔离</td>
 </tr>
 <tr>
-<td>粗精接力平动调整</td>
-<td><code>PlanarAdjustment</code>（<code>src/robot_app/algorithms/pct_nav/planar_adjustment.hpp</code>）</td>
-<td><code>0.10 m/s</code> 低速平调，必要时沿当前朝向先倒退
-<code>0.20 m</code> 脱困，收敛窗口 <code>5 cm / 10°</code> 且附带
-<code>0.10 s</code> 稳定等待</td>
+<td><strong>5. 离线可测性与失败留痕</strong></td>
+<td><code>PASS</code></td>
+<td>终端伺服、体素 ICP
+与接力规划均支持注入点云与虚拟运动响应离线单测复现</td>
+</tr>
+<tr>
+<td><strong>6. 单真源约束与过渡债务透明度</strong></td>
+<td><code>HYBRID</code></td>
+<td>客观存在
+<code>C++20</code>（<code>HybridAStar</code>/<code>MPPI</code>/<code>PlanarAdjustment</code>）与
+<code>Python</code>（<code>box_route</code>/<code>ResponseSampling</code>/<code>ConvergentTerminalServo</code>）并存调度边界</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2
-id="三零先验终端收敛伺服convergentterminalservo">三、零先验终端收敛伺服：<code>ConvergentTerminalServo</code></h2>
-<p>工位操作前的最后 <code>0.3 m</code>
-精停易受地面摩擦不均、鞋底弹性形变与步态稳态漂移影响而产生系统性偏置。<code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code>
-中的 <code>ConvergentTerminalServo</code>
-采用同心圆三态切换机制与零先验在线学习解决终段抖动问题：</p>
-<ol type="1">
-<li><strong>三状态同心收敛机（<code>IDLE_IN_BAND</code> /
-<code>APPROACH</code> /
-<code>SETTLE</code>）</strong>：当位置偏差落入核心停靠区
-<code>R_core = min(0.015, 0.30 * r_accept, r_entry_cap)</code>（<code>m</code>）以内且偏航收敛后进入
-<code>IDLE_IN_BAND</code>（输出零速），避免微幅量化噪声引起反复微步踩踏；仅当外溢超出公开验收阈值
-<code>r_accept</code> 时重入 <code>APPROACH</code> 或
-<code>SETTLE</code> 平滑归位。</li>
-<li><strong>零先验阻尼割线偏置估计（<code>b_xy</code>）</strong>：初始化偏置严格为零（不假设任何硬件固定漂移），在近距
-<code>SETTLE</code>
-过程中根据实发参考速度与实际机体系位移增量做阻尼割线更新，并将估计偏置总量硬性限幅在
-<code>min(0.12, 2.5 * r_accept)</code>
-内，既能消除长周期步态稳态侧滑，又防止噪声环境下估算积分发散。</li>
-</ol>
-<h2
-id="四三维激光回环定位与导航避障录像">四、三维激光回环定位与导航避障录像</h2>
-<p>下面视频展示 <code>FACRI</code> 在启用动态腰部外参补偿、体素 ICP
-定位与 <code>spatial_runtime</code> / <code>navigation_runtime</code>
-实时避障路线更新条件下的回环定位过程（<code>PHYSICAL_SIM</code>
-证据级别，原速呈现）。</p>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<p>下表归纳定位与导航核心算子的接口边界；各规划器详细数值规格收录于折叠面板。</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>模块类 / 函数</th>
+<th>源码路径</th>
+<th>核心输入与输出契约</th>
+<th>冻结关键限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compensate_waist_for_livox</code></td>
+<td><code>src/robot_app/modules/spatial_runtime/infrastructure/ros/sal_lidar.py</code></td>
+<td><code>SalLidarWire</code> 原始点云 + 腰角 -&gt; 水平投影点云</td>
+<td>同源 <code>stamp_ns</code> 读取腰部正解；零偏差时零拷贝直通</td>
+</tr>
+<tr>
+<td><code>VoxelIcpLocalizer::localize</code></td>
+<td><code>src/robot_app/algorithms/lightning_loc/voxel_icp_localizer.hpp</code></td>
+<td>水平点云 + 里程计初值 -&gt; <code>LocalizerOutput</code></td>
+<td><code>voxel_leaf_m = 0.20 m</code>；单帧上限 <code>6000</code>
+点；输出净空</td>
+</tr>
+<tr>
+<td><code>MppiLocalPlanner::compute_command</code></td>
+<td><code>src/robot_app/algorithms/pct_nav/mppi_local_planner.hpp</code></td>
+<td><code>Pose2D</code> + 局部目标 + <code>EsdfMap2D</code> -&gt;
+<code>MppiCommand</code></td>
+<td><code>64..128</code> 条滚动轨迹 × <code>15</code> 步；安全净距
+<code>0.45 m</code></td>
+</tr>
+<tr>
+<td><code>plan_box</code></td>
+<td><code>src/robot_app/modules/navigation_runtime/infrastructure/geometry/box_route.py</code></td>
+<td>占据栅格 + 起止位姿 -&gt; 通道关键帧序列</td>
+<td><code>0.05 m</code> 分辨率；Pass 0 原地调头 + 三级拉出回退</td>
+</tr>
+<tr>
+<td><code>ConvergentTerminalServo.update</code></td>
+<td><code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code></td>
+<td>位姿 + <code>arrival_rule</code> + 停令标志 -&gt;
+<code>TerminalServoDirective</code></td>
+<td><code>R_core &lt;= 0.015 m</code>；偏置模长上限
+<code>min(0.12, 2.5 * r_accept)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="tech-details">
+<summary>
+查看 HybridAStar、MPPI、ResponseSampling 与 PlanarAdjustment
+冻结参数明细
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>算子</th>
+<th>参数名</th>
+<th>冻结数值 / 范围</th>
+<th>物理与几何作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HybridAStarConfig</code></td>
+<td><code>step_length_m</code> / <code>min_turning_radius_m</code></td>
+<td><code>0.35 m</code> /
+<code>1.2 m</code>（<code>max_expansions = 15000</code>）</td>
+<td>保障非完整约束曲率可行并封顶全局检索耗时</td>
+</tr>
+<tr>
+<td><code>MppiConfig</code></td>
+<td><code>kinematics</code> / <code>rng_seed</code></td>
+<td>全向 / 差速 / 阿克曼；固定种子 <code>0x454D4D505049ULL</code></td>
+<td>保证离线数值回放完全可复现</td>
+</tr>
+<tr>
+<td><code>ResponseSampling</code></td>
+<td><code>hold_step</code> / 保持检查时长</td>
+<td><code>0.02 s</code> 步长前向保持 <code>0.5 s</code> +
+响应尾部时长</td>
+<td>验证任意候选速度切回零速制动过程中不碰撞工台</td>
+</tr>
+<tr>
+<td><code>PlanarAdjustmentConfig</code></td>
+<td><code>speed_limit_mps</code> / <code>retreat</code> / 到位容差</td>
+<td><code>0.10 m/s</code> / 后退 <code>0.20 m</code> /
+<code>5 cm</code>, <code>10°</code>, <code>0.10 s</code></td>
+<td>统一绑定动作起始实测朝向，交接仅核对控制权回执</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<p>经连续多工位导航与终端平移验证（含 <code>20</code> 次工位间导航与
+<code>40</code> 次末端平移离线实测校验，以及 <code>SIT-F3</code>
+四机多进程 <code>16</code>
+循环工厂封闭回路集成验证），该套定位与接力导航体系在存在弯腰作业干扰及贴边工位靠泊工况下稳定通过停靠容差收敛检验。以下录像记录了启用腰部运动学补偿与体素
+ICP 的实况回环定位与局部避障表现：</p>
 <p><strong>MED-SPATIAL-01 · 3D LiDAR SLAM
 回环定位与局部通道避障</strong>（<code>1600×1000</code>、<code>30 fps</code>、<code>15.0 s</code>、<code>1x</code>
 原速、<code>PHYSICAL_SIM</code>）：</p>
@@ -221,6 +1316,16 @@ SHA256:ab20e0387b）</span><span
 class="doc-media-badge">PHYSICAL_SIM</span>
 </figcaption>
 </figure>
+<aside class="doc-callout doc-callout--note" role="note">
+  <div class="doc-callout-title">NOTE · 实现注记</div>
+  <p><strong>能力边界声明</strong>： 1.
+导航确认到位后，向操作的交接仅校验同一控制权与关节锁回执，不再越权读取
+<code>SIM</code> 全局物体真值、复判 <code>5°</code>
+阈值或触发基于站位漂移的在线重启。 2. <code>translation_only</code>
+平移严格按动作起始时刻实测朝向绑定位移向量（有登记站位则使用该站完整目标，自由后退则沿当前朝向后退
+<code>0.20 m</code>），不依赖新增运行时容差放大凑通过。</p>
+  
+</aside>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -232,26 +1337,28 @@ class="doc-media-badge">PHYSICAL_SIM</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#一空间定位与动态腰部运动学补偿spatial_runtime"
-id="toc-一空间定位与动态腰部运动学补偿spatial_runtime">一、空间定位与动态腰部运动学补偿（<code>spatial_runtime</code>）</a>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与机制推演</a>
 <ul>
-<li><a href="#c20-体素-icp-定位器与激光接入新鲜度"
-id="toc-c20-体素-icp-定位器与激光接入新鲜度">1.1 C++20 体素 ICP
-定位器与激光接入新鲜度</a></li>
-<li><a href="#弯腰倾斜工况下的激光外参实时补偿"
-id="toc-弯腰倾斜工况下的激光外参实时补偿">1.2
-弯腰倾斜工况下的激光外参实时补偿</a></li>
+<li><a href="#腰部运动学外参投影与体素-icp-定位spatial_runtime"
+id="toc-腰部运动学外参投影与体素-icp-定位spatial_runtime">3.1
+腰部运动学外参投影与体素 ICP
+定位（<code>spatial_runtime</code>）</a></li>
+<li><a href="#四级接力避障与三层拉出规划管线"
+id="toc-四级接力避障与三层拉出规划管线">3.2
+四级接力避障与三层拉出规划管线</a></li>
+<li><a href="#零先验同心三态伺服与割线偏置学习convergentterminalservo"
+id="toc-零先验同心三态伺服与割线偏置学习convergentterminalservo">3.3
+零先验同心三态伺服与割线偏置学习（<code>ConvergentTerminalServo</code>）</a></li>
 </ul></li>
-<li><a
-href="#二多层接力规划管线hybridastarmppiboxroute-与-responsesampling"
-id="toc-二多层接力规划管线hybridastarmppiboxroute-与-responsesampling">二、多层接力规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
-与 <code>ResponseSampling</code></a></li>
-<li><a href="#三零先验终端收敛伺服convergentterminalservo"
-id="toc-三零先验终端收敛伺服convergentterminalservo">三、零先验终端收敛伺服：<code>ConvergentTerminalServo</code></a></li>
-<li><a href="#四三维激光回环定位与导航避障录像"
-id="toc-四三维激光回环定位与导航避障录像">四、三维激光回环定位与导航避障录像</a></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -264,20 +1371,21 @@ id="toc-四三维激光回环定位与导航避障录像">四、三维激光回�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

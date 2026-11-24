@@ -1,6 +1,7 @@
 """Validate hierarchical public handbook, redirect stubs, zero binary media, and modern web invariants."""
 from __future__ import annotations
 
+from collections import Counter
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -22,9 +23,13 @@ class SiteHtmlAuditor(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.refs: list[str] = []
+        self.ids: list[str] = []
         self.has_color_scheme_meta = False
         self.has_site_nav = False
         self.has_until_found = False
+        self.static_diagram_imgs: list[str] = []
+        self.inline_arch_svgs = 0
+        self.bad_svg_roles = 0
         self.videos: list[dict[str, str | None]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -33,12 +38,20 @@ class SiteHtmlAuditor(HTMLParser):
             val = amap.get(key)
             if val:
                 self.refs.append(val)
+        if amap.get("id"):
+            self.ids.append(amap["id"])
         if tag == "meta" and amap.get("name") == "color-scheme" and amap.get("content") == "light dark":
             self.has_color_scheme_meta = True
         if tag == "nav" and amap.get("aria-label") == "主导航":
             self.has_site_nav = True
         if amap.get("hidden") == "until-found":
             self.has_until_found = True
+        if tag == "img" and "assets/diagrams/" in (amap.get("src") or ""):
+            self.static_diagram_imgs.append(amap.get("src") or "")
+        if tag == "svg" and "interactive-arch-svg" in (amap.get("class") or "").split():
+            self.inline_arch_svgs += 1
+            if amap.get("role") != "group":
+                self.bad_svg_roles += 1
         if tag == "video":
             self.videos.append(amap)
 
@@ -73,6 +86,9 @@ def main() -> None:
         poster_rel = clip.get("poster", "")
         assert poster_rel and (SITE_ROOT / "assets" / poster_rel).is_file(), f"Missing poster for {clip.get('id')}: {poster_rel}"
 
+    svgs = list((SITE_ROOT / "assets" / "diagrams").glob("*.svg"))
+    assert len(svgs) == 39, f"Expected 39 SVG diagrams, got {len(svgs)}"
+
     # 3. Verify all generated HTML files & internal links
     all_html = sorted(SITE_ROOT.rglob("*.html"))
     assert len(all_html) == len(expected_pages) + redirects_count, (
@@ -80,6 +96,7 @@ def main() -> None:
     )
 
     site_resolved = SITE_ROOT.resolve()
+    total_inline_svgs = 0
     for html_file in all_html:
         rel = html_file.relative_to(SITE_ROOT).as_posix()
         text = html_file.read_text(encoding="utf-8")
@@ -87,6 +104,11 @@ def main() -> None:
 
         auditor = SiteHtmlAuditor()
         auditor.feed(text)
+        dups = [k for k, v in Counter(auditor.ids).items() if v > 1]
+        assert not dups, f"Duplicate DOM IDs in {rel}: {dups[:5]}"
+        assert not auditor.static_diagram_imgs, f"Inert <img> diagram tags remain in {rel}: {auditor.static_diagram_imgs}"
+        assert auditor.bad_svg_roles == 0, f"Interactive SVG missing role='group' in {rel}"
+        total_inline_svgs += auditor.inline_arch_svgs
 
         for ref in auditor.refs:
             parsed = urlparse(ref)
@@ -110,9 +132,10 @@ def main() -> None:
                     assert vid.get("loading") == "lazy", f"Below-fold video in {rel} should use loading='lazy'"
                     assert vid.get("width") and vid.get("height"), f"Video in {rel} must specify explicit width & height"
 
+    assert total_inline_svgs > 0, "Expected inline interactive <svg> diagrams across handbook pages"
     print(
         f"Verified {len(expected_pages)} handbook pages, {redirects_count} redirect stubs, "
-        f"{len(clips)} external media refs, and 0 repo video binaries."
+        f"{len(svgs)} SVGs ({total_inline_svgs} inline), {len(clips)} external media refs, and 0 repo video binaries."
     )
 
 

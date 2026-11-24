@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
   <meta name="generator" content="facri-docs · interactive theme" />
-  <meta name="description" content="解析单机 P1/P2/P0 内部能力模块的
-C++20 算法内核，覆盖三维点云定位、全构型导航、冻结合拢调节、上肢 49
-候选抗偏置逆解及基于接近锥的自主避障边界。" />
-  <title>单机导航、定位、操作与安全保护能力 · FACRI 文档</title>
+  <meta name="description" content="剖析单机 P1/P2/P3
+能力提供者的统一接入契约、MotionCoordinator
+单写者控制租约与代次校验，以及核心算法模块的 C++20 与 Python
+双栈演进边界。" />
+  <title>单机能力提供者、控制租约与双栈演进边界 · FACRI 文档</title>
   <link rel="stylesheet" href="../assets/site-shell.css" />
   <link rel="stylesheet" href="../assets/theme-interactive.css" />
   <script src="../assets/site-shell.js" defer></script>
@@ -62,49 +63,719 @@ C++20 算法内核，覆盖三维点云定位、全构型导航、冻结合拢�
 
       <header class="doc-title-block">
         <div class="eyebrow">核心子系统手册</div>
-        <h1 class="title">单机导航、定位、操作与安全保护能力</h1>
-        <p class="subtitle">VoxelICP、HybridA*+MPPI、17 轴加权 DLS
-逆解、双足策略推理与雷达反射防碰环</p>
+        <h1 class="title">单机能力提供者、控制租约与双栈演进边界</h1>
+        <p class="subtitle">五大能力提供者统一生命周期、MotionCoordinator
+单写者租约与 C++20 / Python 双栈现状</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>在 <code>EmbodimentSpecPod</code> 与 <code>4+1</code>
-进程边界内，单机能力层将高频空间定位、全身移动导航、上肢操作规划与实时安全保护全部构建为纯
-<code>C++20</code> 算法内核（位于
-<code>src/robot_app/algorithms/</code>）。上游由 <code>P1</code> 与
-<code>P2</code> 运行域按固定节拍读取 <code>SalWire</code> 观测与
-<code>LocalTaskRuntime</code> 能力指令，下游向
-<code>motion_cmd.shm</code> 与 <code>traj_slot.shm</code>
-写出连续控制量并交由 <code>P0</code> 进程在激光防碰护栏内安全执行。</p>
-<figure class="diagram-figure">
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>在单机自主执行场景中，导航、双臂操作、空间定位、视觉感知与跨机同步五大能力往往需要共享同一套底盘速度通道、腰部自由度与持物责任状态。若缺乏统一的提供者生命周期与写权限仲裁层，会立刻暴露出三类工程问题：</p>
+<ol type="1">
+<li><strong>多写者竞争写穿控制槽位</strong>：当导航正在调整站位而操作模块同步尝试解锁腰部做逆解时，双写
+<code>motion_cmd.shm</code>
+会导致底盘速度与腰部目标发生剧烈振荡，甚至在负重状态下引发侧翻。</li>
+<li><strong>能力步骤与代际失配引发伪成功</strong>：上游重连、仿真重启或任务取消后，残留的旧
+<code>assignment_id</code> 或旧代际 <code>epoch</code>
+回调若未在能力入口与协调器边界拦截，会让上层误以为新阶段已经到位。</li>
+<li><strong>子系统边界与算法内部实现混杂</strong>：若把每个数学算子的细节公式全部堆在系统接入层，读者无法看清「谁负责准入、谁持有运动写租约、谁负责中止回收」，也容易掩盖当前
+<code>C++20</code> 与 <code>Python</code> 双栈并存的真实工程结构。</li>
+</ol>
+<p>本篇聚焦能力提供者的生命周期接口、单写者控制租约与双栈过渡边界；各算法数学推导与参数细节分别归档于
+<a href="../algorithms/overview.html">算法矩阵与活跃度总览</a>
+及四篇专题算法文档。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p>单机能力提供者与仲裁层位于端侧 <code>RobotApp</code> 内部，横跨
+<code>P3</code>（<code>local_task_runtime</code>）、<code>P2</code>（<code>motion_coordinator</code>、<code>navigation_runtime</code>、<code>manipulation_runtime</code>）与
+<code>P1</code>（<code>spatial_runtime</code>、<code>perception_runtime</code>）三大进程域，并通过
+<code>src/robot_app/assembly.py</code> 协调跨机同步模块
+<code>coordination_runtime</code>；最终全部控制输出经唯一仲裁口写向
+<code>motion_cmd.shm</code> 与 <code>traj_slot.shm</code>，交由
+<code>P0</code> 进程在激光防护边界内安全执行。</p>
+<figure class="diagram-figure" data-diagram-id="sub-cap-provider-lease" data-fig-uid="sub-cap-provider-lease-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/algo-full-stack-map.svg"
-alt="单机 C++20 算法内核与全栈能力数据流图" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-cap-provider-lease" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="sub-cap-provider-lease-title-f0" aria-describedby="sub-cap-provider-lease-desc-f0">
+  <title id="sub-cap-provider-lease-title-f0">五大能力提供者统一契约、单写者租约与 C++20 / Python 双栈演进边界</title>
+  <desc id="sub-cap-provider-lease-desc-f0">明确端侧能力调度与底层算法的边界：五大能力提供者由统一租约与 epoch 协调，并透明标注双栈演进现状。</desc>
+  <defs>
+    <pattern id="sub-cap-provider-lease-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-cap-provider-lease-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#sub-cap-provider-lease-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="450.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">ADMISSION &amp; SINGLE-WRITER LEASE</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">任务准入与单写者运动租约仲裁</text>
+  <rect x="412.0" y="86.0" width="420.0" height="450.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="426.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">FIVE CAPABILITY PROVIDERS (P-IV TRANSPARENCY)</text>
+  <text x="426.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">五大能力提供者与双栈实现现状</text>
+  <rect x="858.0" y="86.0" width="306.0" height="450.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="872.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">P0 EXECUTOR</text>
+  <text x="872.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">200 Hz 编码器到位终端</text>
+  <g class="arch-edge" data-from="local_task" data-to="motion_coord" data-flow="lease">
+    <path d="M 211.0 228.0 L 211.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-terracotta-f0)"/>
+    <rect x="185.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="211.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">申请租约</text>
+  </g>
+  <g class="arch-edge" data-from="motion_coord" data-to="cap_nav" data-flow="providers">
+    <path d="M 364.0 344.0 L 389.0 344.0 Q 394.0 344.0 394.0 339.0 L 394.0 164.0 Q 394.0 159.0 399.0 159.0 L 434.0 159.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-ink-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="motion_coord" data-to="cap_manip" data-flow="providers">
+    <path d="M 364.0 360.0 L 397.0 360.0 Q 402.0 360.0 402.0 355.0 L 402.0 242.0 Q 402.0 237.0 407.0 237.0 L 434.0 237.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-ink-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="local_task" data-to="cap_spatial" data-flow="dual_stack">
+    <path d="M 364.0 190.0 L 405.0 190.0 Q 410.0 190.0 410.0 195.0 L 410.0 310.0 Q 410.0 315.0 415.0 315.0 L 434.0 315.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-cap-provider-lease-arrow-slate-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="local_task" data-to="cap_perc" data-flow="dual_stack">
+    <path d="M 364.0 204.0 L 411.0 204.0 Q 416.0 204.0 416.0 209.0 L 416.0 388.0 Q 416.0 393.0 421.0 393.0 L 434.0 393.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-cap-provider-lease-arrow-slate-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="local_task" data-to="cap_sync" data-flow="dual_stack">
+    <path d="M 364.0 218.0 L 379.0 218.0 Q 384.0 218.0 384.0 223.0 L 384.0 466.0 Q 384.0 471.0 389.0 471.0 L 434.0 471.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-cap-provider-lease-arrow-ochre-f0)"/>
+    <rect x="364.1" y="335.5" width="39.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="384.0" y="347.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">仅 Py</text>
+  </g>
+  <g class="arch-edge" data-from="cap_nav" data-to="act_exec" data-flow="lease">
+    <path d="M 810.0 159.0 L 835.0 159.0 Q 840.0 159.0 840.0 164.0 L 840.0 271.0 Q 840.0 276.0 845.0 276.0 L 880.0 276.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-forest-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="cap_manip" data-to="act_exec" data-flow="lease">
+    <path d="M 810.0 237.0 L 829.0 237.0 Q 834.0 237.0 834.0 242.0 L 834.0 289.0 Q 834.0 294.0 839.0 294.0 L 880.0 294.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-forest-f0)"/>
+    <rect x="813.2" y="256.5" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="834.0" y="268.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">轨迹槽</text>
+  </g>
+  <g class="arch-node-card" data-node-id="local_task" aria-controls="sub-cap-provider-lease-f0-drawer-local_task">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="local_task" data-flows="all,dual_stack,lease" aria-expanded="false" aria-label="local_task_runtime (P3)（能力步准入与串行路由）" aria-controls="sub-cap-provider-lease-f0-drawer-local_task">
+      <rect class="arch-node-box" x="58.0" y="152.0" width="306.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">local_task_runtime (P3)</text>
+      <text class="arch-node-role" x="70.0" y="214.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">能力步准入与串行路由</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#flow" data-same-page="true" aria-label="前往「local_task_runtime (P3)」对应章节">
+      <rect x="336.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="348.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="motion_coord" aria-controls="sub-cap-provider-lease-f0-drawer-motion_coord">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="motion_coord" data-flows="all,lease,providers" aria-expanded="false" aria-label="MotionCoordinator (P2)（单写者租约 + epoch）" aria-controls="sub-cap-provider-lease-f0-drawer-motion_coord">
+      <rect class="arch-node-box" x="58.0" y="326.0" width="306.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">MotionCoordinator (P2)</text>
+      <text class="arch-node-role" x="70.0" y="388.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">单写者租约 + epoch</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#principles" data-same-page="true" aria-label="前往「MotionCoordinator (P2)」对应章节">
+      <rect x="336.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="348.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_nav" aria-controls="sub-cap-provider-lease-f0-drawer-cap_nav">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_nav" data-flows="all,lease,providers" aria-expanded="false" aria-label="navigation_runtime（双栈 · C++ 核 + Py 伺服）" aria-controls="sub-cap-provider-lease-f0-drawer-cap_nav">
+      <rect class="arch-node-box" x="434.0" y="128.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="151.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">navigation_runtime</text>
+      <text class="arch-node-role" x="446.0" y="178.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · C++ 核 + Py 伺服</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true" aria-label="前往「navigation_runtime」对应章节">
+      <rect x="782.0" y="132.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="148.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_manip" aria-controls="sub-cap-provider-lease-f0-drawer-cap_manip">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_manip" data-flows="all,lease,providers" aria-expanded="false" aria-label="manipulation_runtime（双栈 · 49-Cand + Py 导纳）" aria-controls="sub-cap-provider-lease-f0-drawer-cap_manip">
+      <rect class="arch-node-box" x="434.0" y="206.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="229.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">manipulation_runtime</text>
+      <text class="arch-node-role" x="446.0" y="256.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · 49-Cand + Py 导纳</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true" aria-label="前往「manipulation_runtime」对应章节">
+      <rect x="782.0" y="210.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="226.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_spatial" aria-controls="sub-cap-provider-lease-f0-drawer-cap_spatial">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_spatial" data-flows="all,dual_stack" aria-expanded="false" aria-label="spatial_runtime（双栈 · VoxelICP + Py 域）" aria-controls="sub-cap-provider-lease-f0-drawer-cap_spatial">
+      <rect class="arch-node-box" x="434.0" y="284.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="307.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">spatial_runtime</text>
+      <text class="arch-node-role" x="446.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · VoxelICP + Py 域</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true" aria-label="前往「spatial_runtime」对应章节">
+      <rect x="782.0" y="288.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="304.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_perc" aria-controls="sub-cap-provider-lease-f0-drawer-cap_perc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_perc" data-flows="all,dual_stack" aria-expanded="false" aria-label="perception_runtime（双栈 · Tag/ROI + Py 域）" aria-controls="sub-cap-provider-lease-f0-drawer-cap_perc">
+      <rect class="arch-node-box" x="434.0" y="362.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">perception_runtime</text>
+      <text class="arch-node-role" x="446.0" y="412.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · Tag/ROI + Py 域</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true" aria-label="前往「perception_runtime」对应章节">
+      <rect x="782.0" y="366.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="382.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_sync" aria-controls="sub-cap-provider-lease-f0-drawer-cap_sync">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_sync" data-flows="all,dual_stack" aria-expanded="false" aria-label="coordination_runtime（纯 Python · V5 同步）" aria-controls="sub-cap-provider-lease-f0-drawer-cap_sync">
+      <rect class="arch-node-box" x="434.0" y="440.0" width="376.0" height="62.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="463.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">coordination_runtime</text>
+      <text class="arch-node-role" x="446.0" y="490.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">纯 Python · V5 同步</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#contracts" data-same-page="true" aria-label="前往「coordination_runtime」对应章节">
+      <rect x="782.0" y="444.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="794.0" y="460.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="act_exec" aria-controls="sub-cap-provider-lease-f0-drawer-act_exec">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="act_exec" data-flows="all,lease" aria-expanded="false" aria-label="action_executor (P0)（200 Hz 编码器到位）" aria-controls="sub-cap-provider-lease-f0-drawer-act_exec">
+      <rect class="arch-node-box" x="880.0" y="248.0" width="262.0" height="84.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="892.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">action_executor (P0)</text>
+      <text class="arch-node-role" x="892.0" y="318.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">200 Hz 编码器到位</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-capabilities.html#evidence" data-same-page="true" aria-label="前往「action_executor (P0)」对应章节">
+      <rect x="1114.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">单写者租约与 epoch 锁</text>
+  <rect x="234.7" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="256.7" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">HYBRID: C++20 核 + Python 域</text>
+  <rect x="430.1" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="452.1" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">仅 Python (coordination_runtime)</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">算法内部数学与控制细节全部收拢至 L4 五篇算法专章</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 07 · CAPABILITY PROVIDERS &amp; HYBRID STACK</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">五大能力提供者统一契约、单写者租约与 C++20 / Python 双栈演进边界</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">MotionCoordinator 单写者租约 · 诚实标示 P-IV 双栈模块</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>单机 C++20
-算法内核与全栈能力数据流图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="providers" aria-pressed="false">五大能力提供者统一状态机</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="lease" aria-pressed="false">单写者租约与交接锁</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="dual_stack" aria-pressed="false">C++20 / Python 双栈边界</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>五大能力提供者统一状态机、单写者租约与双栈演进边界</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-cap-provider-lease.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-cap-provider-lease-f0-drawer-local_task" class="diagram-drawer-panel" data-node-drawer="local_task" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">local_task_runtime (P3)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P3 · 任务调度 · 10 Hz 能力步编排</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「local_task_runtime (P3)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">管理单台机器人接收到的多步能力任务队列，严格执行单步串行与取消清理。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>任务准入状态机 + 取消传播</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/local_task_runtime/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>消费 task_cmd_ring，按步骤顺序路由至五大能力提供者并保证单机失败隔离</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-cap-provider-lease-f0-drawer-motion_coord" class="diagram-drawer-panel" data-node-drawer="motion_coord" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">MotionCoordinator (P2)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P2 · 租约仲裁 · 50 Hz 交接锁</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「MotionCoordinator (P2)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">防止导航与操作能力并发争夺底盘或腰臂写入权导致运动撕裂。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单写者运动租约模式</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/motion_coordinator/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>任一时刻仅允许一个动作持有运动写权；导航交接操作时仅核验锁回执与 epoch</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-cap-provider-lease-f0-drawer-cap_nav" class="diagram-drawer-panel" data-node-drawer="cap_nav" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">navigation_runtime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Provider 01 · 导航能力 · 20 Hz · HYBRID</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「navigation_runtime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">提供全局路径、局部避障、精停平移与零先验视觉终段伺服能力。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV C++20/Python 双栈受控演进</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>C++ 核运行 HybridA*/MPPI；Python 领域承载 box_route、ResponseSampling 与终端伺服</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-cap-provider-lease-f0-drawer-cap_manip" class="diagram-drawer-panel" data-node-drawer="cap_manip" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">manipulation_runtime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Provider 02 · 操作能力 · 20/2 Hz · HYBRID</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「manipulation_runtime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">执行双臂抓取、放置、按键退手、胸前携物及轨迹后机身补偿。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV C++20/Python 双栈受控演进</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>C++ UpperBodyPlanner/DLS IK + Python WrenchObserver/TouchdownGuard/CubicHermite</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-cap-provider-lease-f0-drawer-cap_spatial" class="diagram-drawer-panel" data-node-drawer="cap_spatial" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">spatial_runtime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Provider 03 · 空间定位 · 10 Hz · HYBRID</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「spatial_runtime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">融合弯腰正向运动学输出高置信度本体位姿与周边净距。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV C++20/Python 双栈受控演进</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/spatial_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>C++ VoxelIcpLocalizer + Python compensate_waist_for_livox 与地图版本切换</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-cap-provider-lease-f0-drawer-cap_perc" class="diagram-drawer-panel" data-node-drawer="cap_perc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">perception_runtime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Provider 04 · 工件感知 · 10 Hz · HYBRID</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「perception_runtime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">提供工件定位、Tag 标靶跟踪与开放词汇识别能力。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV 双栈 + 特性分支隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/perception_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>C++ AprilTag/RoiClient + Python 目标配准；pft_workpiece_sr 标为 BRANCH</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-cap-provider-lease-f0-drawer-cap_sync" class="diagram-drawer-panel" data-node-drawer="cap_sync" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">coordination_runtime</strong>
+        <span class="diagram-drawer-badge is-partial">P · 部分/规划</span>
+        <span class="diagram-drawer-meta">Provider 05 · 对等同步 · 默认空配 (无租约)</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「coordination_runtime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">透明披露仅存在 Python 实现的跨机协同模块，不占用运动租约。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>V5 dispatch/await 状态机</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/coordination_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>cpp_entry 为 null；仅在显式 peer 绑定时执行 Domain 126 四阶段对称锁步</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-cap-provider-lease-f0-drawer-act_exec" class="diagram-drawer-panel" data-node-drawer="act_exec" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">action_executor (P0)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P0 · 执行终端 · 200 Hz 采样</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「action_executor (P0)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">消费持有租约并携带有效 epoch 的轨迹槽，执行并上报真实到位证据。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>执行器编码器回执闭环</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/action_executor/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>阶段完成直接复用编码器实测到位，不用名义 TCP 二次否决</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-capabilities.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2
-id="空间定位与视觉跟踪p1robot_spatial_perc">空间定位与视觉跟踪（P1：<code>robot_spatial_perc</code>）</h2>
-<p>P1 进程以 <code>10 Hz</code> 周期并行运转两大核心感知子域：</p>
+<p>端到端能力流转分为四步确定性接力：</p>
+<ol type="1">
+<li><strong>准入与路由（<code>LocalTaskRuntime</code>）</strong>：<code>src/robot_app/modules/local_task_runtime/domain.hpp</code>
+中的 <code>LocalTaskDomain</code> 联合 <code>CapabilityRouter</code>
+读取 <code>AgentRegistrationContract</code>，校验能力白名单、禁抓对象与
+<code>effective_max_payload_kg</code> 负载上限，并确保
+<code>step_active_ == false</code> 后方才向
+<code>task_cmd_ring.shm</code> 投递 <code>TaskCommandMsg</code>。</li>
+<li><strong>单写者租约仲裁（<code>MotionCoordinator</code>）</strong>：<code>src/robot_app/modules/motion_coordinator/domain.hpp</code>
+在 <code>50 Hz</code> 节拍下按互斥状态机分派
+<code>ActiveStepGoalPod</code>（<code>domain = 1 NAV / 2 MANIP / 3 CANCEL</code>），独占汇总输出
+<code>MotionCmdPod</code>。</li>
+<li><strong>分域能力步执行</strong>：<code>navigation_runtime</code>、<code>manipulation_runtime</code>、<code>spatial_runtime</code>、<code>perception_runtime</code>
+与 <code>coordination_runtime</code> 按统一步骤契约推进并向
+<code>MotionPlanBus</code> 回写进度与失败码。</li>
+<li><strong>回执归因与状态清理</strong>：执行终结或受
+<code>ProtectionCore</code> 急停/取消触发时，生成携带
+<code>epoch</code>、<code>holding_context_ref</code> 与真实
+<code>origin</code> 的 <code>TaskReceiptMsg</code>，通过
+<code>task_receipt_ring.shm</code> 上报 <code>SystemApp</code> 的
+<code>TeamVerifier</code>。</li>
+</ol>
+<h2 id="principles">03 · 核心原理与内部机制</h2>
+<h3
+id="单写者控制租约与交接锁motioncoordinatordomain">单写者控制租约与交接锁（<code>MotionCoordinatorDomain</code>）</h3>
+<p><code>MotionCoordinatorDomain</code>
+通过四项状态不变量保证同一时刻至多只有一个能力域掌控底层执行通道：</p>
 <ul>
-<li><strong>体素 ICP 先验地图定位（<code>spatial_runtime</code> /
-<code>VoxelIcpLocalizer</code>）</strong>：直接读取
-<code>SalLidarWire</code> 最多 <code>6000</code> 个点，采用
-<code>0.20 m</code> 体素降采样网格结合里程计初值求解高精度三维位姿
-<code>SpatialPosePod</code>（输出
-<code>map_pos_xyz</code>、<code>map_quat_xyzw</code>、<code>tracking_quality</code>
-<code>0..100</code> 及雷达最近净空障碍距离
-<code>min_lidar_clearance_m</code>）。</li>
-<li><strong>视觉基准标志与 ROI 受限上报（<code>perception_runtime</code>
-/ <code>AprilTagTracker</code>）</strong>：基于
-<code>alpha_pos = 0.35</code>、<code>alpha_rot = 0.35</code>
-的指数滤波与严格重投影误差上限（<code>max_reproj_err_px = 3.5</code>）、单帧跳变门槛（<code>max_jump_m = 0.35 m</code>）持续跟踪工位或机门标签位姿；若启用图像裁剪上传，<code>RoiGatewayClient</code>
-强制执行单包字节上限 <code>512000 B</code>。</li>
+<li><strong>互斥活跃域锁</strong>：内部状态位
+<code>busy_</code>、<code>active_is_nav_</code>、<code>active_is_manip_</code>
+与 <code>active_is_perc_</code> 严格互斥；新命令只有当
+<code>cmd_seq &gt; last_seen_cmd_seq_</code>
+且处于空闲态（或显式取消请求）时方能抢占租约，防止重复消费历史指令。</li>
+<li><strong>腰部重锁速度校验（<code>wait_upper_relock_</code>）</strong>：从双臂操作切换回移动导航（或进入胸前抱物行进）时，必须等待上肢回到收臂/携物位且实测腰部关节速度收敛至冻结阈值
+<code>kUpperRelockMaxVelRps = 0.02 rad/s</code> 以下，方可置位
+<code>torso_relock_active</code>
+交还导航控制权，避免带着未停稳的上肢惯量起步。</li>
+<li><strong>携物导航限速委派（<code>holding_delegated</code>）</strong>：当
+<code>manip_out.holding_active</code>
+为真时，协调器显式将持物行进上限锁定为
+<code>kHoldingNavMaxSpeedMps = 0.45 m/s</code>，并在
+<code>MotionCmdPod</code> 中保持夹持目标而不释放握持责任。</li>
+<li><strong>跨机同步零租约约束（<code>CoordinationRuntime</code>）</strong>：位于
+<code>src/robot_app/modules/coordination_runtime/runtime.py</code> 的
+<code>coordination.auto_task</code> 仅承担显式对端绑定下的单次
+<code>dispatch</code>/<code>await</code>
+状态同步，明确<strong>不持有任何运动或持物租约</strong>，也不执行自动重发或远程停机。</li>
 </ul>
-<h2
-id="全构型移动导航与精确靠泊调节p2navigation_runtime">全构型移动导航与精确靠泊调节（P2：<code>navigation_runtime</code>）</h2>
+<h3
+id="统一提供者生命周期与故障隔离策略">统一提供者生命周期与故障隔离策略</h3>
+<p>在 <code>src/robot_app/assembly.py</code>
+中，<code>Robot._providers()</code> 将
+<code>navigation</code>、<code>manipulation</code>、<code>spatial</code>
+与 <code>coordination</code> 聚合为统一迭代对象：正常周期内统一调用
+<code>provider.tick(self.now)</code>；当 <code>Robot::fail(error)</code>
+触发时，仅在错误原因包含
+<code>SPATIAL</code>、<code>LOCALIZATION</code>、<code>SHUTDOWN</code>、<code>RANGE_INPUT</code>
+或 <code>CANCELED_BY_REQUEST</code> 时才中止 <code>spatial</code>
+提供者，避免普通操作或导航异常连带清零正常运转的三维定位地图。</p>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>本层遵循 <strong>能力提供者接口 +
+单写者租约模式</strong>，同时如实披露 <strong>P-IV
+<code>C++20 / Python</code> 双栈受控演进范式（过渡接缝）</strong>：</p>
+<ul>
+<li><strong>接口隔离与单写者门面</strong>：上层
+<code>LocalTaskRuntime</code> 只消费
+<code>AgentRegistrationContract</code> 与标准化
+<code>CapabilityDecision</code>，不感知底部运动学细节；<code>MotionCoordinator</code>
+作为 <code>motion_cmd.shm</code>
+唯一写入者，把多域并发冲突收敛为单点状态机。</li>
+<li><strong>双栈并存现状的诚实披露（重要）</strong>：经源码逐目录核实，<code>src/robot_app/modules/{manipulation_runtime,navigation_runtime,spatial_runtime,perception_runtime,state_estimation,action_executor,local_task_runtime}</code>
+这 <code>7</code> 个核心运行模块目前<strong>同时存在</strong>
+<code>C++20</code> <code>domain.cpp</code> /
+<code>runtime.cpp</code>（服务 <code>4+1</code> <code>SHM</code>
+实时回路）与 <code>Python</code> <code>runtime.py</code> /
+<code>domain/*.py</code> 双栈实现——其中 <code>Python</code> 六层包承载了
+<code>ConvergentTerminalServo</code>、<code>WrenchObserver</code>、<code>TouchdownGuard</code>、<code>DeviceCollisionQuery</code>
+与动态腰部 <code>LiDAR</code> 补偿等精细算子并由
+<code>src/robot_app/assembly.py</code>
+调度；此外，<code>src/robot_app/modules/coordination_runtime</code>
+当前<strong>仅有 <code>Python</code>
+实现（<code>cpp_entry: null</code>）</strong>。各模块算法内部原理参见 <a
+href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a>、<a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a>、<a
+href="../algorithms/manipulation-and-ik.html">双臂操作规划与柔顺导纳</a>
+与 <a
+href="../algorithms/workpiece-perception.html">工件视觉定位与五阶段超分检测</a>。</li>
+</ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>合规状态</th>
+<th>工程依据与审视说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 领域纯洁性与依赖倒置</td>
+<td><code>PASS</code></td>
+<td><code>MotionCoordinatorDomain</code> 与 <code>LocalTaskDomain</code>
+均与底层 <code>ROS 2</code>/硬件解耦；<code>Python</code> 各模块保持
+<code>contracts</code>/<code>domain</code>/<code>application</code>
+分层</td>
+</tr>
+<tr>
+<td>2. 契约完备性与边界防呆</td>
+<td><code>PASS</code></td>
+<td><code>CapabilityRouter</code>
+校验白名单与负载；<code>MotionCoordinator</code> 核验
+<code>epoch</code>、单调 <code>cmd_seq</code> 与 <code>0.02 rad/s</code>
+腰部重锁门限</td>
+</tr>
+<tr>
+<td>3. 状态机与生命周期确定性</td>
+<td><code>PASS</code></td>
+<td><code>_providers()</code> 统一执行
+<code>tick</code>/<code>abort</code>/<code>close</code>；<code>Robot::fail</code>
+按故障域精确隔离 <code>spatial</code> 提供者不误杀定位</td>
+</tr>
+<tr>
+<td>4. 实时内存与并发安全性</td>
+<td><code>PASS</code></td>
+<td><code>MotionPlanBus</code> 内置 <code>SeqLock</code>
+无锁交换；<code>MotionCoordinator</code> 独占
+<code>motion_cmd.shm</code> 写入权消除多写者竞争</td>
+</tr>
+<tr>
+<td>5. 离线可测性与失败留痕</td>
+<td><code>PASS</code></td>
+<td><code>LocalTaskDomain</code> 与 <code>MotionCoordinatorDomain</code>
+支持脱离 <code>SHM</code>
+的离线确定性单步测试；<code>CoordinationRuntime</code> 借助
+<code>Evidence</code> 记录
+<code>coordination_dispatch_reserved</code>/<code>synchronized</code>
+事件</td>
+</tr>
+<tr>
+<td>6. 单真源约束与过渡债务透明度</td>
+<td><code>HYBRID</code></td>
+<td>明确披露 <code>7</code> 个核心能力模块并存 <code>C++20</code>
+<code>domain.cpp</code>（服务 <code>4+1</code> <code>SHM</code>
+实时回路）与 <code>Python</code>
+<code>runtime.py</code>/<code>domain/*.py</code> 双栈实现，且
+<code>coordination_runtime</code> 仅有 <code>Python</code>
+实现（<code>cpp_entry: null</code>）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>能力提供者</th>
+<th>宿主进程 / 双栈入口</th>
+<th>核心能力契约</th>
+<th>所属 L4 算法专章</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SpatialRuntime</code></td>
+<td><code>P1</code>（<code>src/robot_app/modules/spatial_runtime/</code>）</td>
+<td>读取 <code>SalLidarWire</code>（<code>6000</code> 点）、动态腰部
+<code>FK</code> 补偿与先验地图重定位，输出
+<code>SpatialPosePod</code></td>
+<td><a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a></td>
+</tr>
+<tr>
+<td><code>PerceptionRuntime</code></td>
+<td><code>P1</code>（<code>src/robot_app/modules/perception_runtime/</code>）</td>
+<td><code>AprilTagTracker</code>、<code>YOLOv8-seg</code> +
+<code>FoundationPose</code> 与 <code>LocateAnything-3B</code>
+按需检测，输出 <code>PerceptionObsPod</code></td>
+<td><a
+href="../algorithms/workpiece-perception.html">工件视觉定位与五阶段超分检测</a></td>
+</tr>
+<tr>
+<td><code>NavigationRuntime</code></td>
+<td><code>P2</code>（<code>src/robot_app/modules/navigation_runtime/</code>）</td>
+<td><code>HybridA*</code> + <code>MPPI</code> + <code>box_route</code> +
+<code>PlanarAdjustment</code> +
+<code>ConvergentTerminalServo</code>，输出底盘
+<code>base_twist_vw</code></td>
+<td><a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a></td>
+</tr>
+<tr>
+<td><code>ManipulationRuntime</code></td>
+<td><code>P2</code>（<code>src/robot_app/modules/manipulation_runtime/</code>）</td>
+<td><code>17</code> 轴 <code>49</code> 候选 <code>DLS</code>
+逆解、<code>C2</code> 五次插补、纯臂导纳与
+<code>TouchdownGuard</code>，输出 <code>TrajectorySlotPod</code></td>
+<td><a
+href="../algorithms/manipulation-and-ik.html">双臂操作规划与柔顺导纳</a></td>
+</tr>
+<tr>
+<td><code>CoordinationRuntime</code></td>
+<td><code>assembly.py</code>（<code>src/robot_app/modules/coordination_runtime/runtime.py</code>）</td>
+<td><code>coordination.auto_task</code> 跨机对端
+<code>dispatch</code>/<code>await</code>（默认空配、零运动租约）</td>
+<td><a
+href="../subsystems/system-agent-and-rsi.html">系统智能体与受约束离线
+RSI</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="tech-details">
+<summary>
+查看能力模块 C++20 / Python 双栈映射与冻结交接常量清单
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>模块名称</th>
+<th><code>C++20</code> 原生核路径</th>
+<th><code>Python</code> 运行时路径</th>
+<th>冻结交接常量与说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>local_task_runtime</code></td>
+<td><code>src/robot_app/modules/local_task_runtime/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/local_task_runtime/runtime.py</code></td>
+<td>任务准入单步互斥（<code>step_active_</code>），拒收超载或禁用对象</td>
+</tr>
+<tr>
+<td><code>motion_coordinator</code></td>
+<td><code>src/robot_app/modules/motion_coordinator/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/motion_coordinator/runtime.py</code></td>
+<td><code>kUpperRelockMaxVelRps = 0.02 rad/s</code>；<code>kHoldingNavMaxSpeedMps = 0.45 m/s</code></td>
+</tr>
+<tr>
+<td><code>navigation_runtime</code></td>
+<td><code>src/robot_app/modules/navigation_runtime/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/navigation_runtime/runtime.py</code></td>
+<td><code>20 Hz</code> 控制循环；站位 <code>5 cm</code> /
+<code>10°</code> / <code>0.10 s</code> 停稳门限</td>
+</tr>
+<tr>
+<td><code>manipulation_runtime</code></td>
+<td><code>src/robot_app/modules/manipulation_runtime/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/manipulation_runtime/runtime.py</code></td>
+<td>主动 <code>20 Hz</code> / 被动 <code>2 Hz</code>；<code>49</code>
+候选 <code>±30 mm</code> 偏移，段残差 <code>&lt;= 20 mm</code></td>
+</tr>
+<tr>
+<td><code>spatial_runtime</code></td>
+<td><code>src/robot_app/modules/spatial_runtime/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/spatial_runtime/runtime.py</code></td>
+<td><code>10 Hz</code> 定位更新；<code>VoxelIcpLocalizer</code>
+<code>0.20 m</code> 体素网格</td>
+</tr>
+<tr>
+<td><code>perception_runtime</code></td>
+<td><code>src/robot_app/modules/perception_runtime/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/perception_runtime/runtime.py</code></td>
+<td><code>AprilTag</code>
+<code>max_reproj_err_px = 3.5</code>、<code>max_jump_m = 0.35 m</code></td>
+</tr>
+<tr>
+<td><code>state_estimation</code></td>
+<td><code>src/robot_app/modules/state_estimation/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/state_estimation/runtime.py</code></td>
+<td><code>BodyStabilityMonitor</code> 滑窗
+<code>1.0 s</code>、最大数据年龄 <code>40 ms</code>、倾角
+<code>&lt;= 10°</code></td>
+</tr>
+<tr>
+<td><code>action_executor</code></td>
+<td><code>src/robot_app/modules/action_executor/runtime.cpp</code></td>
+<td><code>src/robot_app/modules/action_executor/runtime.py</code></td>
+<td><code>200 Hz</code> 轨迹采样；路点上限 <code>128</code> 点；支持
+<code>REVERSE_PREFIX_REPLAY</code></td>
+</tr>
+<tr>
+<td><code>coordination_runtime</code></td>
+<td>无（<code>cpp_entry: null</code>）</td>
+<td><code>src/robot_app/modules/coordination_runtime/runtime.py</code></td>
+<td><code>V5</code> 对端同步与 <code>V0</code>
+观测适配；严格无运动租约与无自动重发</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<ul>
+<li><strong>单机持物搬运与纯接触操作实证（<code>L3</code>
+<code>PHYSICAL_SIM</code>）</strong>：在 <code>MuJoCo 4.0.1</code> 零
+<code>&lt;weld&gt;</code> 纯接触工厂中，能力层连续完成
+<code>510 / 510</code> 调试与验证操作样本（覆盖 <code>204</code>
+次按键、<code>153</code> 次抓取、<code>153</code> 次触底安置）；在
+<code>SIT-F3</code> 四机联调中连续跑通 <code>16</code> 个工位周期与
+<code>12</code> 次 <code>coordination.auto_task</code>
+同步接管。以下两段 <code>1x</code>
+原速物理仿真录像分别记录胸前搬运重心调节与双臂按键/抓取/退手完整作业周期：</li>
+</ul>
 <figure class="doc-video" data-media-id="MED-LOCO-02">
 <video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-LOCO-02.webp">
 <source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-chest-carry-conveyor.mp4" type="video/mp4" />
@@ -115,52 +786,6 @@ SHA256:0970597f26）</span><span
 class="doc-media-badge">PHYSICAL_SIM</span>
 </figcaption>
 </figure>
-<p><code>navigation_runtime</code> 在 <code>20 Hz</code>
-节拍下按任务阶段依次串联三层规划控制算法，适配从全向人形到阿克曼机场牵引车的全部底盘类型：</p>
-<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
-<table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<thead>
-<tr>
-<th>算法层级</th>
-<th>核心实现类</th>
-<th>关键冻结参数与适用构型</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>全局运动学搜索</strong></td>
-<td><code>HybridAStar</code>（<code>pct_nav/hybrid_astar.hpp</code>）</td>
-<td>步长 <code>0.35 m</code>、最小转弯半径 <code>1.2 m</code>、机身半径
-<code>0.35 m</code>、允许倒车、单次扩展上限 <code>15000</code> 节点</td>
-</tr>
-<tr>
-<td><strong>局部 ESDF 滚动避障</strong></td>
-<td><code>MppiLocalPlanner</code>（<code>pct_nav/mppi_local_planner.hpp</code>）</td>
-<td>均匀支持
-<code>kHolonomic</code>、<code>kDifferential</code>、<code>kAckermann</code>
-三种运动学；默认 <code>64</code> 条采样滚动轨迹（上限
-<code>128</code>）、前瞻 <code>15</code>
-步（<code>dt = 0.1 s</code>）、安全净空阈值 <code>0.45 m</code>
-与确定性随机种子</td>
-</tr>
-<tr>
-<td><strong>精确合拢与后退脱离</strong></td>
-<td><code>PlanarAdjustment</code>（<code>pct_nav/planar_adjustment.hpp</code>）</td>
-<td>冻结调节限速
-<code>0.10 m/s</code>、<code>make_current_heading_retreat_target</code>
-固定沿当前航向后退 <code>0.20 m</code>、位置容差 <code>5 cm</code> /
-航向容差 <code>10°</code> 且连续停稳校验 <code>0.10 s</code></td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="全身协调17-轴操作规划与柔顺执行p2-p0">全身协调、17
-轴操作规划与柔顺执行（P2 + P0）</h2>
 <figure class="doc-video" data-media-id="MED-MANIP-01">
 <video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-01.webp">
 <source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-manip-pipeline-cycle.mp4" type="video/mp4" />
@@ -171,61 +796,13 @@ SHA256:86896da199）</span><span
 class="doc-media-badge">PHYSICAL_SIM</span>
 </figcaption>
 </figure>
-<p>上身作业能力同时跨越规划进程（P2
-<code>manipulation_runtime</code>）与实时执行进程（P0
-<code>action_executor</code> + <code>body_gateway</code>）：</p>
 <ul>
-<li><strong>17 轴加权 DLS
-上肢规划（<code>UpperBodyPlanner</code>）</strong>：针对
-<code>kUpperBodyDofs = 17</code>（<code>3</code> 轴腰部 + 双
-<code>7</code> 轴机械臂），强制腰部冻结角度限幅（偏航
-<code>±40°</code>、俯仰 <code>-10°..+30°</code>、滚转
-<code>±25°</code>）并设定阶梯惩罚权重（<code>yaw=1.0</code>、<code>pitch=10.0</code>、<code>roll=100.0</code>）优先释放手臂自由度。</li>
-<li><strong>49 候选搜索与姿态生成</strong>：支持围绕目标点的
-<code>49</code> 候选 <code>±30 mm</code> 微扰采样（要求段残差不超过
-<code>20 mm</code>），集成最小加加速度（Minimum-Jerk）插补及靠站后单次底盘漂移补偿（位移超过
-<code>2 cm</code> 或转角超过 <code>3°</code> 自动触发），并内建
-<code>chest_carry_posture()</code>（抱物行进姿态）与
-<code>empty_stow_posture()</code>（空手收臂姿态）。</li>
-<li><strong>多模态纯接触轨迹执行与异常回退（<code>TrajectorySlotPod</code>
-&amp; <code>ActionExecutor</code>）</strong>：单机共享槽位支持
-<code>SINGLE_ARM_PLUG_MATE</code>（单臂电源插头力控对接）、<code>DUAL_ARM_CART_PUSH_PULL</code>（双臂推车导纳推拉）及异常情况下的
-<code>REVERSE_PREFIX_REPLAY</code> 原路前缀回退，轨迹路点上限
-<code>128</code> 点。</li>
-<li><strong>双足策略推理与关节安全防线（<code>PolicyRunner</code>）</strong>：对双足构型按
-SHA-256（<code>card</code> / <code>onnx</code> / <code>manifest</code>
-三重指纹核验）加载 ONNX 策略包，输出腿部目标位置与
-<code>kp</code>/<code>kd</code> 刚度增益；同时通过
-<code>SimPositionExcursionGuard</code>
-监测非策略自由度超限时间，任意关节超幅持续超过
-<code>100 ms</code>（<code>kSimPositionExcursionNs</code>）即立刻触发报错拦截。</li>
-<li><strong>全身协调仲裁（<code>MotionCoordinator</code> &amp;
-<code>LocalTaskRuntime</code>）</strong>：以 <code>50 Hz</code> 统一向
-<code>motion_cmd.shm</code>
-下发底盘扭转速度、<code>torso_relock_active</code>
-行进锁腰标志、机构行程及夹爪动作标志；并由 P3 进程中的
-<code>LocalTaskRuntime</code> 衔接上层 <code>ExecuteAssignment</code> /
-<code>ExecuteCapability</code> 契约与底层无锁命令/回执环形队列。</li>
-</ul>
-<h2
-id="主动防碰与接近锥掩蔽机制lidarreflexring">主动防碰与接近锥掩蔽机制（<code>LidarReflexRing</code>）</h2>
-<p>在机器人贴近工台按键、插拔地面电源插头或对准托盘货箱的瞬间，固定半径急停圈极易误将目标物体识别为障碍物导致僵死。P0
-进程内的 <code>protection_runtime</code> 集成
-<code>src/robot_app/algorithms/safety/lidar_reflex_ring.hpp</code>
-定义的
-<code>LidarReflexRing</code>，通过分向阈值兼顾贴近作业可完成性与全向防碰安全：</p>
-<ul>
-<li><strong>常态全向保护</strong>：当激光点进入 <code>1.20 m</code>
-减速环（<code>slow_radius_m</code>）内执行线性降速，进入
-<code>0.45 m</code>
-硬停环（<code>hard_stop_radius_m</code>）内立即切断速度。</li>
-<li><strong>前向接近锥掩蔽（<code>approach_cone_active</code>）</strong>：当
-<code>PlanarAdjustment</code> 或操作协调器激活半锥角 <code>25.0°</code>
-的前向接近锥掩蔽时，仅对锥面正前方限速至 <code>0.15 m/s</code>
-并把前向硬停阈值收窄至
-<code>0.08 m</code>（<code>cone_hard_stop_radius_m</code>），其余
-<code>310°</code> 侧后方保持原有 <code>0.45 m</code>
-安全环防撞不变。</li>
+<li><strong>证据边界声明</strong>：<code>coordination.auto_task</code>
+默认空配置且仅在显式对端绑定下工作；双栈中 <code>Python</code>
+精细算子与 <code>C++20</code> <code>4+1</code>
+内核正在持续收敛并统一接口（通过共享契约保持语义一致），且所有
+<code>PHYSICAL_SIM</code>（<code>L3</code>）结果均不可直接等效为未经现场标定的
+<code>L4</code> 真机验收。</li>
 </ul>
       </article>
 
@@ -238,17 +815,22 @@ id="主动防碰与接近锥掩蔽机制lidarreflexring">主动防碰与接近�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#空间定位与视觉跟踪p1robot_spatial_perc"
-id="toc-空间定位与视觉跟踪p1robot_spatial_perc">空间定位与视觉跟踪（P1：<code>robot_spatial_perc</code>）</a></li>
-<li><a href="#全构型移动导航与精确靠泊调节p2navigation_runtime"
-id="toc-全构型移动导航与精确靠泊调节p2navigation_runtime">全构型移动导航与精确靠泊调节（P2：<code>navigation_runtime</code>）</a></li>
-<li><a href="#全身协调17-轴操作规划与柔顺执行p2-p0"
-id="toc-全身协调17-轴操作规划与柔顺执行p2-p0">全身协调、17
-轴操作规划与柔顺执行（P2 + P0）</a></li>
-<li><a href="#主动防碰与接近锥掩蔽机制lidarreflexring"
-id="toc-主动防碰与接近锥掩蔽机制lidarreflexring">主动防碰与接近锥掩蔽机制（<code>LidarReflexRing</code>）</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与内部机制</a>
+<ul>
+<li><a href="#单写者控制租约与交接锁motioncoordinatordomain"
+id="toc-单写者控制租约与交接锁motioncoordinatordomain">单写者控制租约与交接锁（<code>MotionCoordinatorDomain</code>）</a></li>
+<li><a href="#统一提供者生命周期与故障隔离策略"
+id="toc-统一提供者生命周期与故障隔离策略">统一提供者生命周期与故障隔离策略</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -261,20 +843,21 @@ id="toc-主动防碰与接近锥掩蔽机制lidarreflexring">主动防碰与接�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

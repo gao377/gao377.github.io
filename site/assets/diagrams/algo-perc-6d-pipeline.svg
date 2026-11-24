@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-perc-6d-pipeline" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-perc-6d-pipeline-title" aria-describedby="algo-perc-6d-pipeline-desc">
+  <title id="algo-perc-6d-pipeline-title">ZED 2i / RealSense -&gt; YOLOv8-seg + FoundationPose 单实例 6D 配准与分支标记</title>
+  <desc id="algo-perc-6d-pipeline-desc">呈现主线 RGB-D 分割与 CAD 先验 6D 位姿配准、单实例防误抓门禁，以及仍在特性分支的超分检测隔离边界。</desc>
+  <defs>
+    <pattern id="algo-perc-6d-pipeline-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-perc-6d-pipeline-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-perc-6d-pipeline-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-perc-6d-pipeline-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="800.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">MAINLINE 6D REGISTRATION PIPELINE (P1)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">主线双目 RGB-D、基准跟踪与单实例 6D 配准</text>
+  <rect x="864.0" y="86.0" width="300.0" height="420.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="878.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">BRANCH ISOLATION &amp; TARGET</text>
+  <text x="878.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">特性分支隔离与最终抓点绑定</text>
+  <g class="arch-edge" data-from="zed_rgbd" data-to="apriltag" data-flow="mainline">
+    <path d="M 290.0 182.0 L 320.0 182.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-forest)"/>
+    <rect x="289.1" y="173.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="305.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">源帧</text>
+  </g>
+  <g class="arch-edge" data-from="zed_rgbd" data-to="yolo_seg" data-flow="mainline">
+    <path d="M 174.0 218.0 L 174.0 243.0 Q 174.0 248.0 179.0 248.0 L 691.0 248.0 Q 696.0 248.0 696.0 243.0 L 696.0 218.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-slate)"/>
+    <rect x="414.1" y="239.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="435.0" y="251.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">RGB-D</text>
+  </g>
+  <g class="arch-edge" data-from="yolo_seg" data-to="fpose_6d" data-flow="mainline">
+    <path d="M 696.0 218.0 L 696.0 271.0 Q 696.0 276.0 691.0 276.0 L 285.0 276.0 Q 280.0 276.0 280.0 281.0 L 280.0 316.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-slate)"/>
+    <rect x="472.1" y="267.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="488.0" y="279.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">掩膜</text>
+  </g>
+  <g class="arch-edge" data-from="fpose_6d" data-to="inst_guard" data-flow="mainline">
+    <path d="M 420.0 353.0 L 480.0 353.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-terracotta)"/>
+    <rect x="422.2" y="344.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="450.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">5+2 配准</text>
+  </g>
+  <g class="arch-edge" data-from="inst_guard" data-to="manip_bind" data-flow="mainline">
+    <path d="M 760.0 353.0 L 884.0 353.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-6d-pipeline-arrow-forest)"/>
+    <rect x="796.2" y="344.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="822.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">唯一实例</text>
+  </g>
+  <g class="arch-edge" data-from="sr_branch" data-to="manip_bind" data-flow="branch">
+    <path d="M 1014.0 220.0 L 1014.0 316.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-perc-6d-pipeline-arrow-ochre)"/>
+    <rect x="972.3" y="259.0" width="83.3" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="1014.0" y="271.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">BRANCH 未并入</text>
+  </g>
+  <g class="arch-node-card" data-node-id="zed_rgbd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zed_rgbd" data-flows="all,mainline" aria-expanded="false" aria-label="ZED 2i / RealSense RGB-D（双目深度 · 源时间戳）">
+      <rect class="arch-node-box" x="58.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">ZED 2i / RealSense RGB-D</text>
+      <text class="arch-node-role" x="70.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双目深度 · 源时间戳</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#flow" aria-label="前往「ZED 2i / RealSense RGB-D」对应章节">
+      <rect x="262.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="274.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="apriltag">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="apriltag" data-flows="all,mainline" aria-expanded="false" aria-label="AprilTagTracker (P1)（C++20 10 Hz 基准跟踪）">
+      <rect class="arch-node-box" x="320.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="332.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">AprilTagTracker (P1)</text>
+      <text class="arch-node-role" x="332.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">C++20 10 Hz 基准跟踪</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#paradigm" aria-label="前往「AprilTagTracker (P1)」对应章节">
+      <rect x="524.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="536.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="yolo_seg">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="yolo_seg" data-flows="all,mainline" aria-expanded="false" aria-label="YOLOv8-seg 实例分割（目标掩膜提取）">
+      <rect class="arch-node-box" x="580.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="592.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">YOLOv8-seg 实例分割</text>
+      <text class="arch-node-role" x="592.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">目标掩膜提取</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#principles" aria-label="前往「YOLOv8-seg 实例分割」对应章节">
+      <rect x="784.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="796.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fpose_6d">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fpose_6d" data-flows="all,mainline" aria-expanded="false" aria-label="FoundationPose 6D 配准（5+2 候选姿态精配准）">
+      <rect class="arch-node-box" x="140.0" y="316.0" width="280.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="152.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FoundationPose 6D 配准</text>
+      <text class="arch-node-role" x="152.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">5+2 候选姿态精配准</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#contracts" aria-label="前往「FoundationPose 6D 配准」对应章节">
+      <rect x="392.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="404.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="inst_guard">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="inst_guard" data-flows="all,mainline" aria-expanded="false" aria-label="单实例防误抓门禁（剔除多目标混淆）">
+      <rect class="arch-node-box" x="480.0" y="316.0" width="280.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="492.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单实例防误抓门禁</text>
+      <text class="arch-node-role" x="492.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">剔除多目标混淆</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#principles" aria-label="前往「单实例防误抓门禁」对应章节">
+      <rect x="732.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="744.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sr_branch">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sr_branch" data-flows="all,branch" aria-expanded="false" aria-label="pft_workpiece_sr (BRANCH)（五阶段超分待并入主线）">
+      <rect class="arch-node-box" x="884.0" y="146.0" width="260.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="896.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">pft_workpiece_sr (BRANCH)</text>
+      <text class="arch-node-role" x="896.0" y="206.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">五阶段超分待并入主线</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#paradigm" aria-label="前往「pft_workpiece_sr (BRANCH)」对应章节">
+      <rect x="1116.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1128.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="manip_bind">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="manip_bind" data-flows="all,branch,mainline" aria-expanded="false" aria-label="ManipulationTarget 输出（绑定真实双抓点）">
+      <rect class="arch-node-box" x="884.0" y="316.0" width="260.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="896.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ManipulationTarget 输出</text>
+      <text class="arch-node-role" x="896.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">绑定真实双抓点</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#evidence" aria-label="前往「ManipulationTarget 输出」对应章节">
+      <rect x="1116.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1128.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">主线检测与 FoundationPose 6D</text>
+  <rect x="278.8" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="300.8" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">单实例防错抓校验门禁</text>
+  <rect x="426.9" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="448.9" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">pft_workpiece_sr (特性分支隔离)</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">主线明确区分已上线 6D 配准与特性分支螺母超分，绝不提前虚报合入状态</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 04B · SINGLE-INSTANCE 6D POSE PIPELINE</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">ZED 2i / RealSense -&gt; YOLOv8-seg + FoundationPose 单实例 6D 配准与分支标记</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">P1 AprilTag + 6D 配准 · 透明标注 pft_workpiece_sr (BRANCH)</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

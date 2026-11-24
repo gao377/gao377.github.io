@@ -68,12 +68,441 @@ Ground Turnaround 场景对照</p>
 <p>FACRI 采用「单一用户入口 +
 三条场景后端路由」的命令行设计，自动依据场景参数与同步标志将请求分派至对应生命周期控制器。本页梳理命令路由逻辑与
 Smart Factory、C919 Ground Turnaround 两大旗舰场景的核心配置差异。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="portal-dual-scenes-map" data-fig-uid="portal-dual-scenes-map-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/portal-dual-scenes-map.svg"
-alt="双旗舰场景空间与设备拓扑图" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="portal-dual-scenes-map" viewBox="0 0 1200 610" width="1200" height="610" role="group" aria-labelledby="portal-dual-scenes-map-title-f0" aria-describedby="portal-dual-scenes-map-desc-f0">
+  <title id="portal-dual-scenes-map-title-f0">双旗舰场景拓扑: Smart Factory 四机产线 vs C919 九机机坪保障</title>
+  <desc id="portal-dual-scenes-map-desc-f0">对比 Smart Factory 四机 16 工位流线与 C919 双高度作业面 9 台异构装备及 8 台地勤设施的调度拓扑。</desc>
+  <defs>
+    <pattern id="portal-dual-scenes-map-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="portal-dual-scenes-map-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="portal-dual-scenes-map-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="portal-dual-scenes-map-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="portal-dual-scenes-map-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="portal-dual-scenes-map-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="portal-dual-scenes-map-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="610" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="610" fill="url(#portal-dual-scenes-map-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="608.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="520.0" height="470.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SCENE 01 · factory.json (500 Hz 物理)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Smart Factory 智能机电产线（4 台 FACRI · 16 工位）</text>
+  <rect x="580.0" y="86.0" width="584.0" height="470.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="594.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SCENE 02 · c919.json (200 Hz / T3 运动学)</text>
+  <text x="594.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">C919 地面保障过站（双工作面 · 9 台异构体）</text>
+  <g class="arch-edge" data-from="fac_cells" data-to="fac_mutex" data-flow="factory">
+    <path d="M 296.0 212.0 L 296.0 250.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-scenes-map-arrow-ochre-f0)"/>
+    <rect x="261.3" y="222.0" width="69.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="296.0" y="234.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">16 设备回执</text>
+  </g>
+  <g class="arch-edge" data-from="fac_mutex" data-to="fac_r1" data-flow="factory">
+    <path d="M 172.0 316.0 L 172.0 356.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-scenes-map-arrow-terracotta-f0)"/>
+    <rect x="136.2" y="327.0" width="71.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="172.0" y="339.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">Domain 126</text>
+  </g>
+  <g class="arch-edge" data-from="fac_mutex" data-to="fac_r24" data-flow="factory">
+    <path d="M 420.0 316.0 L 420.0 356.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-scenes-map-arrow-forest-f0)"/>
+    <rect x="394.2" y="327.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="420.0" y="339.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">走廊令牌</text>
+  </g>
+  <g class="arch-edge" data-from="c919_cabin" data-to="c919_apron" data-flow="c919">
+    <path d="M 862.0 180.0 L 882.0 180.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#portal-dual-scenes-map-arrow-slate-f0)"/>
+    <rect x="841.3" y="171.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="872.0" y="183.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">登机桥接口</text>
+  </g>
+  <g class="arch-edge" data-from="c919_apron" data-to="c919_fac" data-flow="c919">
+    <path d="M 1012.0 214.0 L 1012.0 248.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-scenes-map-arrow-ochre-f0)"/>
+    <rect x="985.2" y="222.0" width="53.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="1012.0" y="234.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">5 互斥锁</text>
+  </g>
+  <g class="arch-edge" data-from="c919_ugv" data-to="c919_fac" data-flow="c919">
+    <path d="M 862.0 282.0 L 882.0 282.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-scenes-map-arrow-ink-f0)"/>
+    <rect x="846.2" y="273.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="872.0" y="285.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">地勤协同</text>
+  </g>
+  <g class="arch-edge" data-from="c919_fac" data-to="c919_gates" data-flow="c919">
+    <path d="M 1012.0 316.0 L 1012.0 331.0 Q 1012.0 336.0 1007.0 336.0 L 737.0 336.0 Q 732.0 336.0 732.0 341.0 L 732.0 356.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-scenes-map-arrow-terracotta-f0)"/>
+    <rect x="838.3" y="327.0" width="67.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="872.0" y="339.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">G1–G4 门禁</text>
+  </g>
+  <g class="arch-edge" data-from="c919_gates" data-to="c919_sites" data-flow="c919">
+    <path d="M 862.0 392.0 L 882.0 392.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-scenes-map-arrow-ink-f0)"/>
+    <rect x="845.2" y="383.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="872.0" y="395.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">sim/lab</text>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_cells" aria-controls="portal-dual-scenes-map-f0-drawer-fac_cells">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_cells" data-flows="all,factory" aria-expanded="false" aria-label="16 工位四线矩阵（A1..D4 · FacilityHAL）" aria-controls="portal-dual-scenes-map-f0-drawer-fac_cells">
+      <rect class="arch-node-box" x="58.0" y="146.0" width="476.0" height="66.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">16 工位四线矩阵</text>
+      <text class="arch-node-role" x="70.0" y="198.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">A1..D4 · FacilityHAL</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/cli-and-scenes.html" data-same-page="true" aria-label="前往「16 工位四线矩阵」对应章节">
+      <rect x="506.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="518.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_mutex" aria-controls="portal-dual-scenes-map-f0-drawer-fac_mutex">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_mutex" data-flows="all,factory" aria-expanded="false" aria-label="产线共享走廊互斥锁（StarFleetBus :18641）" aria-controls="portal-dual-scenes-map-f0-drawer-fac_mutex">
+      <rect class="arch-node-box" x="58.0" y="250.0" width="476.0" height="66.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="275.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">产线共享走廊互斥锁</text>
+      <text class="arch-node-role" x="70.0" y="302.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">StarFleetBus :18641</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#flow" aria-label="前往「产线共享走廊互斥锁」对应章节">
+      <rect x="506.0" y="254.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="518.0" y="270.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_r1" aria-controls="portal-dual-scenes-map-f0-drawer-fac_r1">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_r1" data-flows="all,factory" aria-expanded="false" aria-label="robot_r1 真机对等位（Domain 126 · 31 DOF）" aria-controls="portal-dual-scenes-map-f0-drawer-fac_r1">
+      <rect class="arch-node-box" x="58.0" y="356.0" width="228.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">robot_r1 真机对等位</text>
+      <text class="arch-node-role" x="70.0" y="414.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">Domain 126 · 31 DOF</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/real-peer-sync.html" aria-label="前往「robot_r1 真机对等位」对应章节">
+      <rect x="258.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="270.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_r24" aria-controls="portal-dual-scenes-map-f0-drawer-fac_r24">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_r24" data-flows="all,factory" aria-expanded="false" aria-label="robot_r2–r4 独立并发（容器 4+1 · 故障隔离）" aria-controls="portal-dual-scenes-map-f0-drawer-fac_r24">
+      <rect class="arch-node-box" x="306.0" y="356.0" width="228.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="318.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">robot_r2–r4 独立并发</text>
+      <text class="arch-node-role" x="318.0" y="414.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">容器 4+1 · 故障隔离</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/runtime-baselines.html" aria-label="前往「robot_r2–r4 独立并发」对应章节">
+      <rect x="506.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="518.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="c919_cabin" aria-controls="portal-dual-scenes-map-f0-drawer-c919_cabin">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="c919_cabin" data-flows="all,c919" aria-expanded="false" aria-label="map_cabin 客舱作业面（RP1 40 DOF · z=3.47m）" aria-controls="portal-dual-scenes-map-f0-drawer-c919_cabin">
+      <rect class="arch-node-box" x="602.0" y="146.0" width="260.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="614.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">map_cabin 客舱作业面</text>
+      <text class="arch-node-role" x="614.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">RP1 40 DOF · z=3.47m</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#principles" aria-label="前往「map_cabin 客舱作业面」对应章节">
+      <rect x="834.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="846.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="c919_apron" aria-controls="portal-dual-scenes-map-f0-drawer-c919_apron">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="c919_apron" data-flows="all,c919" aria-expanded="false" aria-label="map_apron 机坪编队（FACRI · G2 · M20）" aria-controls="portal-dual-scenes-map-f0-drawer-c919_apron">
+      <rect class="arch-node-box" x="882.0" y="146.0" width="260.0" height="68.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="894.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">map_apron 机坪编队</text>
+      <text class="arch-node-role" x="894.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">FACRI · G2 · M20</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/cli-and-scenes.html" data-same-page="true" aria-label="前往「map_apron 机坪编队」对应章节">
+      <rect x="1114.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="c919_ugv" aria-controls="portal-dual-scenes-map-f0-drawer-c919_ugv">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="c919_ugv" data-flows="all,c919" aria-expanded="false" aria-label="四型特种地勤无人车（5 DOF 差速/阿克曼）" aria-controls="portal-dual-scenes-map-f0-drawer-c919_ugv">
+      <rect class="arch-node-box" x="602.0" y="248.0" width="260.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="614.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">四型特种地勤无人车</text>
+      <text class="arch-node-role" x="614.0" y="302.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">5 DOF 差速/阿克曼</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#flow" aria-label="前往「四型特种地勤无人车」对应章节">
+      <rect x="834.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="846.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="c919_fac" aria-controls="portal-dual-scenes-map-f0-drawer-c919_fac">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="c919_fac" data-flows="all,c919" aria-expanded="false" aria-label="8 台机场地勤设施（FacilityHAL :18642）" aria-controls="portal-dual-scenes-map-f0-drawer-c919_fac">
+      <rect class="arch-node-box" x="882.0" y="248.0" width="260.0" height="68.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="894.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">8 台机场地勤设施</text>
+      <text class="arch-node-role" x="894.0" y="302.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">FacilityHAL :18642</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#flow" aria-label="前往「8 台机场地勤设施」对应章节">
+      <rect x="1114.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1126.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="c919_gates" aria-controls="portal-dual-scenes-map-f0-drawer-c919_gates">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="c919_gates" data-flows="all,c919" aria-expanded="false" aria-label="G1–G4 四道过站门禁（5 业务线 · T3 边界）" aria-controls="portal-dual-scenes-map-f0-drawer-c919_gates">
+      <rect class="arch-node-box" x="602.0" y="356.0" width="260.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="614.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">G1–G4 四道过站门禁</text>
+      <text class="arch-node-role" x="614.0" y="414.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">5 业务线 · T3 边界</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/simulation-engine.html" aria-label="前往「G1–G4 四道过站门禁」对应章节">
+      <rect x="834.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="846.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="c919_sites" aria-controls="portal-dual-scenes-map-f0-drawer-c919_sites">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="c919_sites" data-flows="all,c919" aria-expanded="false" aria-label="sim / lab 站点切换（SIM_SAL &lt;-&gt; REAL_HAL）" aria-controls="portal-dual-scenes-map-f0-drawer-c919_sites">
+      <rect class="arch-node-box" x="882.0" y="356.0" width="260.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="894.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">sim / lab 站点切换</text>
+      <text class="arch-node-role" x="894.0" y="414.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SIM_SAL &lt;-&gt; REAL_HAL</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/cli-and-scenes.html" data-same-page="true" aria-label="前往「sim / lab 站点切换」对应章节">
+      <rect x="1114.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1126.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="566.0" x2="1164.0" y2="566.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="588.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="104.0" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">并发执行与主工作面</text>
+  <rect x="219.3" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="241.3" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">互斥走廊与高空客舱面</text>
+  <rect x="367.5" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="389.5" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FacilityHAL 托管设施</text>
+  <rect x="517.1" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="539.1" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">真机接口与 T3 外推红线</text>
+  <text x="1164.0" y="587.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">16 工位编号与 8 台地勤设施明细已下沉至点击抽屉与 Cli-and-Scenes 专章</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">PORTAL VIEW 05 · DUAL FLAGSHIP SCENES</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">双旗舰场景拓扑: Smart Factory 四机产线 vs C919 九机机坪保障</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">共享端口 :18640/:18641/:18642 · 无自动停机</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>双旗舰场景空间与设备拓扑图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="factory" aria-pressed="false">Smart Factory 四机产线</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="c919" aria-pressed="false">C919 九机机坪与客舱</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>双旗舰场景空间与设备拓扑图</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/portal-dual-scenes-map.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="portal-dual-scenes-map-f0-drawer-fac_cells" class="diagram-drawer-panel" data-node-drawer="fac_cells" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">16 工位四线矩阵</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Smart Factory · 产线拓扑 · 500 Hz 物理 / 50 Hz 控制</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「16 工位四线矩阵」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">四条并行产线共 16 座工位，由 FacilityHAL :18642 托管异步加工周期。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>四道工序流水线 + 离散工装托管</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/scenes/manifests/factory.json</code></dd></div>
+      <div><dt>核心契约</dt><dd>FEEDER(feed) -&gt; PRESS(process) -&gt; INSPECT(inspect) -&gt; CONVEYOR(present_box)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/cli-and-scenes.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-fac_mutex" class="diagram-drawer-panel" data-node-drawer="fac_mutex" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">产线共享走廊互斥锁</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Smart Factory · 资源仲裁 · 独占令牌窗口</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「产线共享走廊互斥锁」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在规划编译期注入资源区间并在运行期按令牌串行化通过交叉走廊。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>ResourceTokenMutexRegistry 防死锁</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/fleet_bus/star_fleet_bus.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>仲裁 factory.ch_corridor 与 factory.workcell_aisle 互斥通行窗口</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-fac_r1" class="diagram-drawer-panel" data-node-drawer="fac_r1" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">robot_r1 真机对等位</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Smart Factory · 真机接口 · 四阶段对称锁步</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「robot_r1 真机对等位」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">产线 1 号机位预留对等锁步接口，真机闭环不占用额外运动租约。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>伴生发布清单隔离 + V5 同步</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/prepare_real_peer_release.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>支持 --real 接入外部真机 (192.168.123.76) 或 --mock 隔离测试</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/real-peer-sync.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-fac_r24" class="diagram-drawer-panel" data-node-drawer="fac_r24" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">robot_r2–r4 独立并发</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Smart Factory · 多机并发 · 448 对 condim=6 接触</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「robot_r2–r4 独立并发」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">其余三台 FACRI 在容器内并发运行各自 4+1 进程，共享同一纯接触物理基准。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单机独立故障域</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/body_rt_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>单台急停仅置本机 LOCAL_HOLD，其余三机持续作业并保留真实计数</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/runtime-baselines.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-c919_cabin" class="diagram-drawer-panel" data-node-drawer="c919_cabin" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">map_cabin 客舱作业面</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">C919 · 高空客舱面 · aisle_half=0.25 m</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「map_cabin 客舱作业面」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在 3.47 米高度客舱平面执行 CorridorSegmentPod 窄走廊硬约束。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>双高度分层地图 + 窄道围栏</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/rp1/description.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>承载 robot_rp1 灵巧手服务，对接 GS01 登机桥与 GS09 餐车升降口</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-c919_apron" class="diagram-drawer-panel" data-node-drawer="c919_apron" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">map_apron 机坪编队</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">C919 · 机坪主平面 · 160×120 m · 200 Hz</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「map_apron 机坪编队」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在机坪主平面按统一 Capability 契约统筹人形、双臂与轮腿巡检机器人。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>声明式异构多机协同</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/scenes/manifests/c919.json</code></dd></div>
+      <div><dt>核心契约</dt><dd>2×FACRI(电源/轮挡)、G2(32 DOF 舱门推车)、M20(16 DOF 轮腿巡检)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/cli-and-scenes.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-c919_ugv" class="diagram-drawer-panel" data-node-drawer="c919_ugv" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">四型特种地勤无人车</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">C919 · 特种车辆 · vy == 0 运动学约束</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「四型特种地勤无人车」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">通过非完整约束底盘模型统一接入 MPPI 与 HybridA* 规划栈。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>底盘运动学适配器</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/c919_ugv_tractor/description.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>AU_02 牵引车、AU_03 叉车、GS_02 传送带车、AU_01 摆渡车</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-c919_fac" class="diagram-drawer-panel" data-node-drawer="c919_fac" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">8 台机场地勤设施</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">C919 · 设施与互斥 · 5 处共享互斥资源</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「8 台机场地勤设施」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">将地面电源、货舱门、传送带与登机桥状态纳入统一编排与 WAL 持久化。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>FacilityHAL + StarFleetBus 锁</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/contracts.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>AC09_GPU、AC06_CARGO、GS02_BELT、ZN11_SCALE 等 8 设施与 5 互斥区域</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-c919_gates" class="diagram-drawer-panel" data-node-drawer="c919_gates" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">G1–G4 四道过站门禁</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">C919 · 流程门禁 · L2 零物理运动学</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「G1–G4 四道过站门禁」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">严格串联五条过站保障支线，明确标注 T3 运动学证据与动力学边界。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>序贯门禁 DAG 编排</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/skills/c919-line-maintenance/contract.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>G1_STAND_SAFE -&gt; G2 -&gt; G3 -&gt; G4_TURNAROUND_CLOSED；T3 不外推为动力学接触</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/simulation-engine.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="portal-dual-scenes-map-f0-drawer-c919_sites" class="diagram-drawer-panel" data-node-drawer="c919_sites" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">sim / lab 站点切换</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">C919 · 部署模式 · 启动期清单切换</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「sim / lab 站点切换」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在不改核心规划与控制代码的前提下切换全仿真与展陈实机站点配置。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>双域对称驱动切换</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/c919_system.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>--site sim (全仿真) &lt;-&gt; --site lab (REAL_HAL 白名单)，共享 :18640 入口</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/cli-and-scenes.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
 <h2 id="统一入口路由机制">统一入口路由机制</h2>
 <p>在仓库根目录调用 <code>./facrictl</code>
@@ -321,20 +750,21 @@ id="toc-场景清单文件与内部资源标识对照">3.
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

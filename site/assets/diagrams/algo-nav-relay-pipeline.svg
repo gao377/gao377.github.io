@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-nav-relay-pipeline" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-nav-relay-pipeline-title" aria-describedby="algo-nav-relay-pipeline-desc">
+  <title id="algo-nav-relay-pipeline-title">混合导航三层接力: HybridA* -&gt; MPPI -&gt; box_route -&gt; ResponseSampling</title>
+  <desc id="algo-nav-relay-pipeline-desc">展示长距全局规划、局部采样避障、贴近工位三级拉出脱困与实测朝向绑定平移的接力流程。</desc>
+  <defs>
+    <pattern id="algo-nav-relay-pipeline-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-nav-relay-pipeline-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-nav-relay-pipeline-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-nav-relay-pipeline-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="420.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">GLOBAL &amp; LOCAL C++20 KERNEL</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">HybridA* 全局搜索与 MPPI 滚动避障</text>
+  <rect x="604.0" y="86.0" width="560.0" height="420.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">ESCAPE, SAMPLING &amp; CHASSIS</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">box_route 脱困、响应采样与底盘适配</text>
+  <g class="arch-edge" data-from="nav_goal" data-to="hybrid_astar" data-flow="global">
+    <path d="M 290.0 181.0 L 320.0 181.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-ink)"/>
+    <rect x="289.1" y="172.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="305.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">目标</text>
+  </g>
+  <g class="arch-edge" data-from="hybrid_astar" data-to="mppi_local" data-flow="global">
+    <path d="M 436.0 216.0 L 436.0 261.0 Q 436.0 266.0 431.0 266.0 L 320.0 266.0 Q 315.0 266.0 315.0 271.0 L 315.0 310.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-slate)"/>
+    <rect x="349.7" y="257.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="375.5" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">引导路标</text>
+  </g>
+  <g class="arch-edge" data-from="mppi_local" data-to="box_route" data-flow="local">
+    <path d="M 460.0 347.0 L 585.0 347.0 Q 590.0 347.0 590.0 342.0 L 590.0 186.0 Q 590.0 181.0 595.0 181.0 L 626.0 181.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-ochre)"/>
+    <rect x="564.2" y="255.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="590.0" y="267.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">工位脱离</text>
+  </g>
+  <g class="arch-edge" data-from="box_route" data-to="resp_samp" data-flow="local">
+    <path d="M 872.0 181.0 L 896.0 181.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-ochre)"/>
+    <rect x="858.2" y="172.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="884.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">实测朝向</text>
+  </g>
+  <g class="arch-edge" data-from="resp_samp" data-to="planar_adj" data-flow="local">
+    <path d="M 1019.0 216.0 L 1019.0 310.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-relay-pipeline-arrow-forest)"/>
+    <rect x="989.2" y="254.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="1019.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.10 m/s</text>
+  </g>
+  <g class="arch-edge" data-from="chassis_adapt" data-to="mppi_local" data-flow="kinematics">
+    <path d="M 626.0 362.0 L 460.0 362.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-nav-relay-pipeline-arrow-ink)"/>
+    <rect x="522.1" y="353.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="543.0" y="365.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">vy==0</text>
+  </g>
+  <g class="arch-edge" data-from="chassis_adapt" data-to="planar_adj" data-flow="kinematics">
+    <path d="M 872.0 347.0 L 896.0 347.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-nav-relay-pipeline-arrow-ink)"/>
+    <rect x="868.1" y="338.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="884.0" y="350.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">投影</text>
+  </g>
+  <g class="arch-node-card" data-node-id="nav_goal">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="nav_goal" data-flows="all,global" aria-expanded="false" aria-label="NavigationGoalV2 接入（登记站位 / 自由后退）">
+      <rect class="arch-node-box" x="60.0" y="146.0" width="230.0" height="70.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">NavigationGoalV2 接入</text>
+      <text class="arch-node-role" x="72.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">登记站位 / 自由后退</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#flow" aria-label="前往「NavigationGoalV2 接入」对应章节">
+      <rect x="262.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="274.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="hybrid_astar">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="hybrid_astar" data-flows="all,global" aria-expanded="false" aria-label="HybridAStar 全局搜索（0.35 m 步 · 15000 节点）">
+      <rect class="arch-node-box" x="320.0" y="146.0" width="232.0" height="70.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="332.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">HybridAStar 全局搜索</text>
+      <text class="arch-node-role" x="332.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">0.35 m 步 · 15000 节点</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#paradigm" aria-label="前往「HybridAStar 全局搜索」对应章节">
+      <rect x="524.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mppi_local">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mppi_local" data-flows="all,global,kinematics,local" aria-expanded="false" aria-label="MppiLocalPlanner（128 采样 · 0.45 m ESDF）">
+      <rect class="arch-node-box" x="170.0" y="310.0" width="290.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="182.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">MppiLocalPlanner</text>
+      <text class="arch-node-role" x="182.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">128 采样 · 0.45 m ESDF</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#paradigm" aria-label="前往「MppiLocalPlanner」对应章节">
+      <rect x="432.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="444.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="box_route">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="box_route" data-flows="all,local" aria-expanded="false" aria-label="box_route 三级拉出（工位贴边脱困序列）">
+      <rect class="arch-node-box" x="626.0" y="146.0" width="246.0" height="70.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">box_route 三级拉出</text>
+      <text class="arch-node-role" x="638.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">工位贴边脱困序列</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#principles" aria-label="前往「box_route 三级拉出」对应章节">
+      <rect x="844.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="856.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="resp_samp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="resp_samp" data-flows="all,local" aria-expanded="false" aria-label="ResponseSampling 平移（translation_only 定向调节）">
+      <rect class="arch-node-box" x="896.0" y="146.0" width="246.0" height="70.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ResponseSampling 平移</text>
+      <text class="arch-node-role" x="908.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">translation_only 定向调节</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#principles" aria-label="前往「ResponseSampling 平移」对应章节">
+      <rect x="1114.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1126.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="chassis_adapt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="chassis_adapt" data-flows="all,kinematics" aria-expanded="false" aria-label="三类底盘运动学统一（全向 / 差速 / 阿克曼）">
+      <rect class="arch-node-box" x="626.0" y="310.0" width="246.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">三类底盘运动学统一</text>
+      <text class="arch-node-role" x="638.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">全向 / 差速 / 阿克曼</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#contracts" aria-label="前往「三类底盘运动学统一」对应章节">
+      <rect x="844.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="856.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="planar_adj">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="planar_adj" data-flows="all,kinematics,local" aria-expanded="false" aria-label="PlanarAdjustment 精停（0.10 m/s · 交接终端）">
+      <rect class="arch-node-box" x="896.0" y="310.0" width="246.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">PlanarAdjustment 精停</text>
+      <text class="arch-node-role" x="908.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">0.10 m/s · 交接终端</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#evidence" aria-label="前往「PlanarAdjustment 精停」对应章节">
+      <rect x="1114.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">C++20 HybridA* 全局核</text>
+  <rect x="239.5" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="261.5" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Python box_route &amp; 响应采样</text>
+  <rect x="431.5" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="453.5" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">MPPI 避障与终端精停交接</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">导航自主确认停稳即可交接，不再读取 SIM 全局真值复判 5°</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 02B · RELAY NAVIGATION PIPELINE</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">混合导航三层接力: HybridA* -&gt; MPPI -&gt; box_route -&gt; ResponseSampling</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">C++20 pct_nav + Python 局部控制 · 全向/差速/阿克曼统一</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

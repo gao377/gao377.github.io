@@ -70,12 +70,367 @@ r180 双场景只读渲染与 RSI 实验面板</p>
 <code>apps/collaboration_platform/README.md</code>
 所述工作区。界面自身绝不创建第二套任务运行器或物理仿真器，所有下发指令均显式代理至主系统网关或受约束
 ROS 服务。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="guide-ui-readonly-separation" data-fig-uid="guide-ui-readonly-separation-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/guide-ui-readonly-separation.svg"
-alt="多机协作平台三态隔离与只读视图架构图" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="guide-ui-readonly-separation" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="guide-ui-readonly-separation-title-f0" aria-describedby="guide-ui-readonly-separation-desc-f0">
+  <title id="guide-ui-readonly-separation-title-f0">WebGL :18640 / :8088 只读三态隔离与底层控制单向边界</title>
+  <desc id="guide-ui-readonly-separation-desc-f0">阐明浏览器端三端口呈现、LIVE/REPLAY/?demo=1 三态严格隔离及 RoiGatewayGuard 到物理控制器的安全防火墙。</desc>
+  <defs>
+    <pattern id="guide-ui-readonly-separation-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="guide-ui-readonly-separation-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="guide-ui-readonly-separation-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="guide-ui-readonly-separation-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="guide-ui-readonly-separation-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="guide-ui-readonly-separation-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="guide-ui-readonly-separation-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#guide-ui-readonly-separation-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="452.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">BROWSER PRESENTATION</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双端口只读观测层</text>
+  <rect x="418.0" y="86.0" width="360.0" height="452.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="432.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">THREE-STATE ISOLATION</text>
+  <text x="432.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">三态严格隔离墙</text>
+  <rect x="810.0" y="86.0" width="354.0" height="452.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="824.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">BANDWIDTH &amp; CONTROL GUARD</text>
+  <text x="824.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">配额防线与物理控制边界</text>
+  <g class="arch-edge" data-from="ui_shell" data-to="mode_live" data-flow="live">
+    <path d="M 366.0 181.0 L 438.0 181.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#guide-ui-readonly-separation-arrow-forest-f0)"/>
+    <rect x="364.3" y="172.0" width="75.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="402.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">C01 受控代理</text>
+  </g>
+  <g class="arch-edge" data-from="ui_shell" data-to="mode_replay" data-flow="replay">
+    <path d="M 366.0 200.0 L 397.0 200.0 Q 402.0 200.0 402.0 205.0 L 402.0 290.0 Q 402.0 295.0 407.0 295.0 L 438.0 295.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#guide-ui-readonly-separation-arrow-ink-f0)"/>
+    <rect x="386.1" y="238.5" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="402.0" y="250.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">回放</text>
+  </g>
+  <g class="arch-edge" data-from="ui_iframe" data-to="mode_demo" data-flow="replay">
+    <path d="M 366.0 310.0 L 397.0 310.0 Q 402.0 310.0 402.0 315.0 L 402.0 404.0 Q 402.0 409.0 407.0 409.0 L 438.0 409.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#guide-ui-readonly-separation-arrow-ochre-f0)"/>
+    <rect x="376.2" y="350.5" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="402.0" y="362.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">设计预览</text>
+  </g>
+  <g class="arch-edge" data-from="roi_guard" data-to="mode_live" data-flow="guard">
+    <path d="M 830.0 212.0 L 758.0 212.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#guide-ui-readonly-separation-arrow-slate-f0)"/>
+    <rect x="762.2" y="203.0" width="63.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="794.0" y="215.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">2 流 640p</text>
+  </g>
+  <g class="arch-edge" data-from="ui_voice" data-to="mode_live" data-flow="live">
+    <path d="M 366.0 409.0 L 383.0 409.0 Q 388.0 409.0 388.0 404.0 L 388.0 197.0 Q 388.0 192.0 393.0 192.0 L 438.0 192.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#guide-ui-readonly-separation-arrow-slate-f0)"/>
+    <rect x="360.2" y="291.5" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="388.0" y="303.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">SSE 只读</text>
+  </g>
+  <g class="arch-edge" data-from="mode_live" data-to="phys_boundary" data-flow="guard">
+    <path d="M 758.0 196.0 L 789.0 196.0 Q 794.0 196.0 794.0 201.0 L 794.0 373.0 Q 794.0 378.0 799.0 378.0 L 830.0 378.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#guide-ui-readonly-separation-arrow-terracotta-f0)"/>
+    <rect x="758.3" y="278.0" width="71.3" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="794.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">禁读显示真值</text>
+  </g>
+  <g class="arch-node-card" data-node-id="ui_shell" aria-controls="guide-ui-readonly-separation-f0-drawer-ui_shell">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="ui_shell" data-flows="all,live,replay" aria-expanded="false" aria-label="主协作平台外壳（:18640 · Three.js r186）" aria-controls="guide-ui-readonly-separation-f0-drawer-ui_shell">
+      <rect class="arch-node-box" x="56.0" y="146.0" width="310.0" height="70.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">主协作平台外壳</text>
+      <text class="arch-node-role" x="68.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18640 · Three.js r186</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" data-same-page="true" aria-label="前往「主协作平台外壳」对应章节">
+      <rect x="338.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="350.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="ui_iframe" aria-controls="guide-ui-readonly-separation-f0-drawer-ui_iframe">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="ui_iframe" data-flows="all,replay" aria-expanded="false" aria-label="同源 3D 视口 iframe（r180 · preview_only）" aria-controls="guide-ui-readonly-separation-f0-drawer-ui_iframe">
+      <rect class="arch-node-box" x="56.0" y="260.0" width="310.0" height="70.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="285.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">同源 3D 视口 iframe</text>
+      <text class="arch-node-role" x="68.0" y="316.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">r180 · preview_only</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" data-same-page="true" aria-label="前往「同源 3D 视口 iframe」对应章节">
+      <rect x="338.0" y="264.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="350.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="ui_voice" aria-controls="guide-ui-readonly-separation-f0-drawer-ui_voice">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="ui_voice" data-flows="all,live" aria-expanded="false" aria-label="语音交互控制台（:8088 · SSE /client）" aria-controls="guide-ui-readonly-separation-f0-drawer-ui_voice">
+      <rect class="arch-node-box" x="56.0" y="374.0" width="310.0" height="70.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="399.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">语音交互控制台</text>
+      <text class="arch-node-role" x="68.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:8088 · SSE /client</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#flow" aria-label="前往「语音交互控制台」对应章节">
+      <rect x="338.0" y="378.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="350.0" y="394.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mode_live" aria-controls="guide-ui-readonly-separation-f0-drawer-mode_live">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mode_live" data-flows="all,guard,live" aria-expanded="false" aria-label="LIVE 实时代理模式（auto_start=false）" aria-controls="guide-ui-readonly-separation-f0-drawer-mode_live">
+      <rect class="arch-node-box" x="438.0" y="146.0" width="320.0" height="70.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="450.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">LIVE 实时代理模式</text>
+      <text class="arch-node-role" x="450.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">auto_start=false</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" data-same-page="true" aria-label="前往「LIVE 实时代理模式」对应章节">
+      <rect x="730.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="742.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mode_replay" aria-controls="guide-ui-readonly-separation-f0-drawer-mode_replay">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mode_replay" data-flows="all,replay" aria-expanded="false" aria-label="REPLAY 只读归档模式（写入门禁全锁死）" aria-controls="guide-ui-readonly-separation-f0-drawer-mode_replay">
+      <rect class="arch-node-box" x="438.0" y="260.0" width="320.0" height="70.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="450.0" y="285.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">REPLAY 只读归档模式</text>
+      <text class="arch-node-role" x="450.0" y="316.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">写入门禁全锁死</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" data-same-page="true" aria-label="前往「REPLAY 只读归档模式」对应章节">
+      <rect x="730.0" y="264.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="742.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mode_demo" aria-controls="guide-ui-readonly-separation-f0-drawer-mode_demo">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mode_demo" data-flows="all,replay" aria-expanded="false" aria-label="?demo=1 设计预览（零真实证据隔离）" aria-controls="guide-ui-readonly-separation-f0-drawer-mode_demo">
+      <rect class="arch-node-box" x="438.0" y="374.0" width="320.0" height="70.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="450.0" y="399.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">?demo=1 设计预览</text>
+      <text class="arch-node-role" x="450.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">零真实证据隔离</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" data-same-page="true" aria-label="前往「?demo=1 设计预览」对应章节">
+      <rect x="730.0" y="378.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="742.0" y="394.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="roi_guard" aria-controls="guide-ui-readonly-separation-f0-drawer-roi_guard">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="roi_guard" data-flows="all,guard" aria-expanded="false" aria-label="RoiGatewayGuard（&lt;=2 流 · 640p · 15s）" aria-controls="guide-ui-readonly-separation-f0-drawer-roi_guard">
+      <rect class="arch-node-box" x="830.0" y="190.0" width="314.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="842.0" y="215.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">RoiGatewayGuard</text>
+      <text class="arch-node-role" x="842.0" y="252.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">&lt;=2 流 · 640p · 15s</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" aria-label="前往「RoiGatewayGuard」对应章节">
+      <rect x="1116.0" y="194.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1128.0" y="210.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="phys_boundary" aria-controls="guide-ui-readonly-separation-f0-drawer-phys_boundary">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="phys_boundary" data-flows="all,guard" aria-expanded="false" aria-label="底层控制隔离边界（禁读显示真值）" aria-controls="guide-ui-readonly-separation-f0-drawer-phys_boundary">
+      <rect class="arch-node-box" x="830.0" y="340.0" width="314.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="842.0" y="365.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">底层控制隔离边界</text>
+      <text class="arch-node-role" x="842.0" y="402.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">禁读显示真值</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/runtime-baselines.html" aria-label="前往「底层控制隔离边界」对应章节">
+      <rect x="1116.0" y="344.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1128.0" y="360.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <line x1="82.0" y1="563.0" x2="100.0" y2="563.0" stroke="#2C5E3F" stroke-width="2.00"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">受控 LIVE 条件代理</text>
+  <line x1="219.0" y1="563.0" x2="237.0" y2="563.0" stroke="#1E4D8C" stroke-width="1.80" stroke-dasharray="4 3"/>
+  <text x="241.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">单向只读遥测与 ROI</text>
+  <rect x="356.1" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="378.1" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">preview_only 物理隔离红线</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">浏览器验证复用系统已打开的窗口，不额外加载重型 Viewer</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">GUIDE 02 · UI ISOLATION &amp; THREE-STATE GUARD</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">WebGL :18640 / :8088 只读三态隔离与底层控制单向边界</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">Three.js r186 Shell + r180 iframe · preview_only</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>多机协作平台三态隔离与只读视图架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="live" aria-pressed="false">LIVE 受控观测与 C01 代理</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="replay" aria-pressed="false">REPLAY / ?demo=1 只读隔离</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="guard" aria-pressed="false">ROI 带宽与物理碰撞红线</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>多机协作平台三态隔离与只读视图架构图</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/guide-ui-readonly-separation.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="guide-ui-readonly-separation-f0-drawer-ui_shell" class="diagram-drawer-panel" data-node-drawer="ui_shell" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">主协作平台外壳</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">前端表现 · Shell · 浏览器渲染帧率</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「主协作平台外壳」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">承载多机协作态势、规划 DAG、技能库与 RsiLab 离线实验面板，无独立控制循环。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>17+ 面板 + C01 条件入口</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/web/index.html</code></dd></div>
+      <div><dt>核心契约</dt><dd>P01–P07 核心面板；C01 CollaborationBar 仅在 --enable-control 时激活</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-ui-readonly-separation-f0-drawer-ui_iframe" class="diagram-drawer-panel" data-node-drawer="ui_iframe" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">同源 3D 视口 iframe</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">前端表现 · 3D 隔离 · DPR &lt;= 1.25 · 双解码</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「同源 3D 视口 iframe」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">隔离高保真场景渲染，精修 Three.js 外观资产绝不自动赋予物理碰撞或规划资格。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>同源沙箱 + 仅相机 postMessage</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/src/embodied_hybrid/modules</code></dd></div>
+      <div><dt>核心契约</dt><dd>AgX 色调 / PCF 1024；强制标记 preview_only，禁止暴露机器人控制接口</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-ui-readonly-separation-f0-drawer-ui_voice" class="diagram-drawer-panel" data-node-drawer="ui_voice" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">语音交互控制台</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">前端表现 · 观众/运维 · SSE LiveHub 推流</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「语音交互控制台」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">分离观众讲解视图与运维页面，通过 SSE 推送只读实时状态快照。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>只读快照投影</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/interaction_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>P08 /client 零后台入口；P09–P17 运维页；Ctrl+C 不中断后台物理仿真</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-ui-readonly-separation-f0-drawer-mode_live" class="diagram-drawer-panel" data-node-drawer="mode_live" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">LIVE 实时代理模式</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">三态隔离 · LIVE · 互斥 --system-url/domain</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「LIVE 实时代理模式」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">绑定真实系统端点的活动观测模式，严格禁止前端绕过系统层直连端侧进程。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>受控代理模式</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/hybridctl</code></dd></div>
+      <div><dt>核心契约</dt><dd>固定 auto_start=false 防止浏览器访问误起仿真；仅经 SystemApp 下发指令</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-ui-readonly-separation-f0-drawer-mode_replay" class="diagram-drawer-panel" data-node-drawer="mode_replay" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">REPLAY 只读归档模式</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">三态隔离 · REPLAY · 静态目录回放</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「REPLAY 只读归档模式」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">以 hybridctl serve --data 回放历史归档，所有下发与写入路由全部关闭。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>只读归档代理</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/hybridctl</code></dd></div>
+      <div><dt>核心契约</dt><dd>批次封存期间返回 503 OBSERVER_FINALIZING；严格区分 LIVE / HISTORY / STALE</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-ui-readonly-separation-f0-drawer-mode_demo" class="diagram-drawer-panel" data-node-drawer="mode_demo" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">?demo=1 设计预览</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">三态隔离 · DEMO · 静态前端样例</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「?demo=1 设计预览」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">仅用于界面排版与视觉设计预览，与真实运行证据和物理验收严格划清界限。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>防假阳性降级红线</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/web/index.html</code></dd></div>
+      <div><dt>核心契约</dt><dd>刷新即清零草稿；LIVE 断连时绝不静默回退至演示假数据</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-ui-readonly-separation-f0-drawer-roi_guard" class="diagram-drawer-panel" data-node-drawer="roi_guard" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">RoiGatewayGuard</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">带宽门禁 · 安全校验 · 15 s 租约 TTL</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「RoiGatewayGuard」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">防止多机高分辨率图像流挤占调度与总线带宽，确保感知资源安全只读呈现。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>守门代理 + SHA-256 逐块验真</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/fleet_bus/roi_gateway_guard.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>全局最多 2 路视频流、640×480 分辨率；readDisplayResource 逐块核验长度与哈希</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="guide-ui-readonly-separation-f0-drawer-phys_boundary" class="diagram-drawer-panel" data-node-drawer="phys_boundary" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">底层控制隔离边界</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">权威物理 · C++20 · 200 Hz 传感闭环</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「底层控制隔离边界」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">从架构上确保前端不能创建第二套物理运行器，也不允许渲染结果伪造 L3/L4 通过。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单向观测不可逆红线</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/motion_plan_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>PlanningCore 仅消费 SpatialPosePod 与传感器观测，严禁读取 r180 网格或显示真值</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/runtime-baselines.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
 <figure class="doc-video" data-media-id="MED-SYS-02">
 <video controls playsinline loading="lazy" preload="none" width="1868" height="978" poster="../assets/posters/MED-SYS-02.webp">
@@ -291,20 +646,21 @@ id="toc-三态绑定渲染参数与网关源码锚点">2.
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

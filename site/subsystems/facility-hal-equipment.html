@@ -68,57 +68,764 @@
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p><code>FacilityHAL</code>（<code>src/facility_hal/</code>）将产线工装与机场地勤设施抽象为独立于机器人本体的外部受控硬件边界，上游承接
-<code>SystemApp</code> 内 <code>equipment_runtime</code> 经 HTTP
-<code>:18642</code> 下发的离散设施操作指令，下游调度 <code>MuJoCo</code>
-场景机构、工业 <code>Modbus PLC</code>
-或展陈半实物模拟驱动。外部设施动作周期通常持续数秒且依赖离散状态字，因此物理上完全剥离出机器人
-<code>200 Hz</code> <code>SalWire</code> v2
-实时内存总线，不占用单机运动伺服槽位。</p>
-<figure class="diagram-figure">
-  <div class="diagram-canvas">
-    <img src="../assets/diagrams/sub-hal-sal-facility.svg"
-alt="FacilityHAL 工装网关、EquipmentRuntime 与 AckJournal 架构" loading="eager" decoding="async" />
-  </div>
-  <figcaption><span>FacilityHAL 工装网关、EquipmentRuntime 与
-AckJournal 架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
-</figure>
-<h2
-id="为什么将工装与地勤设备剥离出-salwire">为什么将工装与地勤设备剥离出
-<code>SalWire</code></h2>
-<p>在物理产线与机场保障场景中，机器人操作对象涵盖上料机、压装机、检测台、箱式输送线、货舱门、地面电源插座、行李传送带、称重台与登机桥等主动基础设施。系统通过双向隔离保证高频伺服与慢速外设互不干扰：</p>
-<ul>
-<li>机器人本体仅经 <code>SalWire</code> v2 与 <code>IHalDriver</code>
-交互，维持定长 <code>48</code> 轴关节节拍；</li>
-<li>外部环境设施一律由 <code>FacilityHAL</code> 驱动网关（默认绑定
-<code>:18642</code>）托管；</li>
-<li>上层 <code>SystemApp</code> 中的 <code>equipment_runtime</code>
-模块通过 HTTP 客户端向 <code>:18642</code> 下发标准化设备操作指令，并在
-<code>TeamRuntime</code> DAG
-中与机器人导航、按键、取放步骤按依赖关系联合编排（例如：机器人到达工位
-<code>B1</code> 按下启动按钮或由系统触发 <code>process</code> -&gt;
-<code>FacilityHAL</code> 回报 <code>ready_to_pick: true</code> -&gt;
-机器人执行纯接触抓取）。</li>
-</ul>
-<h2 id="三大驱动后端与统一-131-操作契约">三大驱动后端与统一
-<code>13+1</code> 操作契约</h2>
-<p><code>src/facility_hal/contracts.py</code> 定义了抽象基类
-<code>IFacilityHalDriver</code>，当前仓库内置三套可热切换驱动后端：</p>
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>在智能产线与机场保障场景中，机器人并非在孤立静态环境中作业，而是需要与上料机、压装机、检测台、箱式输送线、飞机前货舱门、地面电源插座及旅客登机桥等主动设施交互。若将外部设备控制直接混入机器人本地
+<code>SalWire</code> v2 实时总线，会引发两项致命工程冲突：</p>
 <ol type="1">
-<li><strong><code>mujoco</code>
-驱动（<code>drivers/mujoco_facility.py</code>）</strong>：直接驱动
-MuJoCo
-物理场景中的活动门板、传送带滑轨、升降平台与触发传感器，在零吸附纯接触仿真中真实产生物理位姿与接触完成信号。</li>
-<li><strong><code>modbus_plc</code>
-驱动（<code>drivers/modbus_plc_facility.py</code>）</strong>：面向真实实验室或现场产线，通过
-Modbus 寄存器读写对接真实 PLC 控制器。</li>
-<li><strong><code>mockup</code>
-驱动（<code>drivers/mockup_facility.py</code>）</strong>：面向无物理仿真器或半实物展陈台架（如
-<code>--site lab</code>），按预设时序模拟机构动作与数字量应答。</li>
+<li><strong>秒级离散外设阻塞 <code>200 Hz</code>
+关节伺服</strong>：外部机构单次启停与限位等待耗时数秒乃至数十秒，且依赖工业
+<code>Modbus</code> 寄存器或仿真物理事件轮询，一旦与 <code>48</code>
+轴关节共享同一轮询线程，必然破坏 <code>5 ms</code> 控制节拍。</li>
+<li><strong>网关进程崩溃后的状态悬空风险</strong>：若工装网关在机械机构运动中途崩溃重启，内存中的执行状态随之丢失；若简单将未完指令当作成功或允许盲目重发，极易诱发机器人伸臂撞击未开启的货舱门或未退锁的压装模腔。</li>
 </ol>
-<p>全系统统一注册 <code>13</code> 项业务设备操作（外加通用紧急中止动作
-<code>stop</code>），每项操作在契约层绑定唯一的完成状态判定字段（<code>OPERATION_COMPLETION_FIELDS</code>）：</p>
+<p>因此，平台构建独立的 <code>FacilityHAL</code>
+设施网关（<code>src/facility_hal/</code>，默认监听
+<code>:18642</code>），从物理通道、协议生命周期与崩溃恢复三个维度实现工装设施与单机
+<code>SalWire</code> 的彻底剥离。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p><code>FacilityHAL</code> 位于平台外部设施硬件抽象平面：上游承接
+<code>SystemApp</code> 中
+<code>equipment_runtime</code>（<code>src/system_app/modules/equipment_runtime/runtime.py</code>）在
+<code>TeamRuntime</code> DAG 编排下通过 HTTP/1.1 <code>:18642</code>
+发出的离散设备指令，下游分别桥接 <code>MuJoCo</code> 场景机构、工业
+<code>Modbus PLC</code> 或展陈半实物模拟后端；单机机器人本体则继续独占
+<code>SalWire</code> v2 内存总线与
+<code>IHalDriver</code>，两条总线在进程与存储上零耦合。</p>
+<figure class="diagram-figure" data-diagram-id="sub-facility-topology" data-fig-uid="sub-facility-topology-f0">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-facility-topology" viewBox="0 0 1200 580" width="1200" height="580" role="group" aria-labelledby="sub-facility-topology-title-f0" aria-describedby="sub-facility-topology-desc-f0">
+  <title id="sub-facility-topology-title-f0">FacilityHAL (:18642) 与 200 Hz SalWire 双总线物理剥离拓扑</title>
+  <desc id="sub-facility-topology-desc-f0">说明为何将秒级离散工装与机场地勤设施通过 FacilityHAL HTTP 网关独立管理，与机器人本体 SalWire 总线完全解耦。</desc>
+  <defs>
+    <pattern id="sub-facility-topology-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-facility-topology-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="580" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="580" fill="url(#sub-facility-topology-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="578.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="720.0" height="444.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">FACILITY HTTP BOUNDARY (:18642)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">离散工装网关与三大后端策略驱动</text>
+  <rect x="784.0" y="86.0" width="380.0" height="444.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="798.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">PARALLEL ROBOT REALTIME</text>
+  <text x="798.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">平行隔离的机器人 200 Hz 本体总线</text>
+  <g class="arch-edge" data-from="equip_client" data-to="fac_http" data-flow="facility_http">
+    <path d="M 374.0 181.0 L 414.0 181.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-topology-arrow-ochre-f0)"/>
+    <rect x="370.1" y="172.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="394.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">Bearer</text>
+  </g>
+  <g class="arch-edge" data-from="fac_http" data-to="fac_drv_mj" data-flow="facility_http">
+    <path d="M 500.0 216.0 L 500.0 243.0 Q 500.0 248.0 495.0 248.0 L 169.0 248.0 Q 164.0 248.0 164.0 253.0 L 164.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-topology-arrow-ochre-f0)"/>
+    <rect x="317.1" y="239.0" width="29.9" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="332.0" y="251.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">SIM</text>
+  </g>
+  <g class="arch-edge" data-from="fac_http" data-to="fac_drv_plc" data-flow="facility_http">
+    <path d="M 572.0 216.0 L 572.0 249.0 Q 572.0 254.0 567.0 254.0 L 401.0 254.0 Q 396.0 254.0 396.0 259.0 L 396.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-topology-arrow-ochre-f0)"/>
+    <rect x="466.1" y="245.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="484.0" y="257.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">REAL</text>
+  </g>
+  <g class="arch-edge" data-from="fac_http" data-to="fac_drv_mock" data-flow="facility_http">
+    <path d="M 644.0 216.0 L 644.0 249.0 Q 644.0 254.0 639.0 254.0 L 633.0 254.0 Q 628.0 254.0 628.0 259.0 L 628.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-facility-topology-arrow-ochre-f0)"/>
+    <rect x="626.1" y="226.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="644.0" y="238.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">MOCK</text>
+  </g>
+  <g class="arch-edge" data-from="p0_sal" data-to="hal_wall" data-flow="robot_rt">
+    <path d="M 974.0 244.0 L 974.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-facility-topology-arrow-terracotta-f0)"/>
+    <rect x="943.3" y="276.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="974.0" y="288.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">零交叉依赖</text>
+  </g>
+  <g class="arch-node-card" data-node-id="equip_client" aria-controls="sub-facility-topology-f0-drawer-equip_client">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="equip_client" data-flows="all,facility_http" aria-expanded="false" aria-label="equipment_runtime（SystemApp 设施客户端）" aria-controls="sub-facility-topology-f0-drawer-equip_client">
+      <rect class="arch-node-box" x="64.0" y="146.0" width="310.0" height="70.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">equipment_runtime</text>
+      <text class="arch-node-role" x="76.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SystemApp 设施客户端</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#flow" data-same-page="true" aria-label="前往「equipment_runtime」对应章节">
+      <rect x="346.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_http" aria-controls="sub-facility-topology-f0-drawer-fac_http">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_http" data-flows="all,facility_http" aria-expanded="false" aria-label="FacilityHAL HTTP (:18642)（Origin + WAL 网关）" aria-controls="sub-facility-topology-f0-drawer-fac_http">
+      <rect class="arch-node-box" x="414.0" y="146.0" width="316.0" height="70.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="426.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FacilityHAL HTTP (:18642)</text>
+      <text class="arch-node-role" x="426.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">Origin + WAL 网关</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#paradigm" data-same-page="true" aria-label="前往「FacilityHAL HTTP (:18642)」对应章节">
+      <rect x="702.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="714.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_drv_mj" aria-controls="sub-facility-topology-f0-drawer-fac_drv_mj">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_drv_mj" data-flows="all,facility_http" aria-expanded="false" aria-label="MuJoCo 设施驱动（16 产线 / 8 机场设施）" aria-controls="sub-facility-topology-f0-drawer-fac_drv_mj">
+      <rect class="arch-node-box" x="58.0" y="286.0" width="212.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">MuJoCo 设施驱动</text>
+      <text class="arch-node-role" x="70.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">16 产线 / 8 机场设施</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#principles" data-same-page="true" aria-label="前往「MuJoCo 设施驱动」对应章节">
+      <rect x="242.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="254.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_drv_plc" aria-controls="sub-facility-topology-f0-drawer-fac_drv_plc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_drv_plc" data-flows="all,facility_http" aria-expanded="false" aria-label="Modbus PLC 驱动（真实工业设备总线）" aria-controls="sub-facility-topology-f0-drawer-fac_drv_plc">
+      <rect class="arch-node-box" x="290.0" y="286.0" width="212.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="302.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">Modbus PLC 驱动</text>
+      <text class="arch-node-role" x="302.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">真实工业设备总线</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#contracts" data-same-page="true" aria-label="前往「Modbus PLC 驱动」对应章节">
+      <rect x="474.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="486.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_drv_mock" aria-controls="sub-facility-topology-f0-drawer-fac_drv_mock">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_drv_mock" data-flows="all,facility_http" aria-expanded="false" aria-label="Mockup 仿真驱动（离线无物理快速测试）" aria-controls="sub-facility-topology-f0-drawer-fac_drv_mock">
+      <rect class="arch-node-box" x="522.0" y="286.0" width="212.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="534.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">Mockup 仿真驱动</text>
+      <text class="arch-node-role" x="534.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">离线无物理快速测试</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#origins" data-same-page="true" aria-label="前往「Mockup 仿真驱动」对应章节">
+      <rect x="706.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="718.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p0_sal" aria-controls="sub-facility-topology-f0-drawer-p0_sal">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p0_sal" data-flows="all,robot_rt" aria-expanded="false" aria-label="RobotApp P0 + SalWire（200 Hz 48 轴实时环）" aria-controls="sub-facility-topology-f0-drawer-p0_sal">
+      <rect class="arch-node-box" x="812.0" y="166.0" width="324.0" height="78.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="824.0" y="191.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">RobotApp P0 + SalWire</text>
+      <text class="arch-node-role" x="824.0" y="230.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">200 Hz 48 轴实时环</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#flow" data-same-page="true" aria-label="前往「RobotApp P0 + SalWire」对应章节">
+      <rect x="1108.0" y="170.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1120.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="hal_wall" aria-controls="sub-facility-topology-f0-drawer-hal_wall">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="hal_wall" data-flows="all,robot_rt" aria-expanded="false" aria-label="双总线物理剥离红线（秒级 PLC 绝不入 SalWire）" aria-controls="sub-facility-topology-f0-drawer-hal_wall">
+      <rect class="arch-node-box" x="812.0" y="326.0" width="324.0" height="78.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="824.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双总线物理剥离红线</text>
+      <text class="arch-node-role" x="824.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">秒级 PLC 绝不入 SalWire</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#origins" data-same-page="true" aria-label="前往「双总线物理剥离红线」对应章节">
+      <rect x="1108.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1120.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="536.0" x2="1164.0" y2="536.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="558.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="104.0" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FacilityHAL 与三驱动策略</text>
+  <rect x="253.2" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="275.2" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">200 Hz SalWire 平行总线</text>
+  <rect x="418.6" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="440.6" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">WAL 网关与物理剥离红线</text>
+  <text x="1164.0" y="557.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">离散秒级 PLC 设施绝不塞入 200 Hz SalWire 48 轴实时共享内存槽</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 03A · FACILITYHAL &amp; SALWIRE SEPARATION</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">FacilityHAL (:18642) 与 200 Hz SalWire 双总线物理剥离拓扑</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">13+1 标准工装契约 · MuJoCo / Modbus / Mockup 三驱动策略</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="facility_http" aria-pressed="false">FacilityHAL :18642 离散总线</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="robot_rt" aria-pressed="false">SalWire 200 Hz 实时物理隔离</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>FacilityHAL
+双总线隔离与产线工装拓扑</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-facility-topology.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-facility-topology-f0-drawer-equip_client" class="diagram-drawer-panel" data-node-drawer="equip_client" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">equipment_runtime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · DAG 外设 · 有界异步轮询</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「equipment_runtime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在任务图节点驱动下异步操纵产线设备或地勤设施，不参与机器人高频伺服。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>鉴权 HTTP 客户端</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/equipment_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>携带 &gt;=32 字符 Bearer Token 派发离散工装任务并轮询终态</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-topology-f0-drawer-fac_http" class="diagram-drawer-panel" data-node-drawer="fac_http" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">FacilityHAL HTTP (:18642)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">FacilityHAL · 服务网关 · REST + AckJournal</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「FacilityHAL HTTP (:18642)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">作为所有外围工装与机场地勤设备的唯一受控 HTTP 网关。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III 守门代理 + WAL</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/gateway/http_server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>/state、/commands、/operator-inputs (SIM_EQUIPMENT_DEBUG_V1)；拒绝跨源 Origin</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-facility-wal-fsm">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-topology-f0-drawer-fac_drv_mj" class="diagram-drawer-panel" data-node-drawer="fac_drv_mj" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">MuJoCo 设施驱动</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">FacilityHAL · 仿真后端 · 与仿真步进协同</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「MuJoCo 设施驱动」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在物理仿真中执行传送带、推杆、检测台与机坪设施开关动作。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>IFacilityHalDriver 策略实现</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/drivers/mujoco_facility.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>驱动 Smart Factory FEEDER/PRESS/INSPECT/BOX 与 C919 GPU/货舱门/登机桥</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-topology-f0-drawer-fac_drv_plc" class="diagram-drawer-panel" data-node-drawer="fac_drv_plc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">Modbus PLC 驱动</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">FacilityHAL · 硬件后端 · PLC 寄存器轮询</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「Modbus PLC 驱动」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在不改动 SystemApp 与机器人代码的前提下接入真实产线 PLC 硬件。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>IFacilityHalDriver 策略实现</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/drivers/modbus_plc_facility.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>将 13+1 标准动作契约映射为 Modbus TCP/RTU 寄存器读写与到位反馈</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-topology-f0-drawer-fac_drv_mock" class="diagram-drawer-panel" data-node-drawer="fac_drv_mock" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">Mockup 仿真驱动</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">FacilityHAL · 模拟后端 · 内存状态机</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「Mockup 仿真驱动」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">支撑系统级 DAG 与异常恢复逻辑的零物理代价离线单元测试。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>IFacilityHalDriver 策略实现</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/drivers/mockup_facility.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>在无物理仿真或实机连接时提供确定性动作响应，用于 L0/L1 离线契约回归</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-topology-f0-drawer-p0_sal" class="diagram-drawer-panel" data-node-drawer="p0_sal" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">RobotApp P0 + SalWire</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp · 平行控制总线 · 200 Hz 硬实时</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「RobotApp P0 + SalWire」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">与 FacilityHAL 保持物理总线完全正交，确保慢速外设永不阻塞本体步态。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>彻底剥离的零拷贝总线</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/body_gateway/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅传输机器人本体 48 轴关节、底盘与雷达数据，绝不混入秒级 PLC 指令</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-topology-f0-drawer-hal_wall" class="diagram-drawer-panel" data-node-drawer="hal_wall" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">双总线物理剥离红线</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Invariant · 架构红线 · 静态接口强制隔离</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「双总线物理剥离红线」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">防止早期把传送带和气缸塞进机器人 SHM 结构体引发的跨领域耦合。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>职责正交边界</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/contracts.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>设备完成不等于工件已取走；所有工装动作只能通过 FacilityHAL 13+1 契约表达</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<p>跨层协作顺序如下：机器人按 <code>TeamRuntime</code> DAG
+到达工位并触发启动条件（或由上层直接派发
+<code>EquipmentAssignmentNode</code>）→ <code>equipment_runtime</code>
+携带
+<code>run_id</code>、<code>epoch</code>、<code>scene_revision</code>、<code>request_id</code>
+与操作名向 <code>:18642</code> <code>POST /commands</code> 提交幂等请求
+→ <code>FacilityGatewayCore</code> 经 <code>AckJournal</code>
+持久化后调度 <code>IFacilityHalDriver</code> → 上层轮询终态回执并核验
+<code>OPERATION_COMPLETION_FIELDS</code> 对应布尔字段（如
+<code>ready_to_pick: true</code> 或
+<code>door_opened: true</code>）后，方才解锁机器人下游纯接触抓取或登机动作。</p>
+<h2 id="principles">03 · 核心原理与内部机制</h2>
+<figure class="diagram-figure" data-diagram-id="sub-facility-wal-fsm" data-fig-uid="sub-facility-wal-fsm-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-facility-wal-fsm" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="sub-facility-wal-fsm-title-f1" aria-describedby="sub-facility-wal-fsm-desc-f1">
+  <title id="sub-facility-wal-fsm-title-f1">AckJournal WAL 预写日志提交与崩溃 PENDING -&gt; UNKNOWN 恢复状态机</title>
+  <desc id="sub-facility-wal-fsm-desc-f1">展示工装请求经预写日志持久化、驱动执行及异常重启后将未决状态强制收敛为 UNKNOWN 的确定性状态迁移。</desc>
+  <defs>
+    <pattern id="sub-facility-wal-fsm-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-facility-wal-fsm-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#sub-facility-wal-fsm-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="190.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">NORMAL COMMIT FLOW</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">正常请求受理 -&gt; WAL 落盘 -&gt; 真实终态写回</text>
+  <rect x="36.0" y="294.0" width="1128.0" height="192.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="313.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CRASH RECOVERY FLOW</text>
+  <text x="50.0" y="330.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">进程崩溃或断电重启恢复路径</text>
+  <g class="arch-edge" data-from="wal_req" data-to="wal_pending" data-flow="normal">
+    <path d="M 298.0 182.0 L 336.0 182.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-slate-f1)"/>
+    <rect x="296.2" y="173.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="317.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">先落盘</text>
+  </g>
+  <g class="arch-edge" data-from="wal_pending" data-to="wal_exec" data-flow="normal">
+    <path d="M 584.0 182.0 L 622.0 182.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-ochre-f1)"/>
+    <rect x="587.1" y="173.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="603.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">驱动</text>
+  </g>
+  <g class="arch-edge" data-from="wal_exec" data-to="wal_done" data-flow="normal">
+    <path d="M 862.0 182.0 L 900.0 182.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-forest-f1)"/>
+    <rect x="855.2" y="173.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="881.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">实测真值</text>
+  </g>
+  <g class="arch-edge" data-from="wal_pending" data-to="wal_crash" data-flow="recovery">
+    <path d="M 460.0 218.0 L 460.0 356.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-facility-wal-fsm-arrow-terracotta-f1)"/>
+    <rect x="429.3" y="278.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="460.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">未终结重启</text>
+  </g>
+  <g class="arch-edge" data-from="wal_crash" data-to="wal_unknown" data-flow="recovery">
+    <path d="M 676.0 393.0 L 760.0 393.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-terracotta-f1)"/>
+    <rect x="687.3" y="384.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="718.0" y="396.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">禁伪造成功</text>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_req" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_req">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_req" data-flows="all,normal" aria-expanded="false" aria-label="1. POST /commands 接入（幂等 request_id 校验）" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_req">
+      <rect class="arch-node-box" x="58.0" y="146.0" width="240.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">1. POST /commands 接入</text>
+      <text class="arch-node-role" x="70.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">幂等 request_id 校验</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#contracts" data-same-page="true" aria-label="前往「1. POST /commands 接入」对应章节">
+      <rect x="270.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="282.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_pending" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_pending">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_pending" data-flows="all,normal,recovery" aria-expanded="false" aria-label="2. AckJournal PENDING（预写日志先落盘）" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_pending">
+      <rect class="arch-node-box" x="336.0" y="146.0" width="248.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">2. AckJournal PENDING</text>
+      <text class="arch-node-role" x="348.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">预写日志先落盘</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#principles" data-same-page="true" aria-label="前往「2. AckJournal PENDING」对应章节">
+      <rect x="556.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="568.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_exec" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_exec">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_exec" data-flows="all,normal" aria-expanded="false" aria-label="3. IFacilityHalDriver 执行（13+1 标准动作映射）" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_exec">
+      <rect class="arch-node-box" x="622.0" y="146.0" width="240.0" height="72.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="634.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">3. IFacilityHalDriver 执行</text>
+      <text class="arch-node-role" x="634.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">13+1 标准动作映射</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#flow" data-same-page="true" aria-label="前往「3. IFacilityHalDriver 执行」对应章节">
+      <rect x="834.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="846.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_done" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_done">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_done" data-flows="all,normal" aria-expanded="false" aria-label="4. 终态 SUCCEEDED / FAILED（真实 completion_field）" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_done">
+      <rect class="arch-node-box" x="900.0" y="146.0" width="240.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="912.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">4. 终态 SUCCEEDED / FAILED</text>
+      <text class="arch-node-role" x="912.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">真实 completion_field</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#evidence" data-same-page="true" aria-label="前往「4. 终态 SUCCEEDED / FAILED」对应章节">
+      <rect x="1112.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1124.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_crash" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_crash">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_crash" data-flows="all,recovery" aria-expanded="false" aria-label="5. 进程崩溃或断电重放（扫描未终结 PENDING）" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_crash">
+      <rect class="arch-node-box" x="336.0" y="356.0" width="340.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">5. 进程崩溃或断电重放</text>
+      <text class="arch-node-role" x="348.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">扫描未终结 PENDING</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#principles" data-same-page="true" aria-label="前往「5. 进程崩溃或断电重放」对应章节">
+      <rect x="648.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="660.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_unknown" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_unknown">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_unknown" data-flows="all,recovery" aria-expanded="false" aria-label="6. 强制判为 UNKNOWN（严禁伪造成功状态）" aria-controls="sub-facility-wal-fsm-f1-drawer-wal_unknown">
+      <rect class="arch-node-box" x="760.0" y="356.0" width="360.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="772.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">6. 强制判为 UNKNOWN</text>
+      <text class="arch-node-role" x="772.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">严禁伪造成功状态</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#paradigm" data-same-page="true" aria-label="前往「6. 强制判为 UNKNOWN」对应章节">
+      <rect x="1092.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1104.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">WAL PENDING 预写</text>
+  <rect x="218.6" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="240.6" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">真实终态 SUCCEEDED / FAILED</text>
+  <rect x="419.9" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="441.9" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">崩溃恢复强制 UNKNOWN</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">遇 UNKNOWN 回执须按原 request_id 查状态，绝不盲目重发引发双倍动作</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 03B · ACKJIOURNAL WAL RECOVERY FSM</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">AckJournal WAL 预写日志提交与崩溃 PENDING -&gt; UNKNOWN 恢复状态机</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">先落盘后执行 · 崩溃重启绝不伪造成功</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="normal" aria-pressed="false">正常 WAL 提交与终态确认</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="recovery" aria-pressed="false">崩溃重启 PENDING -&gt; UNKNOWN 恢复</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>AckJournal WAL
+持久化与崩溃恢复状态机</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-facility-wal-fsm.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-facility-wal-fsm-f1-drawer-wal_req" class="diagram-drawer-panel" data-node-drawer="wal_req" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">1. POST /commands 接入</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">FacilityHAL · 接入 · HTTP 同步受理</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「1. POST /commands 接入」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在网关入口拦截重复派发与非法参数，分配不可变请求身份。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>幂等请求去重</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/gateway/http_server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>校验 Bearer Token、Origin 与 13+1 动作模式合法性；重复 request_id 返回原记录</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-wal-fsm-f1-drawer-wal_pending" class="diagram-drawer-panel" data-node-drawer="wal_pending" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">2. AckJournal PENDING</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">AckJournal WAL · 持久化 · 先落盘后执行</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「2. AckJournal PENDING」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保证即使在执行期间发生进程崩溃，系统也确知曾派发过该动作。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III Write-Ahead Logging</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>在真正触发底层 PLC 或 MuJoCo 执行前，将 PENDING 条目同步刷新至磁盘日志</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-wal-fsm-f1-drawer-wal_exec" class="diagram-drawer-panel" data-node-drawer="wal_exec" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">3. IFacilityHalDriver 执行</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Driver · 物理推进 · 秒级异步动作</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「3. IFacilityHalDriver 执行」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">由当前激活策略驱动推进实际设备状态并监听硬件传感器到位字段。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>策略接口执行</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/contracts.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>feed/process-&gt;ready_to_pick；inspect-&gt;cycle_completed；open_door/dock_bridge 等</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-wal-fsm-f1-drawer-wal_done" class="diagram-drawer-panel" data-node-drawer="wal_done" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">4. 终态 SUCCEEDED / FAILED</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">AckJournal WAL · 终态 · 回执写盘</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「4. 终态 SUCCEEDED / FAILED」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">以设备真实物理状态为唯一判据封存日志条目。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>真实完成字段核验</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/contracts.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>只有当指定 completion_field 实测为真时才追加 SUCCEEDED，否则如实记 FAILED</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-wal-fsm-f1-drawer-wal_crash" class="diagram-drawer-panel" data-node-drawer="wal_crash" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">5. 进程崩溃或断电重放</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">AckJournal WAL · 恢复 · 启动期自动恢复</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「5. 进程崩溃或断电重放」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">识别所有在崩溃瞬间处于未知物理进程中的工装请求。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>崩溃日志扫描</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>重启加载 AckJournal 时检索所有缺少终态记录的 PENDING 动作</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-facility-wal-fsm-f1-drawer-wal_unknown" class="diagram-drawer-panel" data-node-drawer="wal_unknown" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">6. 强制判为 UNKNOWN</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">AckJournal WAL · 诚实态 · 阻断隐式重发</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「6. 强制判为 UNKNOWN」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">防止因状态丢失导致的重复下料、双倍冲压或舱门误撞事故。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>Fail-Safe 诚实状态机</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>统一置为 UNKNOWN 并要求上层按原身份查状态，绝不默认成功或擅自重发</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-facility-topology">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<h3 id="统一-13-1-操作契约与代际槽位解析">统一 <code>13 + 1</code>
+操作契约与代际槽位解析</h3>
+<p><code>src/facility_hal/contracts.py</code> 冻结了全平台统一的
+<code>13</code> 项业务设施操作（外加通用紧急中止
+<code>stop</code>），并通过 <code>OPERATION_COMPLETION_FIELDS</code>
+将每项操作强制映射为唯一的机器快照完成字段，供
+<code>equipment_runtime.domain.operations.verify_machine</code>
+核验。对于携带 <code>.g&lt;N&gt;</code> 代际后缀的动态工件引用（如
+<code>box_01.g2</code>），<code>resolve_slot_id</code> 在除
+<code>present_box</code> 外的全部操作中自动剥离 <code>.gN</code>
+后缀以映射到物理工位槽位，而在 <code>present_box</code>
+中保留完整代际标识以区分新到空料箱与旧离场料箱。</p>
+<h3
+id="ackjournal-预写日志与崩溃强制未知化pending---unknown"><code>AckJournal</code>
+预写日志与崩溃强制未知化（<code>PENDING -&gt; UNKNOWN</code>）</h3>
+<p><code>src/facility_hal/gateway/http_server.py</code> 内的
+<code>FacilityGatewayCore</code> 借助
+<code>AckJournal</code>（<code>embodied_core.async_journal.AsyncJournal</code>）将指令生命周期划分为非终态
+<code>PENDING_RECEIPT_STATUSES</code>（<code>QUEUED</code>、<code>ARMED</code>、<code>PRESS_LATCHED</code>、<code>RUNNING</code>）与终态
+<code>TERMINAL_RECEIPT_STATUSES</code>（<code>SUCCEEDED</code>、<code>FAILED</code>、<code>CANCELED</code>、<code>UNKNOWN</code>）：</p>
+<ol type="1">
+<li><strong>先写日志再执行</strong>：任何新提交操作与终态/关键
+<code>ARMED</code> 转换均写入 <code>AckJournal</code> 日志并在终态时触发
+<code>flush()</code>。</li>
+<li><strong>重启崩溃恢复铁律</strong>：网关进程重启加载
+<code>_init_journal()</code> 回放历史日志时，凡仍停留在
+<code>PENDING_RECEIPT_STATUSES</code> 的未决指令一律强制改写为
+<code>status = "UNKNOWN"</code>、<code>reason = "FACILITY_RESTART_RECONCILIATION_REQUIRED"</code>、<code>remaining_responsibility = "UNKNOWN"</code>，<strong>绝对禁止伪造为
+<code>SUCCEEDED</code></strong>，迫使上层调度器重新核实设备真实物理状态。</li>
+</ol>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p><code>FacilityHAL</code> 采用 <strong>P-III
+策略桥接与预写日志网关范式</strong>：</p>
+<ul>
+<li><strong>策略模式与工厂路由（<code>IFacilityHalDriver</code>）</strong>：<code>src/facility_hal/contracts.py</code>
+定义抽象接口
+<code>IFacilityHalDriver</code>，<code>src/facility_hal/runtime.py</code>
+中的 <code>create_driver(config)</code> 根据声明式配置分别实例化
+<code>MujocoFacilityDriver</code>（<code>src/facility_hal/drivers/mujoco_facility.py</code>）、<code>ModbusPlcFacilityDriver</code>（<code>src/facility_hal/drivers/modbus_plc_facility.py</code>）与
+<code>MockupFacilityDriver</code>（<code>src/facility_hal/drivers/mockup_facility.py</code>），网关核心逻辑对物理实现零感知。</li>
+<li><strong>契约白名单与防御性网关</strong>：<code>FacilityOperationRequest.from_wire_dict</code>
+精确校对必需字段与允许字段差集（禁止多余未知字段注入）、验证非负整型
+<code>epoch</code> 与合法 <code>request_id</code>；HTTP 层通过
+<code>hmac.compare_digest</code> 校验至少 <code>32</code> 字符的强
+Bearer Token，拦截全部跨源 <code>Origin</code> 请求并限制载荷不超过
+<code>1_048_576 B</code>。</li>
+<li><strong>条件调试隔离（<code>SIM_EQUIPMENT_DEBUG_V1</code>）</strong>：人工注入接口
+<code>/operator-inputs</code> 仅在配置标签为
+<code>SIM_EQUIPMENT_DEBUG_V1</code> 且驱动出身
+<code>origin == "SIM"</code> 时启用，绝不渗漏至实机或生产默认配置。</li>
+</ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>合规状态</th>
+<th>工程依据与审视说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 领域纯洁性与依赖倒置</td>
+<td><code>PASS</code></td>
+<td><code>contracts.py</code> 与 <code>FacilityGatewayCore</code> 仅面向
+<code>IFacilityHalDriver</code> 抽象契约，不耦合 <code>MuJoCo</code> 或
+<code>Modbus</code> 库</td>
+</tr>
+<tr>
+<td>2. 契约完备性与边界防呆</td>
+<td><code>PASS</code></td>
+<td><code>FacilityDeviceSpec</code> 与
+<code>FacilityOperationRequest</code> 严格校验字段集、<code>epoch</code>
+与 <code>EQUIPMENT_OPERATIONS</code>；强制 <code>&gt;= 32</code>
+字符令牌与跨域阻断</td>
+</tr>
+<tr>
+<td>3. 状态机与生命周期确定性</td>
+<td><code>PASS</code></td>
+<td><code>PENDING</code> 与 <code>TERMINAL</code>
+状态集合正交划分；网关崩溃重启后强制将未决状态转入 <code>UNKNOWN</code>
+以要求物理复检</td>
+</tr>
+<tr>
+<td>4. 实时内存与并发安全性</td>
+<td><code>PASS</code></td>
+<td>使用 <code>RLock</code> 与 <code>_submission_lock</code>
+隔离提交与状态轮询；运行在低频 HTTP 网关线程，与机器人
+<code>200 Hz</code> 控制循环物理隔离</td>
+</tr>
+<tr>
+<td>5. 离线可测性与失败留痕</td>
+<td><code>PASS</code></td>
+<td><code>MockupFacilityDriver</code> 与注入式驱动支持纯软件回放与
+<code>AckJournal</code> 崩溃重放测试，完整留存失败与
+<code>UNKNOWN</code> 原因码</td>
+</tr>
+<tr>
+<td>6. 单真源约束与过渡债务透明度</td>
+<td><code>PASS</code></td>
+<td><code>OPERATION_COMPLETION_FIELDS</code> 与
+<code>embodied_core.equipment</code>
+共享操作枚举；<code>SIM_EQUIPMENT_DEBUG_V1</code> 显式标注并锁死
+<code>origin == "SIM"</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -192,34 +899,9 @@ Modbus 寄存器读写对接真实 PLC 控制器。</li>
 </tbody>
 </table>
 </div>
-<h2 id="网关安全边界与-ackjournal-崩溃恢复机制">网关安全边界与
-<code>AckJournal</code> 崩溃恢复机制</h2>
-<p><code>src/facility_hal/gateway/http_server.py</code>
-面向多机系统与本地调试工具提供严格的 HTTP 接口控制：</p>
-<ul>
-<li><strong>强制长令牌与跨域阻断</strong>：服务端拒绝默认弱口令，强制要求调用方提供长度不少于
-<code>32</code> 个字符的 Bearer Token，并在中间件层直接拦截所有跨源
-<code>Origin</code> 请求。</li>
-<li><strong>标准操作端点</strong>：暴露
-<code>GET /state</code>（查询全量设备快照）、<code>POST /commands</code>（提交幂等设备指令）、<code>GET /commands/{request_id}</code>（轮询指令终态）；另提供受明确标签
-<code>SIM_EQUIPMENT_DEBUG_V1</code> 约束的调试接口
-<code>POST /operator-inputs</code> 与
-<code>GET /operator-inputs/{event_id}</code>
-供仿真环境面板人工介入。</li>
-<li><strong>预写日志 <code>AckJournal</code> WAL
-核查</strong>：每条设施指令在送往底层驱动前首先持久化写入
-<code>AckJournal</code> WAL
-日志；若网关进程在动作执行中途崩溃或重启，恢复阶段自动将所有仍停留在未终结态
-<code>PENDING</code> 的旧指令标记为 <code>UNKNOWN</code>
-而绝不伪造成功完成，强制上层调度显式复检设备真实物理状态。</li>
-</ul>
-<h2 id="双场景接入设备拓扑对照">双场景接入设备拓扑对照</h2>
-<p>平台在两大核心场景中共纳管 <code>24</code>
-台工业与地勤设施，其中智能工厂按 <code>4</code> 条产线部署
-<code>16</code> 个单元格，C919 机坪接入 <code>8</code> 台保障设备。</p>
 <details class="tech-details">
 <summary>
-查看双场景全量接入设施清单（16 台产线设备 + 8 台地勤设施）
+查看双场景全量接入设施清单（16 台产线设备 + 8 台地勤设施）与 HTTP 端点
 </summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
@@ -291,7 +973,62 @@ Modbus 寄存器读写对接真实 PLC 控制器。</li>
 </tbody>
 </table>
 </div>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>HTTP 接口路径</th>
+<th>请求方法</th>
+<th>契约说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/state</code></td>
+<td><code>GET</code></td>
+<td>刷新挂起任务并返回全部注册工装设备实时快照与
+<code>unknown_stations</code> 标记</td>
+</tr>
+<tr>
+<td><code>/commands</code></td>
+<td><code>POST</code></td>
+<td>校验字段后写入 <code>AckJournal</code> 并下发幂等设施操作指令</td>
+</tr>
+<tr>
+<td><code>/commands/{request_id}</code></td>
+<td><code>GET</code></td>
+<td>查询并刷新单笔操作指令当前回执与终态</td>
+</tr>
+<tr>
+<td><code>/operator-inputs</code></td>
+<td><code>POST</code></td>
+<td>仅在 <code>SIM_EQUIPMENT_DEBUG_V1</code> 且
+<code>origin == "SIM"</code> 下开放的仿真面板调试注入端点</td>
+</tr>
+</tbody>
+</table>
+</div>
 </details>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<ul>
+<li><strong>多场景纳管与联合演练验证（<code>L2</code> /
+<code>L3</code>）</strong>：在 <code>Smart Factory</code>
+四机集成测试（<code>SIT-F3</code>）中，<code>MujocoFacilityDriver</code>
+驱动 <code>16</code> 台产线单元格与四台 <code>FACRI</code>
+机器人连续完成 <code>16</code> 轮供料、压装、检测与出料循环；在
+<code>C919</code> 机坪 <code>T3</code> 场景（<code>L2</code>）中完成
+<code>8</code> 台地勤设备动作锁定与顺序编排核验。</li>
+<li><strong>能力边界声明</strong>：<code>MockupFacilityDriver</code>
+仅用于无物理半实物测试（<code>L1</code>），不代表真实机构力学与电气信号；<code>MujocoFacilityDriver</code>
+属于 <code>SIM</code> 物理仿真验证（<code>L3</code>）；真实工业现场使用
+<code>ModbusPlcFacilityDriver</code> 时必须在 <code>L4</code>
+阶段逐台核对 PLC 寄存器映射、急停硬接线与人工安全联锁。</li>
+</ul>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -303,19 +1040,24 @@ Modbus 寄存器读写对接真实 PLC 控制器。</li>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#为什么将工装与地勤设备剥离出-salwire"
-id="toc-为什么将工装与地勤设备剥离出-salwire">为什么将工装与地勤设备剥离出
-<code>SalWire</code></a></li>
-<li><a href="#三大驱动后端与统一-131-操作契约"
-id="toc-三大驱动后端与统一-131-操作契约">三大驱动后端与统一
-<code>13+1</code> 操作契约</a></li>
-<li><a href="#网关安全边界与-ackjournal-崩溃恢复机制"
-id="toc-网关安全边界与-ackjournal-崩溃恢复机制">网关安全边界与
-<code>AckJournal</code> 崩溃恢复机制</a></li>
-<li><a href="#双场景接入设备拓扑对照"
-id="toc-双场景接入设备拓扑对照">双场景接入设备拓扑对照</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与内部机制</a>
+<ul>
+<li><a href="#统一-13-1-操作契约与代际槽位解析"
+id="toc-统一-13-1-操作契约与代际槽位解析">统一 <code>13 + 1</code>
+操作契约与代际槽位解析</a></li>
+<li><a href="#ackjournal-预写日志与崩溃强制未知化pending---unknown"
+id="toc-ackjournal-预写日志与崩溃强制未知化pending---unknown"><code>AckJournal</code>
+预写日志与崩溃强制未知化（<code>PENDING -&gt; UNKNOWN</code>）</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -328,20 +1070,21 @@ id="toc-双场景接入设备拓扑对照">双场景接入设备拓扑对照</a>
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

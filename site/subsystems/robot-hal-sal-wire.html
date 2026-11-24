@@ -68,49 +68,545 @@ state_cmd.shm 与 128 KiB lidar.shm</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p><code>IHalDriver</code> 与 <code>SalWire</code> v2 共同构成端侧
-<code>robot_body_rt</code>
-控制进程与外部物理世界之间的唯一双边解耦境界：上游承接
-<code>200 Hz</code> 全身参考指令与带外 <code>SafetyFrame</code>
-急停覆盖信号，下游对接 MuJoCo
-物理仿真共享内存（<code>SIM_SAL</code>）或五型真机硬件总线动态库（<code>REAL_HAL</code>）。通过定长零拷贝线协议、编译期字节断言与单调代际
-<code>epoch</code>
-校验，端侧核心算法可在仿真与真机硬件之间切换而无需重新编译。</p>
-<figure class="diagram-figure">
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>端侧 <code>200 Hz</code> 运动控制系统需要同时运行在
+<code>MuJoCo</code>
+物理仿真环境与五型异构真机硬件总线上。若直接把仿真共享内存结构体或特定厂商
+SDK 编译进 <code>robot_body_rt</code> 主程序，会造成三类工程风险：</p>
+<ol type="1">
+<li><strong>驱动耦合导致二进制分叉</strong>：仿真或任一厂家通信协议变动都会迫使核心规划与控制模块重新编译，且容易把仿真特有字段泄漏进真机控制路径。</li>
+<li><strong>脏帧、错代与未标定飞车隐患</strong>：仿真复位或总线重连瞬间，若传感器通道混入
+<code>NaN</code> 浮点、倒退序列号 <code>seq</code> 或上一代际
+<code>epoch</code> 残留帧，PD 控制器会在单个 <code>5 ms</code>
+周期内输出巨大力矩阶跃。</li>
+<li><strong>带外急停无法抢占软件轨迹</strong>：当操作员按下无线急停或单机触发局部保护时，必须由硬件出口层的最后一道关口在写入总线前强制覆写目标，确保高层规划指令无法覆盖安全停机信号。</li>
+</ol>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p><code>IHalDriver</code> 与 <code>SalWire</code> v2 位于单机实时进程
+<code>robot_body_rt</code>（<code>P0</code>）与外部物理世界之间，构成唯一双边解耦边界：上游经
+<code>SensorAdaptersDomain</code> 接收采集样本并经
+<code>BodyGatewayDomain::step_200hz</code> 汇出关节参考指令，下游通过
+<code>HalPluginLoader</code> 动态载入的 <code>.so</code> 插件对接
+<code>/dev/shm/embodied_sal/&lt;run_id&gt;/&lt;robot_id&gt;/</code>
+共享内存（<code>SIM_SAL</code>）或真机硬件驱动（<code>REAL_HAL</code>）。</p>
+<figure class="diagram-figure" data-diagram-id="sub-hal-sal-bridge" data-fig-uid="sub-hal-sal-bridge-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/sub-hal-sal-facility.svg"
-alt="HAL 插件抽象边界、SalWire v2 与 FacilityHAL 双边隔离架构" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-hal-sal-bridge" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="sub-hal-sal-bridge-title-f0" aria-describedby="sub-hal-sal-bridge-desc-f0">
+  <title id="sub-hal-sal-bridge-title-f0">IHalDriver 6 插件动态加载、SalWire v2 与四级传感器防腐校验网</title>
+  <desc id="sub-hal-sal-bridge-desc-f0">展示端侧同一套控制二进制如何经 C ABI 插件动态切换仿真与五型真机，并在入口拦截脏帧与错代包。</desc>
+  <defs>
+    <pattern id="sub-hal-sal-bridge-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-hal-sal-bridge-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#sub-hal-sal-bridge-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="450.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">P0 GATEWAY &amp; PLUGIN LOADER</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">动态插件加载与标定校验</text>
+  <rect x="604.0" y="86.0" width="560.0" height="450.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">SALWIRE V2 &amp; ANTI-CORRUPTION</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">零拷贝线协议、四级过滤与带外急停</text>
+  <g class="arch-edge" data-from="bgw" data-to="plug_load" data-flow="sim_path,real_path">
+    <path d="M 296.0 172.0 L 316.0 172.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-ink-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="plug_load" data-to="so_sim" data-flow="sim_path">
+    <path d="M 380.0 206.0 L 380.0 221.0 Q 380.0 226.0 375.0 226.0 L 183.0 226.0 Q 178.0 226.0 178.0 231.0 L 178.0 248.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-slate-f0)"/>
+    <rect x="252.2" y="217.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="279.0" y="229.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">SIM_SAL</text>
+  </g>
+  <g class="arch-edge" data-from="plug_load" data-to="so_real" data-flow="real_path">
+    <path d="M 434.0 206.0 L 434.0 248.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta-f0)"/>
+    <rect x="404.2" y="218.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="434.0" y="230.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">REAL_HAL</text>
+  </g>
+  <g class="arch-edge" data-from="so_sim" data-to="sal_v2" data-flow="sim_path">
+    <path d="M 296.0 266.0 L 585.0 266.0 Q 590.0 266.0 590.0 261.0 L 590.0 187.0 Q 590.0 182.0 595.0 182.0 L 628.0 182.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-slate-f0)"/>
+    <rect x="425.1" y="257.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="443.0" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">mmap</text>
+  </g>
+  <g class="arch-edge" data-from="so_sim" data-to="phys_carrier" data-flow="sim_path">
+    <path d="M 178.0 316.0 L 178.0 386.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-hal-sal-bridge-arrow-forest-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="so_real" data-to="phys_carrier" data-flow="real_path">
+    <path d="M 434.0 316.0 L 434.0 386.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta-f0)"/>
+    <rect x="404.2" y="342.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="434.0" y="354.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">CAN/ECAT</text>
+  </g>
+  <g class="arch-edge" data-from="sal_v2" data-to="sa_filter" data-flow="filter">
+    <path d="M 874.0 182.0 L 900.0 182.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta-f0)"/>
+    <rect x="860.2" y="173.0" width="53.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="887.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">4 级校验</text>
+  </g>
+  <g class="arch-edge" data-from="oob_udp" data-to="bgw" data-flow="filter">
+    <path d="M 690.0 358.0 L 589.0 358.0 Q 584.0 358.0 584.0 353.0 L 584.0 113.0 Q 584.0 108.0 579.0 108.0 L 183.0 108.0 Q 178.0 108.0 178.0 113.0 L 178.0 138.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta-f0)"/>
+    <rect x="347.3" y="99.0" width="67.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="381.0" y="111.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">ESTOP 覆盖</text>
+  </g>
+  <g class="arch-node-card" data-node-id="bgw" aria-controls="sub-hal-sal-bridge-f0-drawer-bgw">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="bgw" data-flows="all,filter,real_path,sim_path" aria-expanded="false" aria-label="body_gateway (P0)（唯一身体命令出口）" aria-controls="sub-hal-sal-bridge-f0-drawer-bgw">
+      <rect class="arch-node-box" x="60.0" y="138.0" width="236.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="163.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">body_gateway (P0)</text>
+      <text class="arch-node-role" x="72.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">唯一身体命令出口</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#flow" data-same-page="true" aria-label="前往「body_gateway (P0)」对应章节">
+      <rect x="268.0" y="142.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="280.0" y="158.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="plug_load" aria-controls="sub-hal-sal-bridge-f0-drawer-plug_load">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="plug_load" data-flows="all,real_path,sim_path" aria-expanded="false" aria-label="PluginLoader (C ABI)（URDF SHA-256 验签）" aria-controls="sub-hal-sal-bridge-f0-drawer-plug_load">
+      <rect class="arch-node-box" x="316.0" y="138.0" width="236.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="328.0" y="163.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">PluginLoader (C ABI)</text>
+      <text class="arch-node-role" x="328.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">URDF SHA-256 验签</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#paradigm" data-same-page="true" aria-label="前往「PluginLoader (C ABI)」对应章节">
+      <rect x="524.0" y="142.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="158.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="so_sim" aria-controls="sub-hal-sal-bridge-f0-drawer-so_sim">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="so_sim" data-flows="all,sim_path" aria-expanded="false" aria-label="libsal_shm.so（HalOrigin::SIM_SAL）" aria-controls="sub-hal-sal-bridge-f0-drawer-so_sim">
+      <rect class="arch-node-box" x="60.0" y="248.0" width="236.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">libsal_shm.so</text>
+      <text class="arch-node-role" x="72.0" y="302.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">HalOrigin::SIM_SAL</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#flow" data-same-page="true" aria-label="前往「libsal_shm.so」对应章节">
+      <rect x="268.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="280.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="so_real" aria-controls="sub-hal-sal-bridge-f0-drawer-so_real">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="so_real" data-flows="all,real_path" aria-expanded="false" aria-label="5 型实机 HAL .so（HalOrigin::REAL_HAL）" aria-controls="sub-hal-sal-bridge-f0-drawer-so_real">
+      <rect class="arch-node-box" x="316.0" y="248.0" width="236.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="328.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">5 型实机 HAL .so</text>
+      <text class="arch-node-role" x="328.0" y="302.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">HalOrigin::REAL_HAL</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#contracts" data-same-page="true" aria-label="前往「5 型实机 HAL .so」对应章节">
+      <rect x="524.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="536.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="phys_carrier" aria-controls="sub-hal-sal-bridge-f0-drawer-phys_carrier">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="phys_carrier" data-flows="all,real_path,sim_path" aria-expanded="false" aria-label="物理仿真 / 实机本体（MuJoCo 4.0.1 / 关节电机）" aria-controls="sub-hal-sal-bridge-f0-drawer-phys_carrier">
+      <rect class="arch-node-box" x="120.0" y="386.0" width="372.0" height="72.0" rx="3.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="132.0" y="411.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">物理仿真 / 实机本体</text>
+      <text class="arch-node-role" x="132.0" y="444.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#16181D">MuJoCo 4.0.1 / 关节电机</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#evidence" data-same-page="true" aria-label="前往「物理仿真 / 实机本体」对应章节">
+      <rect x="464.0" y="390.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="476.0" y="406.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_v2" aria-controls="sub-hal-sal-bridge-f0-drawer-sal_v2">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_v2" data-flows="all,filter,sim_path" aria-expanded="false" aria-label="SalWire v2 线格式（state_cmd + lidar.shm）" aria-controls="sub-hal-sal-bridge-f0-drawer-sal_v2">
+      <rect class="arch-node-box" x="628.0" y="146.0" width="246.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="640.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalWire v2 线格式</text>
+      <text class="arch-node-role" x="640.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">state_cmd + lidar.shm</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#contracts" data-same-page="true" aria-label="前往「SalWire v2 线格式」对应章节">
+      <rect x="846.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="858.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sa_filter" aria-controls="sub-hal-sal-bridge-f0-drawer-sa_filter">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sa_filter" data-flows="all,filter" aria-expanded="false" aria-label="SensorAdapters 防腐层（4 级脏帧拦截网）" aria-controls="sub-hal-sal-bridge-f0-drawer-sa_filter">
+      <rect class="arch-node-box" x="900.0" y="146.0" width="242.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="912.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">SensorAdapters 防腐层</text>
+      <text class="arch-node-role" x="912.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">4 级脏帧拦截网</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#principles" data-same-page="true" aria-label="前往「SensorAdapters 防腐层」对应章节">
+      <rect x="1114.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="oob_udp" aria-controls="sub-hal-sal-bridge-f0-drawer-oob_udp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="oob_udp" data-flows="all,filter" aria-expanded="false" aria-label="32 B SafetyFrame 直通（UDP :18749 覆盖急停）" aria-controls="sub-hal-sal-bridge-f0-drawer-oob_udp">
+      <rect class="arch-node-box" x="690.0" y="320.0" width="390.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="702.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">32 B SafetyFrame 直通</text>
+      <text class="arch-node-role" x="702.0" y="382.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">UDP :18749 覆盖急停</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#principles" data-same-page="true" aria-label="前往「32 B SafetyFrame 直通」对应章节">
+      <rect x="1052.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1064.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SIM_SAL 仿真映射插件</text>
+  <rect x="236.2" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="258.2" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">REAL_HAL / 防腐拦截 / 32B 急停</text>
+  <rect x="444.9" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="466.9" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SalWire v2 定长总线</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">四级防腐依次检查: 魔数/CRC32 -&gt; epoch 一致 -&gt; 序列递增 -&gt; std::isfinite</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 06 · IHALDRIVER &amp; SALWIRE V2 BRIDGE</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">IHalDriver 6 插件动态加载、SalWire v2 与四级传感器防腐校验网</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">PluginLoader (C ABI) · SensorAdapters ACL · 32 B OOB SafetyFrame</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>HAL 插件抽象边界、SalWire v2 与
-FacilityHAL 双边隔离架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="sim_path" aria-pressed="false">SIM_SAL 零拷贝仿真通路</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="real_path" aria-pressed="false">REAL_HAL 实机硬件通路</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="filter" aria-pressed="false">四级传感器防腐校验</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>IHalDriver C ABI 插件、SalWire v2
+与四级防腐网关</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-hal-sal-bridge.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-hal-sal-bridge-f0-drawer-bgw" class="diagram-drawer-panel" data-node-drawer="bgw" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">body_gateway (P0)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P0 · 出口 · 200 Hz 控制循环</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「body_gateway (P0)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把控制环计算出的关节和底盘指令送入动态加载的驱动插件。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单写者硬件网关</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/body_gateway/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>统一管理 5 种 JointCtrlMode 下发，严禁其他模块旁路写硬件</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-hal-sal-bridge-f0-drawer-plug_load" class="diagram-drawer-panel" data-node-drawer="plug_load" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">PluginLoader (C ABI)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">HAL Loader · 插件工厂 · 启动期动态 dlopen</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「PluginLoader (C ABI)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在进入控制环前强制校验机器人模型与标定指纹一致，杜绝错配驱动。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III C ABI 工厂模式</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/hal/plugin_loader.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>create_hal_driver() + probe_and_verify_calibration() 核对 URDF SHA-256</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-hal-sal-bridge-f0-drawer-so_sim" class="diagram-drawer-panel" data-node-drawer="so_sim" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">libsal_shm.so</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Backend · 仿真插件 · mmap 零拷贝读写</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「libsal_shm.so」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在不暴露任何物理引擎私有 API 的前提下将控制二进制桥接至 MuJoCo。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>scene-agnostic 仿真后端</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/backends/sal_shm/sal_shm_plugin.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>映射 /dev/shm/embodied_sal/&lt;run_id&gt;/&lt;robot_id&gt;/；标定来源严格记为 SIM_SAL</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-hal-sal-bridge-f0-drawer-so_real" class="diagram-drawer-panel" data-node-drawer="so_real" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">5 型实机 HAL .so</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Backend · 真机插件 · CAN / EtherCAT 总线</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「5 型实机 HAL .so」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">分别适配双足、轮腿、灵巧手人形及特种无人车实机硬件通信协议。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III 硬件策略插件</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/backends/facri/hal_facri_plugin.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>hal_{facri,g2,m20,rp1,ugv_can}.so；报告 REAL_HAL 来源并执行硬件限位保护</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-hal-sal-bridge-f0-drawer-sal_v2" class="diagram-drawer-panel" data-node-drawer="sal_v2" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SalWire v2 线格式</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Shared Core · 线协议 · 200 Hz / 10 Hz</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SalWire v2 线格式」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">以编译期核验的 48 轴定长内存布局消除跨边界序列化抖动。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>定长紧缩 + CRC32 IEEE</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/sal_wire.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>8192 B state_cmd.shm (1472 B / 2052 B) + 131072 B lidar.shm (96068 B)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-hal-sal-bridge-f0-drawer-sa_filter" class="diagram-drawer-panel" data-node-drawer="sa_filter" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SensorAdapters 防腐层</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P0 · 防腐过滤 · 200 Hz 入口校验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SensorAdapters 防腐层」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在传感反馈进入状态估计与控制器前拦截所有损坏、倒序或错代数据帧。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III 防腐层 (ACL)</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/sensor_adapters/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>依次校验魔数/CRC32 -&gt; epoch 代际 -&gt; 帧序单调 -&gt; std::isfinite 防 NaN 飞车</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-hal-sal-bridge-f0-drawer-oob_udp" class="diagram-drawer-panel" data-node-drawer="oob_udp" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">32 B SafetyFrame 直通</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P0 · 带外保护 · 旁路通用总线</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「32 B SafetyFrame 直通」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">即使上层 ROS 2 或规划环完全卡死，仍能通过 32 B UDP 及时制动。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>带外覆盖通道</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/safety/acvo_udp_rx.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>在保护层直接覆盖下发至插件的输出指令，切入 ESTOP_HOLD 或遥操作接管</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-hal-sal-bridge-f0-drawer-phys_carrier" class="diagram-drawer-panel" data-node-drawer="phys_carrier" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">物理仿真 / 实机本体</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Plane 04 · 物理执行 · 500 / 200 Hz 物理</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「物理仿真 / 实机本体」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">最终物理作用对象，为全栈闭环提供真实接触力、编码器与点云反馈。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>物理真值隔离边界</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/backend/README.md</code></dd></div>
+      <div><dt>核心契约</dt><dd>SIM 与 REAL 来源在 HalOrigin 严格区分，严禁交叉混签验证结论</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2 id="ihaldriver-抽象边界与-6-大动态库插件"><code>IHalDriver</code>
-抽象边界与 <code>6</code> 大动态库插件</h2>
-<p><code>src/robot_app/include/robot_app/hal/i_hal_driver.hpp</code>
-定义了标准虚基类 <code>IHalDriver</code> 及基于 C 语言符号
-<code>create_hal_driver(const char* profile_json)</code> /
-<code>destroy_hal_driver(IHalDriver*)</code> 的动态加载入口（由
-<code>src/robot_app/algorithms/hal/plugin_loader.cpp</code>
-运行时按配置名载入
-<code>.so</code>）。每型驱动必须强制显式声明自身的运行出身与能力约束：</p>
+<p><code>src/robot_app/processes/body_rt_main.cpp</code>
+在进程启动阶段严格按序执行以下四步前置校验，任一步失败即返回错误码
+<code>2</code> 并退出而不进入控制循环：</p>
+<ol type="1">
+<li><strong>动态载入 C ABI
+插件</strong>：<code>HalPluginLoader::load</code>（<code>src/robot_app/algorithms/hal/plugin_loader.cpp</code>）以
+<code>dlopen(..., RTLD_NOW | RTLD_LOCAL)</code> 加载插件，解析
+<code>create_hal_driver</code> 与 <code>destroy_hal_driver</code>
+符号并实例化驱动。</li>
+<li><strong>现场标定指纹核验</strong>：调用
+<code>probe_and_verify_calibration(expected_urdf_sha256, ...)</code>
+核对预期 URDF <code>SHA-256</code> 摘要与现场标定文件一致性。</li>
+<li><strong>代际激活与自由度匹配</strong>：调用
+<code>start(epoch, err)</code> 激活驱动，并比对
+<code>query_hardware_caps().active_dofs</code> 与
+<code>EmbodimentSpecPod.active_dofs</code> 是否一致。</li>
+<li><strong>周期读写与急停覆盖</strong>：<code>SensorAdaptersModule</code>
+读入样本并过滤脏帧，<code>BodyGatewayModule</code> 在
+<code>200 Hz</code> 下合流
+<code>ActionExecOutPod</code>、<code>PolicyRunner</code> 与带外
+<code>SafetyStatusPod</code> 后写入硬件。</li>
+</ol>
+<h2 id="principles">03 · 核心原理与内部机制</h2>
+<h3 id="salwire-v2-定长零拷贝线协议与校验和"><code>SalWire</code> v2
+定长零拷贝线协议与校验和</h3>
+<p>在 <code>sal_transport: "shm_v2"</code> 仿真场景下，仿真侧与
+<code>robot_body_rt</code> 共享两个固定大小的 <code>mmap</code>
+文件（<code>src/embodied_core/include/embodied_core/sal_wire.hpp</code>）：<code>state_cmd.shm</code>（<code>8192 B</code>）上半区放置
+<code>SalSampleWire</code>（<code>1472 B</code>，魔数
+<code>0x454D5341</code> <code>"EMSA"</code>，序列锁偏移
+<code>0</code>、载荷偏移 <code>8 B</code>），下半区放置
+<code>SalCommandWire</code>（<code>2052 B</code>，魔数
+<code>0x454D5343</code> <code>"EMSC"</code>，序列锁偏移
+<code>4096</code>、载荷偏移
+<code>4104 B</code>）；<code>lidar.shm</code>（<code>131072 B</code> /
+<code>128 KiB</code>）放置
+<code>SalLidarWire</code>（<code>96068 B</code>，魔数
+<code>0x454D4C44</code> <code>"EMLD"</code>，最多 <code>6000</code> 个
+<code>16 B</code> <code>SalLidarPointXYZI</code>
+点云）。所有线结构体均以 <code>#pragma pack(push, 1)</code>
+紧密打包，并在编译期由 <code>static_assert</code> 锁定精确字节尺寸与尾部
+<code>crc32_ieee</code>
+偏移，彻底消除跨语言、跨编译单元的结构体填充歧义。</p>
+<h3
+id="四级传感器防腐过滤与带外急停覆盖">四级传感器防腐过滤与带外急停覆盖</h3>
 <ul>
-<li><strong>可信出身标识（<code>HalOrigin</code>）</strong>：返回
-<code>HalOrigin::SIM_SAL</code>（物理仿真后端）或
-<code>HalOrigin::REAL_HAL</code>（实物硬件后端），作为跨层追踪执行真实来源的基础依据。</li>
-<li><strong>启动前标定核验（<code>probe_and_verify_calibration</code>）</strong>：在
-<code>start(epoch, out_error)</code> 拉起控制循环前，强制核查预期 URDF
-SHA-256
-摘要与现场标定文件是否完整匹配，校验失败则拒绝激活驱动输出。</li>
-<li><strong>五种标准控制模式（<code>JointCtrlMode</code>）</strong>：支持
-<code>kDisabled</code>（失能）、<code>kPositionPd</code>（位置 PD
-伺服）、<code>kVelocityPd</code>（速度 PD
-伺服）、<code>kTorque</code>（纯力矩前馈）与
-<code>kDampingHold</code>（高阻尼安全保持），并统一暴露紧急保护入口
-<code>engage_safe_stop()</code>。</li>
+<li><strong>四级防腐拦截（<code>SensorAdaptersDomain</code>）</strong>：<code>src/robot_app/modules/sensor_adapters/domain.hpp</code>
+对每帧 <code>HalSample</code> 依次校验
+<code>verify_sal_sample_wire()</code> CRC32
+校验和、全部关节/IMU/位姿分量有限浮点合法性（异常递增
+<code>nonfinite_rejected</code>）、与 <code>expected_epoch_</code>
+的代际一致性，以及帧序号单调性（倒退丢弃并递增
+<code>stale_seq_dropped</code>），绝不放行脏数据进入内部
+<code>BodyRtBus</code>。</li>
+<li><strong>双时钟隔离</strong>：<code>SalSampleWire</code>
+携带仿真物理时间 <code>sim_time_ns</code>，<code>SalCommandWire</code>
+携带宿主机单调时间
+<code>host_monotonic_ns</code>，严禁混用两类时钟判断消息新鲜度。</li>
+<li><strong>带外 <code>32 B</code> <code>SafetyFrame</code>
+优先权</strong>：<code>src/embodied_core/include/embodied_core/safety_frame.hpp</code>
+定义固定 <code>32 B</code> UDP 安全帧（魔数 <code>0x454D5346</code>
+<code>"EMSF"</code>，监听端口 <code>18749</code>）。一旦
+<code>protection_runtime</code> 触发急停或
+<code>LOCAL_HOLD</code>，<code>BodyGatewayDomain::step_200hz</code>（<code>src/robot_app/modules/body_gateway/domain.hpp</code>）强制置位
+<code>estop_hold = true</code>（对应
+<code>kCmdFlagEstopHold</code>）并对执行器下发零速与
+<code>kDampingHold</code> 高阻尼安全保持，无条件覆盖上层运动目标。</li>
 </ul>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>本子系统体现 <strong>P-III
+动态插件策略桥接与防腐层边界范式</strong>：</p>
+<ul>
+<li><strong>C ABI
+插件工厂与最小可见性隔离（<code>HalPluginLoader</code>）</strong>：<code>src/robot_app/include/robot_app/hal/i_hal_driver.hpp</code>
+通过纯虚基类 <code>IHalDriver</code> 与 <code>extern "C"</code> 工厂函数
+<code>create_hal_driver</code>/<code>destroy_hal_driver</code>
+隔离核心二进制与插件实现；<code>HalPluginLoader</code> 使用
+<code>RTLD_LOCAL</code> 防止多插件间符号污染，并在析构期自动调用
+<code>driver_-&gt;close()</code> 与 <code>destroy_fn_</code>
+避免资源泄漏。</li>
+<li><strong>不可信输入防腐边界（<code>SensorAdaptersDomain</code>）</strong>：在
+<code>P0</code>
+最前端设立无状态检验过滤器，将未校验的物理/网络字节流阻挡在领域计算之外。</li>
+<li><strong>可信出身自证（<code>HalOrigin</code>）</strong>：驱动必须显式返回
+<code>HalOrigin::SIM_SAL</code> 或
+<code>HalOrigin::REAL_HAL</code>，由下而上贯通
+<code>ChildHeartbeatPod</code> 与
+<code>TeamVerifier</code>，防止仿真后端伪装成真机回执。</li>
+</ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>合规状态</th>
+<th>工程依据与审视说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 领域纯洁性与依赖倒置</td>
+<td><code>PASS</code></td>
+<td><code>robot_body_rt</code> 核心仅依赖 <code>IHalDriver</code>
+抽象接口，<code>SalWire</code> 与真机总线实现下沉至 <code>.so</code>
+插件</td>
+</tr>
+<tr>
+<td>2. 契约完备性与边界防呆</td>
+<td><code>PASS</code></td>
+<td><code>#pragma pack(push, 1)</code> + <code>static_assert</code> +
+<code>CRC32</code> + <code>URDF SHA-256</code> 核验 +
+<code>SensorAdaptersDomain</code> 四级过滤</td>
+</tr>
+<tr>
+<td>3. 状态机与生命周期确定性</td>
+<td><code>PASS</code></td>
+<td><code>load -&gt; probe_and_verify_calibration -&gt; start(epoch) -&gt; read/write -&gt; engage_safe_stop -&gt; close</code>
+严格有序</td>
+</tr>
+<tr>
+<td>4. 实时内存与并发安全性</td>
+<td><code>PASS</code></td>
+<td>定长 <code>mmap</code>
+零堆分配传输；<code>BodyGatewayDomain::step_200hz</code> 标记
+<code>noexcept</code> 并配合 <code>SeqLock</code> 无阻塞读写</td>
+</tr>
+<tr>
+<td>5. 离线可测性与失败留痕</td>
+<td><code>PASS</code></td>
+<td><code>test_core_hal_safety_ipc</code> 离线校验字节布局、CRC32
+篡改拒收、帧序倒退统计与 <code>SafetyFrame</code> 解码</td>
+</tr>
+<tr>
+<td>6. 单真源约束与过渡债务透明度</td>
+<td><code>SCOPED</code></td>
+<td>线协议收口于 <code>sal_wire.hpp</code> 与
+<code>safety_frame.hpp</code>；<code>libsal_shm.so</code> 已在
+<code>SIM</code> 验证，五型真机 <code>libhal_*.so</code>
+插件需独立绑定现场标定与 <code>L4</code> 物理验收</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
 <p>依据 <code>src/robot_app/CMakeLists.txt</code>
-编译产物清单，平台目前内建并注册以下 <code>6</code> 个动态加载后端：</p>
+构建产物清单，平台内建并注册以下 <code>6</code> 个动态加载驱动插件与
+<code>SalWire</code> v2 共享内存布局：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -130,54 +626,44 @@ SHA-256
 <tbody>
 <tr>
 <td><code>libsal_shm.so</code></td>
-<td><code>backends/sal_shm/</code></td>
+<td><code>src/robot_app/backends/sal_shm/sal_shm_plugin.cpp</code></td>
 <td><code>HalOrigin::SIM_SAL</code></td>
 <td>通用场景无关 MuJoCo 仿真驱动，直接读写 <code>SalWire</code> v2
 <code>/dev/shm/embodied_sal/</code></td>
 </tr>
 <tr>
 <td><code>libhal_facri.so</code></td>
-<td><code>backends/facri/</code></td>
+<td><code>src/robot_app/backends/facri/hal_facri_plugin.cpp</code></td>
 <td><code>HalOrigin::REAL_HAL</code></td>
 <td><code>FACRI</code> 31 轴双足人形真机总线硬件驱动与异步同步接口</td>
 </tr>
 <tr>
 <td><code>libhal_g2.so</code></td>
-<td><code>backends/g2/</code></td>
+<td><code>src/robot_app/backends/agibot_g2/hal_g2_plugin.cpp</code></td>
 <td><code>HalOrigin::REAL_HAL</code></td>
 <td><code>G2</code> 32 轴全向四轮转向双臂机器人实物控制器驱动</td>
 </tr>
 <tr>
 <td><code>libhal_m20.so</code></td>
-<td><code>backends/m20/</code></td>
+<td><code>src/robot_app/backends/deeprobotics_m20/hal_m20_plugin.cpp</code></td>
 <td><code>HalOrigin::REAL_HAL</code></td>
 <td><code>M20</code> 16 轴轮腿混合四足机器狗硬件驱动</td>
 </tr>
 <tr>
 <td><code>libhal_rp1.so</code></td>
-<td><code>backends/rp1/</code></td>
+<td><code>src/robot_app/backends/roboparty_rp1/hal_rp1_plugin.cpp</code></td>
 <td><code>HalOrigin::REAL_HAL</code></td>
 <td><code>RP1</code> 40 轴客舱服务双足与灵巧手真机驱动</td>
 </tr>
 <tr>
 <td><code>libhal_ugv_can.so</code></td>
-<td><code>backends/ugv_can/</code></td>
+<td><code>src/robot_app/backends/ugv_can/hal_ugv_can_plugin.cpp</code></td>
 <td><code>HalOrigin::REAL_HAL</code></td>
 <td>C919 机坪专用地面车辆（牵引、叉车、传送带、摆渡）SocketCAN 驱动</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="salwire-v2-定长零拷贝共享内存协议"><code>SalWire</code> v2
-定长零拷贝共享内存协议</h2>
-<p>在所有仿真场景（<code>sal_transport: "shm_v2"</code>）中，仿真器后端与各机器人
-<code>robot_body_rt</code> 进程通过
-<code>/dev/shm/embodied_sal/&lt;run_id&gt;/&lt;robot_id&gt;/</code>
-目录下的两个固定尺寸 mmap
-文件交换高频姿态、关节指令与三维点云。所有结构体在
-<code>src/embodied_core/include/embodied_core/sal_wire.hpp</code> 中均以
-<code>#pragma pack(push, 1)</code> 紧密排列并附带编译期
-<code>static_assert</code> 字节核查与末端 CRC32 IEEE 校验：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -226,7 +712,7 @@ SHA-256
 </div>
 <details class="tech-details">
 <summary>
-查看 SalWire v2 结构体全量字段与标志位字典
+查看 SalWire v2 结构体全量字段、标志位与 SafetyFrame 32 字节字典
 </summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
@@ -271,32 +757,33 @@ SHA-256
 <td>每个点占 <code>16 B</code>（<code>x/y/z/intensity</code> 均为
 <code>float32</code>），点云总数上限 <code>6000</code></td>
 </tr>
+<tr>
+<td><code>SafetyFrame</code>（<code>32 B</code>）</td>
+<td><code>magic</code>（<code>0x454D5346</code>）、<code>version_flags</code>、<code>estop_bitmask</code>、<code>target_robot_idx</code>、<code>lease_ttl_25ms</code>、<code>seq_u32</code>、<code>cmd_vx_mmps</code>/<code>cmd_vy_mmps</code>/<code>cmd_wz_mradps</code>、<code>sender_epoch_tag[6]</code>、<code>crc32_ieee</code></td>
+<td>端口 <code>18749</code>；<code>estop_bitmask = 0xFFFF</code>
+表示全队急停，<code>target_robot_idx = 0xFF</code> 为广播帧</td>
+</tr>
 </tbody>
 </table>
 </div>
 </details>
-<h2
-id="输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新鲜度门禁与双层安全防线</h2>
-<p><code>src/robot_app/modules/sensor_adapters/domain.hpp</code> 中的
-<code>SensorAdaptersDomain</code> 对每条读入的 <code>HalSample</code>
-执行严格检验，不放行任何脏数据进入控制回路：</p>
-<ol type="1">
-<li><strong>数值与结构完整校验</strong>：检查
-<code>verify_sal_sample_wire()</code> CRC32 一致性，以及
-<code>q</code>、<code>dq</code>、IMU
-和位姿分量是否全部为有限浮点数，异常直接递增
-<code>nonfinite_rejected</code> 并拒绝更新总线。</li>
-<li><strong>代际（<code>epoch</code>）与帧序防回退检查</strong>：拒绝与
-<code>expected_epoch_</code>
-不一致或序列号倒退（<code>stale_seq_dropped</code>）的历史残帧，防止重连或仿真重启瞬间发生位置阶跃跳变。</li>
-<li><strong>带外急停覆盖权</strong>：不论上层规划软件发送了何种
-<code>SalCommandWire</code> 目标，一旦 <code>protection_runtime</code>
-通过 <code>18749</code> UDP 端口接收到针对本机位掩码的
-<code>SafetyFrame</code> 急停信号或检测超时触发
-<code>LOCAL_HOLD</code>，<code>body_gateway</code> 将强制置位
-<code>estop_hold = true</code>
-并对下发执行器施加零速度及安全阻尼控制。</li>
-</ol>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<ul>
+<li><strong>离线协议与物理工厂验证（<code>L1</code> /
+<code>L3</code>）</strong>：<code>L1</code> 原生单元测试
+<code>test_core_hal_safety_ipc</code> 验证了
+<code>SalSampleWire</code>（<code>1472 B</code>）、<code>SalCommandWire</code>（<code>2052 B</code>）、<code>SalLidarWire</code>（<code>96068 B</code>）与
+<code>SafetyFrame</code>（<code>32 B</code>）的精确布局、CRC32
+损坏拒收与跨代际拦截；在 <code>L3</code> 级 <code>510/510</code>
+纯接触操作及 <code>SIT-F3</code>
+四机集成测试中，<code>libsal_shm.so</code> 稳定支撑 <code>200 Hz</code>
+关节交互与 <code>10 Hz</code> 点云读取。</li>
+<li><strong>能力边界声明</strong>：<code>libsal_shm.so</code> 仅报告
+<code>HalOrigin::SIM_SAL</code>，任何在 MuJoCo
+仿真环境下通过的测试均<strong>不可</strong>直接替代
+<code>libhal_facri.so</code> 等 <code>REAL_HAL</code> 真机插件在
+<code>L4</code> 现场的实机总线、延迟与急停硬件测试。</li>
+</ul>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -308,16 +795,23 @@ id="输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新�
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#ihaldriver-抽象边界与-6-大动态库插件"
-id="toc-ihaldriver-抽象边界与-6-大动态库插件"><code>IHalDriver</code>
-抽象边界与 <code>6</code> 大动态库插件</a></li>
-<li><a href="#salwire-v2-定长零拷贝共享内存协议"
-id="toc-salwire-v2-定长零拷贝共享内存协议"><code>SalWire</code> v2
-定长零拷贝共享内存协议</a></li>
-<li><a href="#输入验证帧新鲜度门禁与双层安全防线"
-id="toc-输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新鲜度门禁与双层安全防线</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与内部机制</a>
+<ul>
+<li><a href="#salwire-v2-定长零拷贝线协议与校验和"
+id="toc-salwire-v2-定长零拷贝线协议与校验和"><code>SalWire</code> v2
+定长零拷贝线协议与校验和</a></li>
+<li><a href="#四级传感器防腐过滤与带外急停覆盖"
+id="toc-四级传感器防腐过滤与带外急停覆盖">四级传感器防腐过滤与带外急停覆盖</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -330,20 +824,21 @@ id="toc-输入验证帧新鲜度门禁与双层安全防线">输入验证、帧�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

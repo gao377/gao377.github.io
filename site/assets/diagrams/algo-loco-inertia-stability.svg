@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-loco-inertia-stability" viewBox="0 0 1200 550" width="1200" height="550" role="group" aria-labelledby="algo-loco-inertia-stability-title" aria-describedby="algo-loco-inertia-stability-desc">
+  <title id="algo-loco-inertia-stability-title">operation_snapshot 操作期上肢惯性切换与 BodyStabilityMonitor 判稳</title>
+  <desc id="algo-loco-inertia-stability-desc">阐明 2026-11-14 裁定下的导航原生动力学与操作期惯性冻结边沿切换机理及倾角位移判稳状态机。</desc>
+  <defs>
+    <pattern id="algo-loco-inertia-stability-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-loco-inertia-stability-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="550" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="550" fill="url(#algo-loco-inertia-stability-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="548.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="560.0" height="412.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">OPERATION SNAPSHOT HANDOFF</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">导航原生动力学 &lt;-&gt; 操作期固定上肢惯性张量</text>
+  <rect x="624.0" y="86.0" width="540.0" height="412.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="638.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">STABILITY &amp; EXCURSION GUARD</text>
+  <text x="638.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">滑窗判稳、位移越界记录与 SIM_ONLY 范围</text>
+  <g class="arch-edge" data-from="nav_dyn" data-to="op_snap" data-flow="inertia">
+    <path d="M 304.0 189.0 L 332.0 189.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-ochre)"/>
+    <rect x="292.2" y="180.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="318.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">解锁捕获</text>
+  </g>
+  <g class="arch-edge" data-from="op_snap" data-to="relock_rst" data-flow="inertia">
+    <path d="M 452.0 226.0 L 452.0 281.0 Q 452.0 286.0 447.0 286.0 L 325.0 286.0 Q 320.0 286.0 320.0 291.0 L 320.0 326.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-slate)"/>
+    <rect x="360.2" y="277.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="386.0" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">重锁恢复</text>
+  </g>
+  <g class="arch-edge" data-from="relock_rst" data-to="nav_dyn" data-flow="inertia">
+    <path d="M 190.0 363.0 L 125.0 363.0 Q 120.0 363.0 120.0 358.0 L 120.0 226.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-loco-inertia-stability-arrow-forest)"/>
+    <rect x="99.2" y="285.5" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="120.0" y="297.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">原驱动</text>
+  </g>
+  <g class="arch-edge" data-from="op_snap" data-to="stab_mon" data-flow="stability">
+    <path d="M 572.0 189.0 L 654.0 189.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-loco-inertia-stability-arrow-forest)"/>
+    <rect x="587.2" y="180.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="613.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">相对基准</text>
+  </g>
+  <g class="arch-edge" data-from="stab_mon" data-to="excur_guard" data-flow="stability">
+    <path d="M 886.0 189.0 L 906.0 189.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-ink)"/>
+    <rect x="870.2" y="180.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="896.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">40ms 窗</text>
+  </g>
+  <g class="arch-edge" data-from="excur_guard" data-to="sim_only" data-flow="stability">
+    <path d="M 1022.0 226.0 L 1022.0 281.0 Q 1022.0 286.0 1017.0 286.0 L 905.0 286.0 Q 900.0 286.0 900.0 291.0 L 900.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-terracotta)"/>
+    <rect x="931.2" y="277.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="961.0" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">SIM_ONLY</text>
+  </g>
+  <g class="arch-node-card" data-node-id="nav_dyn">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="nav_dyn" data-flows="all,inertia" aria-expanded="false" aria-label="导航期原生动力学（初始上肢不冻结）">
+      <rect class="arch-node-box" x="64.0" y="152.0" width="240.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">导航期原生动力学</text>
+      <text class="arch-node-role" x="76.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">初始上肢不冻结</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#origins" aria-label="前往「导航期原生动力学」对应章节">
+      <rect x="276.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="288.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="op_snap">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="op_snap" data-flows="all,inertia,stability" aria-expanded="false" aria-label="operation_snapshot 捕获（解锁捕获上肢惯性张量）">
+      <rect class="arch-node-box" x="332.0" y="152.0" width="240.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="344.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">operation_snapshot 捕获</text>
+      <text class="arch-node-role" x="344.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">解锁捕获上肢惯性张量</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#principles" aria-label="前往「operation_snapshot 捕获」对应章节">
+      <rect x="544.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="556.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="relock_rst">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="relock_rst" data-flows="all,inertia" aria-expanded="false" aria-label="重锁恢复原动力学（apply_device_command）">
+      <rect class="arch-node-box" x="190.0" y="326.0" width="260.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="202.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">重锁恢复原动力学</text>
+      <text class="arch-node-role" x="202.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">apply_device_command</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#contracts" aria-label="前往「重锁恢复原动力学」对应章节">
+      <rect x="422.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="434.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="stab_mon">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="stab_mon" data-flows="all,stability" aria-expanded="false" aria-label="BodyStabilityMonitor（滑窗倾角判稳 (10°)）">
+      <rect class="arch-node-box" x="654.0" y="152.0" width="232.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="666.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">BodyStabilityMonitor</text>
+      <text class="arch-node-role" x="666.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">滑窗倾角判稳 (10°)</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#paradigm" aria-label="前往「BodyStabilityMonitor」对应章节">
+      <rect x="858.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="870.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="excur_guard">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="excur_guard" data-flows="all,stability" aria-expanded="false" aria-label="SimPositionExcursionGuard（100 ms 位移越界守卫）">
+      <rect class="arch-node-box" x="906.0" y="152.0" width="232.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="918.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">SimPositionExcursionGuard</text>
+      <text class="arch-node-role" x="918.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">100 ms 位移越界守卫</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#evidence" aria-label="前往「SimPositionExcursionGuard」对应章节">
+      <rect x="1110.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1122.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sim_only">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sim_only" data-flows="all,stability" aria-expanded="false" aria-label="SIM_ONLY 能力边界声明（不签 REAL 步行资质）">
+      <rect class="arch-node-box" x="720.0" y="326.0" width="360.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="732.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SIM_ONLY 能力边界声明</text>
+      <text class="arch-node-role" x="732.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">不签 REAL 步行资质</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#evidence" aria-label="前往「SIM_ONLY 能力边界声明」对应章节">
+      <rect x="1052.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1064.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="506.0" x2="1164.0" y2="506.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="528.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="104.0" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">交接边沿 mj_setConst 惯性切换</text>
+  <rect x="281.8" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="303.8" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">原生动力学与判稳状态机</text>
+  <rect x="440.8" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="462.8" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SIM 专用简化 (无 REAL 资格)</text>
+  <text x="1164.0" y="527.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">切换仅在完整解锁/重锁确认边沿执行，绝不重置 qpos / qvel / time</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 01B · INERTIA SNAPSHOT &amp; STABILITY MONITOR</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">operation_snapshot 操作期上肢惯性切换与 BodyStabilityMonitor 判稳</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">upper_inertia_mode=operation_snapshot · SIM_ONLY 边界</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

@@ -1,113 +1,172 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690" width="1200" height="690" role="img" aria-labelledby="diagram-title diagram-desc">
-  <title id="diagram-title">L0–L4 五级证据阶梯、准入跃迁门禁与禁止跨代/跨级外推红线</title>
-  <desc id="diagram-desc">展示 FACRI 从静态契约检查到真机同步验收的五级证据阶梯，每层能证明什么、不能替代什么，以及四条不可逾越红线。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="evidence-verification-ladder" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="evidence-verification-ladder-title" aria-describedby="evidence-verification-ladder-desc">
+  <title id="evidence-verification-ladder-title">L0–L4 五级证据阶梯跃迁门禁与四条禁止跨级/跨代外推红线</title>
+  <desc id="evidence-verification-ladder-desc">展示五级证据阶梯的递进范围以及四条禁止跨级外推、跨代继承、混用外观碰撞和篡改失败记录的红线。</desc>
   <defs>
-    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+    <pattern id="evidence-verification-ladder-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
       <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
     </pattern>
-    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="evidence-verification-ladder-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
     </marker>
-    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="evidence-verification-ladder-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
     </marker>
-    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="evidence-verification-ladder-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
     </marker>
-    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="evidence-verification-ladder-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
     </marker>
-    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="evidence-verification-ladder-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
     </marker>
-    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="evidence-verification-ladder-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
     </marker>
   </defs>
-  <rect x="0" y="0" width="1200" height="690" fill="#FAFAF7"/>
-  <rect x="0" y="0" width="1200" height="690" fill="url(#dot-grid)"/>
-  <rect x="0.75" y="0.75" width="1198.5" height="688.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
-  <rect x="36.0" y="216.0" width="212.0" height="252.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
-  <text x="50.0" y="235.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">TIER L0</text>
-  <text x="50.0" y="252.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">静态契约与零步体检</text>
-  <rect x="265.0" y="186.0" width="212.0" height="282.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
-  <text x="279.0" y="205.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">TIER L1</text>
-  <text x="279.0" y="222.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">原生单元与接触配对</text>
-  <rect x="494.0" y="156.0" width="212.0" height="312.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
-  <text x="508.0" y="175.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">TIER L2</text>
-  <text x="508.0" y="192.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">C919 T3 运动学编排</text>
-  <rect x="723.0" y="126.0" width="212.0" height="342.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
-  <text x="737.0" y="145.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">TIER L3</text>
-  <text x="737.0" y="162.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">多进程与纯接触闭环</text>
-  <rect x="952.0" y="96.0" width="212.0" height="372.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
-  <text x="966.0" y="115.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">TIER L4</text>
-  <text x="966.0" y="132.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">真机同步与现场验收</text>
-  <rect x="36.0" y="484.0" width="1128.0" height="148.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
-  <text x="50.0" y="503.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">FOUR UNBREAKABLE GOVERNANCE REDLINES</text>
-  <text x="50.0" y="520.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">禁止跨级外推、禁止跨代继承与真实失败留痕红线</text>
-  <rect x="46.0" y="260.0" width="192.0" height="198.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="58.0" y="280.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L0 证据范畴与排除</text>
-  <text x="58.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">check_docs / architecture</text>
-  <text x="58.0" y="311.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">check_factory_runtime</text>
-  <text x="58.0" y="327.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">28 文档 · 84 IDL · 0 步</text>
-  <text x="58.0" y="342.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">排除: 不跑业务与物理</text>
-  <rect x="275.0" y="230.0" width="192.0" height="228.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="287.0" y="250.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L1 证据范畴与排除</text>
-  <text x="287.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">make -C robot_app test</text>
-  <text x="287.0" y="281.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">3 C++20 套件 · pytest unit</text>
-  <text x="287.0" y="297.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">448 对 condim=6 回归</text>
-  <text x="287.0" y="312.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">排除: 不证连续多工位</text>
-  <rect x="504.0" y="200.0" width="192.0" height="258.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="516.0" y="220.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L2 证据范畴与排除</text>
-  <text x="516.0" y="236.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">c919 --strict-mjcf</text>
-  <text x="516.0" y="251.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">9 异构体 (UGV vy==0)</text>
-  <text x="516.0" y="267.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">8 设施锁 · 5 阶段 DAG</text>
-  <text x="516.0" y="282.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">排除: 零接触力学/重力</text>
-  <rect x="733.0" y="170.0" width="192.0" height="288.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="745.0" y="190.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L3 证据范畴与排除</text>
-  <text x="745.0" y="206.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">510/510 CAD 纯接触</text>
-  <text x="745.0" y="221.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">SIT-F3 (4x4+1 · 16 循环)</text>
-  <text x="745.0" y="237.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">R4 V0 FAIL -&gt; V1 PASS</text>
-  <text x="745.0" y="252.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">排除: 仍属 SIM_SAL 域</text>
-  <rect x="962.0" y="140.0" width="192.0" height="318.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="974.0" y="160.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L4 证据范畴与排除</text>
-  <text x="974.0" y="176.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">facrictl start --real</text>
-  <text x="974.0" y="191.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">Domain 126 R1 锁步</text>
-  <text x="974.0" y="207.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">ZED 2i / 实机传感器</text>
-  <text x="974.0" y="222.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">排除: 需逐机标定监管</text>
-  <rect x="52.0" y="530.0" width="260.0" height="88.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="64.0" y="550.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">红线 01 · 严禁跨级外推</text>
-  <text x="64.0" y="566.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">L0–L2 不可充当物理成功; L3 SIM</text>
-  <text x="64.0" y="581.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">通过绝不直接等价为 L4 真机放行</text>
-  <rect x="330.0" y="530.0" width="260.0" height="88.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="342.0" y="550.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">红线 02 · 严禁跨代继承</text>
-  <text x="342.0" y="566.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">2026-10 G1 AMO / REVO2 资格</text>
-  <text x="342.0" y="581.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">与标定参数绝对不转给 FACRI/异构体</text>
-  <rect x="608.0" y="530.0" width="260.0" height="88.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="620.0" y="550.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">红线 03 · 展示隔离碰撞</text>
-  <text x="620.0" y="566.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">Three.js r180 模型标 preview_only</text>
-  <text x="620.0" y="581.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">高精度外观绝不自动赋予物理碰撞资格</text>
-  <rect x="886.0" y="530.0" width="260.0" height="88.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="898.0" y="550.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">红线 04 · 真实保留与主权</text>
-  <text x="898.0" y="566.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">完整保留 R4 V0 FAIL 与真实计数</text>
-  <text x="898.0" y="581.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">废除 RTF 0.5 停机 · 禁止篡改基线 JSON</text>
-  <path d="M 248.0 286.0 L 265.0 256.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
-  <path d="M 477.0 256.0 L 494.0 226.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
-  <path d="M 706.0 226.0 L 723.0 196.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
-  <path d="M 935.0 196.0 L 952.0 166.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
-  <line x1="36.0" y1="644.0" x2="1164.0" y2="644.0" stroke="#D8D3C8" stroke-width="1.00"/>
-  <text x="36.0" y="666.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
-  <rect x="82.0" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
-  <text x="104.0" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L0–L1 静态与原语验证</text>
-  <rect x="230.9" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
-  <text x="252.9" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L2 零物理场景运动学</text>
-  <rect x="374.0" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
-  <text x="396.0" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L3 多进程与纯接触闭环</text>
-  <rect x="527.9" y="655.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
-  <text x="549.9" y="665.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L4 真机与四条治理红线</text>
-  <text x="1164.0" y="665.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">每项技术声称须在发布卡中精确标注 L0–L4 等级、case_id 与 HalOrigin</text>
-  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">VERIFICATION LADDER · ANTI-EXTRAPOLATION EVIDENCE TIERS</text>
-  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">L0–L4 五级证据阶梯、准入跃迁门禁与禁止跨代/跨级外推红线</text>
-  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">L0 Static -&gt; L1 Unit -&gt; L2 Kinematic -&gt; L3 Multiprocess Contact -&gt; L4 Real-Peer</text>
-  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#evidence-verification-ladder-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="254.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">ASCENDING VERIFICATION LADDER (L0 -&gt; L4)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">逐级递增证据范畴（低级验证绝不替代高级实证）</text>
+  <rect x="36.0" y="356.0" width="1128.0" height="180.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="375.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">FOUR UNBREAKABLE GOVERNANCE REDLINES</text>
+  <text x="50.0" y="392.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">四条不可逾越工程治理红线</text>
+  <g class="arch-edge" data-from="tier_l0" data-to="tier_l1" data-flow="ladder">
+    <path d="M 262.0 282.0 L 265.9 282.0 Q 269.0 282.0 269.0 278.9 L 269.0 259.1 Q 269.0 256.0 272.1 256.0 L 276.0 256.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-slate)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l1" data-to="tier_l2" data-flow="ladder">
+    <path d="M 486.0 256.0 L 489.9 256.0 Q 493.0 256.0 493.0 252.8 L 493.0 233.2 Q 493.0 230.0 496.1 230.0 L 500.0 230.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-ochre)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l2" data-to="tier_l3" data-flow="ladder">
+    <path d="M 710.0 230.0 L 713.9 230.0 Q 717.0 230.0 717.0 226.8 L 717.0 207.2 Q 717.0 204.0 720.1 204.0 L 724.0 204.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-forest)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l3" data-to="tier_l4" data-flow="ladder">
+    <path d="M 934.0 204.0 L 937.9 204.0 Q 941.0 204.0 941.0 200.8 L 941.0 181.2 Q 941.0 178.0 944.1 178.0 L 948.0 178.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-terracotta)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l3" data-to="red_extrap" data-flow="redlines">
+    <path d="M 829.0 242.0 L 829.0 379.0 Q 829.0 384.0 824.0 384.0 L 189.0 384.0 Q 184.0 384.0 184.0 389.0 L 184.0 412.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#evidence-verification-ladder-arrow-terracotta)"/>
+    <rect x="476.7" y="375.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="506.5" y="387.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">L3 != L4</text>
+  </g>
+  <g class="arch-edge" data-from="tier_l4" data-to="red_honest" data-flow="redlines">
+    <path d="M 1051.0 216.0 L 1051.0 379.0 Q 1051.0 384.0 1046.0 384.0 L 1022.0 384.0 Q 1017.0 384.0 1017.0 389.0 L 1017.0 412.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#evidence-verification-ladder-arrow-terracotta)"/>
+    <rect x="1025.2" y="291.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="1051.0" y="303.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">真实留痕</text>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l0">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l0" data-flows="all,ladder" aria-expanded="false" aria-label="L0 · 静态契约与零步体检（28 文档 · 84 IDL · 0 步）">
+      <rect class="arch-node-box" x="52.0" y="244.0" width="210.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="64.0" y="269.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L0 · 静态契约与零步体检</text>
+      <text class="arch-node-role" x="64.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">28 文档 · 84 IDL · 0 步</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/verification-ladder.html" aria-label="前往「L0 · 静态契约与零步体检」对应章节">
+      <rect x="234.0" y="248.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="246.0" y="264.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l1">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l1" data-flows="all,ladder" aria-expanded="false" aria-label="L1 · 原生单元与接触回归（CTest + 448 对接触）">
+      <rect class="arch-node-box" x="276.0" y="218.0" width="210.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="288.0" y="243.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L1 · 原生单元与接触回归</text>
+      <text class="arch-node-role" x="288.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">CTest + 448 对接触</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/verification-ladder.html" aria-label="前往「L1 · 原生单元与接触回归」对应章节">
+      <rect x="458.0" y="222.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="470.0" y="238.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l2">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l2" data-flows="all,ladder" aria-expanded="false" aria-label="L2 · C919 T3 运动学编排（9 异构体 · 零重力）">
+      <rect class="arch-node-box" x="500.0" y="192.0" width="210.0" height="76.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="512.0" y="217.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L2 · C919 T3 运动学编排</text>
+      <text class="arch-node-role" x="512.0" y="254.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">9 异构体 · 零重力</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/verification-ladder.html" aria-label="前往「L2 · C919 T3 运动学编排」对应章节">
+      <rect x="682.0" y="196.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="694.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l3">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l3" data-flows="all,ladder,redlines" aria-expanded="false" aria-label="L3 · 多进程纯接触闭环（510/510 + SIT-F3）">
+      <rect class="arch-node-box" x="724.0" y="166.0" width="210.0" height="76.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="736.0" y="191.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L3 · 多进程纯接触闭环</text>
+      <text class="arch-node-role" x="736.0" y="228.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">510/510 + SIT-F3</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/verification-ladder.html" aria-label="前往「L3 · 多进程纯接触闭环」对应章节">
+      <rect x="906.0" y="170.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="918.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l4">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l4" data-flows="all,ladder,redlines" aria-expanded="false" aria-label="L4 · 真机对等同步验收（Domain 126 R1 锁步）">
+      <rect class="arch-node-box" x="948.0" y="140.0" width="206.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="960.0" y="165.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L4 · 真机对等同步验收</text>
+      <text class="arch-node-role" x="960.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">Domain 126 R1 锁步</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://guides/real-peer-sync.html" aria-label="前往「L4 · 真机对等同步验收」对应章节">
+      <rect x="1126.0" y="144.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1138.0" y="160.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_extrap">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_extrap" data-flows="all,redlines" aria-expanded="false" aria-label="红线 01 · 严禁跨级外推（L3 SIM != L4 REAL）">
+      <rect class="arch-node-box" x="54.0" y="412.0" width="260.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="66.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 01 · 严禁跨级外推</text>
+      <text class="arch-node-role" x="66.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">L3 SIM != L4 REAL</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/verification-ladder.html" aria-label="前往「红线 01 · 严禁跨级外推」对应章节">
+      <rect x="286.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="298.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_inherit">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_inherit" data-flows="all" aria-expanded="false" aria-label="红线 02 · 严禁跨代继承（G1 资格不转 FACRI）">
+      <rect class="arch-node-box" x="332.0" y="412.0" width="260.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="344.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 02 · 严禁跨代继承</text>
+      <text class="arch-node-role" x="344.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">G1 资格不转 FACRI</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-embodiment-spec.html#origins" aria-label="前往「红线 02 · 严禁跨代继承」对应章节">
+      <rect x="564.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="576.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_preview">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_preview" data-flows="all" aria-expanded="false" aria-label="红线 03 · 展示隔离碰撞（r180 preview_only）">
+      <rect class="arch-node-box" x="610.0" y="412.0" width="260.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="622.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 03 · 展示隔离碰撞</text>
+      <text class="arch-node-role" x="622.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">r180 preview_only</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://guides/platform-ui.html" aria-label="前往「红线 03 · 展示隔离碰撞」对应章节">
+      <rect x="842.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="854.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_honest">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_honest" data-flows="all,redlines" aria-expanded="false" aria-label="红线 04 · 真实留痕与主权（保留 V0 FAIL · 手动停机）">
+      <rect class="arch-node-box" x="888.0" y="412.0" width="258.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="900.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 04 · 真实留痕与主权</text>
+      <text class="arch-node-role" x="900.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">保留 V0 FAIL · 手动停机</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「红线 04 · 真实留痕与主权」对应章节">
+      <rect x="1118.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1130.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L0–L1 静态与原语验证</text>
+  <rect x="230.9" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="252.9" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L2 零物理运动学</text>
+  <rect x="352.4" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="374.4" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L3 多进程纯接触</text>
+  <rect x="473.8" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="495.8" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L4 真机与治理红线</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">每项技术声称须精确标注 L0–L4 等级、case_id 与 HalOrigin</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">EVIDENCE 02 · VERIFICATION LADDER &amp; GOVERNANCE REDLINES</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">L0–L4 五级证据阶梯跃迁门禁与四条禁止跨级/跨代外推红线</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">L0 Static -&gt; L1 Unit -&gt; L2 Kinematic -&gt; L3 Pure Contact -&gt; L4 Real-Peer</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
 </svg>

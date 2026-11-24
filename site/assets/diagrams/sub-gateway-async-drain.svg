@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-gateway-async-drain" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="sub-gateway-async-drain-title" aria-describedby="sub-gateway-async-drain-desc">
+  <title id="sub-gateway-async-drain-title">交互网关异步排空通路: 语音/UI 接入 -&gt; Queue(32) -&gt; 20 ms Drain -&gt; SSE</title>
+  <desc id="sub-gateway-async-drain-desc">阐明语音流与控制台文本请求如何经 Origin 门禁进入 32 项有界队列并按 20 ms 周期平滑排空。</desc>
+  <defs>
+    <pattern id="sub-gateway-async-drain-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-gateway-async-drain-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#sub-gateway-async-drain-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="300.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">INGRESS CLIENTS</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">人机前端入口</text>
+  <rect x="368.0" y="86.0" width="464.0" height="420.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="382.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">BOUNDED BACKPRESSURE GATEWAY (:8090)</text>
+  <text x="382.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">有界队列与 20 ms 排空适配器</text>
+  <rect x="864.0" y="86.0" width="300.0" height="420.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="878.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">DOWNSTREAM &amp; READ-ONLY PUSH</text>
+  <text x="878.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">编排消费与 SSE 推流</text>
+  <g class="arch-edge" data-from="voice_ui" data-to="gw_origin" data-flow="ingress">
+    <path d="M 314.0 197.0 L 339.0 197.0 Q 344.0 197.0 344.0 192.0 L 344.0 179.0 Q 344.0 174.0 349.0 174.0 L 400.0 174.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-slate)"/>
+    <rect x="344.2" y="165.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="372.0" y="177.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">ASR 文本</text>
+  </g>
+  <g class="arch-edge" data-from="web_c01" data-to="gw_origin" data-flow="ingress">
+    <path d="M 314.0 357.0 L 351.0 357.0 Q 356.0 357.0 356.0 352.0 L 356.0 195.0 Q 356.0 190.0 361.0 190.0 L 400.0 190.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-slate)"/>
+    <rect x="328.2" y="264.5" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="356.0" y="276.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">C01 指令</text>
+  </g>
+  <g class="arch-edge" data-from="gw_origin" data-to="gw_queue" data-flow="drain">
+    <path d="M 600.0 208.0 L 600.0 250.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-terracotta)"/>
+    <rect x="567.2" y="220.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="600.0" y="232.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">Origin OK</text>
+  </g>
+  <g class="arch-edge" data-from="gw_queue" data-to="gw_drain" data-flow="drain">
+    <path d="M 600.0 318.0 L 600.0 360.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-ink)"/>
+    <rect x="577.2" y="330.0" width="45.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="600.0" y="342.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">&lt;=8/拍</text>
+  </g>
+  <g class="arch-edge" data-from="gw_drain" data-to="sys_bus" data-flow="drain">
+    <path d="M 800.0 394.0 L 835.0 394.0 Q 840.0 394.0 840.0 389.0 L 840.0 223.0 Q 840.0 218.0 845.0 218.0 L 886.0 218.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-forest)"/>
+    <rect x="812.2" y="297.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="840.0" y="309.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">8 s 超时</text>
+  </g>
+  <g class="arch-edge" data-from="sys_bus" data-to="sse_hub" data-flow="stream">
+    <path d="M 1014.0 256.0 L 1014.0 330.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-gateway-async-drain-arrow-slate)"/>
+    <rect x="988.2" y="284.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="1014.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">状态回执</text>
+  </g>
+  <g class="arch-edge" data-from="sse_hub" data-to="voice_ui" data-flow="stream">
+    <path d="M 886.0 388.0 L 853.0 388.0 Q 848.0 388.0 848.0 393.0 L 848.0 471.0 Q 848.0 476.0 843.0 476.0 L 191.0 476.0 Q 186.0 476.0 186.0 471.0 L 186.0 234.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-gateway-async-drain-arrow-slate)"/>
+    <rect x="489.2" y="467.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="517.0" y="479.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">只读 SSE</text>
+  </g>
+  <g class="arch-node-card" data-node-id="voice_ui">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="voice_ui" data-flows="all,ingress,stream" aria-expanded="false" aria-label="InteractionRuntime (:8088)（VAD / ASR / TTS 流）">
+      <rect class="arch-node-box" x="58.0" y="160.0" width="256.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">InteractionRuntime (:8088)</text>
+      <text class="arch-node-role" x="70.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">VAD / ASR / TTS 流</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#flow" aria-label="前往「InteractionRuntime (:8088)」对应章节">
+      <rect x="286.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="298.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="web_c01">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="web_c01" data-flows="all,ingress" aria-expanded="false" aria-label="Web 协作台 C01 入口（:18640 · 条件写入）">
+      <rect class="arch-node-box" x="58.0" y="320.0" width="256.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Web 协作台 C01 入口</text>
+      <text class="arch-node-role" x="70.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18640 · 条件写入</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#origins" aria-label="前往「Web 协作台 C01 入口」对应章节">
+      <rect x="286.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="298.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_origin">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_origin" data-flows="all,drain,ingress" aria-expanded="false" aria-label="Origin 与鉴权守门（:8090 · 拒绝跨源）">
+      <rect class="arch-node-box" x="400.0" y="140.0" width="400.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="412.0" y="165.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Origin 与鉴权守门</text>
+      <text class="arch-node-role" x="412.0" y="194.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">:8090 · 拒绝跨源</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#principles" aria-label="前往「Origin 与鉴权守门」对应章节">
+      <rect x="772.0" y="144.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="784.0" y="160.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_queue">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_queue" data-flows="all,drain" aria-expanded="false" aria-label="有界队列 Queue(32)（maxsize=32 · 背压保护）">
+      <rect class="arch-node-box" x="400.0" y="250.0" width="400.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="412.0" y="275.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">有界队列 Queue(32)</text>
+      <text class="arch-node-role" x="412.0" y="304.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">maxsize=32 · 背压保护</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#principles" aria-label="前往「有界队列 Queue(32)」对应章节">
+      <rect x="772.0" y="254.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="784.0" y="270.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_drain">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_drain" data-flows="all,drain" aria-expanded="false" aria-label="20 ms Drain 排空器（每次 &lt;=8 条 · 8s 超时）">
+      <rect class="arch-node-box" x="400.0" y="360.0" width="400.0" height="68.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="412.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">20 ms Drain 排空器</text>
+      <text class="arch-node-role" x="412.0" y="414.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">每次 &lt;=8 条 · 8s 超时</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#paradigm" aria-label="前往「20 ms Drain 排空器」对应章节">
+      <rect x="772.0" y="364.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="784.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sys_bus">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sys_bus" data-flows="all,drain,stream" aria-expanded="false" aria-label="TeamPlanner 调度消费（5D 编译 / 取消）">
+      <rect class="arch-node-box" x="886.0" y="180.0" width="256.0" height="76.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="898.0" y="205.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TeamPlanner 调度消费</text>
+      <text class="arch-node-role" x="898.0" y="242.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">5D 编译 / 取消</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#flow" aria-label="前往「TeamPlanner 调度消费」对应章节">
+      <rect x="1114.0" y="184.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sse_hub">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sse_hub" data-flows="all,stream" aria-expanded="false" aria-label="LiveHub SSE 只读流（/api/live/stream）">
+      <rect class="arch-node-box" x="886.0" y="330.0" width="256.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="898.0" y="355.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">LiveHub SSE 只读流</text>
+      <text class="arch-node-role" x="898.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">/api/live/stream</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#contracts" aria-label="前往「LiveHub SSE 只读流」对应章节">
+      <rect x="1114.0" y="334.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1126.0" y="350.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Origin 与回环安全门禁</text>
+  <rect x="233.6" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="255.6" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Queue(32) 与 SSE 只读推流</text>
+  <rect x="413.8" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="435.8" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">20 ms 平滑排空调度</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">Queue(maxsize=32) 与 20 ms drain() 彻底吸收突发流量，防止阻塞 GIL</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 02A · INTERACTION GATEWAY ASYNC DRAIN</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">交互网关异步排空通路: 语音/UI 接入 -&gt; Queue(32) -&gt; 20 ms Drain -&gt; SSE</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">127.0.0.1:8090 / :8088 · 背压有界生产者-消费者</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

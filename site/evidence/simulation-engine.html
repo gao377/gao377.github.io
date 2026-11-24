@@ -74,13 +74,377 @@ weld 纯接触物理工厂、GIL 0.0002 s 基线、单机时钟隔离及 C919 T3
 零物理运动学执行器</strong>；两条路径均遵循 <a
 href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>
 中的时钟隔离、人工停机主权与只读显示分离红线。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="evidence-mujoco-contact-stack" data-fig-uid="evidence-mujoco-contact-stack-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/evidence-mujoco-contact-stack.svg"
-alt="MuJoCo 4.0.1 双层垫片纯物理接触仿真技术栈" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="evidence-mujoco-contact-stack" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="evidence-mujoco-contact-stack-title-f0" aria-describedby="evidence-mujoco-contact-stack-desc-f0">
+  <title id="evidence-mujoco-contact-stack-title-f0">MuJoCo 4.0.1 双层柔顺指垫 condim=6 纯接触物理栈（510/510 基准）</title>
+  <desc id="evidence-mujoco-contact-stack-desc-f0">左侧呈现双层弹性指垫机械剖面与接触配对红线，右侧呈现 float64 求解核与 510/510 纯接触通过里程碑。</desc>
+  <defs>
+    <pattern id="evidence-mujoco-contact-stack-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="evidence-mujoco-contact-stack-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="evidence-mujoco-contact-stack-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="evidence-mujoco-contact-stack-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="evidence-mujoco-contact-stack-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="evidence-mujoco-contact-stack-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="evidence-mujoco-contact-stack-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#evidence-mujoco-contact-stack-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="560.0" height="452.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">DUAL-LAYER PADS &amp; CONTACT PAIRS</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双层柔顺指垫剖面与显式接触配对</text>
+  <rect x="620.0" y="86.0" width="544.0" height="452.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="634.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">SOLVER &amp; 510/510 BENCHMARK</text>
+  <text x="634.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">MuJoCo 4.0.1 求解核与纯接触权威实证</text>
+  <rect x="54.0" y="134.0" width="524.0" height="152.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <rect x="92.0" y="162.0" width="30.0" height="96.0" rx="1.5" fill="#E6E1D6" stroke="#434853" stroke-width="1.30"/>
+  <rect x="122.0" y="168.0" width="12.0" height="84.0" rx="1.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.10"/>
+  <rect x="134.0" y="168.0" width="22.0" height="84.0" rx="1.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.30"/>
+  <rect x="156.0" y="174.0" width="118.0" height="72.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.50"/>
+  <rect x="274.0" y="168.0" width="22.0" height="84.0" rx="1.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.30"/>
+  <rect x="296.0" y="168.0" width="12.0" height="84.0" rx="1.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.10"/>
+  <rect x="308.0" y="162.0" width="30.0" height="96.0" rx="1.5" fill="#E6E1D6" stroke="#434853" stroke-width="1.30"/>
+  <g class="arch-edge" data-from="pad_front" data-to="pad_stop" data-flow="pads">
+    <path d="M 306.0 338.0 L 328.0 338.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-mujoco-contact-stack-arrow-ochre-f0)"/>
+    <rect x="301.1" y="329.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="317.0" y="341.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">梯度</text>
+  </g>
+  <g class="arch-edge" data-from="pad_front" data-to="contact_pair" data-flow="pads">
+    <path d="M 181.0 374.0 L 181.0 396.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-mujoco-contact-stack-arrow-forest-f0)"/>
+    <rect x="169.0" y="376.0" width="23.9" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="181.0" y="388.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">6D</text>
+  </g>
+  <g class="arch-edge" data-from="contact_pair" data-to="zero_weld" data-flow="pads">
+    <path d="M 306.0 432.0 L 328.0 432.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#evidence-mujoco-contact-stack-arrow-terracotta-f0)"/>
+    <rect x="296.2" y="423.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="317.0" y="435.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">零吸附</text>
+  </g>
+  <g class="arch-edge" data-from="mj_solver" data-to="cad_510" data-flow="solver">
+    <path d="M 892.0 218.0 L 892.0 240.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-mujoco-contact-stack-arrow-forest-f0)"/>
+    <rect x="865.2" y="220.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="892.0" y="232.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">float64</text>
+  </g>
+  <g class="arch-edge" data-from="cad_510" data-to="slip_check" data-flow="benchmark">
+    <path d="M 892.0 312.0 L 892.0 334.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-mujoco-contact-stack-arrow-forest-f0)"/>
+    <rect x="871.2" y="314.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="892.0" y="326.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">悬停检</text>
+  </g>
+  <g class="arch-edge" data-from="slip_check" data-to="sim_scope" data-flow="benchmark">
+    <path d="M 892.0 406.0 L 892.0 428.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#evidence-mujoco-contact-stack-arrow-terracotta-f0)"/>
+    <rect x="876.1" y="408.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="892.0" y="420.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">边界</text>
+  </g>
+  <g class="arch-node-card" data-node-id="pad_front" aria-controls="evidence-mujoco-contact-stack-f0-drawer-pad_front">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="pad_front" data-flows="all,pads" aria-expanded="false" aria-label="study_pad_front (前层垫)（35×1.8×26 mm · condim=6）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-pad_front">
+      <rect class="arch-node-box" x="56.0" y="302.0" width="250.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="327.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">study_pad_front (前层垫)</text>
+      <text class="arch-node-role" x="68.0" y="360.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">35×1.8×26 mm · condim=6</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/simulation-engine.html" data-same-page="true" aria-label="前往「study_pad_front (前层垫)」对应章节">
+      <rect x="278.0" y="306.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="290.0" y="322.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="pad_stop" aria-controls="evidence-mujoco-contact-stack-f0-drawer-pad_stop">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="pad_stop" data-flows="all,pads" aria-expanded="false" aria-label="study_pad_stop (硬背衬)（35×0.5×26 mm · 防过压）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-pad_stop">
+      <rect class="arch-node-box" x="328.0" y="302.0" width="250.0" height="72.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="340.0" y="327.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">study_pad_stop (硬背衬)</text>
+      <text class="arch-node-role" x="340.0" y="360.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">35×0.5×26 mm · 防过压</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/simulation-engine.html" data-same-page="true" aria-label="前往「study_pad_stop (硬背衬)」对应章节">
+      <rect x="550.0" y="306.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="562.0" y="322.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="contact_pair" aria-controls="evidence-mujoco-contact-stack-f0-drawer-contact_pair">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="contact_pair" data-flows="all,pads" aria-expanded="false" aria-label="448 对显式接触配对（32 对/机 · 1.5 mm 按键）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-contact_pair">
+      <rect class="arch-node-box" x="56.0" y="396.0" width="250.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="421.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">448 对显式接触配对</text>
+      <text class="arch-node-role" x="68.0" y="454.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">32 对/机 · 1.5 mm 按键</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/simulation-engine.html" data-same-page="true" aria-label="前往「448 对显式接触配对」对应章节">
+      <rect x="278.0" y="400.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="290.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="zero_weld" aria-controls="evidence-mujoco-contact-stack-f0-drawer-zero_weld">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zero_weld" data-flows="all,pads" aria-expanded="false" aria-label="Zero-Weld 严禁作弊红线（禁 &lt;weld&gt; · 禁写 qpos）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-zero_weld">
+      <rect class="arch-node-box" x="328.0" y="396.0" width="250.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="340.0" y="421.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Zero-Weld 严禁作弊红线</text>
+      <text class="arch-node-role" x="340.0" y="454.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">禁 &lt;weld&gt; · 禁写 qpos</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/simulation-engine.html" data-same-page="true" aria-label="前往「Zero-Weld 严禁作弊红线」对应章节">
+      <rect x="550.0" y="400.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="562.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mj_solver" aria-controls="evidence-mujoco-contact-stack-f0-drawer-mj_solver">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mj_solver" data-flows="all,solver" aria-expanded="false" aria-label="MuJoCo 4.0.1 float64 核（dt=0.005 s · 8 substeps）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-mj_solver">
+      <rect class="arch-node-box" x="644.0" y="146.0" width="496.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="656.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">MuJoCo 4.0.1 float64 核</text>
+      <text class="arch-node-role" x="656.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">dt=0.005 s · 8 substeps</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/simulation-engine.html" data-same-page="true" aria-label="前往「MuJoCo 4.0.1 float64 核」对应章节">
+      <rect x="1112.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1124.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cad_510" aria-controls="evidence-mujoco-contact-stack-f0-drawer-cad_510">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cad_510" data-flows="all,benchmark,solver" aria-expanded="false" aria-label="510 / 510 纯接触基准（0 穿插 · &lt;=0.157 m/s）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-cad_510">
+      <rect class="arch-node-box" x="644.0" y="240.0" width="496.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="656.0" y="265.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">510 / 510 纯接触基准</text>
+      <text class="arch-node-role" x="656.0" y="298.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">0 穿插 · &lt;=0.157 m/s</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" aria-label="前往「510 / 510 纯接触基准」对应章节">
+      <rect x="1112.0" y="244.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1124.0" y="260.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="slip_check" aria-controls="evidence-mujoco-contact-stack-f0-drawer-slip_check">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="slip_check" data-flows="all,benchmark" aria-expanded="false" aria-label="1.25 s 自由悬停防滑移（滑移跌落 &lt;= 0.0020 mm）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-slip_check">
+      <rect class="arch-node-box" x="644.0" y="334.0" width="496.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="656.0" y="359.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">1.25 s 自由悬停防滑移</text>
+      <text class="arch-node-role" x="656.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">滑移跌落 &lt;= 0.0020 mm</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" aria-label="前往「1.25 s 自由悬停防滑移」对应章节">
+      <rect x="1112.0" y="338.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1124.0" y="354.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sim_scope" aria-controls="evidence-mujoco-contact-stack-f0-drawer-sim_scope">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sim_scope" data-flows="all,benchmark" aria-expanded="false" aria-label="SIM_SAL 实证范围声明（L3 SIM != L4 REAL）" aria-controls="evidence-mujoco-contact-stack-f0-drawer-sim_scope">
+      <rect class="arch-node-box" x="644.0" y="428.0" width="496.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="656.0" y="453.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SIM_SAL 实证范围声明</text>
+      <text class="arch-node-role" x="656.0" y="486.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">L3 SIM != L4 REAL</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" aria-label="前往「SIM_SAL 实证范围声明」对应章节">
+      <rect x="1112.0" y="432.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1124.0" y="448.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <text x="215.0" y="208.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">LVDT 工件</text>
+  <text x="215.0" y="225.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#434853" text-anchor="middle">零 &lt;weld&gt;</text>
+  <text x="462.0" y="198.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="700" fill="#B04A1A" text-anchor="middle">Fn = 1.5 N 夹紧闭环</text>
+  <text x="462.0" y="222.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="600" fill="#2C5E3F" text-anchor="middle">fz &gt;= 0.90 N 支撑判稳</text>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">柔顺垫片与防作弊红线</text>
+  <rect x="230.1" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="252.1" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">510/510 纯接触通过</text>
+  <rect x="365.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="387.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">MuJoCo 4.0.1 float64 求解器</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">448 对接触明细与 859,974 ticks 指标已收拢至卡片点击抽屉</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">EVIDENCE 01 · ZERO &lt;WELD&gt; PURE CONTACT STACK</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">MuJoCo 4.0.1 双层柔顺指垫 condim=6 纯接触物理栈（510/510 基准）</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">dt=0.005 s (8 substeps) · 448 Contact Pairs · 点击卡片展开实测统计</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="pads" aria-pressed="false">双层柔顺指垫与纯接触红线</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="solver" aria-pressed="false">MuJoCo 4.0.1 积分求解核</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="benchmark" aria-pressed="false">510/510 权威实证与边界</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>MuJoCo 4.0.1
-双层垫片纯物理接触仿真技术栈</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+双层垫片纯物理接触仿真技术栈</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/evidence-mujoco-contact-stack.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="evidence-mujoco-contact-stack-f0-drawer-pad_front" class="diagram-drawer-panel" data-node-drawer="pad_front" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">study_pad_front (前层垫)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Contact Geometry · 前层 · 六维摩擦锥</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「study_pad_front (前层垫)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">直接贴合 LVDT 工件表面建立高置信度 6 维摩擦接触力平衡。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>弹性微变形摩擦接触</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/manipulation_workbench/robot.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>提供法向柔顺包络与切向/扭转摩擦抗滑能力，消除刚体点接触滑落</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/simulation-engine.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-mujoco-contact-stack-f0-drawer-pad_stop" class="diagram-drawer-panel" data-node-drawer="pad_stop" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">study_pad_stop (硬背衬)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Contact Geometry · 背衬 · 切向剪力 3.5..18 N</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「study_pad_stop (硬背衬)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">平衡柔顺包裹性与夹持位置精度，稳定支撑 1.5 N 法向夹紧闭环。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>双层限位刚度梯度</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/manipulation_workbench/robot.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>在前层压缩后提供刚性限位支撑，防止高夹紧力下手指穿入工件网格</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/simulation-engine.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-mujoco-contact-stack-f0-drawer-contact_pair" class="diagram-drawer-panel" data-node-drawer="contact_pair" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">448 对显式接触配对</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">MJCF Pairs · 四机工厂 · 显式 &lt;pair&gt; 注册</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「448 对显式接触配对」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">显式声明指垫、工件与工装承托面间的摩擦配对，包含 1.5 mm 按键物理行程。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>确定性接触对枚举</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/manipulation_workbench/scene.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>单机 32 对显式 &lt;pair&gt; (condim=6)；缺失互斥即报 NATIVE_CONTACT_PROCESS_MACHINE_EXCLUDE_MISSING</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/simulation-engine.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-mujoco-contact-stack-f0-drawer-zero_weld" class="diagram-drawer-panel" data-node-drawer="zero_weld" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">Zero-Weld 严禁作弊红线</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Invariant · 物理真实 · 全程纯物理动力学</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「Zero-Weld 严禁作弊红线」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保证每一次抓取与放置的成功都来自真实的摩擦与重力平衡。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>反吸附作弊规则</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/manipulation_workbench/tactile_evidence.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>彻底废除 &lt;weld&gt; 吸附锁与写 qpos/qvel 伪造跟踪；释放后经真实碰撞自由下落</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/simulation-engine.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-mujoco-contact-stack-f0-drawer-mj_solver" class="diagram-drawer-panel" data-node-drawer="mj_solver" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">MuJoCo 4.0.1 float64 核</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Physics Engine · 求解器 · 0.625 ms 内步长</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「MuJoCo 4.0.1 float64 核」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在刚度差异较大的双层弹性体接触求解下保持数值稳定收敛。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>mjINT_EULER + mjSOL_NEWTON</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/manipulation_workbench/environment.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>200 Hz 外步长配合 8 子步与双精度求解；无 RTF 0.5 自动停机门禁</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/simulation-engine.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-mujoco-contact-stack-f0-drawer-cad_510" class="diagram-drawer-panel" data-node-drawer="cad_510" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">510 / 510 纯接触基准</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Benchmark · L3 实证 · 859,974 ticks 统计</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「510 / 510 纯接触基准」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">覆盖 204 次按键、153 次双臂取料与 153 次柔顺安置，实现 100.0% 纯接触通过。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>CAD 审计 + 物理执行双证</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/manipulation_workbench/run.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>589,400 次 COAL 扫描零穿插；70/70 调试 + 440/440 验证全通过；零超速</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-mujoco-contact-stack-f0-drawer-slip_check" class="diagram-drawer-panel" data-node-drawer="slip_check" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">1.25 s 自由悬停防滑移</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Benchmark · 静摩擦实证 · 1.25 s 悬停校验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「1.25 s 自由悬停防滑移」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">定量证明无吸附条件下双层垫片足以稳定锁住重物并抵抗微振。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>无外力稳态保持检验</dd></div>
+      <div><dt>源码路径</dt><dd><code>simulation/manipulation_workbench/tactile_evidence.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>持物悬停 1.25 s 内测得相对指垫滑移与跌落不超过 0.0020 mm</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-mujoco-contact-stack-f0-drawer-sim_scope" class="diagram-drawer-panel" data-node-drawer="sim_scope" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SIM_SAL 实证范围声明</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Governance · 边界声明 · 反外推红线</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SIM_SAL 实证范围声明」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">明确区分仿真物理基准与真机现场验收的合规边界。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>证据等级隔离声明</dd></div>
+      <div><dt>源码路径</dt><dd><code>tools/verification/check_factory_runtime_baseline.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>不可直接外推为实机放行，亦不转授给 G1 或 C919 T3 运动学世界</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="evidence-verification-ladder">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
 <h2 id="一mujoco-4.0.1-零-weld-纯物理接触工厂">一、MuJoCo 4.0.1 零
 <code>&lt;weld&gt;</code> 纯物理接触工厂</h2>
@@ -242,20 +606,21 @@ id="toc-三c919-机坪-t3-零物理运动学引擎与异构-sal">三、C919 机�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

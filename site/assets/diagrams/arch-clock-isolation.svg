@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-clock-isolation" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="arch-clock-isolation-title" aria-describedby="arch-clock-isolation-desc">
+  <title id="arch-clock-isolation-title">双时钟域严格隔离: sim_time_ns vs host_monotonic_ns 与新鲜度门禁</title>
+  <desc id="arch-clock-isolation-desc">拆解物理仿真时间与宿主机单调时钟的并行传输路径，以及跨时钟帧龄检查和代际防串包门禁。</desc>
+  <defs>
+    <pattern id="arch-clock-isolation-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arch-clock-isolation-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arch-clock-isolation-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arch-clock-isolation-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arch-clock-isolation-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arch-clock-isolation-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arch-clock-isolation-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#arch-clock-isolation-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="340.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">SIMULATION TIME DOMAIN</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">物理世界仿真时钟域 (sim_time_ns)</text>
+  <rect x="412.0" y="86.0" width="376.0" height="420.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="426.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">INVARIANT &amp; FRESHNESS GATE</text>
+  <text x="426.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">跨时钟校验与代际防护门禁</text>
+  <rect x="824.0" y="86.0" width="340.0" height="420.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="838.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">HOST MONOTONIC DOMAIN</text>
+  <text x="838.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">宿主机单调时钟域 (host_monotonic_ns)</text>
+  <g class="arch-edge" data-from="sim_prod" data-to="sim_wire" data-flow="sim_clock">
+    <path d="M 206.0 234.0 L 206.0 320.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-clock-isolation-arrow-slate)"/>
+    <rect x="175.3" y="268.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="206.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">物理捕获戳</text>
+  </g>
+  <g class="arch-edge" data-from="host_prod" data-to="host_cmd" data-flow="host_clock">
+    <path d="M 994.0 234.0 L 994.0 320.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-clock-isolation-arrow-forest)"/>
+    <rect x="952.3" y="268.0" width="83.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="994.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">steady_clock</text>
+  </g>
+  <g class="arch-edge" data-from="sim_wire" data-to="fresh_gate" data-flow="gate">
+    <path d="M 356.0 357.0 L 385.0 357.0 Q 390.0 357.0 390.0 352.0 L 390.0 187.0 Q 390.0 182.0 395.0 182.0 L 436.0 182.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-clock-isolation-arrow-slate)"/>
+    <rect x="364.2" y="260.5" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="390.0" y="272.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">帧龄核验</text>
+  </g>
+  <g class="arch-edge" data-from="host_cmd" data-to="epoch_fence" data-flow="gate">
+    <path d="M 844.0 357.0 L 809.0 357.0 Q 804.0 357.0 804.0 352.0 L 804.0 297.0 Q 804.0 292.0 799.0 292.0 L 764.0 292.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-clock-isolation-arrow-forest)"/>
+    <rect x="783.2" y="315.5" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="804.0" y="327.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">看门狗</text>
+  </g>
+  <g class="arch-edge" data-from="fresh_gate" data-to="epoch_fence" data-flow="gate">
+    <path d="M 600.0 218.0 L 600.0 256.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-clock-isolation-arrow-terracotta)"/>
+    <rect x="574.2" y="228.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="600.0" y="240.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">单调校验</text>
+  </g>
+  <g class="arch-edge" data-from="epoch_fence" data-to="no_backfill" data-flow="gate">
+    <path d="M 600.0 328.0 L 600.0 366.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-clock-isolation-arrow-terracotta)"/>
+    <rect x="569.3" y="338.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="600.0" y="350.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">源时间守恒</text>
+  </g>
+  <g class="arch-node-card" data-node-id="sim_prod">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sim_prod" data-flows="all,sim_clock" aria-expanded="false" aria-label="物理世界时钟源（MuJoCo / ROS /clock）">
+      <rect class="arch-node-box" x="56.0" y="160.0" width="300.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">物理世界时钟源</text>
+      <text class="arch-node-role" x="68.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">MuJoCo / ROS /clock</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/simulation-engine.html" aria-label="前往「物理世界时钟源」对应章节">
+      <rect x="328.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="340.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sim_wire">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sim_wire" data-flows="all,gate,sim_clock" aria-expanded="false" aria-label="传感与雷达仿真帧戳（sim_time_ns · Wire）">
+      <rect class="arch-node-box" x="56.0" y="320.0" width="300.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">传感与雷达仿真帧戳</text>
+      <text class="arch-node-role" x="68.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">sim_time_ns · Wire</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「传感与雷达仿真帧戳」对应章节">
+      <rect x="328.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="340.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fresh_gate">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fresh_gate" data-flows="all,gate" aria-expanded="false" aria-label="跨时钟新鲜度门禁（lidar&lt;=500ms · TF&lt;=2ms）">
+      <rect class="arch-node-box" x="436.0" y="146.0" width="328.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">跨时钟新鲜度门禁</text>
+      <text class="arch-node-role" x="448.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">lidar&lt;=500ms · TF&lt;=2ms</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#principles" aria-label="前往「跨时钟新鲜度门禁」对应章节">
+      <rect x="736.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="748.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="epoch_fence">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="epoch_fence" data-flows="all,gate" aria-expanded="false" aria-label="Epoch 单调代际闸（跳变即清空旧槽位）">
+      <rect class="arch-node-box" x="436.0" y="256.0" width="328.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="281.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Epoch 单调代际闸</text>
+      <text class="arch-node-role" x="448.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">跳变即清空旧槽位</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#contracts" aria-label="前往「Epoch 单调代际闸」对应章节">
+      <rect x="736.0" y="260.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="748.0" y="276.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="no_backfill">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="no_backfill" data-flows="all,gate" aria-expanded="false" aria-label="禁回填推理完成时间（源时间守恒红线）">
+      <rect class="arch-node-box" x="436.0" y="366.0" width="328.0" height="72.0" rx="3.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">禁回填推理完成时间</text>
+      <text class="arch-node-role" x="448.0" y="424.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#16181D">源时间守恒红线</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「禁回填推理完成时间」对应章节">
+      <rect x="736.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="748.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="host_prod">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="host_prod" data-flows="all,host_clock" aria-expanded="false" aria-label="宿主机单调时钟源（steady_clock · 0.2ms）">
+      <rect class="arch-node-box" x="844.0" y="160.0" width="300.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="856.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">宿主机单调时钟源</text>
+      <text class="arch-node-role" x="856.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">steady_clock · 0.2ms</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「宿主机单调时钟源」对应章节">
+      <rect x="1116.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1128.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="host_cmd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="host_cmd" data-flows="all,gate,host_clock" aria-expanded="false" aria-label="指令与看门狗时间戳（host_monotonic_ns）">
+      <rect class="arch-node-box" x="844.0" y="320.0" width="300.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="856.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">指令与看门狗时间戳</text>
+      <text class="arch-node-role" x="856.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">host_monotonic_ns</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/interfaces.html" aria-label="前往「指令与看门狗时间戳」对应章节">
+      <rect x="1116.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1128.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">物理仿真时钟域</text>
+  <rect x="197.7" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="219.7" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">宿主机看门狗时钟域</text>
+  <rect x="335.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="357.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">新鲜度与 Epoch 隔离门禁</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">RTF &lt; 1 时 sim_time_ns 慢于墙钟，但 250 ms 死人开关仍严格按 host_monotonic_ns 触发</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 02 · DUAL-CLOCK ISOLATION &amp; EPOCH FRESHNESS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">双时钟域严格隔离: sim_time_ns vs host_monotonic_ns 与新鲜度门禁</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">禁止推理完成时间回填 · 错代 epoch 即清空旧轨迹</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

@@ -1,160 +1,180 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" width="1200" height="700" role="img" aria-labelledby="diagram-title diagram-desc">
-  <title id="diagram-title">全新系统架构总图: 四平面边界、双时钟域与单机故障隔离域</title>
-  <desc id="diagram-desc">阐述 FACRI 四个正交架构平面的职责划分、跨层边界合同，以及左侧双时钟隔离带与右侧故障隔离与治权边界。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-system-four-planes" viewBox="0 0 1200 610" width="1200" height="610" role="group" aria-labelledby="arch-system-four-planes-title" aria-describedby="arch-system-four-planes-desc">
+  <title id="arch-system-four-planes-title">系统架构全景: 四平面垂直职责边界与降频隔离骨架</title>
+  <desc id="arch-system-four-planes-desc">展示表现交互、系统编排、单机 C++20 4+1 与对称硬件执行四个正交平面的核心组件与边界数据流。</desc>
   <defs>
-    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+    <pattern id="arch-system-four-planes-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
       <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
     </pattern>
-    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="arch-system-four-planes-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
     </marker>
-    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="arch-system-four-planes-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
     </marker>
-    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="arch-system-four-planes-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
     </marker>
-    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="arch-system-four-planes-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
     </marker>
-    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="arch-system-four-planes-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
     </marker>
-    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="arch-system-four-planes-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
     </marker>
   </defs>
-  <rect x="0" y="0" width="1200" height="700" fill="#FAFAF7"/>
-  <rect x="0" y="0" width="1200" height="700" fill="url(#dot-grid)"/>
-  <rect x="0.75" y="0.75" width="1198.5" height="698.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
-  <rect x="36.0" y="90.0" width="178.0" height="548.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
-  <text x="50.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">CLOCK ISOLATION</text>
-  <text x="50.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双时钟域严格隔离</text>
-  <rect x="232.0" y="90.0" width="736.0" height="114.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
-  <text x="246.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">PLANE 01 · INTERACTION &amp; VISUALIZATION</text>
-  <text x="246.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">表现与交互平面 · 浏览器帧率 / 网关异步配额</text>
-  <rect x="232.0" y="218.0" width="736.0" height="128.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
-  <text x="246.0" y="237.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">PLANE 02 · SYSTEM ORCHESTRATION &amp; OFFLINE RSI</text>
-  <text x="246.0" y="254.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">系统编排与 RSI 平面 · Python (GIL 0.0002 s)</text>
-  <rect x="232.0" y="360.0" width="736.0" height="142.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
-  <text x="246.0" y="379.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">PLANE 03 · ROBOTAPP C++20 4+1 REALTIME</text>
-  <text x="246.0" y="396.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单机实时与算法平面 · 独立核组绑核 + 无锁 SHM</text>
-  <rect x="232.0" y="516.0" width="736.0" height="122.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
-  <text x="246.0" y="535.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">PLANE 04 · HARDWARE &amp; PHYSICS EXECUTION</text>
-  <text x="246.0" y="552.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">硬件与仿真执行平面 · 双域对称执行</text>
-  <rect x="986.0" y="90.0" width="178.0" height="548.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
-  <text x="1000.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">FAULT ISOLATION</text>
-  <text x="1000.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">故障隔离与停机主权</text>
-  <rect x="48.0" y="144.0" width="154.0" height="148.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="60.0" y="164.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">host_monotonic_ns</text>
-  <text x="60.0" y="180.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">宿主机单调挂钟</text>
-  <text x="60.0" y="195.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">交互 / 规划 / 心跳</text>
-  <text x="60.0" y="211.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">SalCommandWire</text>
-  <text x="60.0" y="226.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">250 ms 死人开关</text>
-  <text x="60.0" y="242.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">1000 ms 失联保持</text>
-  <rect x="48.0" y="314.0" width="154.0" height="148.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="60.0" y="334.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">sim_time_ns</text>
-  <text x="60.0" y="350.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">物理世界仿真时钟</text>
-  <text x="60.0" y="365.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">MuJoCo / /clock</text>
-  <text x="60.0" y="381.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">SalSampleWire</text>
-  <text x="60.0" y="396.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">SalLidarWire 帧戳</text>
-  <text x="60.0" y="412.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">随真实 RTF 推进</text>
-  <rect x="48.0" y="484.0" width="154.0" height="138.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25" stroke-dasharray="4 3"/>
-  <text x="60.0" y="504.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">epoch 新鲜度门禁</text>
-  <text x="60.0" y="520.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">禁止推理完成时间</text>
-  <text x="60.0" y="535.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">回填传感器捕获戳</text>
-  <text x="60.0" y="551.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">epoch 跳变即清空</text>
-  <text x="60.0" y="566.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">丢弃旧轨迹槽位</text>
-  <rect x="246.0" y="134.0" width="228.0" height="58.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="258.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">Web 协作台 :18640</text>
-  <text x="258.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">17+ 面板 · Three.js r186/r180</text>
-  <text x="258.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">只读视图 · preview_only</text>
-  <rect x="486.0" y="134.0" width="228.0" height="58.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="498.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">语音前端 :8088</text>
-  <text x="498.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">P08 /client · P09–P17</text>
-  <text x="498.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">SSE LiveHub 实时快照</text>
-  <rect x="726.0" y="134.0" width="228.0" height="58.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="738.0" y="154.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">ModelGateway :18080</text>
-  <text x="738.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">主文本 2 / RSI 1 / 视觉 1</text>
-  <text x="738.0" y="185.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">Bearer · O_NOFOLLOW</text>
-  <rect x="246.0" y="262.0" width="228.0" height="72.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="258.0" y="282.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">InteractionGateway :8090</text>
-  <text x="258.0" y="298.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">Queue(32) · 20 ms drain</text>
-  <text x="258.0" y="313.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">拒绝跨源 Origin</text>
-  <rect x="486.0" y="262.0" width="228.0" height="72.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="498.0" y="282.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">TeamPlanner / Runtime</text>
-  <text x="498.0" y="298.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">DynamicCapabilityPlanner</text>
-  <text x="498.0" y="313.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">DAG 编译 · StarFleetBus</text>
-  <rect x="726.0" y="262.0" width="228.0" height="72.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="738.0" y="282.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">TeamVerifier / RSI</text>
-  <text x="738.0" y="298.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">GoalPredicate 核验</text>
-  <text x="738.0" y="313.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">离线 Reflection / Evolution</text>
-  <rect x="246.0" y="404.0" width="228.0" height="86.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="258.0" y="424.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">robot_supervisor (+1)</text>
-  <text x="258.0" y="440.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">TopologyProbe · 25 ms 心跳</text>
-  <text x="258.0" y="455.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">L1 ∧ HAL ∧ L2 能力合成</text>
-  <rect x="486.0" y="404.0" width="228.0" height="86.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="498.0" y="424.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">P0 robot_body_rt</text>
-  <text x="498.0" y="440.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">200 Hz FIFO · mlockall</text>
-  <text x="498.0" y="455.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">50 Hz Safety · 不静默重启</text>
-  <rect x="726.0" y="404.0" width="228.0" height="86.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="738.0" y="424.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">P1 / P2 / P3 子进程</text>
-  <text x="738.0" y="440.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">10 Hz 定位感知 / 20 Hz 规划</text>
-  <text x="738.0" y="455.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">50 Hz 协调 / 10 Hz 任务</text>
-  <rect x="246.0" y="560.0" width="228.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="258.0" y="580.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">IHalDriver (6 .so)</text>
-  <text x="258.0" y="596.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">libsal_shm + 5 REAL .so</text>
-  <text x="258.0" y="611.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">URDF SHA-256 校验</text>
-  <rect x="486.0" y="560.0" width="228.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="498.0" y="580.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">SalWire v2 + UDP</text>
-  <text x="498.0" y="596.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">state_cmd 8K / lidar 128K</text>
-  <text x="498.0" y="611.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">32 B UDP SafetyFrame</text>
-  <rect x="726.0" y="560.0" width="228.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="738.0" y="580.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">FacilityHAL :18642</text>
-  <text x="738.0" y="596.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">MuJoCo / Modbus / Mockup</text>
-  <text x="738.0" y="611.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">AckJournal WAL 重启安全</text>
-  <rect x="998.0" y="144.0" width="154.0" height="128.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="1010.0" y="164.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">编队级隔离</text>
-  <text x="1010.0" y="180.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">单机任务失败只影响</text>
-  <text x="1010.0" y="195.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">本机实例与任务节点</text>
-  <text x="1010.0" y="211.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">不破坏在途邻机运行</text>
-  <text x="1010.0" y="226.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">保留真实计数不伪造</text>
-  <rect x="998.0" y="292.0" width="154.0" height="156.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="1010.0" y="312.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">单机 LOCAL_HOLD</text>
-  <text x="1010.0" y="328.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">1000 ms 心跳失联</text>
-  <text x="1010.0" y="343.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">或 P0 断言异常停机</text>
-  <text x="1010.0" y="359.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">仅置位本机局部保持</text>
-  <text x="1010.0" y="374.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">fleet_wide_estop</text>
-  <text x="1010.0" y="390.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">恒等于 false</text>
-  <rect x="998.0" y="468.0" width="154.0" height="154.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
-  <text x="1010.0" y="488.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">人工停机唯一主权</text>
-  <text x="1010.0" y="504.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#2C5E3F">废除 RTF 0.5 门禁</text>
-  <text x="1010.0" y="519.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">取消 600 s 步数上限</text>
-  <text x="1010.0" y="535.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">仅运行方执行</text>
-  <text x="1010.0" y="550.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">facrictl stop|close</text>
-  <path d="M 500.0 204.0 L 500.0 218.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
-  <path d="M 700.0 218.0 L 700.0 204.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
-  <path d="M 500.0 346.0 L 500.0 360.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
-  <path d="M 700.0 360.0 L 700.0 346.0" fill="none" stroke="#16181D" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ink)"/>
-  <path d="M 500.0 502.0 L 500.0 516.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <path d="M 700.0 516.0 L 700.0 502.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <rect x="457.5" y="344.0" width="84.9" height="17.0" rx="2.0" fill="#FAFAF7" stroke="#16181D" stroke-width="0.80" fill-opacity="0.95"/>
-  <text x="500.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#16181D" text-anchor="middle">ROS 2 / JSON</text>
-  <rect x="463.6" y="500.0" width="72.8" height="17.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.80" fill-opacity="0.95"/>
-  <text x="500.0" y="512.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#2C5E3F" text-anchor="middle">SalWire v2</text>
-  <line x1="36.0" y1="654.0" x2="1164.0" y2="654.0" stroke="#D8D3C8" stroke-width="1.00"/>
-  <text x="36.0" y="676.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
-  <rect x="82.0" y="665.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
-  <text x="104.0" y="675.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">双时钟域与只读呈现</text>
-  <rect x="219.3" y="665.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
-  <text x="241.3" y="675.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">200 Hz 硬实时域与安全停机</text>
-  <rect x="394.7" y="665.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
-  <text x="416.7" y="675.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">对称硬件与设施网关</text>
-  <rect x="532.0" y="665.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
-  <text x="554.0" y="675.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">故障隔离与防越权红线</text>
-  <text x="1164.0" y="675.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">每一平面均具备独立的调度节拍与异常拦截墙</text>
-  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">SYSTEM ARCHITECTURE · FOUR ORTHOGONAL PLANES</text>
-  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">全新系统架构总图: 四平面边界、双时钟域与单机故障隔离域</text>
-  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">双时钟域隔离 · 单机 LOCAL_HOLD · 零物理越权</text>
-  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+  <rect x="0" y="0" width="1200" height="610" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="610" fill="url(#arch-system-four-planes-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="608.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="108.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">PLANE 01 · INTERACTION &amp; QUOTA</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">交互与表现平面（帧率驱动 / 推理配额限流）</text>
+  <rect x="36.0" y="206.0" width="1128.0" height="108.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="225.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">PLANE 02 · SYSTEM ORCHESTRATION &amp; RSI</text>
+  <text x="50.0" y="242.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">系统编排与离线演化平面（Python 0.0002 s GIL）</text>
+  <rect x="36.0" y="326.0" width="1128.0" height="112.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="345.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">PLANE 03 · ROBOTAPP C++20 4+1 REALTIME</text>
+  <text x="50.0" y="362.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">单机实时与算法平面（独立绑核 + 无锁 SHM）</text>
+  <rect x="36.0" y="450.0" width="1128.0" height="108.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="469.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">PLANE 04 · HARDWARE &amp; FACILITY EXECUTION</text>
+  <text x="50.0" y="486.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">硬件与仿真执行平面（SIM_SAL / REAL_HAL / WAL）</text>
+  <g class="arch-edge" data-from="p1_ui" data-to="p2_planner" data-flow="northbound">
+    <path d="M 300.0 182.0 L 300.0 246.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-system-four-planes-arrow-slate)"/>
+    <rect x="267.2" y="205.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="300.0" y="217.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">Queue(32)</text>
+  </g>
+  <g class="arch-edge" data-from="p2_planner" data-to="p1_model" data-flow="northbound">
+    <path d="M 530.0 274.0 L 595.0 274.0 Q 600.0 274.0 600.0 269.0 L 600.0 159.0 Q 600.0 154.0 605.0 154.0 L 670.0 154.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-system-four-planes-arrow-slate)"/>
+    <rect x="584.1" y="205.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="600.0" y="217.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">配额</text>
+  </g>
+  <g class="arch-edge" data-from="p2_planner" data-to="p2_runtime" data-flow="northbound">
+    <path d="M 530.0 274.0 L 670.0 274.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-system-four-planes-arrow-ink)"/>
+    <rect x="585.1" y="265.0" width="29.9" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="600.0" y="277.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">DAG</text>
+  </g>
+  <g class="arch-edge" data-from="p2_runtime" data-to="p3_sup" data-flow="realtime">
+    <path d="M 670.0 290.0 L 595.0 290.0 Q 590.0 290.0 590.0 295.0 L 590.0 391.0 Q 590.0 396.0 585.0 396.0 L 530.0 396.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-system-four-planes-arrow-ink)"/>
+    <rect x="569.1" y="334.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="590.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">ROS 2</text>
+  </g>
+  <g class="arch-edge" data-from="p2_runtime" data-to="p4_fac" data-flow="hal">
+    <path d="M 980.0 302.0 L 980.0 488.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-system-four-planes-arrow-ochre)"/>
+    <rect x="950.2" y="386.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="980.0" y="398.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">HTTP/WAL</text>
+  </g>
+  <g class="arch-edge" data-from="p3_sup" data-to="p3_workers" data-flow="realtime">
+    <path d="M 530.0 396.0 L 670.0 396.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-system-four-planes-arrow-forest)"/>
+    <rect x="572.2" y="387.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="600.0" y="399.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">绑核+SHM</text>
+  </g>
+  <g class="arch-edge" data-from="p3_workers" data-to="p4_hal" data-flow="hal">
+    <path d="M 670.0 412.0 L 595.0 412.0 Q 590.0 412.0 590.0 417.0 L 590.0 511.0 Q 590.0 516.0 585.0 516.0 L 530.0 516.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-system-four-planes-arrow-forest)"/>
+    <rect x="554.2" y="455.0" width="71.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="590.0" y="467.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">SalWire v2</text>
+  </g>
+  <g class="arch-node-card" data-node-id="p1_ui">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p1_ui" data-flows="all,northbound" aria-expanded="false" aria-label="Web 协作与语音前端（:18640 / :8088）">
+      <rect class="arch-node-box" x="70.0" y="126.0" width="460.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="82.0" y="149.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Web 协作与语音前端</text>
+      <text class="arch-node-role" x="82.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18640 / :8088</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://guides/platform-ui.html" aria-label="前往「Web 协作与语音前端」对应章节">
+      <rect x="502.0" y="130.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="514.0" y="146.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p1_model">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p1_model" data-flows="all,northbound" aria-expanded="false" aria-label="ModelGateway 服务（:18080 · 并发配额）">
+      <rect class="arch-node-box" x="670.0" y="126.0" width="460.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="682.0" y="149.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ModelGateway 服务</text>
+      <text class="arch-node-role" x="682.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18080 · 并发配额</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#principles" aria-label="前往「ModelGateway 服务」对应章节">
+      <rect x="1102.0" y="130.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1114.0" y="146.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p2_planner">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p2_planner" data-flows="all,northbound" aria-expanded="false" aria-label="TeamPlanner &amp; Gateway（Queue(32) · 5D DAG）">
+      <rect class="arch-node-box" x="70.0" y="246.0" width="460.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="82.0" y="269.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TeamPlanner &amp; Gateway</text>
+      <text class="arch-node-role" x="82.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Queue(32) · 5D DAG</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#flow" aria-label="前往「TeamPlanner &amp; Gateway」对应章节">
+      <rect x="502.0" y="250.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="514.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p2_runtime">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p2_runtime" data-flows="all,hal,northbound,realtime" aria-expanded="false" aria-label="TeamRuntime &amp; Verifier（StarFleetBus · 核验）">
+      <rect class="arch-node-box" x="670.0" y="246.0" width="460.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="682.0" y="269.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TeamRuntime &amp; Verifier</text>
+      <text class="arch-node-role" x="682.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">StarFleetBus · 核验</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#principles" aria-label="前往「TeamRuntime &amp; Verifier」对应章节">
+      <rect x="1102.0" y="250.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1114.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p3_sup">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p3_sup" data-flows="all,realtime" aria-expanded="false" aria-label="robot_supervisor (+1)（TopologyProbe · 25ms）">
+      <rect class="arch-node-box" x="70.0" y="368.0" width="460.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="82.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">robot_supervisor (+1)</text>
+      <text class="arch-node-role" x="82.0" y="412.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">TopologyProbe · 25ms</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「robot_supervisor (+1)」对应章节">
+      <rect x="502.0" y="372.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="514.0" y="388.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p3_workers">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p3_workers" data-flows="all,hal,realtime" aria-expanded="false" aria-label="P0–P3 实时子进程（200 Hz FIFO · 无锁 SHM）">
+      <rect class="arch-node-box" x="670.0" y="368.0" width="460.0" height="56.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="682.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0–P3 实时子进程</text>
+      <text class="arch-node-role" x="682.0" y="412.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">200 Hz FIFO · 无锁 SHM</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-multiprocess-cpp.html#principles" aria-label="前往「P0–P3 实时子进程」对应章节">
+      <rect x="1102.0" y="372.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1114.0" y="388.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p4_hal">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p4_hal" data-flows="all,hal" aria-expanded="false" aria-label="IHalDriver &amp; SalWire（6 .so · 1472B/2052B）">
+      <rect class="arch-node-box" x="70.0" y="488.0" width="460.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="82.0" y="511.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">IHalDriver &amp; SalWire</text>
+      <text class="arch-node-role" x="82.0" y="532.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">6 .so · 1472B/2052B</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#flow" aria-label="前往「IHalDriver &amp; SalWire」对应章节">
+      <rect x="502.0" y="492.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="514.0" y="508.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p4_fac">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p4_fac" data-flows="all,hal" aria-expanded="false" aria-label="FacilityHAL 设施网关（:18642 · AckJournal）">
+      <rect class="arch-node-box" x="670.0" y="488.0" width="460.0" height="56.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="682.0" y="511.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FacilityHAL 设施网关</text>
+      <text class="arch-node-role" x="682.0" y="532.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">:18642 · AckJournal</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#flow" aria-label="前往「FacilityHAL 设施网关」对应章节">
+      <rect x="1102.0" y="492.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1114.0" y="508.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="566.0" x2="1164.0" y2="566.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="588.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">表现与推理配额</text>
+  <rect x="197.7" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="219.7" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">200 Hz 硬实时域</text>
+  <rect x="319.0" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="341.0" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">对称硬件与设施边界</text>
+  <rect x="456.3" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="478.3" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">WAL 与安全隔离红线</text>
+  <text x="1164.0" y="587.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">时钟隔离与故障治权详见同组《双时钟隔离》与《单机故障与停机主权》视角页签</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 01 · FOUR ORTHOGONAL PLANES</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">系统架构全景: 四平面垂直职责边界与降频隔离骨架</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">每层独立节拍 · 异常不跨平面传染</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
 </svg>

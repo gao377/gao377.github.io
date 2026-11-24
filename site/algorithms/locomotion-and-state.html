@@ -7,7 +7,7 @@
   <meta name="generator" content="facri-docs · interactive theme" />
   <meta name="description" content="详述 FACRI
 下肢神经网络步态推理、C++20 历史编码、SIM
-双向斜率调节及躯干静止判稳算法。" />
+双向斜率调节、操作期上肢惯性切换及躯干静止判稳算法。" />
   <title>下肢策略与状态估计 · FACRI 文档</title>
   <link rel="stylesheet" href="../assets/site-shell.css" />
   <link rel="stylesheet" href="../assets/theme-interactive.css" />
@@ -62,81 +62,856 @@
         <div class="eyebrow">核心算法手册</div>
         <h1 class="title">下肢策略与状态估计</h1>
         <p class="subtitle">FacriMjlabPolicy
-推理链、斜率限幅、防倾覆抑制与 IMU 判稳门禁</p>
+推理链、非对称斜率限幅、operation_snapshot 惯性切换与 IMU 判稳</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>下肢运动控制与状态估计运行于端侧 <code>P0</code>
-实时进程（<code>robot_body_rt</code>）与本体后端适配器之间：上游消费经时间戳同步的
-<code>IMU</code>、<code>29</code> 自由度关节角速反馈以及
-<code>100 ms</code> 内有效的上肢参考量，下游向 <code>SAL</code> /
-<code>HAL</code> 输出受斜率限幅与倾角抑制保护的双足关节目标，同时向上层
-<code>manipulation_runtime</code> 提供 <code>BodyStabilityMonitor</code>
-躯干停稳门禁信号。完整 <code>4+1</code> 进程隔离部署见 <a
-href="../subsystems/robot-multiprocess-cpp.html">单机 C++20 4+1
-多进程实时架构</a>。</p>
-<figure class="diagram-figure">
-  <div class="diagram-canvas">
-    <img src="../assets/diagrams/algo-full-stack-map.svg"
-alt="下肢强化学习策略与状态估计在全栈算法中的位置" loading="eager" decoding="async" />
-  </div>
-  <figcaption><span>下肢强化学习策略与状态估计在全栈算法中的位置</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
-</figure>
-<h2
-id="一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner">一、下肢强化学习策略推理：<code>FacriMjlabPolicy</code>
-与 <code>PolicyRunner</code></h2>
-<p>FACRI 在 Python 后端与 <code>C++20</code>
-实时控制进程中提供同一语义的策略执行路径：</p>
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>双足人形机器人支撑多边形远窄于轮式底盘，下肢策略与上身状态估计同时面临三类严峻的物理与实时约束痛点：</p>
 <ol type="1">
-<li><strong>Python SIM
-专用策略封装（<code>src/robot_app/backends/facri/mjlab_policy.py</code>）</strong>：<code>FacriMjlabPolicy</code>
-将 <code>47</code> 维单帧观测映射为 <code>12</code>
-维腿部关节绝对位置指令，仿真步长
-<code>simulation_dt = 0.005 s</code>、抽样倍率
-<code>control_decimation = 4</code>（控制周期
-<code>period_ns = 20_000_000</code>，即
-<code>50 Hz</code>），标准步态相位周期为 <code>0.8 s</code>。</li>
-<li><strong>模型身份与硬件隔离</strong>：加载阶段强制对
-<code>policy.onnx</code> 与 YAML 配置执行 SHA-256
-哈希核验；且<strong>严格限制 <code>origin == 'SIM'</code></strong>，若在
-<code>REAL</code> 实机上调用会直接抛出
-<code>FACRI_MJLAB_REAL_NOT_QUALIFIED</code> 拒绝运行。</li>
-<li><strong>输出尺度映射与门控</strong>：通过
-<code>action_scale = 0.25 * effort_limits / kp</code>
-计算增量并叠加名义关节角
-<code>q_abs = nominal + action_scale * action</code>；支持
-<code>legacy_xy_v1</code> 与 <code>command_norm_v1</code>
-两种静止门控模式，并在 <code>urdf_limits</code>
-启用时将指令截断在物理关节限位内。</li>
-<li><strong>C++20
-常驻推理内核（<code>src/robot_app/algorithms/policy_infer/policy_runner.hpp</code>）</strong>：<code>PolicyRunner</code>
-与 <code>ObservationEncoder</code> 运行在实时进程
-<code>robot_body_rt</code> 内，维护
-<code>kPolicyJointCount = 29</code>（<code>kLegDofs = 12</code> 与
+<li><strong>加减速踝关节俯仰振荡与冲击倾覆</strong>：上层导航或操作重定位下发阶跃速度指令（如从
+<code>0</code> 突跳至 <code>0.2 m/s</code>
+或急停归零）时，直接送入强化学习步态策略会诱发单周期步幅越界、躯干失稳倾倒以及停稳阶段踝俯仰来回振荡。</li>
+<li><strong>工位弯腰操作引发的重心耦合与全局冻结失稳</strong>：若全程冻结上肢惯性并强行锁死动力学响应，行进转向时上肢离心力矩失真会拖垮双足平衡；反之若在工位操作期间保留未补偿的满载上肢惯性扰动，大范围弯腰伸臂又会冲击腿部平衡策略的观测分布。</li>
+<li><strong>跨模态异步抖动与假停稳误动作</strong>：双臂抓取与按键启动瞬间若躯干仍在微幅晃动，或上肢参考量与
+IMU
+时间差过大，极易导致指垫错位甚至空抓跌落；此外，旧版全量静力限幅器在仿真策略轴微幅越界时产生误报停机，掩盖了真实控制表现。</li>
+</ol>
+<p>围绕上述痛点，下肢与状态估计层确立了明确量化目标：下肢推理稳定运行于
+<code>50 Hz</code>（<code>20 ms</code> 周期，匹配 <code>0.005 s</code>
+仿真物理步长与 <code>control_decimation = 4</code>）、标准步态周期
+<code>0.8 s</code>、上肢参考时效上限
+<code>100 ms</code>；<code>BodyStabilityMonitor</code> 要求
+<code>1.0 s</code> 滑窗内采样延迟 <code>&lt;= 40 ms</code>、最大间隔
+<code>&lt;= 80 ms</code> 且躯干旋转总角
+<code>&lt;= 10°</code>，以此作为双臂启停的唯一因果门禁。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p>下肢运动控制与状态估计驻留于端侧 <code>P0</code>
+实时进程（<code>robot_body_rt</code>）与 <code>FacriBodyBackend</code>
+适配边界之间：上游消费经 <code>SensorAdaptersDomain</code> 时间戳校准的
+<code>IMU</code> 四元数/角速度、<code>29</code>
+自由度关节位置与速度反馈、以及 <code>100 ms</code>
+内有效的上肢参考量；经特征编码与 <code>50 Hz</code>
+策略推理后，依次穿过速度准入、非对称双向斜率限幅器与连续倾角衰减器，最终向
+<code>SAL</code> / <code>HAL</code> 写入 <code>29</code>
+轴位置与阻抗目标。</p>
+<p>与此同时，<code>StateEstimationDomain</code> 并行对 <code>IMU</code>
+缓存与 <code>17</code> 自由度上身正解（FK）做插值融合，驱动
+<code>BodyStabilityMonitor</code> 向 <code>P2</code>
+<code>manipulation_runtime</code>
+提供躯干停稳门禁与机身相对位移基准（用于作业后单次
+<code>2 cm / 3°</code> 机身偏移补偿）。完整 <code>4+1</code> 进程拓扑见
+<a href="../subsystems/robot-multiprocess-cpp.html">单机 C++20 4+1
+多进程实时架构</a>。</p>
+<figure class="diagram-figure" data-diagram-id="algo-loco-inference-flow" data-fig-uid="algo-loco-inference-flow-f0">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-loco-inference-flow" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-loco-inference-flow-title-f0" aria-describedby="algo-loco-inference-flow-desc-f0">
+  <title id="algo-loco-inference-flow-title-f0">FacriMjlabPolicy 50 Hz 步态推理、非对称斜率与倾角防呆通路</title>
+  <desc id="algo-loco-inference-flow-desc-f0">展示 47 维观测编码、50 Hz 策略推理、非对称双向斜率限幅、倾角衰减器及放行下肢 PD 输出的完整通路。</desc>
+  <defs>
+    <pattern id="algo-loco-inference-flow-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-loco-inference-flow-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-loco-inference-flow-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="200.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">OBSERVATION &amp; POLICY INFER (50 Hz)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">观测编码与 C++20 MLP 前向推理</text>
+  <rect x="604.0" y="86.0" width="560.0" height="200.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SLEW &amp; TILT ATTENUATION</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双向斜率防抖与倾角衰减防呆</text>
+  <rect x="36.0" y="304.0" width="1128.0" height="198.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="323.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">LOWER-BODY MUX &amp; 200 HZ PD</text>
+  <text x="50.0" y="340.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">下肢放行多路复用与 PD 物理输出</text>
+  <g class="arch-edge" data-from="obs_enc" data-to="policy_sim" data-flow="obs">
+    <path d="M 294.0 189.0 L 316.0 189.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-slate-f0)"/>
+    <rect x="285.1" y="180.0" width="39.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="305.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">47 维</text>
+  </g>
+  <g class="arch-edge" data-from="policy_sim" data-to="onnx_mlp" data-flow="infer">
+    <path d="M 434.0 226.0 L 434.0 289.0 Q 434.0 294.0 429.0 294.0 L 325.0 294.0 Q 320.0 294.0 320.0 299.0 L 320.0 370.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-ink-f0)"/>
+    <rect x="356.1" y="285.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="377.0" y="297.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">50 Hz</text>
+  </g>
+  <g class="arch-edge" data-from="onnx_mlp" data-to="asym_slew" data-flow="guard">
+    <path d="M 460.0 407.0 L 585.0 407.0 Q 590.0 407.0 590.0 402.0 L 590.0 194.0 Q 590.0 189.0 595.0 189.0 L 626.0 189.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-terracotta-f0)"/>
+    <rect x="565.2" y="289.0" width="49.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="590.0" y="301.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">12 动作</text>
+  </g>
+  <g class="arch-edge" data-from="asym_slew" data-to="tilt_atten" data-flow="guard">
+    <path d="M 872.0 189.0 L 896.0 189.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-terracotta-f0)"/>
+    <rect x="863.2" y="180.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="884.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">抗踝振</text>
+  </g>
+  <g class="arch-edge" data-from="tilt_atten" data-to="lower_mux" data-flow="act">
+    <path d="M 1019.0 226.0 L 1019.0 289.0 Q 1019.0 294.0 1014.0 294.0 L 665.0 294.0 Q 660.0 294.0 660.0 299.0 L 660.0 370.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-forest-f0)"/>
+    <rect x="806.7" y="285.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="839.5" y="297.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.14-0.24</text>
+  </g>
+  <g class="arch-edge" data-from="lower_mux" data-to="raw_pd" data-flow="act">
+    <path d="M 800.0 407.0 L 856.0 407.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-forest-f0)"/>
+    <rect x="804.1" y="398.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="828.0" y="410.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">200 Hz</text>
+  </g>
+  <g class="arch-node-card" data-node-id="obs_enc" aria-controls="algo-loco-inference-flow-f0-drawer-obs_enc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="obs_enc" data-flows="all,obs" aria-expanded="false" aria-label="ObservationEncoder（47 维本体观测向量）" aria-controls="algo-loco-inference-flow-f0-drawer-obs_enc">
+      <rect class="arch-node-box" x="58.0" y="152.0" width="236.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">ObservationEncoder</text>
+      <text class="arch-node-role" x="70.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">47 维本体观测向量</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#flow" data-same-page="true" aria-label="前往「ObservationEncoder」对应章节">
+      <rect x="266.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="278.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="policy_sim" aria-controls="algo-loco-inference-flow-f0-drawer-policy_sim">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="policy_sim" data-flows="all,infer,obs" aria-expanded="false" aria-label="FacriMjlabPolicy（SIM 47-&gt;12 步态核）" aria-controls="algo-loco-inference-flow-f0-drawer-policy_sim">
+      <rect class="arch-node-box" x="316.0" y="152.0" width="236.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="328.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">FacriMjlabPolicy</text>
+      <text class="arch-node-role" x="328.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">SIM 47-&gt;12 步态核</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#origins" data-same-page="true" aria-label="前往「FacriMjlabPolicy」对应章节">
+      <rect x="524.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="onnx_mlp" aria-controls="algo-loco-inference-flow-f0-drawer-onnx_mlp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="onnx_mlp" data-flows="all,guard,infer" aria-expanded="false" aria-label="OnnxProtobufMlp（C++20 无 Python 推理）" aria-controls="algo-loco-inference-flow-f0-drawer-onnx_mlp">
+      <rect class="arch-node-box" x="180.0" y="370.0" width="280.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="192.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">OnnxProtobufMlp</text>
+      <text class="arch-node-role" x="192.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">C++20 无 Python 推理</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#paradigm" data-same-page="true" aria-label="前往「OnnxProtobufMlp」对应章节">
+      <rect x="432.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="444.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="asym_slew" aria-controls="algo-loco-inference-flow-f0-drawer-asym_slew">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="asym_slew" data-flows="all,guard" aria-expanded="false" aria-label="非对称双向斜率限幅（抑制加减速踝关节振荡）" aria-controls="algo-loco-inference-flow-f0-drawer-asym_slew">
+      <rect class="arch-node-box" x="626.0" y="152.0" width="246.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">非对称双向斜率限幅</text>
+      <text class="arch-node-role" x="638.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">抑制加减速踝关节振荡</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#principles" data-same-page="true" aria-label="前往「非对称双向斜率限幅」对应章节">
+      <rect x="844.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="856.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tilt_atten" aria-controls="algo-loco-inference-flow-f0-drawer-tilt_atten">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tilt_atten" data-flows="act,all,guard" aria-expanded="false" aria-label="倾角衰减器（0.14–0.24 rad 平滑衰减）" aria-controls="algo-loco-inference-flow-f0-drawer-tilt_atten">
+      <rect class="arch-node-box" x="896.0" y="152.0" width="246.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">倾角衰减器</text>
+      <text class="arch-node-role" x="908.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">0.14–0.24 rad 平滑衰减</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#principles" data-same-page="true" aria-label="前往「倾角衰减器」对应章节">
+      <rect x="1114.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="lower_mux" aria-controls="algo-loco-inference-flow-f0-drawer-lower_mux">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="lower_mux" data-flows="act,all" aria-expanded="false" aria-label="下肢指令多路放行（取消软件超限否决）" aria-controls="algo-loco-inference-flow-f0-drawer-lower_mux">
+      <rect class="arch-node-box" x="520.0" y="370.0" width="280.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="532.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">下肢指令多路放行</text>
+      <text class="arch-node-role" x="532.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">取消软件超限否决</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#contracts" data-same-page="true" aria-label="前往「下肢指令多路放行」对应章节">
+      <rect x="772.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="784.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="raw_pd" aria-controls="algo-loco-inference-flow-f0-drawer-raw_pd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="raw_pd" data-flows="act,all" aria-expanded="false" aria-label="200 Hz 下肢 PD 执行（12 腿轴纯驱动）" aria-controls="algo-loco-inference-flow-f0-drawer-raw_pd">
+      <rect class="arch-node-box" x="856.0" y="370.0" width="280.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="868.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">200 Hz 下肢 PD 执行</text>
+      <text class="arch-node-role" x="868.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">12 腿轴纯驱动</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#evidence" data-same-page="true" aria-label="前往「200 Hz 下肢 PD 执行」对应章节">
+      <rect x="1108.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1120.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">47-&gt;12 SIM 步态策略</text>
+  <rect x="224.9" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="246.9" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">非对称斜率与倾角抑制</text>
+  <rect x="373.1" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="395.1" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">取消下肢软件误否决与 PD 输出</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">retire/PASSIVE 时立即清零 PD 增益；绝不将阻断后的倒地误归因于策略本身</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 01A · LOCOMOTION INFERENCE &amp; PROTECTION</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">FacriMjlabPolicy 50 Hz 步态推理、非对称斜率与倾角防呆通路</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">取代旧纯文本字符画 · C++20 OnnxProtobufMlp · SIM_ONLY</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="obs" aria-pressed="false">观测编码与策略推理</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="guard" aria-pressed="false">双向斜率与倾角防呆</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="act" aria-pressed="false">下肢多路放行与 PD 输出</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>下肢步态推理与斜率倾角保护总功能流</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-loco-inference-flow.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-loco-inference-flow-f0-drawer-obs_enc" class="diagram-drawer-panel" data-node-drawer="obs_enc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ObservationEncoder</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 Policy · 观测构造 · 50 Hz (20 ms)</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ObservationEncoder」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把原始 IMU 与编码器反馈规范化为严格定序的 47 维策略输入张量。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 零分配编码器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/policy_infer/observation_encoder.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>拼接角速度、投影重力、速度命令、12 轴位置/速度与历史动作 (最大年龄 40 ms)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inference-flow-f0-drawer-policy_sim" class="diagram-drawer-panel" data-node-drawer="policy_sim" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">FacriMjlabPolicy</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 Policy · SIM 策略 · 50 Hz · SIM_ONLY</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「FacriMjlabPolicy」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">面向 FACRI 双足纯接触仿真训练的专用行走策略，严禁未验证迁移至真机。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>确定性策略接口</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/policy_infer/policy_runner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>输出 12 维动作增量，按 action_scale=0.25 叠加默认站姿偏置；无 REAL 资格</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inference-flow-f0-drawer-onnx_mlp" class="diagram-drawer-panel" data-node-drawer="onnx_mlp" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">OnnxProtobufMlp</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 Policy · 推理引擎 · 固定算子零分配</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「OnnxProtobufMlp」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">彻底摆脱 Python 运行时抖动，稳定维持 50 Hz 策略更新节奏。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 嵌入式推理内核</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/policy_infer/onnx_protobuf_mlp.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>在 P0 实时进程内直接加载策略权重执行前向计算，不触发 GIL 或堆分配</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inference-flow-f0-drawer-asym_slew" class="diagram-drawer-panel" data-node-drawer="asym_slew" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">非对称双向斜率限幅</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 Policy · 防呆整形 · 每步速率裁剪</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「非对称双向斜率限幅」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">平滑策略输出突变，防止高增益位置环激发足底反弹滑移。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>分段非对称速率限制器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/policy_infer/policy_runner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>区分起摆加速与触地减速斜率上限，消除双足起步/停稳瞬间的踝振</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inference-flow-f0-drawer-tilt_atten" class="diagram-drawer-panel" data-node-drawer="tilt_atten" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">倾角衰减器</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 Policy · 跌倒抑制 · 实时倾角门控</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「倾角衰减器」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">防止机器人在大倾角失衡态势下继续输出激进迈步导致硬翻覆。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>连续分段衰减函数</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/policy_infer/policy_runner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>机身倾角超过 0.14 rad 线性衰减速度与动作增益，0.24 rad 触发强抑制</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inference-flow-f0-drawer-lower_mux" class="diagram-drawer-panel" data-node-drawer="lower_mux" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">下肢指令多路放行</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 Mux · FACRI SAL · 200 Hz 透传校验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「下肢指令多路放行」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">依 2026-11-13 裁定消除中间软件误截断，保留真实物理执行与跌倒证据。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>一致放行有限输入</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/action_executor/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅核验有限浮点、身份与单写者；取消 FACRI SIM 下肢位置/速度/力软否决</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inference-flow-f0-drawer-raw_pd" class="diagram-drawer-panel" data-node-drawer="raw_pd" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">200 Hz 下肢 PD 执行</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 HAL · 执行输出 · 200 Hz SalCommand</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「200 Hz 下肢 PD 执行」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">向 MuJoCo 仿真输出精确的 12 腿轴目标，确保能量耗散与地面接触真实。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>物理位置-阻尼控制</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/body_gateway/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>retire/PASSIVE 时立即清零 PD 增益；绝不将策略被阻断后的倒地误判为策略恢复</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-loco-inertia-stability">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<h2 id="principles">03 · 核心原理与机制推演</h2>
+<h3 id="双栈同义推理47---12-与-10100---29">3.1
+双栈同义推理：<code>47 -&gt; 12</code> 与
+<code>10×100 -&gt; 29</code></h3>
+<p>系统在 <code>Python</code> <code>SIM</code>
+隔离封装（<code>src/robot_app/backends/facri/mjlab_policy.py</code>）与
+<code>C++20</code>
+多进程常驻核（<code>src/robot_app/algorithms/policy_infer/policy_runner.hpp</code>）中保持同一控制语义：</p>
+<ul>
+<li><strong>Python <code>SIM_ONLY</code>
+策略封装（<code>FacriMjlabPolicy</code>）</strong>：接收 <code>47</code>
+维单帧观测（躯干角速度、投影重力、速度指令、正余弦步态相位、腿部位置误差、腿部速度与上一拍动作），输出
+<code>12</code> 维腿部关节绝对位置指令。源码加载阶段强制校核
+<code>policy.onnx</code> 与 YAML 部署配置的 <code>SHA-256</code>
+哈希，且硬性限定 <code>origin == 'SIM'</code>——一旦在 <code>REAL</code>
+真机配置下实例化立即抛出 <code>FACRI_MJLAB_REAL_NOT_QUALIFIED</code>
+阻断运行。动作解码严格遵循训练缩放关系：</li>
+</ul>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mtext mathvariant="normal">act</mtext></msub><mo>=</mo><mfrac><mrow><mn>0.25</mn><mspace width="0.167em"></mspace><msub><mi>τ</mi><mtext mathvariant="normal">lim</mtext></msub></mrow><msub><mi>k</mi><mi>p</mi></msub></mfrac><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>q</mi><mtext mathvariant="normal">abs</mtext></msub><mo>=</mo><msub><mi>q</mi><mtext mathvariant="normal">nom</mtext></msub><mo>+</mo><msub><mi>α</mi><mtext mathvariant="normal">act</mtext></msub><mo>⊙</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">\alpha_{\text{act}} = \frac{0.25\,\tau_{\text{lim}}}{k_p}, \qquad q_{\text{abs}} = q_{\text{nom}} + \alpha_{\text{act}} \odot a</annotation></semantics></math></p>
+<p>其中
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>q</mi><mtext mathvariant="normal">nom</mtext></msub><annotation encoding="application/x-tex">q_{\text{nom}}</annotation></semantics></math>
+为
+<code>default_angles</code>，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mtext mathvariant="normal">lim</mtext></msub><annotation encoding="application/x-tex">\tau_{\text{lim}}</annotation></semantics></math>
+为
+<code>effort_limits</code>，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>k</mi><mi>p</mi></msub><annotation encoding="application/x-tex">k_p</annotation></semantics></math>
+为关节刚度，支持 <code>legacy_xy_v1</code> 与
+<code>command_norm_v1</code> 两种静止相位门控，并在启用
+<code>urdf_limits</code> 投影时将指令截断在 URDF 物理上下界内。</p>
+<ul>
+<li><strong><code>C++20</code> 常驻推理核（<code>PolicyRunner</code> 与
+<code>ObservationEncoder</code>）</strong>：运行于
+<code>robot_body_rt</code> 实时循环，统一维护
+<code>kPolicyJointCount = 29</code>（<code>kLegDofs = 12</code> +
 <code>kUpperDofs = 17</code>）及 <code>kHistoryLength = 10</code> ×
 <code>kFrameObsDim = 100</code> = <code>kTotalObsDim = 1000</code>
-维历史矩阵，并核验上肢参考数据时效
-<code>kUpperRefMaxAgeNs = 100 ms</code>。优先通过 <code>dlopen</code>
-调用 <code>onnxruntime</code>，若无加速库则回落至内置
-<code>OnnxProtobufMlp</code> 或固定确定性核，并配合
-<code>SimPositionExcursionGuard</code>（连续超差 <code>100 ms</code>
-触发保护）防止关节失控漂移。</li>
+维时序栈（<code>src/robot_app/algorithms/policy_infer/observation_encoder.hpp</code>），强制核验
+<code>kUpperRefMaxAgeNs = 100 ms</code>。推理后端优先经
+<code>dlopen</code> 挂载 <code>onnxruntime</code>，缺省时无缝降级至内建
+<code>OnnxProtobufMlp</code> 或固定确定性核，并挂载
+<code>SimPositionExcursionGuard</code> 对非策略关节连续超差
+<code>100 ms</code>（<code>kSimPositionExcursionNs</code>）执行保护截断。</li>
+</ul>
+<h3 id="非对称双向斜率限幅与倾角连续衰减">3.2
+非对称双向斜率限幅与倾角连续衰减</h3>
+<p>在 <code>src/robot_app/backends/facri/control_cycle.py</code>
+中，<code>_slew_sim_velocity</code> 对 <code>command_norm_v1</code>
+模式的平面速度指令
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><msub><mi>v</mi><mi>x</mi></msub><mo>,</mo><msub><mi>v</mi><mi>y</mi></msub><mo>,</mo><msub><mi>ω</mi><mi>z</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(v_x, v_y, \omega_z)</annotation></semantics></math>
+实施两级非线性整形（阈值由
+<code>src/robot_app/backends/facri/bound_control.py</code> 的
+<code>command_admission</code> 约束在上限
+<code>(0.85, 0.20, 0.40)</code> 之内）：</p>
+<ol type="1">
+<li><strong>连续跌倒倾向衰减器（Stumble-Tilt
+Governor）</strong>：由测量四元数提取躯干总倾角
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mtext mathvariant="normal">tilt</mtext></msub><mo>=</mo><mn>2</mn><mrow><mi mathvariant="normal">arcsin</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><msqrt><mrow><msubsup><mi>q</mi><mi>x</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>q</mi><mi>y</mi><mn>2</mn></msubsup></mrow></msqrt><mi>/</mi><mo stretchy="false" form="postfix">∥</mo><mi>q</mi><mo stretchy="false" form="postfix">∥</mo><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta_{\text{tilt}} = 2\arcsin(\min(1, \sqrt{q_x^2+q_y^2}/\|q\|))</annotation></semantics></math>，在区间
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><mn>0.14</mn><mo>,</mo><mspace width="0.167em"></mspace><mn>0.24</mn><mo stretchy="false" form="postfix">]</mo><mspace width="0.167em"></mspace><mtext mathvariant="normal">rad</mtext></mrow><annotation encoding="application/x-tex">[0.14,\, 0.24]\,\text{rad}</annotation></semantics></math>
+内实施线性衰减：</li>
 </ol>
-<pre><code>[IMU / 29 关节角速反馈 + 100 ms 上肢参考]
-          │
-          ▼  (ObservationEncoder: 10 x 100 = 1000 维 / 或 FacriMjlabPolicy: 47 维)
-[PolicyRunner (ONNX Runtime / Built-in MLP) @ 50 Hz]
-          │  action_scale = 0.25 * effort_limits / kp
-          ▼
-[q_abs 目标 + 双向速度斜率限幅 + 倾角抑制器] ──► [SAL / HAL 写入 29 关节]</code></pre>
-<h2
-id="二速度准入双向斜率控制与防倾覆抑制">二、速度准入、双向斜率控制与防倾覆抑制</h2>
-<p>在
-<code>src/robot_app/backends/facri/app_body.py</code>、<code>bound_control.py</code>
-与 <code>control_cycle.py</code> 中，<code>FacriBodyBackend</code>
-对上层导航或操作下发的速度指令 <code>(vx, vy, vyaw)</code>
-执行三级动力学防护，避免高惯量步态瞬间切换诱发跌倒：</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mtext mathvariant="normal">tilt</mtext></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mrow><mi mathvariant="normal">clip</mi><mo>&#8289;</mo></mrow><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mn>0.24</mn><mo>−</mo><msub><mi>θ</mi><mtext mathvariant="normal">tilt</mtext></msub></mrow><mrow><mn>0.24</mn><mo>−</mo><mn>0.14</mn></mrow></mfrac><mo>,</mo><mspace width="0.278em"></mspace><mn>0</mn><mo>,</mo><mspace width="0.278em"></mspace><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>v</mi><mtext mathvariant="normal">gov</mtext></msub><mo>=</mo><mi>g</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>θ</mi><mtext mathvariant="normal">tilt</mtext></msub><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msub><mi>v</mi><mtext mathvariant="normal">raw</mtext></msub></mrow><annotation encoding="application/x-tex">g(\theta_{\text{tilt}}) = \operatorname{clip}\!\left(\frac{0.24 - \theta_{\text{tilt}}}{0.24 - 0.14},\; 0,\; 1\right), \qquad v_{\text{gov}} = g(\theta_{\text{tilt}})\, v_{\text{raw}}</annotation></semantics></math></p>
+<p>当躯干倾斜超过 <code>0.14 rad</code>（约
+<code>8.0°</code>）时平滑压低期望线/角速度，达到
+<code>0.24 rad</code>（约
+<code>13.8°</code>）时将指令归零以优先保稳。</p>
+<ol start="2" type="1">
+<li><strong>非对称加速/制动斜率与低速归零锁定</strong>：判定当前步处于减速或反向制动条件（<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mtext mathvariant="normal">norm</mtext></msub><mo>&gt;</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>6</mn></mrow></msup></mrow><annotation encoding="application/x-tex">p_{\text{norm}} &gt; 10^{-6}</annotation></semantics></math>
+且
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mtext mathvariant="normal">norm</mtext></msub><mo>&lt;</mo><msub><mi>p</mi><mtext mathvariant="normal">norm</mtext></msub></mrow><annotation encoding="application/x-tex">t_{\text{norm}} &lt; p_{\text{norm}}</annotation></semantics></math>
+或点积为负）后，加速段采用温和步长
+<code>SIM_ACCEL_LINEAR_STEP_MPS = 0.022 m/s</code>（偏航
+<code>0.04 rad/s</code>），而减速段采用快步长
+<code>SIM_DECEL_LINEAR_STEP_MPS = 0.06 m/s</code>（偏航
+<code>0.08 rad/s</code>）；当目标为零速且剩余线速度降入
+<code>SIM_DECEL_GATE_SNAP_MPS = 0.055 m/s</code>（偏航
+<code>0.055 rad/s</code>）以内时果断归零锁定，彻底消除低速临界区来回踏步导致的踝俯仰振荡。</li>
+</ol>
+<h3
+id="operation_snapshot-操作期惯性冻结与-bodystabilitymonitor-判稳">3.3
+<code>operation_snapshot</code> 操作期惯性冻结与
+<code>BodyStabilityMonitor</code> 判稳</h3>
+<figure class="diagram-figure" data-diagram-id="algo-loco-inertia-stability" data-fig-uid="algo-loco-inertia-stability-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-loco-inertia-stability" viewBox="0 0 1200 550" width="1200" height="550" role="group" aria-labelledby="algo-loco-inertia-stability-title-f1" aria-describedby="algo-loco-inertia-stability-desc-f1">
+  <title id="algo-loco-inertia-stability-title-f1">operation_snapshot 操作期上肢惯性切换与 BodyStabilityMonitor 判稳</title>
+  <desc id="algo-loco-inertia-stability-desc-f1">阐明 2026-11-14 裁定下的导航原生动力学与操作期惯性冻结边沿切换机理及倾角位移判稳状态机。</desc>
+  <defs>
+    <pattern id="algo-loco-inertia-stability-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-loco-inertia-stability-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-loco-inertia-stability-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="550" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="550" fill="url(#algo-loco-inertia-stability-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="548.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="560.0" height="412.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">OPERATION SNAPSHOT HANDOFF</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">导航原生动力学 &lt;-&gt; 操作期固定上肢惯性张量</text>
+  <rect x="624.0" y="86.0" width="540.0" height="412.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="638.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">STABILITY &amp; EXCURSION GUARD</text>
+  <text x="638.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">滑窗判稳、位移越界记录与 SIM_ONLY 范围</text>
+  <g class="arch-edge" data-from="nav_dyn" data-to="op_snap" data-flow="inertia">
+    <path d="M 304.0 189.0 L 332.0 189.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-ochre-f1)"/>
+    <rect x="292.2" y="180.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="318.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">解锁捕获</text>
+  </g>
+  <g class="arch-edge" data-from="op_snap" data-to="relock_rst" data-flow="inertia">
+    <path d="M 452.0 226.0 L 452.0 281.0 Q 452.0 286.0 447.0 286.0 L 325.0 286.0 Q 320.0 286.0 320.0 291.0 L 320.0 326.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-slate-f1)"/>
+    <rect x="360.2" y="277.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="386.0" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">重锁恢复</text>
+  </g>
+  <g class="arch-edge" data-from="relock_rst" data-to="nav_dyn" data-flow="inertia">
+    <path d="M 190.0 363.0 L 125.0 363.0 Q 120.0 363.0 120.0 358.0 L 120.0 226.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-loco-inertia-stability-arrow-forest-f1)"/>
+    <rect x="99.2" y="285.5" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="120.0" y="297.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">原驱动</text>
+  </g>
+  <g class="arch-edge" data-from="op_snap" data-to="stab_mon" data-flow="stability">
+    <path d="M 572.0 189.0 L 654.0 189.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-loco-inertia-stability-arrow-forest-f1)"/>
+    <rect x="587.2" y="180.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="613.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">相对基准</text>
+  </g>
+  <g class="arch-edge" data-from="stab_mon" data-to="excur_guard" data-flow="stability">
+    <path d="M 886.0 189.0 L 906.0 189.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-ink-f1)"/>
+    <rect x="870.2" y="180.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="896.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">40ms 窗</text>
+  </g>
+  <g class="arch-edge" data-from="excur_guard" data-to="sim_only" data-flow="stability">
+    <path d="M 1022.0 226.0 L 1022.0 281.0 Q 1022.0 286.0 1017.0 286.0 L 905.0 286.0 Q 900.0 286.0 900.0 291.0 L 900.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inertia-stability-arrow-terracotta-f1)"/>
+    <rect x="931.2" y="277.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="961.0" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">SIM_ONLY</text>
+  </g>
+  <g class="arch-node-card" data-node-id="nav_dyn" aria-controls="algo-loco-inertia-stability-f1-drawer-nav_dyn">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="nav_dyn" data-flows="all,inertia" aria-expanded="false" aria-label="导航期原生动力学（初始上肢不冻结）" aria-controls="algo-loco-inertia-stability-f1-drawer-nav_dyn">
+      <rect class="arch-node-box" x="64.0" y="152.0" width="240.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">导航期原生动力学</text>
+      <text class="arch-node-role" x="76.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">初始上肢不冻结</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#origins" data-same-page="true" aria-label="前往「导航期原生动力学」对应章节">
+      <rect x="276.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="288.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="op_snap" aria-controls="algo-loco-inertia-stability-f1-drawer-op_snap">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="op_snap" data-flows="all,inertia,stability" aria-expanded="false" aria-label="operation_snapshot 捕获（解锁捕获上肢惯性张量）" aria-controls="algo-loco-inertia-stability-f1-drawer-op_snap">
+      <rect class="arch-node-box" x="332.0" y="152.0" width="240.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="344.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">operation_snapshot 捕获</text>
+      <text class="arch-node-role" x="344.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">解锁捕获上肢惯性张量</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#principles" data-same-page="true" aria-label="前往「operation_snapshot 捕获」对应章节">
+      <rect x="544.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="556.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="relock_rst" aria-controls="algo-loco-inertia-stability-f1-drawer-relock_rst">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="relock_rst" data-flows="all,inertia" aria-expanded="false" aria-label="重锁恢复原动力学（apply_device_command）" aria-controls="algo-loco-inertia-stability-f1-drawer-relock_rst">
+      <rect class="arch-node-box" x="190.0" y="326.0" width="260.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="202.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">重锁恢复原动力学</text>
+      <text class="arch-node-role" x="202.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">apply_device_command</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#contracts" data-same-page="true" aria-label="前往「重锁恢复原动力学」对应章节">
+      <rect x="422.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="434.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="stab_mon" aria-controls="algo-loco-inertia-stability-f1-drawer-stab_mon">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="stab_mon" data-flows="all,stability" aria-expanded="false" aria-label="BodyStabilityMonitor（滑窗倾角判稳 (10°)）" aria-controls="algo-loco-inertia-stability-f1-drawer-stab_mon">
+      <rect class="arch-node-box" x="654.0" y="152.0" width="232.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="666.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">BodyStabilityMonitor</text>
+      <text class="arch-node-role" x="666.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">滑窗倾角判稳 (10°)</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#paradigm" data-same-page="true" aria-label="前往「BodyStabilityMonitor」对应章节">
+      <rect x="858.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="870.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="excur_guard" aria-controls="algo-loco-inertia-stability-f1-drawer-excur_guard">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="excur_guard" data-flows="all,stability" aria-expanded="false" aria-label="SimPositionExcursionGuard（100 ms 位移越界守卫）" aria-controls="algo-loco-inertia-stability-f1-drawer-excur_guard">
+      <rect class="arch-node-box" x="906.0" y="152.0" width="232.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="918.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">SimPositionExcursionGuard</text>
+      <text class="arch-node-role" x="918.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">100 ms 位移越界守卫</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#evidence" data-same-page="true" aria-label="前往「SimPositionExcursionGuard」对应章节">
+      <rect x="1110.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1122.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sim_only" aria-controls="algo-loco-inertia-stability-f1-drawer-sim_only">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sim_only" data-flows="all,stability" aria-expanded="false" aria-label="SIM_ONLY 能力边界声明（不签 REAL 步行资质）" aria-controls="algo-loco-inertia-stability-f1-drawer-sim_only">
+      <rect class="arch-node-box" x="720.0" y="326.0" width="360.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="732.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SIM_ONLY 能力边界声明</text>
+      <text class="arch-node-role" x="732.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">不签 REAL 步行资质</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#evidence" data-same-page="true" aria-label="前往「SIM_ONLY 能力边界声明」对应章节">
+      <rect x="1052.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1064.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="506.0" x2="1164.0" y2="506.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="528.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="104.0" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">交接边沿 mj_setConst 惯性切换</text>
+  <rect x="281.8" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="303.8" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">原生动力学与判稳状态机</text>
+  <rect x="440.8" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="462.8" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SIM 专用简化 (无 REAL 资格)</text>
+  <text x="1164.0" y="527.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">切换仅在完整解锁/重锁确认边沿执行，绝不重置 qpos / qvel / time</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 01B · INERTIA SNAPSHOT &amp; STABILITY MONITOR</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">operation_snapshot 操作期上肢惯性切换与 BodyStabilityMonitor 判稳</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">upper_inertia_mode=operation_snapshot · SIM_ONLY 边界</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="inertia" aria-pressed="false">operation_snapshot 惯性切换</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="stability" aria-pressed="false">BodyStabilityMonitor 判稳</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>operation_snapshot 上肢惯性切换与
+BodyStabilityMonitor 滑窗判稳机制</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-loco-inertia-stability.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-loco-inertia-stability-f1-drawer-nav_dyn" class="diagram-drawer-panel" data-node-drawer="nav_dyn" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">导航期原生动力学</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Locomotion · 导航阶段 · 200 Hz 全身动力学</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「导航期原生动力学」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">依据 2026-11-14 最新裁定废除全程上肢冻结，确保行走阶段质心动力学真实。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>原生质量与腰部驱动</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/state_estimation/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>upper_inertia_mode=operation_snapshot；初始行走保留完整上肢质量与惯性</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inertia-stability-f1-drawer-op_snap" class="diagram-drawer-panel" data-node-drawer="op_snap" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">operation_snapshot 捕获</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Handoff Edge · 操作期 · 仅交接边沿切换</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「operation_snapshot 捕获」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">随本体移动但操作期不随腰臂偏转变化，保持操作时双腿抗倾覆稳定性。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>独立 scratch mj_setConst</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/state_estimation/domain/snapshot_rules.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>工位解锁首释腰/臂时捕获相对底座偏心质心与惯性张量；不重置 qpos/qvel/time</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inertia-stability-f1-drawer-relock_rst" class="diagram-drawer-panel" data-node-drawer="relock_rst" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">重锁恢复原动力学</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Handoff Edge · 恢复 · 下一物理步前完成</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「重锁恢复原动力学」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">按钮局部锁不重捕获，失败不触发切换；防止遗留理想腰驱动破坏导航步态。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>缓存失效 + 驱动恢复</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/state_estimation/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>完整腰臂重锁确认后恢复原 body_mass/ipos/iquat/inertia、armature 与原腰部执行驱动</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inertia-stability-f1-drawer-stab_mon" class="diagram-drawer-panel" data-node-drawer="stab_mon" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">BodyStabilityMonitor</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">StateEst · 判稳状态机 · 200 Hz 滑窗评估</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「BodyStabilityMonitor」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为操作前停稳确认及动作后机身漂移检测提供统一相对变换参考。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>确定性滑窗状态机</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/state_estimation/domain/stability.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>结合角速度、倾角 &lt;= 10° 与相对基准偏移判断本体是否已停稳可交接操作</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inertia-stability-f1-drawer-excur_guard" class="diagram-drawer-panel" data-node-drawer="excur_guard" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SimPositionExcursionGuard</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">StateEst · 异常留痕 · 连续监测</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SimPositionExcursionGuard」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">精准捕捉因惯性突变或接触冲击引起的隐性滑移退化。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>只读物理异常记录</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/state_estimation/domain/stability.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>监测操作期间足底打滑或异常位移超限，仅记录诊断证据不伪造通过</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-loco-inertia-stability-f1-drawer-sim_only" class="diagram-drawer-panel" data-node-drawer="sim_only" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SIM_ONLY 能力边界声明</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Governance · 证据范围 · 静态范围标注</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SIM_ONLY 能力边界声明」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">诚实披露仿真简化适用范围，避免把仿真闭环误当成真机验收凭证。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>SCOPED 合规标记</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/facri/policy.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>惯性切换与下肢放行均为 SIM 专用简化，绝不直接用于真实物理双足行走</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-loco-inference-flow">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<p>为兼顾行进稳定性与工位操作精度，仿真物理层启用唯一冻结配置
+<code>upper_inertia_mode=operation_snapshot</code>（实现于
+<code>simulation/backend/src/embodied_sim/modules/mujoco_world/upper_inertia.py</code>
+的 <code>FixedUpperInertia</code> 与
+<code>upper_position.py</code>）：</p>
+<ul>
+<li><strong>交接边沿单次快照切换</strong>：初始导航阶段不冻结上肢，保持真实连杆质量与正常腰部动力学。当工位原生解锁确认后首次释放腰/臂时，<code>FixedUpperInertia.freeze()</code>
+通过 <code>mj_kinematics</code> 与 <code>mj_comPos</code>
+捕获此刻相对底座 <code>base</code>
+的整套上肢质量分布、偏心质心与特征主惯量张量并折叠至根体，随后将操作期上肢腰臂切为理想执行并保留腰部三轴硬范围。</li>
+<li><strong>局部锁不重捕获、重锁原子恢复</strong>：作业中间的按钮局部腰锁或重复解锁不会触发重新捕获；仅当完整腰臂重锁确认后，在下一物理步积分前执行
+<code>restore()</code>，通过独立 <code>scratch</code>
+<code>MjData</code> 重新调用 <code>mj_setConst</code>，完整恢复原
+<code>body_mass</code>、<code>body_ipos</code>、<code>body_iquat</code>、<code>body_inertia</code>、<code>dof_armature</code>
+与原腰部执行驱动（使驱动缓存失效并重用既有
+<code>apply_device_command</code>），绝不重置 <code>qpos</code> /
+<code>qvel</code> /
+<code>time</code>。取消或失败本身不直接切换状态，保持每机独立。</li>
+</ul>
+<p>在进入上身操作前，<code>BodyStabilityMonitor</code>（<code>src/robot_app/modules/state_estimation/domain/stability.py</code>）对融合后的机身质心与姿态执行
+<code>1.0 s</code> 滑窗因果判稳：必须同时满足最新采样年龄
+<code>&lt;= 40 ms</code>（<code>MAX_AGE_NS</code>）、相邻样本间隔
+<code>&lt;= 80 ms</code>（<code>max_gap_ns</code>）、时间戳与
+<code>epoch</code>
+严格单调递增、期望速度处于零速带（<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><msub><mi>v</mi><mi>i</mi></msub><mo stretchy="false" form="prefix">|</mo><mo>≤</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>5</mn></mrow></msup></mrow><annotation encoding="application/x-tex">|v_i| \le 10^{-5}</annotation></semantics></math>）、以及窗内质心漂移范围与总旋转摆幅不超过配置阈值（其中旋转范围硬上限为
+<code>10°</code>），方才锁定并递增因果代际
+<code>standing_generation</code> 放行上臂操作。</p>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>本域呈现典型的「<code>C++20</code> 实时策略核 + <code>Python</code>
+<code>SIM_ONLY</code> 防腐隔离边界 + 因果状态机」工程结构：</p>
+<ul>
+<li><strong>策略模式与动态运行时桥接（<code>PolicyRunner</code>）</strong>：将观测编码（<code>ObservationEncoder</code>）与底层推理后端解耦，支持
+<code>onnxruntime</code> 动态装载、内建 <code>OnnxProtobufMlp</code>
+与固定核平滑降级，同时严格禁用控制循环内堆分配。</li>
+<li><strong>防腐隔离护栏（<code>FacriMjlabPolicy</code> &amp;
+<code>bound_control.py</code>）</strong>：将 <code>SIM</code> 专属的
+<code>47</code> 维步态映射、URDF/YAML <code>SHA-256</code>
+校验、有限浮点检查与 <code>command_admission</code> 集中在边界适配层，以
+<code>FACRI_MJLAB_REAL_NOT_QUALIFIED</code> 硬异常阻断跨模式误用。</li>
+<li><strong>因果代际状态机（<code>BodyStabilityMonitor</code> &amp;
+<code>FixedUpperInertia</code>）</strong>：<code>BodyStabilityMonitor</code>
+显式校验源时间戳因果序与 <code>standing_generation</code>
+租约，拒绝未来时间戳回读；<code>FixedUpperInertia</code>
+将危险的模型结构修改（<code>mj_setConst</code>）限制在独立
+<code>scratch</code> 与状态边沿，确保数值可逆。</li>
+</ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>审阅结论</th>
+<th>客观工程依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 领域纯洁性与依赖倒置</strong></td>
+<td><code>PASS</code></td>
+<td><code>PolicyRunner</code> 与 <code>BodyStabilityMonitor</code> 均与
+<code>ROS 2</code> 传输及仿真引擎 API
+彻底解耦，仅依赖值对象与纯数组输入</td>
+</tr>
+<tr>
+<td><strong>2. 契约完备性与边界防呆</strong></td>
+<td><code>PASS</code></td>
+<td>强制执行 <code>SHA-256</code> 指纹核验、<code>origin == 'SIM'</code>
+守门、有限浮点校验与 <code>epoch</code> 单调递增防串包</td>
+</tr>
+<tr>
+<td><strong>3. 状态机与生命周期确定性</strong></td>
+<td><code>PASS</code></td>
+<td><code>standing_generation</code> 代际失效与
+<code>operation_snapshot</code>
+重锁边沿恢复状态迁移清晰，无隐式旁路</td>
+</tr>
+<tr>
+<td><strong>4. 实时内存与并发安全性</strong></td>
+<td><code>PASS</code></td>
+<td><code>C++20</code> 侧 <code>ObservationEncoder</code> 与
+<code>PolicyRunner</code>
+在实时环零动态分配；<code>BodyStabilityMonitor</code>
+使用有界滑窗队列</td>
+</tr>
+<tr>
+<td><strong>5. 离线可测性与失败留痕</strong></td>
+<td><code>PASS</code></td>
+<td>策略推理与判稳机均支持纯内存确定性回放；保留 <code>N02</code>
+诊断档案、实际计数及失败原因代码</td>
+</tr>
+<tr>
+<td><strong>6. 单真源约束与过渡债务透明度</strong></td>
+<td><code>SCOPED</code></td>
+<td>显式标注 <code>FacriMjlabPolicy</code>、斜率限幅及
+<code>operation_snapshot</code> 为 <code>SIM_ONLY</code>
+隔离简化，不对外宣称 <code>REAL</code> 资格</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<p>下表汇总下肢策略、斜率限幅器与躯干判稳器的核心契约接口与冻结上限；详细调优常量与诊断配置档见折叠明细面板。</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -147,77 +922,109 @@ id="二速度准入双向斜率控制与防倾覆抑制">二、速度准入、�
 </colgroup>
 <thead>
 <tr>
-<th>机制模块</th>
+<th>组件接口</th>
 <th>源码位置</th>
-<th>关键参数与阈值</th>
+<th>核心输入/输出契约</th>
+<th>冻结关键约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PolicyRunner::step_50hz</code></td>
+<td><code>src/robot_app/algorithms/policy_infer/policy_runner.hpp</code></td>
+<td><code>ObservationInput</code>（<code>10×100</code> 栈）-&gt;
+<code>PolicyStepOutput</code>（<code>12</code> 腿目标 + 增益）</td>
+<td><code>kUpperRefMaxAgeNs = 100 ms</code>；<code>SimPositionExcursionGuard</code>
+<code>100 ms</code></td>
+</tr>
+<tr>
+<td><code>FacriMjlabPolicy.step</code></td>
+<td><code>src/robot_app/backends/facri/mjlab_policy.py</code></td>
+<td><code>47</code> 维观测 -&gt;
+<code>JointReference</code>（<code>12</code> 轴绝对位置）</td>
+<td><code>origin == 'SIM'</code>；<code>period_ns = 20 ms</code>；<code>phase_period_s = 0.8 s</code></td>
+</tr>
+<tr>
+<td><code>_slew_sim_velocity</code></td>
+<td><code>src/robot_app/backends/facri/control_cycle.py</code></td>
+<td>期望速度 + <code>IMU</code> 四元数 -&gt; 限幅速度
+<code>(vx, vy, wz)</code></td>
+<td>仅对 <code>SIM</code> + <code>command_norm_v1</code> 激活</td>
+</tr>
+<tr>
+<td><code>BodyStabilityMonitor.update</code></td>
+<td><code>src/robot_app/modules/state_estimation/domain/stability.py</code></td>
+<td>关节态 + <code>IMU</code> + 下发指令 -&gt;
+<code>BodyStabilityResult</code></td>
+<td><code>MAX_AGE_NS = 40 ms</code>、<code>max_gap_ns = 80 ms</code>、<code>window_s = 1.0 s</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="tech-details">
+<summary>
+查看斜率限幅全量常量、倾角衰减阈值与 N02 诊断站立配置细节
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>参数 / 模块</th>
+<th>源码位置</th>
+<th>冻结数值</th>
 <th>工程物理含义</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>速度指令上限准入</td>
-<td><code>command_admission</code></td>
-<td>最大容许 <code>(0.85, 0.20, 0.40)</code> m/s、m/s、rad/s；默认
+<td>速度准入上限（<code>command_admission</code>）</td>
+<td><code>src/robot_app/backends/facri/bound_control.py</code></td>
+<td>最大 <code>(0.85, 0.20, 0.40)</code>；默认
 <code>(0.2, 0.1, 0.3)</code></td>
-<td>约束横移与偏航幅度，防止单周期步幅超出支撑多边形</td>
+<td>约束横移与偏航角速度，防止单步步幅超出支撑多边形</td>
 </tr>
 <tr>
-<td>SIM 双向斜率限幅器（<code>_slew_sim_velocity</code>）</td>
-<td><code>src/robot_app/backends/facri/bound_control.py</code></td>
-<td><code>SIM_ACCEL_LINEAR_STEP_MPS = 0.022</code>、<code>SIM_DECEL_LINEAR_STEP_MPS = 0.06</code>、<code>SIM_DECEL_GATE_SNAP_MPS = 0.055</code>、<code>SIM_ACCEL_YAW_STEP_RPS = 0.04</code>、<code>SIM_DECEL_YAW_STEP_RPS = 0.08</code></td>
-<td>加速慢（每周期 <code>0.022 m/s</code>）、减速快（每周期
-<code>0.06 m/s</code>），并在接近停止阈值 <code>0.055 m/s</code>
-时果断归零锁定，抑制踝俯仰停止振荡</td>
+<td>双向斜率与归零锁（<code>_slew_sim_velocity</code>）</td>
+<td><code>src/robot_app/backends/facri/control_cycle.py</code></td>
+<td>加速 <code>0.022 m/s</code>、<code>0.04 rad/s</code>；减速
+<code>0.06 m/s</code>、<code>0.08 rad/s</code>；归零锁
+<code>0.055</code></td>
+<td>加速平缓防失步，减速干脆并锁定低速零区抑制踝俯仰震荡</td>
 </tr>
 <tr>
-<td>倾角连续衰减器（Stumble-Tilt Governor）</td>
-<td><code>src/robot_app/backends/facri/bound_control.py</code></td>
-<td><code>SIM_TILT_GOVERNOR_START_RAD = 0.14 rad</code> 至
-<code>SIM_TILT_GOVERNOR_ZERO_RAD = 0.24 rad</code></td>
-<td>躯干俯仰或横滚超过 <code>0.14 rad</code>
-时连续线性缩放期望线速度，达到 <code>0.24 rad</code>
-时指令线速度归零以优先保稳</td>
+<td>倾角衰减区（Stumble-Tilt Governor）</td>
+<td><code>src/robot_app/backends/facri/control_cycle.py</code></td>
+<td>起始 <code>0.14 rad</code>、归零 <code>0.24 rad</code></td>
+<td>躯干大倾角时线性削减行进指令，优先保障抗倾覆恢复</td>
 </tr>
 <tr>
-<td>实测限幅与四周期温和回退</td>
-<td><code>check_measured_limits</code></td>
+<td>实测超速反冲（<code>check_measured_limits</code>）</td>
+<td><code>src/robot_app/backends/facri/control_cycle.py</code></td>
 <td><code>SIM_VELOCITY_RECOIL_TICKS = 4</code>，比例系数
 <code>2.5</code></td>
-<td>仿真下肢由强化学习策略轴承担跟随故跳过下肢静态位置报警；当发生速度越界或短暂失稳时执行
-<code>4</code> 个周期温和反冲制动</td>
+<td>仿真下肢由策略轴跟随而放行有限值；工位作业期间允许受控温和回退</td>
+</tr>
+<tr>
+<td>原生站立诊断档（<code>N02 / N03_DIAGNOSTIC_SIM_ONLY</code>）</td>
+<td><code>src/robot_app/backends/facri/control_config.py</code></td>
+<td>仅限 <code>4</code> 组 × <code>6000</code> 步离线站立诊断对照</td>
+<td><code>app_qualified = False</code>、<code>full_task_passed = False</code>，不可外推为完整工序资格</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>需要指出，配置文件
-<code>src/robot_app/backends/facri/control_config.py</code>
-同时关联了经审阅的原生站立测试档 <code>N02</code> 与
-<code>N03_DIAGNOSTIC_SIM_ONLY</code>（验证覆盖 <code>4</code> 组 ×
-<code>6000</code>
-步），该组仅用于下肢站立诊断对照，不代表完整应用任务资格。</p>
-<h2
-id="三多模态状态估计与躯干静止判稳">三、多模态状态估计与躯干静止判稳</h2>
-<p>状态估计模块在
-<code>src/robot_app/modules/state_estimation/domain.cpp</code> 与
-<code>src/robot_app/modules/state_estimation/domain/stability.py</code>
-中统一聚合高频传感器观测，向操作与导航层提供唯一权威坐标系：</p>
-<ol type="1">
-<li><strong>IMU 去偏斜与 <code>17</code> 自由度上身
-FK</strong>：<code>StateEstimationDomain</code> 使用时间戳对 IMU
-角速度与加速度缓存执行插值匹配，结合 <code>17</code>
-自由度上身运动学正解（FK）计算整机质心（CoM）偏移与躯干姿态角。</li>
-<li><strong>静止判稳窗口门禁（<code>BodyStabilityMonitor</code>）</strong>：双臂开始操作或交接前必须确认本体停稳。判稳条件在滑窗
-<code>window_s = 1.0 s</code> 内连续检查三项约束：最近采样延迟不超过
-<code>MAX_AGE_NS = 40 ms</code>、相邻采样时间间隔不超过
-<code>max_gap_ns = 80 ms</code>、躯干倾斜总角不超过
-<code>10°</code>，且当前下发期望速度必须处于零速带（<code>&lt;= 1e-5</code>）并保证
-<code>epoch</code> 与 <code>stamp_ns</code> 严格单调递增。</li>
-</ol>
-<h2
-id="四仿真步态与胸前搬运实证录像">四、仿真步态与胸前搬运实证录像</h2>
-<p>下面两段 <code>PHYSICAL_SIM</code> 录像来自
-<code>docs/manifests/media-manifest.json</code>，分别记录强化学习步态在无载跟踪中的稳定性，以及双臂持物贴胸搬运场景下的重心补偿表现。两段均采用
-<code>1x</code> 真实物理速率渲染与公开录制。</p>
+</details>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<p>以下两段 <code>PHYSICAL_SIM</code> 实证录像来自
+<code>docs/manifests/media-manifest.json</code>，以 <code>1x</code>
+原速记录了启用非对称斜率与倾角防呆后的空载步态跟踪稳定性，以及双臂胸前搬运过程中
+<code>StateEstimationDomain</code> 与重心补偿的物理协调表现。</p>
 <p><strong>MED-LOCO-01 ·
 强化学习步态跟踪实证</strong>（<code>1152×720</code>、<code>30 fps</code>、<code>15.0 s</code>、<code>1x</code>
 原速、<code>PHYSICAL_SIM</code>）：</p>
@@ -246,10 +1053,17 @@ class="doc-media-badge">PHYSICAL_SIM</span>
 </figure>
 <aside class="doc-callout doc-callout--important" role="note">
   <div class="doc-callout-title">IMPORTANT · 关键约束</div>
-  <p>严禁跨本体转移下肢资格。<code>src/robot_app/backends/unitree_g1/</code>
+  <p><strong>能力边界与防外推红线</strong>： 1.
+<code>FacriMjlabPolicy</code>、<code>_slew_sim_velocity</code>、<code>operation_snapshot</code>（<code>FixedUpperInertia</code>）及下肢有限值放行裁定全部限定为
+<strong><code>SIM_ONLY</code></strong>，当前<strong>不具备
+<code>REAL</code> 实机部署资格</strong>。 2.
+<code>N02 / N03_DIAGNOSTIC_SIM_ONLY</code> 的 <code>4 × 6000</code>
+步站立通过与离线输入回放仅证明局部站立与接口兼容，不能签发四机连续行走稳定或完整生产合格。
+3.
+<strong>严禁跨本体转移下肢资格</strong>：<code>src/robot_app/backends/unitree_g1/</code>
 路径下的历史 <code>G1 AMO</code>
-观测或步态权重仅作跨机型对比参考，不赋予 <code>FACRI</code> 任何 SIM 或
-REAL 运行资格。</p>
+步态权重或观测定义仅作历史归档对照，绝不赋予 <code>FACRI</code> 任何
+<code>SIM</code> 或 <code>REAL</code> 资格。</p>
   
 </aside>
       </article>
@@ -263,17 +1077,30 @@ REAL 运行资格。</p>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner"
-id="toc-一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner">一、下肢强化学习策略推理：<code>FacriMjlabPolicy</code>
-与 <code>PolicyRunner</code></a></li>
-<li><a href="#二速度准入双向斜率控制与防倾覆抑制"
-id="toc-二速度准入双向斜率控制与防倾覆抑制">二、速度准入、双向斜率控制与防倾覆抑制</a></li>
-<li><a href="#三多模态状态估计与躯干静止判稳"
-id="toc-三多模态状态估计与躯干静止判稳">三、多模态状态估计与躯干静止判稳</a></li>
-<li><a href="#四仿真步态与胸前搬运实证录像"
-id="toc-四仿真步态与胸前搬运实证录像">四、仿真步态与胸前搬运实证录像</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与机制推演</a>
+<ul>
+<li><a href="#双栈同义推理47---12-与-10100---29"
+id="toc-双栈同义推理47---12-与-10100---29">3.1
+双栈同义推理：<code>47 -&gt; 12</code> 与
+<code>10×100 -&gt; 29</code></a></li>
+<li><a href="#非对称双向斜率限幅与倾角连续衰减"
+id="toc-非对称双向斜率限幅与倾角连续衰减">3.2
+非对称双向斜率限幅与倾角连续衰减</a></li>
+<li><a
+href="#operation_snapshot-操作期惯性冻结与-bodystabilitymonitor-判稳"
+id="toc-operation_snapshot-操作期惯性冻结与-bodystabilitymonitor-判稳">3.3
+<code>operation_snapshot</code> 操作期惯性冻结与
+<code>BodyStabilityMonitor</code> 判稳</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -286,20 +1113,21 @@ id="toc-四仿真步态与胸前搬运实证录像">四、仿真步态与胸前�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>
