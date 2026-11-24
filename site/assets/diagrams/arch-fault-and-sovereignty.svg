@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-fault-and-sovereignty" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="arch-fault-and-sovereignty-title" aria-describedby="arch-fault-and-sovereignty-desc">
+  <title id="arch-fault-and-sovereignty-title">单机 LOCAL_HOLD 故障隔离域、冻结基线与操作员停机主权</title>
+  <desc id="arch-fault-and-sovereignty-desc">阐明单机异常局限于本机 LOCAL_HOLD 与 P0 禁静默重启边界，以及废除自动停机门禁后的操作员停机主权。</desc>
+  <defs>
+    <pattern id="arch-fault-and-sovereignty-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arch-fault-and-sovereignty-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arch-fault-and-sovereignty-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arch-fault-and-sovereignty-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arch-fault-and-sovereignty-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arch-fault-and-sovereignty-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arch-fault-and-sovereignty-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#arch-fault-and-sovereignty-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="560.0" height="420.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">FAULT ISOLATION DOMAIN</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">编队级与单机级局部故障隔离（R3 不牵连邻机）</text>
+  <rect x="624.0" y="86.0" width="540.0" height="420.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="638.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">FROZEN BASELINE &amp; STOP SOVEREIGNTY</text>
+  <text x="638.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">冻结运行基线与操作员唯一停机主权</text>
+  <g class="arch-edge" data-from="fault_r3" data-to="local_hold" data-flow="isolation">
+    <path d="M 332.0 189.0 L 321.0 189.0 Q 316.0 189.0 316.0 194.0 L 316.0 318.0 Q 316.0 323.0 311.0 323.0 L 300.0 323.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-fault-and-sovereignty-arrow-terracotta)"/>
+    <rect x="285.3" y="247.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="316.0" y="259.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">仅本机置位</text>
+  </g>
+  <g class="arch-edge" data-from="fault_r3" data-to="p0_nocrash" data-flow="isolation">
+    <path d="M 452.0 226.0 L 452.0 286.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-fault-and-sovereignty-arrow-ink)"/>
+    <rect x="426.2" y="247.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="452.0" y="259.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">崩溃制动</text>
+  </g>
+  <g class="arch-edge" data-from="fleet_r124" data-to="local_hold" data-flow="isolation">
+    <path d="M 180.0 226.0 L 180.0 286.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-fault-and-sovereignty-arrow-forest)"/>
+    <rect x="154.2" y="247.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="180.0" y="259.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">互不传染</text>
+  </g>
+  <g class="arch-edge" data-from="baseline_chk" data-to="no_rtf_stop" data-flow="sovereignty">
+    <path d="M 894.0 224.0 L 894.0 262.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-fault-and-sovereignty-arrow-ochre)"/>
+    <rect x="868.2" y="234.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="894.0" y="246.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">授权核查</text>
+  </g>
+  <g class="arch-edge" data-from="no_rtf_stop" data-to="op_sovereign" data-flow="sovereignty">
+    <path d="M 894.0 334.0 L 894.0 372.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-fault-and-sovereignty-arrow-forest)"/>
+    <rect x="863.3" y="344.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="894.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">唯一停机权</text>
+  </g>
+  <g class="arch-node-card" data-node-id="fleet_r124">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fleet_r124" data-flows="all,isolation" aria-expanded="false" aria-label="在途正常编队 (R1/R2/R4)（RUNNING · 互不牵连）">
+      <rect class="arch-node-box" x="60.0" y="152.0" width="240.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">在途正常编队 (R1/R2/R4)</text>
+      <text class="arch-node-role" x="72.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">RUNNING · 互不牵连</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「在途正常编队 (R1/R2/R4)」对应章节">
+      <rect x="272.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="284.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fault_r3">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fault_r3" data-flows="all,isolation" aria-expanded="false" aria-label="单机异常触发 (如 R3)（1000 ms 超时 / 位掩码）">
+      <rect class="arch-node-box" x="332.0" y="152.0" width="240.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="344.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">单机异常触发 (如 R3)</text>
+      <text class="arch-node-role" x="344.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">1000 ms 超时 / 位掩码</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「单机异常触发 (如 R3)」对应章节">
+      <rect x="544.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="556.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="local_hold">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="local_hold" data-flows="all,isolation" aria-expanded="false" aria-label="LOCAL_HOLD 局部保持（fleet_wide_estop=false）">
+      <rect class="arch-node-box" x="60.0" y="286.0" width="240.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">LOCAL_HOLD 局部保持</text>
+      <text class="arch-node-role" x="72.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">fleet_wide_estop=false</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-multiprocess-cpp.html#principles" aria-label="前往「LOCAL_HOLD 局部保持」对应章节">
+      <rect x="272.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="284.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p0_nocrash">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p0_nocrash" data-flows="all,isolation" aria-expanded="false" aria-label="P0 不静默重启规则（restart_on_crash=false）">
+      <rect class="arch-node-box" x="332.0" y="286.0" width="240.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="344.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">P0 不静默重启规则</text>
+      <text class="arch-node-role" x="344.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">restart_on_crash=false</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「P0 不静默重启规则」对应章节">
+      <rect x="544.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="556.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="baseline_chk">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="baseline_chk" data-flows="all,sovereignty" aria-expanded="false" aria-label="冻结基线只读核验（GIL 0.0002 s · 禁改 JSON）">
+      <rect class="arch-node-box" x="650.0" y="152.0" width="488.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="662.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">冻结基线只读核验</text>
+      <text class="arch-node-role" x="662.0" y="210.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">GIL 0.0002 s · 禁改 JSON</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「冻结基线只读核验」对应章节">
+      <rect x="1110.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1122.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="no_rtf_stop">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="no_rtf_stop" data-flows="all,sovereignty" aria-expanded="false" aria-label="废除 RTF 0.5 自动停机（no_rtf_auto_stop: true）">
+      <rect class="arch-node-box" x="650.0" y="262.0" width="488.0" height="72.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="662.0" y="287.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">废除 RTF 0.5 自动停机</text>
+      <text class="arch-node-role" x="662.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">no_rtf_auto_stop: true</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「废除 RTF 0.5 自动停机」对应章节">
+      <rect x="1110.0" y="266.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1122.0" y="282.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="op_sovereign">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="op_sovereign" data-flows="all,sovereignty" aria-expanded="false" aria-label="操作员唯一停机主权（facrictl stop | close）">
+      <rect class="arch-node-box" x="650.0" y="372.0" width="488.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="662.0" y="397.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">操作员唯一停机主权</text>
+      <text class="arch-node-role" x="662.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">facrictl stop | close</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://guides/quickstart.html" aria-label="前往「操作员唯一停机主权」对应章节">
+      <rect x="1110.0" y="376.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1122.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">正常并发与操作员主权</text>
+  <rect x="230.1" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="252.1" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">单机 LOCAL_HOLD 隔离</text>
+  <rect x="389.2" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="411.2" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">废除 RTF 0.5 停机裁定</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">物理仿真仅可由运行方手动执行 ./facrictl stop 或 close --wait 停止</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 03 · FAULT ISOLATION &amp; STOP SOVEREIGNTY</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">单机 LOCAL_HOLD 故障隔离域、冻结基线与操作员停机主权</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">fleet_wide_estop == false · 废除 RTF 0.5 自动停机</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-model-roi-firewall" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="sub-model-roi-firewall-title" aria-describedby="sub-model-roi-firewall-desc">
+  <title id="sub-model-roi-firewall-title">ModelGateway (:18080) 配额信号量与 RoiGatewayGuard 视觉防火墙</title>
+  <desc id="sub-model-roi-firewall-desc">展示推理网关如何通过角色信号量与安全沙箱防逃逸，以及车队总线如何对端侧 ROI 视频流施加租约与分辨率上限。</desc>
+  <defs>
+    <pattern id="sub-model-roi-firewall-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-model-roi-firewall-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#sub-model-roi-firewall-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">MODELGATEWAY QUOTA &amp; SANDBOX (:18080)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">多泳道并发信号量与文件引用防逃逸</text>
+  <rect x="604.0" y="86.0" width="560.0" height="420.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">ROI BANDWIDTH &amp; DISPLAY FIREWALL</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">端侧 ROI 租约流控与只读哈希验证</text>
+  <g class="arch-edge" data-from="caller_sdk" data-to="mgw_sem" data-flow="model_quota">
+    <path d="M 292.0 185.0 L 322.0 185.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-slate)"/>
+    <rect x="283.1" y="176.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="307.0" y="188.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">Bearer</text>
+  </g>
+  <g class="arch-edge" data-from="mgw_sem" data-to="mgw_sandbox" data-flow="model_quota">
+    <path d="M 437.0 222.0 L 437.0 261.0 Q 437.0 266.0 432.0 266.0 L 315.0 266.0 Q 310.0 266.0 310.0 271.0 L 310.0 310.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-terracotta)"/>
+    <rect x="343.7" y="257.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="373.5" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">media://</text>
+  </g>
+  <g class="arch-edge" data-from="robot_roi" data-to="roi_guard" data-flow="roi_guard">
+    <path d="M 870.0 185.0 L 900.0 185.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-ochre)"/>
+    <rect x="855.2" y="176.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="885.0" y="188.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">15 s TTL</text>
+  </g>
+  <g class="arch-edge" data-from="roi_guard" data-to="disp_ro" data-flow="roi_guard">
+    <path d="M 1020.0 222.0 L 1020.0 261.0 Q 1020.0 266.0 1015.0 266.0 L 895.0 266.0 Q 890.0 266.0 890.0 271.0 L 890.0 310.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-forest)"/>
+    <rect x="928.2" y="257.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="955.0" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">SHA-256</text>
+  </g>
+  <g class="arch-edge" data-from="mgw_sandbox" data-to="disp_ro" data-flow="model_quota">
+    <path d="M 440.0 347.0 L 760.0 347.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-model-roi-firewall-arrow-slate)"/>
+    <rect x="574.2" y="338.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="600.0" y="350.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">只读投影</text>
+  </g>
+  <g class="arch-node-card" data-node-id="caller_sdk">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="caller_sdk" data-flows="all,model_quota" aria-expanded="false" aria-label="ModelGatewayClient SDK（embodied_core 客户端）">
+      <rect class="arch-node-box" x="62.0" y="148.0" width="230.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="74.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">ModelGatewayClient SDK</text>
+      <text class="arch-node-role" x="74.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">embodied_core 客户端</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#contracts" aria-label="前往「ModelGatewayClient SDK」对应章节">
+      <rect x="264.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="276.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mgw_sem">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mgw_sem" data-flows="all,model_quota" aria-expanded="false" aria-label="分角色并发信号量（文本 2 · RSI 1 · 视 1）">
+      <rect class="arch-node-box" x="322.0" y="148.0" width="230.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="334.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">分角色并发信号量</text>
+      <text class="arch-node-role" x="334.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">文本 2 · RSI 1 · 视 1</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#principles" aria-label="前往「分角色并发信号量」对应章节">
+      <rect x="524.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mgw_sandbox">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mgw_sandbox" data-flows="all,model_quota" aria-expanded="false" aria-label="O_NOFOLLOW 安全沙箱（media:// + SHA-256）">
+      <rect class="arch-node-box" x="180.0" y="310.0" width="260.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="192.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">O_NOFOLLOW 安全沙箱</text>
+      <text class="arch-node-role" x="192.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">media:// + SHA-256</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#paradigm" aria-label="前往「O_NOFOLLOW 安全沙箱」对应章节">
+      <rect x="412.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="424.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="robot_roi">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="robot_roi" data-flows="all,roi_guard" aria-expanded="false" aria-label="RoiGatewayClient (P1)（端侧按需采图请求）">
+      <rect class="arch-node-box" x="630.0" y="148.0" width="240.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="642.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">RoiGatewayClient (P1)</text>
+      <text class="arch-node-role" x="642.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">端侧按需采图请求</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#flow" aria-label="前往「RoiGatewayClient (P1)」对应章节">
+      <rect x="842.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="854.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="roi_guard">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="roi_guard" data-flows="all,roi_guard" aria-expanded="false" aria-label="RoiGatewayGuard（&lt;=2 流 · 640×480 · 15s）">
+      <rect class="arch-node-box" x="900.0" y="148.0" width="240.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="912.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">RoiGatewayGuard</text>
+      <text class="arch-node-role" x="912.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">&lt;=2 流 · 640×480 · 15s</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#principles" aria-label="前往「RoiGatewayGuard」对应章节">
+      <rect x="1112.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1124.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="disp_ro">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="disp_ro" data-flows="all,model_quota,roi_guard" aria-expanded="false" aria-label="DisplayRoutes 只读通道（/display/perception/*）">
+      <rect class="arch-node-box" x="760.0" y="310.0" width="260.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="772.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">DisplayRoutes 只读通道</text>
+      <text class="arch-node-role" x="772.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">/display/perception/*</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#evidence" aria-label="前往「DisplayRoutes 只读通道」对应章节">
+      <rect x="992.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1004.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">分角色信号量隔离</text>
+  <rect x="208.5" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="230.5" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">O_NOFOLLOW + SHA-256 沙箱</text>
+  <rect x="401.2" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="423.2" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">2 流 / 640p ROI 门禁</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">视觉和反思并发严格隔离，绝不因后台推理任务导致主控语音或前端卡死</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 02B · MODEL QUOTA &amp; ROI FIREWALL</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">ModelGateway (:18080) 配额信号量与 RoiGatewayGuard 视觉防火墙</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">文本 2 / RSI 1 / 视 1 · O_NOFOLLOW · &lt;=2 流 640×480</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

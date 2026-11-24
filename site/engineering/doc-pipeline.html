@@ -6,7 +6,8 @@
   <meta name="color-scheme" content="light dark" />
   <meta name="generator" content="facri-docs · article theme" />
   <meta name="description" content="说明 FACRI 工程手册在 docs/handbook/
-下的元数据模型、定制 SVG 图表渲染、双轨静态生成管线 tools/docs/build.py
+下的元数据模型、39 张低密度可交互 SVG
+图谱渲染与内联注入、双轨静态生成管线 tools/docs/build.py
 及全量静态质量门禁 check_docs.py。" />
   <title>文档架构与构建管线 · FACRI 文档</title>
   <link rel="stylesheet" href="../assets/site-shell.css" />
@@ -60,8 +61,8 @@
       <header class="doc-title-block">
         <div class="eyebrow">研发工程与演进</div>
         <h1 class="title">文档架构与构建管线</h1>
-        <p class="subtitle">从散落 web 文档迁至双轨模板、单一清单、定制
-18 图矢量集与受控校验</p>
+        <p class="subtitle">从散落 web 文档迁至双轨模板、单一清单、39
+张低密度交互图谱与受控校验</p>
       </header>
 
       <article class="doc-article">
@@ -130,13 +131,23 @@ href="../engineering/dependencies-licenses.html">依赖与许可合规</a>
 提供可机读来源索引</td>
 </tr>
 <tr>
+<td><code>docs/manifests/diagram-nodes.json</code></td>
+<td>登记全部 <code>39</code>
+张低密度交互图谱的流向过滤器、节点工程范式、源码路径、核心契约与章节跳转锚点</td>
+<td>由
+<code>render_diagrams.py</code>、<code>check_architecture.py</code> 与
+<code>build.py</code> 校验并预渲染详情抽屉</td>
+</tr>
+<tr>
 <td><code>docs/manifests/diagrams/*.svg</code></td>
 <td>存放由 <code>python3 tools/docs/render_diagrams.py</code> 确定的
-<code>18</code> 张定制架构与证据矢量图集（涵盖
-<code>portal-architecture-manifesto.svg</code>、<code>arch-system-four-planes.svg</code>、<code>arch-communication-fabric.svg</code>、<code>sub-system-agent-rsi.svg</code>、<code>sub-robot-multiprocess-4plus1.svg</code>、<code>sub-embodiment-synthesis.svg</code>、<code>sub-hal-sal-facility.svg</code>、<code>algo-full-stack-map.svg</code>、<code>evidence-mujoco-contact-stack.svg</code>、<code>evidence-verification-ladder.svg</code>
+<code>39</code> 张低密度交互矢量图集（涵盖
+<code>portal-planes-overview.svg</code>、<code>arch-system-four-planes.svg</code>、<code>arch-northbound-contracts.svg</code>、<code>arch-southbound-binary-bus.svg</code>、<code>sub-system-online-dag.svg</code>、<code>sub-robot-4plus1-topology.svg</code>、<code>sub-hal-sal-bridge.svg</code>、<code>algo-full-stack-map.svg</code>、<code>evidence-mujoco-contact-stack.svg</code>、<code>evidence-verification-ladder.svg</code>
 等）</td>
-<td>经相对路径 <code>../../manifests/diagrams/&lt;name&gt;.svg</code>
-嵌入正文并由 <code>build.py</code> 打包至
+<td>经相对路径或 <code>&lt;!-- diagram-tabs:... --&gt;</code>
+注入正文，由 <code>build.py</code> 内联为带作用域 ID 的
+<code>&lt;svg role="group"&gt;</code> 与
+<code>hidden="until-found"</code> 详情抽屉，并复制原始矢量文件至
 <code>site/assets/diagrams/</code></td>
 </tr>
 </tbody>
@@ -147,9 +158,12 @@ id="二矢量图表渲染双轨模板与-html5-构建流程toolsdocsbuild.py">�
 HTML5 构建流程（<code>tools/docs/build.py</code>）</h2>
 <p>工程架构图由独立脚本
 <code>python3 tools/docs/render_diagrams.py</code>
-从确定性矢量布局生成，与页面文本共用同一配色与字体契约；随后构建入口
-<code>tools/docs/build.py</code> 调用 Pandoc 与受控双轨模板将 Markdown
-编译为静态 HTML5，并支持独立页面调试或 DOCX 导出：</p>
+从确定性低密度布局生成（强制单图主节点不超过 <code>12</code>
+个、卡片仅含主标题与单行角色标签，并与页面文本共用同一配色与字体契约）；随后构建入口
+<code>tools/docs/build.py</code> 调用 Pandoc（含原生
+<code>--mathml</code> 公式渲染）与受控双轨模板将 Markdown 编译为静态
+HTML5，注入内联交互图谱与可搜参详情抽屉，并支持独立页面调试或 DOCX
+导出：</p>
 <ul>
 <li><strong>Portal
 门户轨（<code>tools/docs/templates/portal/</code>）</strong>：服务
@@ -231,20 +245,21 @@ id="toc-三自动化文本规范与质量校验check_docs.py">三、自动化文
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

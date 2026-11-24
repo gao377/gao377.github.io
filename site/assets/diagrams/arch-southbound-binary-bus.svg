@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-southbound-binary-bus" viewBox="0 0 1200 570" width="1200" height="570" role="group" aria-labelledby="arch-southbound-binary-bus-title" aria-describedby="arch-southbound-binary-bus-desc">
+  <title id="arch-southbound-binary-bus-title">南向定长零拷贝二进制总线: 4+1 SHM IPC、SalWire v2 与 32 B UDP</title>
+  <desc id="arch-southbound-binary-bus-desc">独立拆出南向硬实时二进制传输层，展示进程内顺序锁、SPSC 环形队列、SalWire v2 与带外 32 字节安全脉搏。</desc>
+  <defs>
+    <pattern id="arch-southbound-binary-bus-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arch-southbound-binary-bus-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="570" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="570" fill="url(#arch-southbound-binary-bus-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="568.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="360.0" height="430.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">INTRA-ROBOT IPC (/dev/shm/embodied_ipc/*)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">4+1 进程无锁共享内存 (0x454D4950)</text>
+  <rect x="422.0" y="86.0" width="376.0" height="430.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="436.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">SALWIRE V2 (/dev/shm/embodied_sal/*)</text>
+  <text x="436.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">硬件与仿真对称二进制总线 (kMaxDofs=48)</text>
+  <rect x="824.0" y="86.0" width="340.0" height="430.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="838.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">OUT-OF-BAND &amp; ARBITER</text>
+  <text x="838.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">带外安全帧与 P0 执行仲裁</text>
+  <g class="arch-edge" data-from="shm_seq" data-to="p0_arbiter" data-flow="intra_ipc">
+    <path d="M 374.0 197.0 L 395.0 197.0 Q 400.0 197.0 400.0 202.0 L 400.0 345.0 Q 400.0 350.0 405.0 350.0 L 846.0 350.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-ink)"/>
+    <rect x="590.2" y="341.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="623.0" y="353.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">traj_slot</text>
+  </g>
+  <g class="arch-edge" data-from="shm_ring" data-to="shm_seq" data-flow="intra_ipc">
+    <path d="M 216.0 326.0 L 216.0 238.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-southbound-binary-bus-arrow-ink)"/>
+    <rect x="198.1" y="273.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="216.0" y="285.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">SPSC</text>
+  </g>
+  <g class="arch-edge" data-from="sal_sample" data-to="p0_arbiter" data-flow="sal_wire">
+    <path d="M 776.0 182.0 L 801.0 182.0 Q 806.0 182.0 806.0 187.0 L 806.0 351.0 Q 806.0 356.0 811.0 356.0 L 846.0 356.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-slate)"/>
+    <rect x="790.1" y="260.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="806.0" y="272.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">反馈</text>
+  </g>
+  <g class="arch-edge" data-from="p0_arbiter" data-to="sal_cmd" data-flow="sal_wire">
+    <path d="M 846.0 367.0 L 815.0 367.0 Q 810.0 367.0 810.0 362.0 L 810.0 297.0 Q 810.0 292.0 805.0 292.0 L 776.0 292.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-forest)"/>
+    <rect x="773.3" y="320.5" width="73.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="810.0" y="332.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">200 Hz 下发</text>
+  </g>
+  <g class="arch-edge" data-from="sal_lidar" data-to="shm_seq" data-flow="sal_wire">
+    <path d="M 444.0 402.0 L 413.0 402.0 Q 408.0 402.0 408.0 397.0 L 408.0 217.0 Q 408.0 212.0 403.0 212.0 L 374.0 212.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-slate)"/>
+    <rect x="387.1" y="298.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="408.0" y="310.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">10 Hz</text>
+  </g>
+  <g class="arch-edge" data-from="udp_safety" data-to="p0_arbiter" data-flow="safety_oob">
+    <path d="M 994.0 238.0 L 994.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-terracotta)"/>
+    <rect x="951.3" y="273.0" width="85.3" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="994.0" y="285.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">32 B OOB 覆盖</text>
+  </g>
+  <g class="arch-node-card" data-node-id="shm_seq">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="shm_seq" data-flows="all,intra_ipc,sal_wire" aria-expanded="false" aria-label="ShmSeqSlot&lt;PodT&gt; (9 槽)（0x454D4950 · 16 次自旋）">
+      <rect class="arch-node-box" x="58.0" y="156.0" width="316.0" height="82.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="181.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ShmSeqSlot&lt;PodT&gt; (9 槽)</text>
+      <text class="arch-node-role" x="70.0" y="224.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">0x454D4950 · 16 次自旋</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-multiprocess-cpp.html#principles" aria-label="前往「ShmSeqSlot&lt;PodT&gt; (9 槽)」对应章节">
+      <rect x="346.0" y="160.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="176.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="shm_ring">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="shm_ring" data-flows="all,intra_ipc" aria-expanded="false" aria-label="ShmRingQueue (3 环)（SPSC · N=64 / 256）">
+      <rect class="arch-node-box" x="58.0" y="326.0" width="316.0" height="82.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ShmRingQueue (3 环)</text>
+      <text class="arch-node-role" x="70.0" y="394.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SPSC · N=64 / 256</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-multiprocess-cpp.html#contracts" aria-label="前往「ShmRingQueue (3 环)」对应章节">
+      <rect x="346.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_sample">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_sample" data-flows="all,sal_wire" aria-expanded="false" aria-label="SalSampleWire v2（1472 B · 0x454D5341）">
+      <rect class="arch-node-box" x="444.0" y="146.0" width="332.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalSampleWire v2</text>
+      <text class="arch-node-role" x="456.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">1472 B · 0x454D5341</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「SalSampleWire v2」对应章节">
+      <rect x="748.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="760.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_cmd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_cmd" data-flows="all,sal_wire" aria-expanded="false" aria-label="SalCommandWire v2（2052 B · 0x454D5343）">
+      <rect class="arch-node-box" x="444.0" y="256.0" width="332.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="281.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalCommandWire v2</text>
+      <text class="arch-node-role" x="456.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">2052 B · 0x454D5343</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「SalCommandWire v2」对应章节">
+      <rect x="748.0" y="260.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="760.0" y="276.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_lidar">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_lidar" data-flows="all,sal_wire" aria-expanded="false" aria-label="SalLidarWire v2（96068 B · 6000 pts）">
+      <rect class="arch-node-box" x="444.0" y="366.0" width="332.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalLidarWire v2</text>
+      <text class="arch-node-role" x="456.0" y="424.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">96068 B · 6000 pts</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#principles" aria-label="前往「SalLidarWire v2」对应章节">
+      <rect x="748.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="760.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="udp_safety">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="udp_safety" data-flows="all,safety_oob" aria-expanded="false" aria-label="带外 SafetyFrame UDP（32 B · :18749 · EMSF）">
+      <rect class="arch-node-box" x="846.0" y="156.0" width="296.0" height="82.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="858.0" y="181.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">带外 SafetyFrame UDP</text>
+      <text class="arch-node-role" x="858.0" y="224.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">32 B · :18749 · EMSF</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/interfaces.html" aria-label="前往「带外 SafetyFrame UDP」对应章节">
+      <rect x="1114.0" y="160.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="176.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p0_arbiter">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p0_arbiter" data-flows="all,intra_ipc,safety_oob,sal_wire" aria-expanded="false" aria-label="P0 校验与执行仲裁（CRC32 + 防呆拦截）">
+      <rect class="arch-node-box" x="846.0" y="326.0" width="296.0" height="82.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="858.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0 校验与执行仲裁</text>
+      <text class="arch-node-role" x="858.0" y="394.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">CRC32 + 防呆拦截</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#flow" aria-label="前往「P0 校验与执行仲裁」对应章节">
+      <rect x="1114.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="526.0" x2="1164.0" y2="526.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="548.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="104.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SeqSlot / RingQueue / Sample</text>
+  <rect x="277.2" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="299.2" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SalCommand &amp; P0 执行仲裁</text>
+  <rect x="451.6" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="473.6" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">32 B UDP 旁路安全脉搏</text>
+  <text x="1164.0" y="547.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">严禁在 SalWire v2 线包中透传工位名称或场景语义字符串</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 07 · SOUTHBOUND ZERO-COPY BINARY BUS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">南向定长零拷贝二进制总线: 4+1 SHM IPC、SalWire v2 与 32 B UDP</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">#pragma pack(1) · static_assert · CRC32 IEEE · :18749 UDP</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

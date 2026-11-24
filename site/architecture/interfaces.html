@@ -70,14 +70,723 @@ v2、SHM IPC 和 32 字节 SafetyFrame 线协议字段。" />
 ROS 2 IDL 及 HTTP/WebSocket
 网关维持结构严谨性；端侧物理控制面则剥离序列化与动态内存分配，全部运行于共享内存顺序锁、无锁环形队列以及定长
 UDP 安全脉冲之上。</p>
-<figure class="diagram-figure">
+<div class="diagram-tabs" data-diagram-tabs="arch-interfaces">
+<div class="diagram-tablist" role="tablist" aria-label="架构视图切换">
+<button type="button" class="diagram-tab" role="tab" id="arch-interfaces-tab-1" aria-selected="true" tabindex="0" data-tab-panel-id="arch-interfaces-panel-1">
+北向 84 IDL 与五大网关
+</button>
+<button type="button" class="diagram-tab" role="tab" id="arch-interfaces-tab-2" aria-selected="false" tabindex="-1" data-tab-panel-id="arch-interfaces-panel-2">
+南向 SHM 与二进制总线
+</button>
+</div>
+<div class="diagram-tabpanels">
+<div id="arch-interfaces-panel-1" class="diagram-tabpanel"
+role="tabpanel" aria-labelledby="arch-interfaces-tab-1"
+data-tab-panel="">
+<div class="diagram-tabpanel-inner">
+<figure class="diagram-figure" data-diagram-id="arch-northbound-contracts" data-fig-uid="arch-northbound-contracts-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/arch-communication-fabric.svg"
-alt="FACRI 跨层通信总线与二进制契约架构图" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-northbound-contracts" viewBox="0 0 1200 570" width="1200" height="570" role="group" aria-labelledby="arch-northbound-contracts-title-f0" aria-describedby="arch-northbound-contracts-desc-f0">
+  <title id="arch-northbound-contracts-title-f0">北向强类型语义契约: 84 份 ROS 2 V2–V5 IDL 与五大 HTTP/WS 网关</title>
+  <desc id="arch-northbound-contracts-desc-f0">独立拆出北向语义通信层，呈现 84 份 ROS 2 IDL 分类与五大 HTTP/WebSocket 网关的鉴权及限流边界。</desc>
+  <defs>
+    <pattern id="arch-northbound-contracts-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arch-northbound-contracts-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="570" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="570" fill="url(#arch-northbound-contracts-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="568.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="400.0" height="430.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">ROS 2 IDL · src/embodied_interfaces/ (84 份)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">强类型跨节点服务、动作与消息定义</text>
+  <rect x="464.0" y="86.0" width="700.0" height="430.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="478.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">HTTP &amp; WEBSOCKET GATEWAYS (5 大服务网关)</text>
+  <text x="478.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">回环端口 · Origin 拦截 · 有界队列与并发配额</text>
+  <g class="arch-edge" data-from="gw_interact" data-to="idl_srv" data-flow="ros_idl">
+    <path d="M 488.0 188.0 L 445.0 188.0 Q 440.0 188.0 440.0 193.0 L 440.0 291.0 Q 440.0 296.0 435.0 296.0 L 414.0 296.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-slate-f0)"/>
+    <rect x="411.2" y="233.0" width="57.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="440.0" y="245.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">编译/查询</text>
+  </g>
+  <g class="arch-edge" data-from="gw_fleet" data-to="idl_action" data-flow="bridge">
+    <path d="M 488.0 276.0 L 455.0 276.0 Q 450.0 276.0 450.0 271.0 L 450.0 193.0 Q 450.0 188.0 445.0 188.0 L 414.0 188.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-ink-f0)"/>
+    <rect x="434.1" y="223.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="450.0" y="235.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">派发</text>
+  </g>
+  <g class="arch-edge" data-from="gw_fleet" data-to="idl_msg" data-flow="ros_idl">
+    <path d="M 488.0 312.0 L 455.0 312.0 Q 450.0 312.0 450.0 317.0 L 450.0 399.0 Q 450.0 404.0 445.0 404.0 L 414.0 404.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-northbound-contracts-arrow-ink-f0)"/>
+    <rect x="434.1" y="349.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="450.0" y="361.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">状态</text>
+  </g>
+  <g class="arch-edge" data-from="gw_voice" data-to="gw_interact" data-flow="http_gw">
+    <path d="M 826.0 188.0 L 804.0 188.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-slate-f0)"/>
+    <rect x="799.1" y="179.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="815.0" y="191.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">入队</text>
+  </g>
+  <g class="arch-edge" data-from="gw_interact" data-to="gw_fleet" data-flow="http_gw">
+    <path d="M 646.0 226.0 L 646.0 258.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-ink-f0)"/>
+    <rect x="630.1" y="233.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="646.0" y="245.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">调度</text>
+  </g>
+  <g class="arch-edge" data-from="gw_fleet" data-to="gw_facility" data-flow="http_gw">
+    <path d="M 804.0 296.0 L 826.0 296.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-ochre-f0)"/>
+    <rect x="799.1" y="287.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="815.0" y="299.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">外设</text>
+  </g>
+  <g class="arch-edge" data-from="gw_interact" data-to="gw_model" data-flow="http_gw">
+    <path d="M 540.0 226.0 L 540.0 366.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-northbound-contracts-arrow-terracotta-f0)"/>
+    <rect x="516.1" y="287.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="540.0" y="299.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">Bearer</text>
+  </g>
+  <g class="arch-node-card" data-node-id="idl_action" aria-controls="arch-northbound-contracts-f0-drawer-idl_action">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="idl_action" data-flows="all,bridge" aria-expanded="false" aria-label="ROS 2 .action (6 份)（ExecuteAssignment/Cap）" aria-controls="arch-northbound-contracts-f0-drawer-idl_action">
+      <rect class="arch-node-box" x="58.0" y="150.0" width="356.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="175.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ROS 2 .action (6 份)</text>
+      <text class="arch-node-role" x="70.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">ExecuteAssignment/Cap</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/interfaces.html" data-same-page="true" aria-label="前往「ROS 2 .action (6 份)」对应章节">
+      <rect x="386.0" y="154.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="398.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="idl_srv" aria-controls="arch-northbound-contracts-f0-drawer-idl_srv">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="idl_srv" data-flows="all,ros_idl" aria-expanded="false" aria-label="ROS 2 .srv (22 份)（Assess / Plan / Memory）" aria-controls="arch-northbound-contracts-f0-drawer-idl_srv">
+      <rect class="arch-node-box" x="58.0" y="258.0" width="356.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="283.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ROS 2 .srv (22 份)</text>
+      <text class="arch-node-role" x="70.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Assess / Plan / Memory</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/interfaces.html" data-same-page="true" aria-label="前往「ROS 2 .srv (22 份)」对应章节">
+      <rect x="386.0" y="262.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="398.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="idl_msg" aria-controls="arch-northbound-contracts-f0-drawer-idl_msg">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="idl_msg" data-flows="all,ros_idl" aria-expanded="false" aria-label="ROS 2 .msg (56 份)（Task / Body / Goal）" aria-controls="arch-northbound-contracts-f0-drawer-idl_msg">
+      <rect class="arch-node-box" x="58.0" y="366.0" width="356.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ROS 2 .msg (56 份)</text>
+      <text class="arch-node-role" x="70.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Task / Body / Goal</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/interfaces.html" data-same-page="true" aria-label="前往「ROS 2 .msg (56 份)」对应章节">
+      <rect x="386.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="398.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_interact" aria-controls="arch-northbound-contracts-f0-drawer-gw_interact">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_interact" data-flows="all,http_gw,ros_idl" aria-expanded="false" aria-label="InteractionGateway（:8090 · Queue(32)）" aria-controls="arch-northbound-contracts-f0-drawer-gw_interact">
+      <rect class="arch-node-box" x="488.0" y="150.0" width="316.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="500.0" y="175.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">InteractionGateway</text>
+      <text class="arch-node-role" x="500.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">:8090 · Queue(32)</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#flow" aria-label="前往「InteractionGateway」对应章节">
+      <rect x="776.0" y="154.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="788.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_voice" aria-controls="arch-northbound-contracts-f0-drawer-gw_voice">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_voice" data-flows="all,http_gw" aria-expanded="false" aria-label="InteractionRuntime（:8088 · SSE / ASR / TTS）" aria-controls="arch-northbound-contracts-f0-drawer-gw_voice">
+      <rect class="arch-node-box" x="826.0" y="150.0" width="316.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="838.0" y="175.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">InteractionRuntime</text>
+      <text class="arch-node-role" x="838.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:8088 · SSE / ASR / TTS</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#flow" aria-label="前往「InteractionRuntime」对应章节">
+      <rect x="1114.0" y="154.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1126.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_fleet" aria-controls="arch-northbound-contracts-f0-drawer-gw_fleet">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_fleet" data-flows="all,bridge,http_gw,ros_idl" aria-expanded="false" aria-label="StarFleetBus（:18641 · 互斥 / ROI）" aria-controls="arch-northbound-contracts-f0-drawer-gw_fleet">
+      <rect class="arch-node-box" x="488.0" y="258.0" width="316.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="500.0" y="283.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">StarFleetBus</text>
+      <text class="arch-node-role" x="500.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18641 · 互斥 / ROI</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/interfaces.html" data-same-page="true" aria-label="前往「StarFleetBus」对应章节">
+      <rect x="776.0" y="262.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="788.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_facility" aria-controls="arch-northbound-contracts-f0-drawer-gw_facility">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_facility" data-flows="all,http_gw" aria-expanded="false" aria-label="FacilityHAL Gateway（:18642 · Bearer / WAL）" aria-controls="arch-northbound-contracts-f0-drawer-gw_facility">
+      <rect class="arch-node-box" x="826.0" y="258.0" width="316.0" height="76.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="838.0" y="283.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FacilityHAL Gateway</text>
+      <text class="arch-node-role" x="838.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">:18642 · Bearer / WAL</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#flow" aria-label="前往「FacilityHAL Gateway」对应章节">
+      <rect x="1114.0" y="262.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1126.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_model" aria-controls="arch-northbound-contracts-f0-drawer-gw_model">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_model" data-flows="all,http_gw" aria-expanded="false" aria-label="ModelGateway（:18080 · O_NOFOLLOW）" aria-controls="arch-northbound-contracts-f0-drawer-gw_model">
+      <rect class="arch-node-box" x="488.0" y="366.0" width="654.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="500.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ModelGateway</text>
+      <text class="arch-node-role" x="500.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">:18080 · O_NOFOLLOW</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" aria-label="前往「ModelGateway」对应章节">
+      <rect x="1114.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="526.0" x2="1164.0" y2="526.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="548.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="104.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ROS 2 IDL 与语义网关</text>
+  <rect x="231.7" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="253.7" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FacilityHAL 工装鉴权网关</text>
+  <rect x="403.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="425.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ModelGateway 安全沙箱与配额</text>
+  <text x="1164.0" y="547.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">84 份 IDL 清点与 5 大网关路由明细见《跨层接口与通信契约》折叠表</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 06 · NORTHBOUND SEMANTIC CONTRACTS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">北向强类型语义契约: 84 份 ROS 2 V2–V5 IDL 与五大 HTTP/WS 网关</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">56 .msg · 22 .srv · 6 .action · 5 Gateways (Loopback + Origin)</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>FACRI
-跨层通信总线与二进制契约架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="ros_idl" aria-pressed="false">84 份 ROS 2 IDL 契约</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="http_gw" aria-pressed="false">五大 HTTP / WS 网关</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="bridge" aria-pressed="false">端侧 ROS 边界映射</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>北向 84 IDL 与五大网关</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/arch-northbound-contracts.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="arch-northbound-contracts-f0-drawer-idl_action" class="diagram-drawer-panel" data-node-drawer="idl_action" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ROS 2 .action (6 份)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Northbound IDL · 动作 · 异步可取消</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ROS 2 .action (6 份)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">定义系统派发到单机代理的异步执行目标、连续进度反馈与最终结果。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>强类型异步长任务契约</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_interfaces</code></dd></div>
+      <div><dt>核心契约</dt><dd>ExecuteAssignment{,V5} (2) + ExecuteCapability{,V3,V4,V5} (4)，支持任务级取消</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/interfaces.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-northbound-contracts-f0-drawer-idl_srv" class="diagram-drawer-panel" data-node-drawer="idl_srv" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ROS 2 .srv (22 份)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Northbound IDL · 服务 · 同步请求响应</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ROS 2 .srv (22 份)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">提供无副作用的能力预评估、上下文查询、记忆检索与任务控制端点。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>显式状态查询契约</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_interfaces</code></dd></div>
+      <div><dt>核心契约</dt><dd>AssessCapability(4)、GetExecution(4)、Plan/Mission(6)、Context/Memory(7) 与 GetCapabilities</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/interfaces.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-northbound-contracts-f0-drawer-idl_msg" class="diagram-drawer-panel" data-node-drawer="idl_msg" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ROS 2 .msg (56 份)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Northbound IDL · 消息 · 周期遥测与目标包</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ROS 2 .msg (56 份)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">承载多机同步、全身测量、RGB-D 元数据、轨迹点与证据包结构。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>版本化不可变 DTO</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_interfaces</code></dd></div>
+      <div><dt>核心契约</dt><dd>涵盖 TaskStep{,V5}、AutoTaskGoalV5、ManipulationGoalV4、EvidencePacket 与标定身份</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/interfaces.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-northbound-contracts-f0-drawer-gw_interact" class="diagram-drawer-panel" data-node-drawer="gw_interact" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">InteractionGateway</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">HTTP Gateway · 系统主网关 · 20 ms drain / 8 s 超时</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「InteractionGateway」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保护系统编排核免受前端高频轮询或突发指令队列冲击。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III 有界网关 + 跨域拦截</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>127.0.0.1:8090 拒绝跨源 Origin；暴露 /missions /plans /rsi /display/* 等路由</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-northbound-contracts-f0-drawer-gw_voice" class="diagram-drawer-panel" data-node-drawer="gw_voice" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">InteractionRuntime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">HTTP Gateway · 语音交互 · 流式推送</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「InteractionRuntime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">承接麦克风语音转写、语音播报与观众侧只读状态推流。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>交互状态机 + 只读 SSE</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/interaction_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>/api/audio/{transcribe,speak}、/api/say 与 /api/live/stream</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-northbound-contracts-f0-drawer-gw_fleet" class="diagram-drawer-panel" data-node-drawer="gw_fleet" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">StarFleetBus</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">HTTP Gateway · 车队总线 · 低频协调与令牌锁</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「StarFleetBus」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">协调多机共享空间冲突并限制图像流向表现层的传输上限。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>共享资源仲裁 + 流量守卫</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/fleet_bus/star_fleet_bus.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>/api/fleet/v1/* 管理 agents、corridor 互斥令牌及 ROI 2 流 640p 上限</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/interfaces.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-northbound-contracts-f0-drawer-gw_facility" class="diagram-drawer-panel" data-node-drawer="gw_facility" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">FacilityHAL Gateway</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">HTTP Gateway · 工装设施 · 异步请求 + WAL</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「FacilityHAL Gateway」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">统一抽象仿真工装、Modbus PLC 与展陈设施动作调用。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III 鉴权网关 + 预写日志</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/gateway/http_server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>&gt;=32 字符 Bearer Token；POST /commands 经 AckJournal 落盘防丢</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-northbound-contracts-f0-drawer-gw_model" class="diagram-drawer-panel" data-node-drawer="gw_model" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ModelGateway</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">HTTP/WS Gateway · 推理 · 并发信号量 (2/1/1)</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ModelGateway」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">集中调度文本、语音与开放词汇视觉模型推理资源。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>配额隔离 + 安全路径代理</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/model_gateway/model_gateway_service/app.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>/v1/chat/completions、WS /gateway/v1/speech；media:// 强制 SHA-256 检验</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="arch-southbound-binary-bus">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
+</div>
+</div>
+<div id="arch-interfaces-panel-2" class="diagram-tabpanel"
+role="tabpanel" aria-labelledby="arch-interfaces-tab-2"
+data-tab-panel="" hidden="until-found">
+<div class="diagram-tabpanel-inner">
+<figure class="diagram-figure" data-diagram-id="arch-southbound-binary-bus" data-fig-uid="arch-southbound-binary-bus-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-southbound-binary-bus" viewBox="0 0 1200 570" width="1200" height="570" role="group" aria-labelledby="arch-southbound-binary-bus-title-f1" aria-describedby="arch-southbound-binary-bus-desc-f1">
+  <title id="arch-southbound-binary-bus-title-f1">南向定长零拷贝二进制总线: 4+1 SHM IPC、SalWire v2 与 32 B UDP</title>
+  <desc id="arch-southbound-binary-bus-desc-f1">独立拆出南向硬实时二进制传输层，展示进程内顺序锁、SPSC 环形队列、SalWire v2 与带外 32 字节安全脉搏。</desc>
+  <defs>
+    <pattern id="arch-southbound-binary-bus-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arch-southbound-binary-bus-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arch-southbound-binary-bus-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="570" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="570" fill="url(#arch-southbound-binary-bus-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="568.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="360.0" height="430.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">INTRA-ROBOT IPC (/dev/shm/embodied_ipc/*)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">4+1 进程无锁共享内存 (0x454D4950)</text>
+  <rect x="422.0" y="86.0" width="376.0" height="430.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="436.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">SALWIRE V2 (/dev/shm/embodied_sal/*)</text>
+  <text x="436.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">硬件与仿真对称二进制总线 (kMaxDofs=48)</text>
+  <rect x="824.0" y="86.0" width="340.0" height="430.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="838.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">OUT-OF-BAND &amp; ARBITER</text>
+  <text x="838.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">带外安全帧与 P0 执行仲裁</text>
+  <g class="arch-edge" data-from="shm_seq" data-to="p0_arbiter" data-flow="intra_ipc">
+    <path d="M 374.0 197.0 L 395.0 197.0 Q 400.0 197.0 400.0 202.0 L 400.0 345.0 Q 400.0 350.0 405.0 350.0 L 846.0 350.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-ink-f1)"/>
+    <rect x="590.2" y="341.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="623.0" y="353.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">traj_slot</text>
+  </g>
+  <g class="arch-edge" data-from="shm_ring" data-to="shm_seq" data-flow="intra_ipc">
+    <path d="M 216.0 326.0 L 216.0 238.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-southbound-binary-bus-arrow-ink-f1)"/>
+    <rect x="198.1" y="273.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="216.0" y="285.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">SPSC</text>
+  </g>
+  <g class="arch-edge" data-from="sal_sample" data-to="p0_arbiter" data-flow="sal_wire">
+    <path d="M 776.0 182.0 L 801.0 182.0 Q 806.0 182.0 806.0 187.0 L 806.0 351.0 Q 806.0 356.0 811.0 356.0 L 846.0 356.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-slate-f1)"/>
+    <rect x="790.1" y="260.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="806.0" y="272.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">反馈</text>
+  </g>
+  <g class="arch-edge" data-from="p0_arbiter" data-to="sal_cmd" data-flow="sal_wire">
+    <path d="M 846.0 367.0 L 815.0 367.0 Q 810.0 367.0 810.0 362.0 L 810.0 297.0 Q 810.0 292.0 805.0 292.0 L 776.0 292.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-forest-f1)"/>
+    <rect x="773.3" y="320.5" width="73.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="810.0" y="332.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">200 Hz 下发</text>
+  </g>
+  <g class="arch-edge" data-from="sal_lidar" data-to="shm_seq" data-flow="sal_wire">
+    <path d="M 444.0 402.0 L 413.0 402.0 Q 408.0 402.0 408.0 397.0 L 408.0 217.0 Q 408.0 212.0 403.0 212.0 L 374.0 212.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-slate-f1)"/>
+    <rect x="387.1" y="298.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="408.0" y="310.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">10 Hz</text>
+  </g>
+  <g class="arch-edge" data-from="udp_safety" data-to="p0_arbiter" data-flow="safety_oob">
+    <path d="M 994.0 238.0 L 994.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-southbound-binary-bus-arrow-terracotta-f1)"/>
+    <rect x="951.3" y="273.0" width="85.3" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="994.0" y="285.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">32 B OOB 覆盖</text>
+  </g>
+  <g class="arch-node-card" data-node-id="shm_seq" aria-controls="arch-southbound-binary-bus-f1-drawer-shm_seq">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="shm_seq" data-flows="all,intra_ipc,sal_wire" aria-expanded="false" aria-label="ShmSeqSlot&lt;PodT&gt; (9 槽)（0x454D4950 · 16 次自旋）" aria-controls="arch-southbound-binary-bus-f1-drawer-shm_seq">
+      <rect class="arch-node-box" x="58.0" y="156.0" width="316.0" height="82.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="181.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ShmSeqSlot&lt;PodT&gt; (9 槽)</text>
+      <text class="arch-node-role" x="70.0" y="224.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">0x454D4950 · 16 次自旋</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#principles" aria-label="前往「ShmSeqSlot&lt;PodT&gt; (9 槽)」对应章节">
+      <rect x="346.0" y="160.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="176.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="shm_ring" aria-controls="arch-southbound-binary-bus-f1-drawer-shm_ring">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="shm_ring" data-flows="all,intra_ipc" aria-expanded="false" aria-label="ShmRingQueue (3 环)（SPSC · N=64 / 256）" aria-controls="arch-southbound-binary-bus-f1-drawer-shm_ring">
+      <rect class="arch-node-box" x="58.0" y="326.0" width="316.0" height="82.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ShmRingQueue (3 环)</text>
+      <text class="arch-node-role" x="70.0" y="394.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SPSC · N=64 / 256</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#contracts" aria-label="前往「ShmRingQueue (3 环)」对应章节">
+      <rect x="346.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_sample" aria-controls="arch-southbound-binary-bus-f1-drawer-sal_sample">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_sample" data-flows="all,sal_wire" aria-expanded="false" aria-label="SalSampleWire v2（1472 B · 0x454D5341）" aria-controls="arch-southbound-binary-bus-f1-drawer-sal_sample">
+      <rect class="arch-node-box" x="444.0" y="146.0" width="332.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalSampleWire v2</text>
+      <text class="arch-node-role" x="456.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">1472 B · 0x454D5341</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「SalSampleWire v2」对应章节">
+      <rect x="748.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="760.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_cmd" aria-controls="arch-southbound-binary-bus-f1-drawer-sal_cmd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_cmd" data-flows="all,sal_wire" aria-expanded="false" aria-label="SalCommandWire v2（2052 B · 0x454D5343）" aria-controls="arch-southbound-binary-bus-f1-drawer-sal_cmd">
+      <rect class="arch-node-box" x="444.0" y="256.0" width="332.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="281.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalCommandWire v2</text>
+      <text class="arch-node-role" x="456.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">2052 B · 0x454D5343</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「SalCommandWire v2」对应章节">
+      <rect x="748.0" y="260.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="760.0" y="276.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_lidar" aria-controls="arch-southbound-binary-bus-f1-drawer-sal_lidar">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_lidar" data-flows="all,sal_wire" aria-expanded="false" aria-label="SalLidarWire v2（96068 B · 6000 pts）" aria-controls="arch-southbound-binary-bus-f1-drawer-sal_lidar">
+      <rect class="arch-node-box" x="444.0" y="366.0" width="332.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalLidarWire v2</text>
+      <text class="arch-node-role" x="456.0" y="424.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">96068 B · 6000 pts</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#principles" aria-label="前往「SalLidarWire v2」对应章节">
+      <rect x="748.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="760.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="udp_safety" aria-controls="arch-southbound-binary-bus-f1-drawer-udp_safety">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="udp_safety" data-flows="all,safety_oob" aria-expanded="false" aria-label="带外 SafetyFrame UDP（32 B · :18749 · EMSF）" aria-controls="arch-southbound-binary-bus-f1-drawer-udp_safety">
+      <rect class="arch-node-box" x="846.0" y="156.0" width="296.0" height="82.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="858.0" y="181.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">带外 SafetyFrame UDP</text>
+      <text class="arch-node-role" x="858.0" y="224.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">32 B · :18749 · EMSF</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/interfaces.html" data-same-page="true" aria-label="前往「带外 SafetyFrame UDP」对应章节">
+      <rect x="1114.0" y="160.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="176.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p0_arbiter" aria-controls="arch-southbound-binary-bus-f1-drawer-p0_arbiter">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p0_arbiter" data-flows="all,intra_ipc,safety_oob,sal_wire" aria-expanded="false" aria-label="P0 校验与执行仲裁（CRC32 + 防呆拦截）" aria-controls="arch-southbound-binary-bus-f1-drawer-p0_arbiter">
+      <rect class="arch-node-box" x="846.0" y="326.0" width="296.0" height="82.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="858.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0 校验与执行仲裁</text>
+      <text class="arch-node-role" x="858.0" y="394.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">CRC32 + 防呆拦截</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-hal-sal-wire.html#flow" aria-label="前往「P0 校验与执行仲裁」对应章节">
+      <rect x="1114.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="526.0" x2="1164.0" y2="526.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="548.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="104.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SeqSlot / RingQueue / Sample</text>
+  <rect x="277.2" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="299.2" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SalCommand &amp; P0 执行仲裁</text>
+  <rect x="451.6" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="473.6" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">32 B UDP 旁路安全脉搏</text>
+  <text x="1164.0" y="547.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">严禁在 SalWire v2 线包中透传工位名称或场景语义字符串</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 07 · SOUTHBOUND ZERO-COPY BINARY BUS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">南向定长零拷贝二进制总线: 4+1 SHM IPC、SalWire v2 与 32 B UDP</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">#pragma pack(1) · static_assert · CRC32 IEEE · :18749 UDP</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="intra_ipc" aria-pressed="false">4+1 进程内无锁 IPC</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="sal_wire" aria-pressed="false">SalWire v2 二进制总线</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="safety_oob" aria-pressed="false">带外 32 B SafetyFrame</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>南向 SHM 与二进制总线</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/arch-southbound-binary-bus.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="arch-southbound-binary-bus-f1-drawer-shm_seq" class="diagram-drawer-panel" data-node-drawer="shm_seq" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ShmSeqSlot&lt;PodT&gt; (9 槽)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Intra-Robot IPC · 状态槽 · 最新值覆盖无锁读</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ShmSeqSlot&lt;PodT&gt; (9 槽)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">写端永不阻塞，通过奇偶版本号与最多 16 次自旋保证跨进程读取结构体一致。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II SeqLock 顺序锁原语</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/seqlock.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>含 embodiment_spec、body_state、safety_status、spatial_pose、traj_slot (&lt;=128 点) 等 9 槽</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-southbound-binary-bus-f1-drawer-shm_ring" class="diagram-drawer-panel" data-node-drawer="shm_ring" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ShmRingQueue (3 环)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Intra-Robot IPC · 事件环 · 无丢弃单写单读</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ShmRingQueue (3 环)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保任务指令、执行回执与审计事件在单生产者和单消费者之间零堆分配传递。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 无锁 SPSC 环形队列</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/spsc_queue.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>task_cmd_ring(64, &lt;=3584B)、task_receipt_ring(64) 与分进程 evidence_ring(256)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#contracts">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-southbound-binary-bus-f1-drawer-sal_sample" class="diagram-drawer-panel" data-node-drawer="sal_sample" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SalSampleWire v2</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SalWire v2 · state_cmd.shm · 200 Hz 物理采样</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SalSampleWire v2」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">承载最多 48 轴自由度的全量本体与夹爪实测状态，由防腐层校验完整性。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>#pragma pack(1) + CRC32</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/sal_wire.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>偏移 8 B；含 sim_time_ns、q/dq/tau_est[48]、左右腕力、持物哈希与 CRC 偏移 1468</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#contracts">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-southbound-binary-bus-f1-drawer-sal_cmd" class="diagram-drawer-panel" data-node-drawer="sal_cmd" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SalCommandWire v2</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SalWire v2 · state_cmd.shm · 200 Hz 下发</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SalCommandWire v2」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">统一下发位置、速度、力矩或阻抗控制模式参考值至仿真或硬件插件。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>#pragma pack(1) + CRC32</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/sal_wire.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>偏移 4104 B；含 host_monotonic_ns、modes[48]、q_ref/kp/kd/tau_ff 与底盘速度</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#contracts">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-southbound-binary-bus-f1-drawer-sal_lidar" class="diagram-drawer-panel" data-node-drawer="sal_lidar" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SalLidarWire v2</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SalWire v2 · lidar.shm · 10 Hz 零拷贝点云</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SalLidarWire v2」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">绕过 ROS 2 序列化开销将三维激光扫描直接映射给 P1 空间定位进程。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>128 KiB 共享页 + CRC32</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/sal_wire.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>0x454D4C44；最多 6000 组 16 B XYZI 点与 sim_time_ns；CRC 偏移 96064</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-southbound-binary-bus-f1-drawer-udp_safety" class="diagram-drawer-panel" data-node-drawer="udp_safety" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">带外 SafetyFrame UDP</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">OOB Safety · 带外脉冲 · 旁路业务队列</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「带外 SafetyFrame UDP」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">通过独立 UDP 通道向单机 P0 传送急停位掩码与安全遥操作接管脉搏。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>定长小端序心跳 + 死人开关</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/safety_frame.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>0x454D5346 (&lt;IHHBBHIhhh6sI)；按机器人索引位隔离急停与 250 ms 租约 TTL</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/interfaces.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-southbound-binary-bus-f1-drawer-p0_arbiter" class="diagram-drawer-panel" data-node-drawer="p0_arbiter" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P0 校验与执行仲裁</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P0 · 仲裁出口 · 200 / 50 Hz</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P0 校验与执行仲裁」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保进入电机执行器的每一帧二进制指令均合法、新鲜且在安全边界内。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>防腐拦截 + 局部制动</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/protection_runtime/runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>拒绝 NaN/错代 epoch/CRC 失败包并递增 nonfinite_rejected；超时切 LOCAL_HOLD</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="arch-northbound-contracts">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/robot-hal-sal-wire.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</div>
+</div>
 <h2 id="北向契约与南向传输总览">北向契约与南向传输总览</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
@@ -442,20 +1151,21 @@ id="toc-带外-safetyframe-32-字节布局srcembodied_coreincludeembodied_coresa
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

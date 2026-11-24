@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-cap-provider-lease" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="sub-cap-provider-lease-title" aria-describedby="sub-cap-provider-lease-desc">
+  <title id="sub-cap-provider-lease-title">五大能力提供者统一契约、单写者租约与 C++20 / Python 双栈演进边界</title>
+  <desc id="sub-cap-provider-lease-desc">明确端侧能力调度与底层算法的边界：五大能力提供者由统一租约与 epoch 协调，并透明标注双栈演进现状。</desc>
+  <defs>
+    <pattern id="sub-cap-provider-lease-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-cap-provider-lease-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-cap-provider-lease-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#sub-cap-provider-lease-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="450.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">ADMISSION &amp; SINGLE-WRITER LEASE</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">任务准入与单写者运动租约仲裁</text>
+  <rect x="412.0" y="86.0" width="420.0" height="450.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="426.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">FIVE CAPABILITY PROVIDERS (P-IV TRANSPARENCY)</text>
+  <text x="426.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">五大能力提供者与双栈实现现状</text>
+  <rect x="858.0" y="86.0" width="306.0" height="450.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="872.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">P0 EXECUTOR</text>
+  <text x="872.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">200 Hz 编码器到位终端</text>
+  <g class="arch-edge" data-from="local_task" data-to="motion_coord" data-flow="lease">
+    <path d="M 211.0 228.0 L 211.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-terracotta)"/>
+    <rect x="185.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="211.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">申请租约</text>
+  </g>
+  <g class="arch-edge" data-from="motion_coord" data-to="cap_nav" data-flow="providers">
+    <path d="M 364.0 344.0 L 389.0 344.0 Q 394.0 344.0 394.0 339.0 L 394.0 164.0 Q 394.0 159.0 399.0 159.0 L 434.0 159.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-ink)"/>
+  </g>
+  <g class="arch-edge" data-from="motion_coord" data-to="cap_manip" data-flow="providers">
+    <path d="M 364.0 360.0 L 397.0 360.0 Q 402.0 360.0 402.0 355.0 L 402.0 242.0 Q 402.0 237.0 407.0 237.0 L 434.0 237.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-ink)"/>
+  </g>
+  <g class="arch-edge" data-from="local_task" data-to="cap_spatial" data-flow="dual_stack">
+    <path d="M 364.0 190.0 L 405.0 190.0 Q 410.0 190.0 410.0 195.0 L 410.0 310.0 Q 410.0 315.0 415.0 315.0 L 434.0 315.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-cap-provider-lease-arrow-slate)"/>
+  </g>
+  <g class="arch-edge" data-from="local_task" data-to="cap_perc" data-flow="dual_stack">
+    <path d="M 364.0 204.0 L 411.0 204.0 Q 416.0 204.0 416.0 209.0 L 416.0 388.0 Q 416.0 393.0 421.0 393.0 L 434.0 393.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-cap-provider-lease-arrow-slate)"/>
+  </g>
+  <g class="arch-edge" data-from="local_task" data-to="cap_sync" data-flow="dual_stack">
+    <path d="M 364.0 218.0 L 379.0 218.0 Q 384.0 218.0 384.0 223.0 L 384.0 466.0 Q 384.0 471.0 389.0 471.0 L 434.0 471.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-cap-provider-lease-arrow-ochre)"/>
+    <rect x="364.1" y="335.5" width="39.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="384.0" y="347.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">仅 Py</text>
+  </g>
+  <g class="arch-edge" data-from="cap_nav" data-to="act_exec" data-flow="lease">
+    <path d="M 810.0 159.0 L 835.0 159.0 Q 840.0 159.0 840.0 164.0 L 840.0 271.0 Q 840.0 276.0 845.0 276.0 L 880.0 276.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-forest)"/>
+  </g>
+  <g class="arch-edge" data-from="cap_manip" data-to="act_exec" data-flow="lease">
+    <path d="M 810.0 237.0 L 829.0 237.0 Q 834.0 237.0 834.0 242.0 L 834.0 289.0 Q 834.0 294.0 839.0 294.0 L 880.0 294.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-cap-provider-lease-arrow-forest)"/>
+    <rect x="813.2" y="256.5" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="834.0" y="268.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">轨迹槽</text>
+  </g>
+  <g class="arch-node-card" data-node-id="local_task">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="local_task" data-flows="all,dual_stack,lease" aria-expanded="false" aria-label="local_task_runtime (P3)（能力步准入与串行路由）">
+      <rect class="arch-node-box" x="58.0" y="152.0" width="306.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">local_task_runtime (P3)</text>
+      <text class="arch-node-role" x="70.0" y="214.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">能力步准入与串行路由</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#flow" aria-label="前往「local_task_runtime (P3)」对应章节">
+      <rect x="336.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="348.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="motion_coord">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="motion_coord" data-flows="all,lease,providers" aria-expanded="false" aria-label="MotionCoordinator (P2)（单写者租约 + epoch）">
+      <rect class="arch-node-box" x="58.0" y="326.0" width="306.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">MotionCoordinator (P2)</text>
+      <text class="arch-node-role" x="70.0" y="388.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">单写者租约 + epoch</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#principles" aria-label="前往「MotionCoordinator (P2)」对应章节">
+      <rect x="336.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="348.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_nav">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_nav" data-flows="all,lease,providers" aria-expanded="false" aria-label="navigation_runtime（双栈 · C++ 核 + Py 伺服）">
+      <rect class="arch-node-box" x="434.0" y="128.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="151.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">navigation_runtime</text>
+      <text class="arch-node-role" x="446.0" y="178.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · C++ 核 + Py 伺服</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#paradigm" aria-label="前往「navigation_runtime」对应章节">
+      <rect x="782.0" y="132.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="148.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_manip">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_manip" data-flows="all,lease,providers" aria-expanded="false" aria-label="manipulation_runtime（双栈 · 49-Cand + Py 导纳）">
+      <rect class="arch-node-box" x="434.0" y="206.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="229.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">manipulation_runtime</text>
+      <text class="arch-node-role" x="446.0" y="256.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · 49-Cand + Py 导纳</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#paradigm" aria-label="前往「manipulation_runtime」对应章节">
+      <rect x="782.0" y="210.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="226.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_spatial">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_spatial" data-flows="all,dual_stack" aria-expanded="false" aria-label="spatial_runtime（双栈 · VoxelICP + Py 域）">
+      <rect class="arch-node-box" x="434.0" y="284.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="307.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">spatial_runtime</text>
+      <text class="arch-node-role" x="446.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · VoxelICP + Py 域</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#paradigm" aria-label="前往「spatial_runtime」对应章节">
+      <rect x="782.0" y="288.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="304.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_perc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_perc" data-flows="all,dual_stack" aria-expanded="false" aria-label="perception_runtime（双栈 · Tag/ROI + Py 域）">
+      <rect class="arch-node-box" x="434.0" y="362.0" width="376.0" height="62.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">perception_runtime</text>
+      <text class="arch-node-role" x="446.0" y="412.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">双栈 · Tag/ROI + Py 域</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#paradigm" aria-label="前往「perception_runtime」对应章节">
+      <rect x="782.0" y="366.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="794.0" y="382.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_sync">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_sync" data-flows="all,dual_stack" aria-expanded="false" aria-label="coordination_runtime（纯 Python · V5 同步）">
+      <rect class="arch-node-box" x="434.0" y="440.0" width="376.0" height="62.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="446.0" y="463.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">coordination_runtime</text>
+      <text class="arch-node-role" x="446.0" y="490.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">纯 Python · V5 同步</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#contracts" aria-label="前往「coordination_runtime」对应章节">
+      <rect x="782.0" y="444.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="794.0" y="460.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="act_exec">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="act_exec" data-flows="all,lease" aria-expanded="false" aria-label="action_executor (P0)（200 Hz 编码器到位）">
+      <rect class="arch-node-box" x="880.0" y="248.0" width="262.0" height="84.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="892.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">action_executor (P0)</text>
+      <text class="arch-node-role" x="892.0" y="318.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">200 Hz 编码器到位</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-capabilities.html#evidence" aria-label="前往「action_executor (P0)」对应章节">
+      <rect x="1114.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">单写者租约与 epoch 锁</text>
+  <rect x="234.7" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="256.7" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">HYBRID: C++20 核 + Python 域</text>
+  <rect x="430.1" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="452.1" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">仅 Python (coordination_runtime)</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">算法内部数学与控制细节全部收拢至 L4 五篇算法专章</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 07 · CAPABILITY PROVIDERS &amp; HYBRID STACK</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">五大能力提供者统一契约、单写者租约与 C++20 / Python 双栈演进边界</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">MotionCoordinator 单写者租约 · 诚实标示 P-IV 双栈模块</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

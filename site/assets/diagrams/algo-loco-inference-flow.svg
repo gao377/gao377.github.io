@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-loco-inference-flow" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-loco-inference-flow-title" aria-describedby="algo-loco-inference-flow-desc">
+  <title id="algo-loco-inference-flow-title">FacriMjlabPolicy 50 Hz 步态推理、非对称斜率与倾角防呆通路</title>
+  <desc id="algo-loco-inference-flow-desc">展示 47 维观测编码、50 Hz 策略推理、非对称双向斜率限幅、倾角衰减器及放行下肢 PD 输出的完整通路。</desc>
+  <defs>
+    <pattern id="algo-loco-inference-flow-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-loco-inference-flow-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-loco-inference-flow-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-loco-inference-flow-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="200.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">OBSERVATION &amp; POLICY INFER (50 Hz)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">观测编码与 C++20 MLP 前向推理</text>
+  <rect x="604.0" y="86.0" width="560.0" height="200.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SLEW &amp; TILT ATTENUATION</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双向斜率防抖与倾角衰减防呆</text>
+  <rect x="36.0" y="304.0" width="1128.0" height="198.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="323.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">LOWER-BODY MUX &amp; 200 HZ PD</text>
+  <text x="50.0" y="340.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">下肢放行多路复用与 PD 物理输出</text>
+  <g class="arch-edge" data-from="obs_enc" data-to="policy_sim" data-flow="obs">
+    <path d="M 294.0 189.0 L 316.0 189.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-slate)"/>
+    <rect x="285.1" y="180.0" width="39.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="305.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">47 维</text>
+  </g>
+  <g class="arch-edge" data-from="policy_sim" data-to="onnx_mlp" data-flow="infer">
+    <path d="M 434.0 226.0 L 434.0 289.0 Q 434.0 294.0 429.0 294.0 L 325.0 294.0 Q 320.0 294.0 320.0 299.0 L 320.0 370.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-ink)"/>
+    <rect x="356.1" y="285.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="377.0" y="297.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">50 Hz</text>
+  </g>
+  <g class="arch-edge" data-from="onnx_mlp" data-to="asym_slew" data-flow="guard">
+    <path d="M 460.0 407.0 L 585.0 407.0 Q 590.0 407.0 590.0 402.0 L 590.0 194.0 Q 590.0 189.0 595.0 189.0 L 626.0 189.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-terracotta)"/>
+    <rect x="565.2" y="289.0" width="49.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="590.0" y="301.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">12 动作</text>
+  </g>
+  <g class="arch-edge" data-from="asym_slew" data-to="tilt_atten" data-flow="guard">
+    <path d="M 872.0 189.0 L 896.0 189.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-terracotta)"/>
+    <rect x="863.2" y="180.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="884.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">抗踝振</text>
+  </g>
+  <g class="arch-edge" data-from="tilt_atten" data-to="lower_mux" data-flow="act">
+    <path d="M 1019.0 226.0 L 1019.0 289.0 Q 1019.0 294.0 1014.0 294.0 L 665.0 294.0 Q 660.0 294.0 660.0 299.0 L 660.0 370.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-forest)"/>
+    <rect x="806.7" y="285.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="839.5" y="297.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.14-0.24</text>
+  </g>
+  <g class="arch-edge" data-from="lower_mux" data-to="raw_pd" data-flow="act">
+    <path d="M 800.0 407.0 L 856.0 407.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-loco-inference-flow-arrow-forest)"/>
+    <rect x="804.1" y="398.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="828.0" y="410.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">200 Hz</text>
+  </g>
+  <g class="arch-node-card" data-node-id="obs_enc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="obs_enc" data-flows="all,obs" aria-expanded="false" aria-label="ObservationEncoder（47 维本体观测向量）">
+      <rect class="arch-node-box" x="58.0" y="152.0" width="236.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">ObservationEncoder</text>
+      <text class="arch-node-role" x="70.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">47 维本体观测向量</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#flow" aria-label="前往「ObservationEncoder」对应章节">
+      <rect x="266.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="278.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="policy_sim">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="policy_sim" data-flows="all,infer,obs" aria-expanded="false" aria-label="FacriMjlabPolicy（SIM 47-&gt;12 步态核）">
+      <rect class="arch-node-box" x="316.0" y="152.0" width="236.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="328.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">FacriMjlabPolicy</text>
+      <text class="arch-node-role" x="328.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">SIM 47-&gt;12 步态核</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#origins" aria-label="前往「FacriMjlabPolicy」对应章节">
+      <rect x="524.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="onnx_mlp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="onnx_mlp" data-flows="all,guard,infer" aria-expanded="false" aria-label="OnnxProtobufMlp（C++20 无 Python 推理）">
+      <rect class="arch-node-box" x="180.0" y="370.0" width="280.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="192.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">OnnxProtobufMlp</text>
+      <text class="arch-node-role" x="192.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">C++20 无 Python 推理</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#paradigm" aria-label="前往「OnnxProtobufMlp」对应章节">
+      <rect x="432.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="444.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="asym_slew">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="asym_slew" data-flows="all,guard" aria-expanded="false" aria-label="非对称双向斜率限幅（抑制加减速踝关节振荡）">
+      <rect class="arch-node-box" x="626.0" y="152.0" width="246.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">非对称双向斜率限幅</text>
+      <text class="arch-node-role" x="638.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">抑制加减速踝关节振荡</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#principles" aria-label="前往「非对称双向斜率限幅」对应章节">
+      <rect x="844.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="856.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tilt_atten">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tilt_atten" data-flows="act,all,guard" aria-expanded="false" aria-label="倾角衰减器（0.14–0.24 rad 平滑衰减）">
+      <rect class="arch-node-box" x="896.0" y="152.0" width="246.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">倾角衰减器</text>
+      <text class="arch-node-role" x="908.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">0.14–0.24 rad 平滑衰减</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#principles" aria-label="前往「倾角衰减器」对应章节">
+      <rect x="1114.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="lower_mux">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="lower_mux" data-flows="act,all" aria-expanded="false" aria-label="下肢指令多路放行（取消软件超限否决）">
+      <rect class="arch-node-box" x="520.0" y="370.0" width="280.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="532.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">下肢指令多路放行</text>
+      <text class="arch-node-role" x="532.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">取消软件超限否决</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#contracts" aria-label="前往「下肢指令多路放行」对应章节">
+      <rect x="772.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="784.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="raw_pd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="raw_pd" data-flows="act,all" aria-expanded="false" aria-label="200 Hz 下肢 PD 执行（12 腿轴纯驱动）">
+      <rect class="arch-node-box" x="856.0" y="370.0" width="280.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="868.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">200 Hz 下肢 PD 执行</text>
+      <text class="arch-node-role" x="868.0" y="430.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">12 腿轴纯驱动</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#evidence" aria-label="前往「200 Hz 下肢 PD 执行」对应章节">
+      <rect x="1108.0" y="374.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1120.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">47-&gt;12 SIM 步态策略</text>
+  <rect x="224.9" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="246.9" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">非对称斜率与倾角抑制</text>
+  <rect x="373.1" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="395.1" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">取消下肢软件误否决与 PD 输出</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">retire/PASSIVE 时立即清零 PD 增益；绝不将阻断后的倒地误归因于策略本身</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 01A · LOCOMOTION INFERENCE &amp; PROTECTION</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">FacriMjlabPolicy 50 Hz 步态推理、非对称斜率与倾角防呆通路</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">取代旧纯文本字符画 · C++20 OnnxProtobufMlp · SIM_ONLY</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

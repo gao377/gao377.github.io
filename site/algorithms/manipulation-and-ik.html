@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
   <meta name="generator" content="facri-docs · interactive theme" />
-  <meta name="description" content="详述 UpperBodyPlanner 17-DOF DLS
-IK、立方 Hermite 种子插值、DeviceCollisionQuery 扫掠碰撞检测与
+  <meta name="description" content="详述 UpperBodyPlanner 17-DOF 仅位置
+49 候选 DLS IK、立方 Hermite 种子插值、DeviceCollisionQuery 扫掠碰撞与
 WrenchObserver/TouchdownGuard 纯接触控制。" />
   <title>双臂规划与柔顺操作 · FACRI 文档</title>
   <link rel="stylesheet" href="../assets/site-shell.css" />
@@ -61,64 +61,800 @@ WrenchObserver/TouchdownGuard 纯接触控制。" />
       <header class="doc-title-block">
         <div class="eyebrow">核心算法手册</div>
         <h1 class="title">双臂规划与柔顺操作</h1>
-        <p class="subtitle">49 候选阻尼最小二乘 IK、连续 Minkowski
-扫掠碰撞与纯接触导纳</p>
+        <p class="subtitle">仅位置约束 49 候选 DLS 逆解、Minkowski
+扫掠检验与纯臂雅可比纯接触导纳</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>上身操作模块运行在零 <code>&lt;weld&gt;</code>
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>在废弃仿真 <code>&lt;weld&gt;</code>
+等式吸附外挂后，双臂柔顺抓取与精密安置暴露出四项制约任务成功率的物理与优化瓶颈：</p>
+<ol type="1">
+<li><strong>全姿态强约束 <code>Pink/Clarabel</code>
+逆解频繁失败</strong>：工位操作空间狭小且受限于双足站位误差，若强行要求双夹爪末端同时满足全
+6 自由度位姿（含 <code>10°</code> 姿态容差）并叠加双臂 <code>14</code>
+个关节位置限位，求解器极易在运动学奇异区或工作空间边缘无解停摆。</li>
+<li><strong>传统离散碰撞检测的「穿隧」风险</strong>：仅对时间采样点做静态网格碰撞检查时，高速机械臂连杆或手部在
+<code>20 ms</code>
+步长间隔内可能直接跳过薄壁货箱侧板或设备棱边而未被检出。</li>
+<li><strong>腰部隐式阻尼污染末端接触力反演</strong>：若沿用包含腰部关节的全身雅可比计算末端广义力，躯干大阻尼与关节摩擦会混入臂端力估计，导致无力矩传感器场景下无法分辨「工件刚着台」与「躯干内部阻尼拉扯」。</li>
+<li><strong>过早松爪导致悬空跌落</strong>：在纯物理接触抓放中，若仅按名义位置到达判定就打开夹爪，极易因几毫米高度偏差令工件在空中松脱倾翻。</li>
+</ol>
+<p>针对上述问题，仓库冻结采用唯一的
+<code>native_full / PlanningCore</code> 管线：放弃末端姿态约束与双臂
+<code>14</code> 轴位置界限，转为仅约束末端位置的 <code>17</code>
+轴加权阻尼最小二乘（DLS）与 <code>49</code>
+组横向网格候选搜索；执行前强制通过 Minkowski
+连续扫掠检验；接触阶段采用显式剔除腰部关节的纯 <code>7</code>
+轴臂雅可比力观测器配合作业分阶段导纳剖面与 <code>TouchdownGuard</code>
+垂直触底守卫。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p>上身操作模块运行在无 <code>&lt;weld&gt;</code>
 辅助的纯物理接触基准上，横跨
-<code>manipulation_runtime</code>（<code>P2</code>）与
-<code>action_executor</code>（<code>P0</code>）：上游消费
-<code>BodyStabilityMonitor</code> 确认的停稳状态、目标 TCP
-位姿以及持物上下文，完成 <code>17</code>
-轴联合逆解与连续扫掠碰撞检验后，下游向 <code>traj_slot.shm</code>
-写出同步轨迹并由纯臂力矩观测器与触底守卫完成物理接触抓放。全局冻结参数见
-<a
-href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>，仿真接触机制见
+<code>manipulation_runtime</code>（<code>P2</code> 进程）与
+<code>action_executor</code>（<code>P0</code> 进程）：上游消费
+<code>BodyStabilityMonitor</code> 确认的躯干停稳门禁、目标 TCP
+位置以及持物上下文；在规划阶段完成 <code>17</code> 轴 <code>49</code>
+候选顺序逆解、速度连续种子插值与连续扫掠碰撞核验后，经
+<code>traj_slot.shm</code> 下发同步时间序列；执行期由
+<code>WrenchObserver</code> 与 <code>TouchdownGuard</code> 实施
+<code>200 Hz</code> 外环柔顺修正与触底判稳释放。全局冻结配置见 <a
+href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>，物理接触垫片细节见
 <a href="../evidence/simulation-engine.html">MuJoCo 4.0.1
 仿真引擎</a>。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="algo-manip-49cand-ik" data-fig-uid="algo-manip-49cand-ik-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/algo-full-stack-map.svg"
-alt="双臂规划、逆解与纯接触柔顺控制在全栈算法中的位置" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-manip-49cand-ik" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-manip-49cand-ik-title-f0" aria-describedby="algo-manip-49cand-ik-desc-f0">
+  <title id="algo-manip-49cand-ik-title-f0">17 轴位置优先加权 DLS 与 49 候选微扰全段打包规划流水线</title>
+  <desc id="algo-manip-49cand-ik-desc-f0">展示从双 TCP 位置优先目标生成、49 组微扰筛选、腰三轴硬限位加权 DLS 到公共时间表打包与轨迹后补偿的流水线。</desc>
+  <defs>
+    <pattern id="algo-manip-49cand-ik-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-manip-49cand-ik-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-manip-49cand-ik-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-manip-49cand-ik-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-manip-49cand-ik-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-manip-49cand-ik-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-manip-49cand-ik-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-manip-49cand-ik-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="190.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SEARCH &amp; 17-DOF WEIGHTED DLS</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">执行前完整搜完 49 候选，放弃半途前缀执行</text>
+  <rect x="36.0" y="294.0" width="1128.0" height="208.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="313.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">TIMELINE PACKING &amp; POST-COMPENSATION</text>
+  <text x="50.0" y="330.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">公共时间表打包与轨迹完成后机身补偿</text>
+  <g class="arch-edge" data-from="tcp_origin" data-to="cand_49" data-flow="candidates">
+    <path d="M 298.0 183.0 L 336.0 183.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-49cand-ik-arrow-terracotta-f0)"/>
+    <rect x="291.2" y="174.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="317.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">位置目标</text>
+  </g>
+  <g class="arch-edge" data-from="cand_49" data-to="dls_17" data-flow="solver">
+    <path d="M 584.0 183.0 L 622.0 183.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-49cand-ik-arrow-slate-f0)"/>
+    <rect x="583.1" y="174.0" width="39.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="603.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">49 组</text>
+  </g>
+  <g class="arch-edge" data-from="dls_17" data-to="waist_bounds" data-flow="solver">
+    <path d="M 862.0 183.0 L 900.0 183.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-manip-49cand-ik-arrow-ochre-f0)"/>
+    <rect x="855.2" y="174.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="881.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">三轴限位</text>
+  </g>
+  <g class="arch-edge" data-from="dls_17" data-to="pack_100" data-flow="traj">
+    <path d="M 742.0 220.0 L 742.0 281.0 Q 742.0 286.0 737.0 286.0 L 250.0 286.0 Q 245.0 286.0 245.0 291.0 L 245.0 360.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-49cand-ik-arrow-forest-f0)"/>
+    <rect x="462.8" y="277.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="493.5" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">首个全成功</text>
+  </g>
+  <g class="arch-edge" data-from="pack_100" data-to="hermite_totg" data-flow="traj">
+    <path d="M 390.0 398.0 L 455.0 398.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-49cand-ik-arrow-ink-f0)"/>
+    <rect x="396.7" y="389.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="422.5" y="401.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">公共时间</text>
+  </g>
+  <g class="arch-edge" data-from="hermite_totg" data-to="body_comp" data-flow="traj">
+    <path d="M 745.0 398.0 L 810.0 398.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-49cand-ik-arrow-terracotta-f0)"/>
+    <rect x="753.6" y="389.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="777.5" y="401.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">2cm/3°</text>
+  </g>
+  <g class="arch-node-card" data-node-id="tcp_origin" aria-controls="algo-manip-49cand-ik-f0-drawer-tcp_origin">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tcp_origin" data-flows="all,candidates" aria-expanded="false" aria-label="双 TCP 位置优先目标（放弃 10° 姿态约束）" aria-controls="algo-manip-49cand-ik-f0-drawer-tcp_origin">
+      <rect class="arch-node-box" x="58.0" y="146.0" width="240.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">双 TCP 位置优先目标</text>
+      <text class="arch-node-role" x="70.0" y="206.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">放弃 10° 姿态约束</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#origins" data-same-page="true" aria-label="前往「双 TCP 位置优先目标」对应章节">
+      <rect x="270.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="282.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cand_49" aria-controls="algo-manip-49cand-ik-f0-drawer-cand_49">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cand_49" data-flows="all,candidates,solver" aria-expanded="false" aria-label="49 候选微扰搜索流水线（±30 mm · 7×7 组合）" aria-controls="algo-manip-49cand-ik-f0-drawer-cand_49">
+      <rect class="arch-node-box" x="336.0" y="146.0" width="248.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">49 候选微扰搜索流水线</text>
+      <text class="arch-node-role" x="348.0" y="206.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">±30 mm · 7×7 组合</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#flow" data-same-page="true" aria-label="前往「49 候选微扰搜索流水线」对应章节">
+      <rect x="556.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="568.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="dls_17" aria-controls="algo-manip-49cand-ik-f0-drawer-dls_17">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="dls_17" data-flows="all,solver,traj" aria-expanded="false" aria-label="17-DOF 加权 DLS IK 核（yaw:1 / pitch:10 / roll:100）" aria-controls="algo-manip-49cand-ik-f0-drawer-dls_17">
+      <rect class="arch-node-box" x="622.0" y="146.0" width="240.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="634.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">17-DOF 加权 DLS IK 核</text>
+      <text class="arch-node-role" x="634.0" y="206.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">yaw:1 / pitch:10 / roll:100</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true" aria-label="前往「17-DOF 加权 DLS IK 核」对应章节">
+      <rect x="834.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="846.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="waist_bounds" aria-controls="algo-manip-49cand-ik-f0-drawer-waist_bounds">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="waist_bounds" data-flows="all,solver" aria-expanded="false" aria-label="腰三轴硬范围与臂豁免（+30/-10 · ±25 · ±40°）" aria-controls="algo-manip-49cand-ik-f0-drawer-waist_bounds">
+      <rect class="arch-node-box" x="900.0" y="146.0" width="240.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="912.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">腰三轴硬范围与臂豁免</text>
+      <text class="arch-node-role" x="912.0" y="206.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">+30/-10 · ±25 · ±40°</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#contracts" data-same-page="true" aria-label="前往「腰三轴硬范围与臂豁免」对应章节">
+      <rect x="1112.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1124.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="pack_100" aria-controls="algo-manip-49cand-ik-f0-drawer-pack_100">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="pack_100" data-flows="all,traj" aria-expanded="false" aria-label="公共时间表打包 (&lt;=100 段)（20 mm · 20 ms · 共享进度）" aria-controls="algo-manip-49cand-ik-f0-drawer-pack_100">
+      <rect class="arch-node-box" x="100.0" y="360.0" width="290.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="112.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">公共时间表打包 (&lt;=100 段)</text>
+      <text class="arch-node-role" x="112.0" y="422.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">20 mm · 20 ms · 共享进度</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#paradigm" data-same-page="true" aria-label="前往「公共时间表打包 (&lt;=100 段)」对应章节">
+      <rect x="362.0" y="364.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="374.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="hermite_totg" aria-controls="algo-manip-49cand-ik-f0-drawer-hermite_totg">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="hermite_totg" data-flows="all,traj" aria-expanded="false" aria-label="CubicHermite + TOTG 过渡（C2 速度连续轨迹）" aria-controls="algo-manip-49cand-ik-f0-drawer-hermite_totg">
+      <rect class="arch-node-box" x="455.0" y="360.0" width="290.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="467.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CubicHermite + TOTG 过渡</text>
+      <text class="arch-node-role" x="467.0" y="422.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">C2 速度连续轨迹</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true" aria-label="前往「CubicHermite + TOTG 过渡」对应章节">
+      <rect x="717.0" y="364.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="729.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="body_comp" aria-controls="algo-manip-49cand-ik-f0-drawer-body_comp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="body_comp" data-flows="all,traj" aria-expanded="false" aria-label="轨迹完成后机身补偿（2 cm / 3° 触发一次）" aria-controls="algo-manip-49cand-ik-f0-drawer-body_comp">
+      <rect class="arch-node-box" x="810.0" y="360.0" width="290.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="822.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">轨迹完成后机身补偿</text>
+      <text class="arch-node-role" x="822.0" y="422.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">2 cm / 3° 触发一次</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#evidence" data-same-page="true" aria-label="前往「轨迹完成后机身补偿」对应章节">
+      <rect x="1072.0" y="364.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1084.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">位置优先去姿态约束 &amp; 后补偿</text>
+  <rect x="267.5" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="289.5" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">±30 mm 49 候选搜索</text>
+  <rect x="403.3" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="425.3" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">17-DOF DLS 与公共时间表</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">实测消融对照: 保留姿态约束 0/20，改为仅位置约束后 20/20 原目标通过</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 03A · 17-DOF POSITION-FIRST 49-CANDIDATE IK</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">17 轴位置优先加权 DLS 与 49 候选微扰全段打包规划流水线</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">放弃 10° 姿态约束 · 49 候选 ±30 mm · 100 段 @ 20 ms</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>双臂规划、逆解与纯接触柔顺控制在全栈算法中的位置</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="candidates" aria-pressed="false">位置优先 49 候选微扰</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="solver" aria-pressed="false">17-DOF 加权 DLS 与硬范围</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="traj" aria-pressed="false">Hermite 轨迹与机身补偿</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>17 轴加权 DLS 与 49
+候选顺序逆解流水线</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-manip-49cand-ik.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-manip-49cand-ik-f0-drawer-tcp_origin" class="diagram-drawer-panel" data-node-drawer="tcp_origin" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">双 TCP 位置优先目标</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation · 目标生成 · 按实测夹持关系</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「双 TCP 位置优先目标」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">统一采用模型抓取 TCP（按键禁用网格尖端偏移），在源头消除虚假不可达。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>位置优先约束削减</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/planning_core/upper_body_planner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>原 Pink/10° 姿态约束导致 169 组无解；现仅约束双 TCP 位置并按实测手距生成</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-49cand-ik-f0-drawer-cand_49" class="diagram-drawer-panel" data-node-drawer="cand_49" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">49 候选微扰搜索流水线</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation · 候选搜索 · 执行前全量搜索</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「49 候选微扰搜索流水线」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">废除旧前缀执行与 ±5° 角搜索，确保任何执行出来的轨迹均全程可达无断层。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>先想完再执行搜索策略</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/planning_core/upper_body_planner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>原目标 -&gt; 单手 ±X/Y/Z 30 mm (各 7) -&gt; 双手组合共 49 组；仅执行首个全段成功组</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-49cand-ik-f0-drawer-dls_17" class="diagram-drawer-panel" data-node-drawer="dls_17" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">17-DOF 加权 DLS IK 核</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation C++20 · 求解器 · ik_damping = 0.015</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「17-DOF 加权 DLS IK 核」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">由底层原生 DLS 核从同一捕获状态求解全分段位置轨迹。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 阻尼最小二乘求解核</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/planning_core/dls_ik_solver.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>3 腰 + 14 双臂联合规划；高 roll 权重抑制侧倾，注册腰零软偏好</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-49cand-ik-f0-drawer-waist_bounds" class="diagram-drawer-panel" data-node-drawer="waist_bounds" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">腰三轴硬范围与臂豁免</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation · 运动学限位 · 规划与 actuation 同源</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「腰三轴硬范围与臂豁免」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">向 IK、打包、actuation、HAL/SAL 与 MJCF 一致传播同一约束边界。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单真源限位传播</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/trajectory_constraints.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>pitch 前倾 30°/后仰 10°、roll ±25°、yaw ±40°；14 双臂关节全链解除位置限位</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-49cand-ik-f0-drawer-pack_100" class="diagram-drawer-panel" data-node-drawer="pack_100" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">公共时间表打包 (&lt;=100 段)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation · 轨迹打包 · 最多 100 段 @ 20 ms</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「公共时间表打包 (&lt;=100 段)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">废除逐手软重定时与全局速度缩放，保证双手与腰部严格同步推进。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单次公共时间表采样</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/planning_core/arm_controller.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>一次生成左右手公共路段；0.2 m/s 仅作软偏好不拒绝轨迹；保留同一 lease 与截止</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-49cand-ik-f0-drawer-hermite_totg" class="diagram-drawer-panel" data-node-drawer="hermite_totg" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">CubicHermite + TOTG 过渡</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation Python · 关节路径 · 无阶跃冲击插值</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「CubicHermite + TOTG 过渡」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为自由非接触衔接提供零加速度突变的平滑关节曲线。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>C2 五次 Hermite + 关节尾段</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/seed.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>覆盖空手收臂 (plan_posture)、胸前携物姿态 (.6589,0,.3547)m 与按钮前缀倒放退手</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-49cand-ik-f0-drawer-body_comp" class="diagram-drawer-panel" data-node-drawer="body_comp" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">轨迹完成后机身补偿</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation · 后补偿 · 轨迹结束单次判定</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「轨迹完成后机身补偿」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">消除执行期间双足微移引起的空间误差，绝不扩展为执行期 FK 循环。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>非循环单次相对重规划</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅经 state_estimation 相对变化判定，达 2 cm 或 3° 向原空间目标重规划一次</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-manip-admittance-touchdown">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2 id="一17-自由度上身规划与-49-候选阻尼最小二乘-ik">一、17
-自由度上身规划与 49 候选阻尼最小二乘 IK</h2>
+<h2 id="principles">03 · 核心原理与机制推演</h2>
+<h3 id="仅位置约束-17-轴加权-dls-与-49-候选顺序搜索">3.1 仅位置约束
+<code>17</code> 轴加权 DLS 与 <code>49</code> 候选顺序搜索</h3>
 <p><code>UpperBodyPlanner</code> 与
 <code>DlsIkSolver</code>（<code>src/robot_app/algorithms/planning_core/upper_body_planner.hpp</code>、<code>upper_body_planner.cpp</code>
-与 <code>dls_ik_solver.hpp</code>）负责双臂及腰部统一逆运动学求解：</p>
+与
+<code>dls_ik_solver.hpp</code>）承担腰臂联合规划，其核心数学结构与冻结约束如下：</p>
+<ol type="1">
+<li><strong>关节分工与腰部刚度惩罚阶梯</strong>：规划向量维度
+<code>kUpperBodyDofs = 17</code>（<code>3</code> 轴腰部 + 左/右臂各
+<code>7</code> 轴）。遵照冻结设计，双臂 <code>14</code>
+个肩/肘/腕关节全部解除位置限位（<code>enforce_limits = false</code>），仅对腰部保留唯一单真源三轴硬范围（<code>resources/facri-upper-joint-limits.json</code>：<code>yaw ±40°</code>、<code>pitch [-10°, +30°]</code>、<code>roll ±25°</code>），并施加显式非均匀惩罚权重
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mtext mathvariant="normal">waist</mtext></msub><mo>=</mo><mrow><mi mathvariant="normal">diag</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>1.0</mn><mo>,</mo><mspace width="0.167em"></mspace><mn>10.0</mn><mo>,</mo><mspace width="0.167em"></mspace><mn>100.0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">W_{\text{waist}} = \operatorname{diag}(1.0,\, 10.0,\, 100.0)</annotation></semantics></math>（<code>yaw : pitch : roll = 1 : 10 : 100</code>）：</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>q</mi><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>J</mi><mtext mathvariant="normal">pos</mtext><mi>⊤</mi></msubsup><msub><mi>J</mi><mtext mathvariant="normal">pos</mtext></msub><mo>+</mo><msup><mi>λ</mi><mn>2</mn></msup><mi>I</mi><mo>+</mo><msub><mi>W</mi><mtext mathvariant="normal">waist</mtext></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msubsup><mi>J</mi><mtext mathvariant="normal">pos</mtext><mi>⊤</mi></msubsup><msub><mi>e</mi><mtext mathvariant="normal">pos</mtext></msub></mrow><annotation encoding="application/x-tex">\Delta q = \left(J_{\text{pos}}^{\top} J_{\text{pos}} + \lambda^2 I + W_{\text{waist}}\right)^{-1} J_{\text{pos}}^{\top} e_{\text{pos}}</annotation></semantics></math></p>
+<p>其中
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>J</mi><mtext mathvariant="normal">pos</mtext></msub><annotation encoding="application/x-tex">J_{\text{pos}}</annotation></semantics></math>
+为剔除旋转行后的纯位置雅可比，阻尼
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>0.015</mn></mrow><annotation encoding="application/x-tex">\lambda = 0.015</annotation></semantics></math>、单点最大迭代
+<code>48</code> 次、分段末端位置误差容限
+<code>max_segment_pos_err_m = 0.020 m</code>。高昂的侧倾权重（<code>roll = 100.0</code>）迫使工作空间需求优先由手臂与腰部偏航消化，严防躯干侧倾危及双足平衡。</p>
+<ol start="2" type="1">
+<li><strong><code>49</code> 组 <code>±30 mm</code>
+网格序列搜索（<code>plan_cartesian_49</code>）</strong>：从同一捕获状态出发，左右手各自生成中心与
+<code>±X / ±Y / ±Z 30 mm</code> 共 <code>7</code>
+个微扰候选，按「原目标对 <code>(0, 0)</code> -&gt; 单手微扰 -&gt;
+双手组合（共 <code>7 × 7 = 49</code>
+组）」顺序逐一构建左右手公共最小加加速度（Minimum-Jerk）时间表（固定
+<code>20 ms</code> 步长、最多 <code>kMaxTcpSegments = 100</code>
+段、<code>kMaxPackedWaypoints = 128</code>
+路点）。<strong>任何一段逆解超差（<code>&gt; 20 mm</code>）或失败立即放弃整组候选，仅执行首个全段成功候选</strong>，不采用前缀截断拼接，亦不再搜索
+<code>±5°</code> 角度候选。</li>
+<li><strong>持物中点几何、单次机身补偿与按钮前缀逆放</strong>：搬运期调用
+<code>compute_held_dual_tcp_targets</code> 使工件标定双抓点中点贴合双
+TCP 中点且连线以最小旋转跟随双 TCP
+连线（允许手距变化与两端均分误差，不跟随单手腕自转）；每条解锁腰部的空间轨迹完成后，经
+<code>state_estimation</code> 检查机身相对偏移若达到 <code>2 cm</code>
+或 <code>3°</code>（<code>kDriftCompPosThresholdM</code> /
+<code>kDriftCompRotThresholdRad</code>），则向同一原空间目标执行单次漂移补偿（不循环）；按钮退手直接启用
+<code>REVERSE_PREFIX_REPLAY</code> 逆序回放本次已发安全关节前缀而不重求
+IK。</li>
+</ol>
+<h3 id="保速种子插值minkowski-扫掠检验与纯臂力控着陆">3.2
+保速种子插值、Minkowski 扫掠检验与纯臂力控着陆</h3>
+<figure class="diagram-figure" data-diagram-id="algo-manip-admittance-touchdown" data-fig-uid="algo-manip-admittance-touchdown-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-manip-admittance-touchdown" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="algo-manip-admittance-touchdown-title-f1" aria-describedby="algo-manip-admittance-touchdown-desc-f1">
+  <title id="algo-manip-admittance-touchdown-title-f1">Minkowski 扫掠检验、纯 7 轴臂雅可比力观测与 TouchdownGuard 触底状态机</title>
+  <desc id="algo-manip-admittance-touchdown-desc-f1">拆解操作接触段几何扫掠筛查、纯 7 轴臂雅可比力估计、C++20 笛卡尔导纳与触底真实释放状态机。</desc>
+  <defs>
+    <pattern id="algo-manip-admittance-touchdown-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-manip-admittance-touchdown-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-manip-admittance-touchdown-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#algo-manip-admittance-touchdown-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">PRE-CONTACT SWEEP &amp; FORCE ESTIMATION</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">扫掠避碰与纯 7 轴臂力估计</text>
+  <rect x="604.0" y="86.0" width="560.0" height="420.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">200 HZ ADMITTANCE &amp; TOUCHDOWN RELEASE</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">导纳顺应执行与触底释放闭环</text>
+  <g class="arch-edge" data-from="minkowski" data-to="admit_4" data-flow="sweep">
+    <path d="M 176.0 146.0 L 176.0 123.0 Q 176.0 118.0 181.0 118.0 L 744.0 118.0 Q 749.0 118.0 749.0 123.0 L 749.0 146.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-ink-f1)"/>
+    <rect x="431.8" y="109.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="462.5" y="121.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">无穿插放行</text>
+  </g>
+  <g class="arch-edge" data-from="wrench_obs" data-to="deadband" data-flow="admittance">
+    <path d="M 436.0 218.0 L 436.0 261.0 Q 436.0 266.0 431.0 266.0 L 320.0 266.0 Q 315.0 266.0 315.0 271.0 L 315.0 314.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-slate-f1)"/>
+    <rect x="354.6" y="257.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="375.5" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">7-DOF</text>
+  </g>
+  <g class="arch-edge" data-from="deadband" data-to="cart_admit" data-flow="admittance">
+    <path d="M 460.0 351.0 L 585.0 351.0 Q 590.0 351.0 590.0 346.0 L 590.0 187.0 Q 590.0 182.0 595.0 182.0 L 896.0 182.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-forest-f1)"/>
+    <rect x="712.3" y="173.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="743.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">纯净力偏置</text>
+  </g>
+  <g class="arch-edge" data-from="admit_4" data-to="cart_admit" data-flow="admittance">
+    <path d="M 872.0 182.0 L 896.0 182.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-ochre-f1)"/>
+  </g>
+  <g class="arch-edge" data-from="cart_admit" data-to="touchdown" data-flow="touchdown">
+    <path d="M 1019.0 218.0 L 1019.0 261.0 Q 1019.0 266.0 1014.0 266.0 L 754.0 266.0 Q 749.0 266.0 749.0 271.0 L 749.0 314.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-terracotta-f1)"/>
+    <rect x="848.2" y="257.0" width="71.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="884.0" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">fz&gt;=0.90 N</text>
+  </g>
+  <g class="arch-edge" data-from="touchdown" data-to="jaw_release" data-flow="touchdown">
+    <path d="M 872.0 351.0 L 896.0 351.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-manip-admittance-touchdown-arrow-forest-f1)"/>
+    <rect x="847.3" y="342.0" width="73.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="884.0" y="354.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.08 s 驻留</text>
+  </g>
+  <g class="arch-node-card" data-node-id="minkowski" aria-controls="algo-manip-admittance-touchdown-f1-drawer-minkowski">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="minkowski" data-flows="all,sweep" aria-expanded="false" aria-label="Minkowski 扫掠检验（Bernstein 细分无穿插）" aria-controls="algo-manip-admittance-touchdown-f1-drawer-minkowski">
+      <rect class="arch-node-box" x="60.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">Minkowski 扫掠检验</text>
+      <text class="arch-node-role" x="72.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Bernstein 细分无穿插</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true" aria-label="前往「Minkowski 扫掠检验」对应章节">
+      <rect x="264.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="276.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wrench_obs" aria-controls="algo-manip-admittance-touchdown-f1-drawer-wrench_obs">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wrench_obs" data-flows="admittance,all" aria-expanded="false" aria-label="WrenchObserver 力观测（纯 7 轴臂雅可比投影）" aria-controls="algo-manip-admittance-touchdown-f1-drawer-wrench_obs">
+      <rect class="arch-node-box" x="320.0" y="146.0" width="232.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="332.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">WrenchObserver 力观测</text>
+      <text class="arch-node-role" x="332.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">纯 7 轴臂雅可比投影</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true" aria-label="前往「WrenchObserver 力观测」对应章节">
+      <rect x="524.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="deadband" aria-controls="algo-manip-admittance-touchdown-f1-drawer-deadband">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="deadband" data-flows="admittance,all" aria-expanded="false" aria-label="0.12 Nm 死区与补偿器（滤除摩擦与模型残差）" aria-controls="algo-manip-admittance-touchdown-f1-drawer-deadband">
+      <rect class="arch-node-box" x="170.0" y="314.0" width="290.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="182.0" y="339.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">0.12 Nm 死区与补偿器</text>
+      <text class="arch-node-role" x="182.0" y="374.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">滤除摩擦与模型残差</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#paradigm" data-same-page="true" aria-label="前往「0.12 Nm 死区与补偿器」对应章节">
+      <rect x="432.0" y="318.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="444.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="admit_4" aria-controls="algo-manip-admittance-touchdown-f1-drawer-admit_4">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="admit_4" data-flows="admittance,all,sweep" aria-expanded="false" aria-label="四套阶段导纳剖面（柔顺刚度阻尼矩阵）" aria-controls="algo-manip-admittance-touchdown-f1-drawer-admit_4">
+      <rect class="arch-node-box" x="626.0" y="146.0" width="246.0" height="72.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">四套阶段导纳剖面</text>
+      <text class="arch-node-role" x="638.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">柔顺刚度阻尼矩阵</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#contracts" data-same-page="true" aria-label="前往「四套阶段导纳剖面」对应章节">
+      <rect x="844.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="856.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="cart_admit" aria-controls="algo-manip-admittance-touchdown-f1-drawer-cart_admit">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cart_admit" data-flows="admittance,all,touchdown" aria-expanded="false" aria-label="CartesianAdmittance 核（P0 200 Hz 柔顺积分）" aria-controls="algo-manip-admittance-touchdown-f1-drawer-cart_admit">
+      <rect class="arch-node-box" x="896.0" y="146.0" width="246.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CartesianAdmittance 核</text>
+      <text class="arch-node-role" x="908.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">P0 200 Hz 柔顺积分</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#flow" data-same-page="true" aria-label="前往「CartesianAdmittance 核」对应章节">
+      <rect x="1114.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="touchdown" aria-controls="algo-manip-admittance-touchdown-f1-drawer-touchdown">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="touchdown" data-flows="all,touchdown" aria-expanded="false" aria-label="TouchdownGuard 触底守卫（fz &gt;= 0.90 N · 0.08 s）" aria-controls="algo-manip-admittance-touchdown-f1-drawer-touchdown">
+      <rect class="arch-node-box" x="626.0" y="314.0" width="246.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="638.0" y="339.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TouchdownGuard 触底守卫</text>
+      <text class="arch-node-role" x="638.0" y="374.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">fz &gt;= 0.90 N · 0.08 s</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true" aria-label="前往「TouchdownGuard 触底守卫」对应章节">
+      <rect x="844.0" y="318.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="856.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="jaw_release" aria-controls="algo-manip-admittance-touchdown-f1-drawer-jaw_release">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="jaw_release" data-flows="all,touchdown" aria-expanded="false" aria-label="JawForceLoop 夹持释放（Fn=1.5 N · 真实 OPEN）" aria-controls="algo-manip-admittance-touchdown-f1-drawer-jaw_release">
+      <rect class="arch-node-box" x="896.0" y="314.0" width="246.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="908.0" y="339.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">JawForceLoop 夹持释放</text>
+      <text class="arch-node-role" x="908.0" y="374.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">Fn=1.5 N · 真实 OPEN</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#evidence" data-same-page="true" aria-label="前往「JawForceLoop 夹持释放」对应章节">
+      <rect x="1114.0" y="318.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="334.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">纯 7 轴臂雅可比力观测</text>
+  <rect x="232.8" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="254.8" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">4 套阶段导纳剖面</text>
+  <rect x="358.1" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="380.1" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">TouchdownGuard 触底门禁</text>
+  <rect x="529.6" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="551.6" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">200 Hz 导纳与真实 OPEN 释放</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">剔除高惯量腰部雅可比后，末端静态接触阈值收敛至 sub-Newton 级</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 03B · SWEEP, 7-DOF WRENCH &amp; TOUCHDOWN GUARD</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">Minkowski 扫掠检验、纯 7 轴臂雅可比力观测与 TouchdownGuard 触底状态机</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">剔除腰部雅可比耦合 · 0.12 Nm 死区 · fz &gt;= 0.90 N (0.08 s)</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="sweep" aria-pressed="false">Minkowski 扫掠避碰</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="admittance" aria-pressed="false">纯 7 轴力观测与导纳</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="touchdown" aria-pressed="false">触底状态机与真实释放</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>Minkowski 扫掠检验、纯臂雅可比力观测与
+TouchdownGuard 触底守卫</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-manip-admittance-touchdown.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-manip-admittance-touchdown-f1-drawer-minkowski" class="diagram-drawer-panel" data-node-drawer="minkowski" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">Minkowski 扫掠检验</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation Python · 避碰 · 执行前几何审计</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「Minkowski 扫掠检验」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在规划落地前筛除扫掠包络与设备部件发生的连续穿插风险。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>连续碰撞区间检验</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/path_diagnostics.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>检查校准手部、双 TCP 中点平移工件与设备部件几何，保留箱体底面与侧壁</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-admittance-touchdown-f1-drawer-wrench_obs" class="diagram-drawer-panel" data-node-drawer="wrench_obs" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">WrenchObserver 力观测</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation Python · 力估计 · 200 Hz 状态投影</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「WrenchObserver 力观测」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">从双臂 7 轴扭矩残差中精准分离出亚牛顿级末端接触力信号。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV 纯臂雅可比算子</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/domain/control/wrench_observer.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>刻意剔除腰部雅可比，防止高惯量躯干关节力矩噪声淹没轻质末端接触信号</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-admittance-touchdown-f1-drawer-deadband" class="diagram-drawer-panel" data-node-drawer="deadband" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">0.12 Nm 死区与补偿器</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Admittance C++20 · 滤波 · 200 Hz 实时过滤</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「0.12 Nm 死区与补偿器」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">抑制无接触自由空间中的零漂引起的末端虚假漂移。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>非线性死区补偿器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/admittance/wrench_compensator.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>过滤 &lt;=0.12 Nm 关节静态偏置与传动噪声，提取纯净接触增量</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-admittance-touchdown-f1-drawer-admit_4" class="diagram-drawer-panel" data-node-drawer="admit_4" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">四套阶段导纳剖面</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Admittance Python · 配置 · 按任务阶段切换</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「四套阶段导纳剖面」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在需要刚性对准与需要柔顺贴合的不同接触阶段平滑调整顺应度。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>策略剖面参数表</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>为取料、插拔、按键与桌面放置配置差异化虚拟质量-阻尼-刚度剖面</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-admittance-touchdown-f1-drawer-cart_admit" class="diagram-drawer-panel" data-node-drawer="cart_admit" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">CartesianAdmittance 核</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Admittance C++20 · 执行 · 200 Hz 实时闭环</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「CartesianAdmittance 核」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">以 5 ms 节拍主动顺应工装台面微倾与位置误差，避免硬碰撞弹跳。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 原生 C++20 导纳积分</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/admittance/cartesian_admittance.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>将末端力偏置转换为笛卡尔位移修正量并叠加至参考轨迹</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-admittance-touchdown-f1-drawer-touchdown" class="diagram-drawer-panel" data-node-drawer="touchdown" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">TouchdownGuard 触底守卫</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Manipulation Python · 状态机 · 连续接触驻留判据</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「TouchdownGuard 触底守卫」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">彻底取代基于高度坐标猜想的盲放，确保释放前工件已稳固压在承托面上。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>力阈值驻留状态机</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>垂向接触力 fz &gt;= 0.90 N 持续稳定驻留 0.08 s 才确认物理落座支撑面</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-manip-admittance-touchdown-f1-drawer-jaw_release" class="diagram-drawer-panel" data-node-drawer="jaw_release" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">JawForceLoop 夹持释放</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 Effector · 执行输出 · 200 Hz 夹爪力控</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「JawForceLoop 夹持释放」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">完成无 &lt;weld&gt; 纯物理抓放闭环，实测达成 510/510 零失败成绩。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>纯接触闭环力控</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/planning_core/dexhand_controller.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>夹持维持 Fn=1.5 N；放置触发真实 OPEN 并允许重力自然下落至登记支撑面</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="algo-manip-49cand-ik">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<ol type="1">
+<li><strong>速度连续种子插值与 Bernstein 扫掠防穿隧</strong>：在
+<code>src/robot_app/modules/manipulation_runtime/domain/trajectory/seed.py</code>
+中，轨迹节点重采样采用 <code>CubicHermiteSpline</code> 严格保持关节速度
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>C</mi><mn>1</mn></msup><annotation encoding="application/x-tex">C^1</annotation></semantics></math>
+连续，消除线性插值在路点拐角引起的力矩尖峰；随后
+<code>DeviceCollisionQuery</code>（<code>src/robot_app/modules/manipulation_runtime/infrastructure/native_bindings/device_collision.py</code>）对校核手部连杆、工装与平移工件构造相邻离散构型间的
+Minkowski 凸包扫掠体，并利用关节链 Bernstein
+多项式速度上界自适应中点二分细分时间区间，直到剩余间隙与分段不确定度满足几何安全门限，从数学上杜绝高速轨迹「穿墙越过」箱壁。</li>
+<li><strong>纯 <code>7</code>
+轴臂雅可比力观测（<code>WrenchObserver</code>）</strong>：位于
+<code>src/robot_app/modules/manipulation_runtime/domain/control/wrench_observer.py</code>，构造<strong>显式剥离全部腰部关节</strong>的纯
+<code>7</code> 自由度单臂 Pinocchio 雅可比矩阵
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>J</mi><mtext mathvariant="normal">arm</mtext></msub><mo>∈</mo><msup><mi mathvariant="double-struck">ℝ</mi><mrow><mn>6</mn><mo>×</mo><mn>7</mn></mrow></msup></mrow><annotation encoding="application/x-tex">J_{\text{arm}} \in \mathbb{R}^{6 \times 7}</annotation></semantics></math>。对经死区过滤（<code>deadband = 0.12 Nm</code>）和一阶指数平滑（<code>ema_alpha = 0.22</code>）后的关节估计力矩
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mtext mathvariant="normal">filt</mtext></msub><annotation encoding="application/x-tex">\tau_{\text{filt}}</annotation></semantics></math>（无质量上肢
+<code>SIM</code>
+配置下重力项显式置零），采用解耦阻尼伪逆反演操作坐标系末端广义外力：</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mtext mathvariant="normal">ee</mtext></msub><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>J</mi><mi>v</mi><mi>⊤</mi></msubsup><msub><mi>J</mi><mi>v</mi></msub><mo>+</mo><msubsup><mi>λ</mi><mtext mathvariant="normal">lin</mtext><mn>2</mn></msubsup><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msubsup><mi>J</mi><mi>v</mi><mi>⊤</mi></msubsup><msub><mi>τ</mi><mtext mathvariant="normal">filt</mtext></msub><mspace width="1.0em"></mspace><mo stretchy="false" form="prefix">(</mo><msub><mi>λ</mi><mtext mathvariant="normal">lin</mtext></msub><mo>=</mo><mn>0.08</mn><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>τ</mi><mtext mathvariant="normal">ee</mtext></msub><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>J</mi><mi>ω</mi><mi>⊤</mi></msubsup><msub><mi>J</mi><mi>ω</mi></msub><mo>+</mo><msubsup><mi>λ</mi><mtext mathvariant="normal">ang</mtext><mn>2</mn></msubsup><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><msubsup><mi>J</mi><mi>ω</mi><mi>⊤</mi></msubsup><msub><mi>τ</mi><mtext mathvariant="normal">filt</mtext></msub><mspace width="1.0em"></mspace><mo stretchy="false" form="prefix">(</mo><msub><mi>λ</mi><mtext mathvariant="normal">ang</mtext></msub><mo>=</mo><mn>0.35</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f_{\text{ee}} = \left(J_{v}^{\top} J_{v} + \lambda_{\text{lin}}^2 I\right)^{-1} J_{v}^{\top} \tau_{\text{filt}} \quad (\lambda_{\text{lin}} = 0.08), \qquad \tau_{\text{ee}} = \left(J_{\omega}^{\top} J_{\omega} + \lambda_{\text{ang}}^2 I\right)^{-1} J_{\omega}^{\top} \tau_{\text{filt}} \quad (\lambda_{\text{ang}} = 0.35)</annotation></semantics></math></p>
+<ol start="3" type="1">
+<li><strong>分阶段导纳与 <code>TouchdownGuard</code>
+触底守卫</strong>：<code>TaskAdmittanceSession</code>（<code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code>）按任务阶段加载四套二阶质量-阻尼-刚度导纳剖面。在安置末段激活
+<code>PLACE_TOUCHDOWN_PROFILE</code> 及其
+<code>TouchdownGuard</code>：当行程进度达到
+<code>90%</code>（<code>seek_start_ratio</code>）而向上反力未及
+<code>0.45 N</code> 时，启动最高 <code>0.008 m</code>
+深度、<code>0.015 m/s</code>
+速率的轻柔下探微寻；仅当实时监测到连续满足垂直接触反力
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mi>z</mi></msub><mo>≥</mo><mn>0.90</mn><mspace width="0.278em"></mspace><mtext mathvariant="normal">N</mtext></mrow><annotation encoding="application/x-tex">f_z \ge 0.90\;\text{N}</annotation></semantics></math>
+且各关节速率 <code>&lt;= 0.15 rad/s</code> 并平稳驻留
+<code>dwell_s = 0.08 s</code>
+后，才确认可靠着台并放行双爪开爪释放。</li>
+</ol>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>上身操作层体现了<strong>「<code>C++20</code>
+<code>UpperBodyPlanner</code> 实时规划核 + <code>Python</code>
+柔顺/扫掠领域算子」双栈协作范式（<code>HYBRID</code>）</strong>：</p>
 <ul>
-<li><strong>关节分工与腰部刚度加权</strong>：规划向量维度
-<code>kUpperBodyDofs = 17</code>（左右双臂各 <code>7</code>
-轴，加上腰部偏航 <code>yaw ±40°</code>、俯仰
-<code>pitch [-10°, +30°]</code>、横滚 <code>roll ±25°</code>
-三个硬约束关节）。<code>DlsIkSolver</code> 采用阻尼参数
-<code>ik_damping = 0.015</code>、单点最大迭代 <code>48</code>
-次与分段末端误差上限
-<code>max_segment_pos_err_m = 0.020 m</code>；腰部三轴权重差异显著设置（<code>yaw = 1.0</code>、<code>pitch = 10.0</code>、<code>roll = 100.0</code>），优先由双臂与腰部偏航消化大角度工作空间需求，抑制危及双足平衡的躯干侧倾。</li>
-<li><strong>49
-候选分级邻域搜索（<code>plan_cartesian_49</code>）</strong>：当标准中心点（<code>(0, 0)</code>）无法避障或触达运动学奇异区时，规划器在笛卡尔横向平面沿
-<code>±30 mm</code> 网格展开尝试，依「中心 <code>(0, 0)</code> -&gt;
-单臂小幅偏置 -&gt; 双臂组合 <code>7×7 = 49</code>
-组」顺序快速检索可行无奇异通道，并在固定时间格（<code>20 ms</code>
-步长最小加加速度插值，最多 <code>kMaxTcpSegments = 100</code>
-段）上生成共线同步的时间序列。</li>
-<li><strong>持物双臂中点约束与轻量按钮回退</strong>：搬运工况调用
-<code>compute_held_dual_tcp_targets</code>
-保持双夹爪相对工件中点刚性几何及最小连线旋转，配合每阶段触发的
-<code>2 cm / 3°</code> 单次漂移纠偏与
-<code>kHoldingLeaseMaxDriftM = 0.050</code>
-持物租赁超时护栏；按钮点按完成返回时，<code>ManipulationDomain</code>（<code>src/robot_app/modules/manipulation_runtime/domain.cpp</code>）支持
-<code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code>
-四类工作模式，并在按钮撤回启用
-<code>REVERSE_PREFIX_REPLAY</code>（<code>mode = 2</code>）直接逆序回放已验证安全路径而无需重新规划。</li>
+<li><strong>值语义算子管道（<code>UpperBodyPlanner</code> &amp;
+<code>DlsIkSolver</code>）</strong>：规划器无隐藏全局状态，输入起止状态与配置结构体即返回完整
+<code>UpperPlanResult</code>；所有 <code>49</code>
+候选生成、公共时间轴插补与 <code>20 ms</code>
+打包在同一原语内原子完成。</li>
+<li><strong>不可变策略配置对象（<code>AdmittanceProfile</code> /
+<code>TouchdownGuard</code>）</strong>：四套导纳剖面以
+<code>@dataclass(frozen=True)</code> 声明并在 <code>__post_init__</code>
+完成正定性与有限值校验；<code>TaskAdmittanceSession</code>
+仅绑定单一轨迹生命周期并支持依赖注入自定义
+<code>WrenchObserver</code>。</li>
+<li><strong>安全门禁与输入验证前置（<code>native_full_inputs.py</code>
+&amp;
+<code>DeviceCollisionQuery</code>）</strong>：将支持面边界、场景几何版本及
+Minkowski
+扫掠检查全部前置于轨迹下发前，绝不在执行期插手动态重规划掩盖几何失效。</li>
 </ul>
-<h2
-id="二种子插值与连续扫掠碰撞核验">二、种子插值与连续扫掠碰撞核验</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -128,105 +864,222 @@ id="二种子插值与连续扫掠碰撞核验">二、种子插值与连续扫�
 </colgroup>
 <thead>
 <tr>
-<th>模块</th>
-<th>实现文件</th>
-<th>核心技术细节</th>
+<th>评估维度</th>
+<th>审阅结论</th>
+<th>客观工程依据</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>速度连续种子插值（<code>seed.py</code>）</td>
-<td><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/seed.py</code></td>
-<td>引入分段三次埃尔米特插值（<code>CubicHermiteSpline</code>），严格保留
-TOTG
-时间最优轨迹节点处的一阶速度连续性，取代容易在节点处引起电机力矩尖峰的常规线性插值</td>
+<td><strong>1. 领域纯洁性与依赖倒置</strong></td>
+<td><code>PASS</code></td>
+<td><code>UpperBodyPlanner</code>、<code>WrenchObserver</code> 与
+<code>TaskAdmittanceSession</code> 均不依赖 <code>ROS 2</code>
+消息总线与底层电机驱动</td>
 </tr>
 <tr>
-<td>扫掠体积碰撞核验（<code>DeviceCollisionQuery</code>）</td>
-<td><code>src/robot_app/modules/manipulation_runtime/infrastructure/native_bindings/device_collision.py</code></td>
-<td>基于连杆凸包与胶囊几何构建相邻离散构型间的 Minkowski
-凸包扫掠体，依据 Bernstein
-导数速度上界自动计算最大采样区间并执行自适应中点二分细分，防止高速轨迹「穿墙越过」窄小障碍边沿</td>
+<td><strong>2. 契约完备性与边界防呆</strong></td>
+<td><code>PASS</code></td>
+<td><code>native_full_inputs.py</code>、<code>AdmittanceProfile</code>
+与 <code>DeviceCollisionQuery</code> 在构造/规划入口拦截缺项与越界</td>
 </tr>
 <tr>
-<td>原生输入合约（<code>native_full_inputs.py</code>）</td>
-<td><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/native_full_inputs.py</code></td>
-<td>校验双臂关节位置限幅、支持面边界与场景障碍几何版本一致性，缺项直接显式阻断执行</td>
+<td><strong>3. 状态机与生命周期确定性</strong></td>
+<td><code>PASS</code></td>
+<td><code>49</code> 候选整组原子成败、<code>TouchdownGuard</code>
+<code>0.08 s</code> 驻留门禁与 <code>REVERSE_PREFIX_REPLAY</code>
+回退边界严密</td>
+</tr>
+<tr>
+<td><strong>4. 实时内存与并发安全性</strong></td>
+<td><code>HYBRID</code></td>
+<td><code>UpperBodyPlanner</code> 在 <code>C++20</code>
+中运行；<code>DeviceCollisionQuery</code>、<code>WrenchObserver</code>
+与导纳会话仍驻留 <code>Python</code> 运行域</td>
+</tr>
+<tr>
+<td><strong>5. 离线可测性与失败留痕</strong></td>
+<td><code>PASS</code></td>
+<td>支持纯内存数值回放、COAL 离线扫掠审计及 <code>C</code>
+站位历史失败对照留存</td>
+</tr>
+<tr>
+<td><strong>6. 单真源约束与过渡债务透明度</strong></td>
+<td><code>HYBRID</code></td>
+<td>腰限收口 <code>resources/facri-upper-joint-limits.json</code>
+单真源；客观标明 <code>C++20</code> 规划核与 <code>Python</code>
+算子双栈协作边界</td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2
-id="三力矩观测touchdownguard-与纯接触任务柔顺控制">三、力矩观测、<code>TouchdownGuard</code>
-与纯接触任务柔顺控制</h2>
-<p>在无桌面真值或 <code>&lt;weld&gt;</code>
-外挂吸附的前提下，操作安全依赖于
-<code>src/robot_app/modules/manipulation_runtime/domain/control/wrench_observer.py</code>（<code>WrenchObserver</code>）与
-<code>admittance.py</code>（<code>TaskAdmittanceSession</code> /
-<code>TouchdownGuard</code>）共同提供的末端物理力感知：</p>
-<ul>
-<li><strong>纯臂关节雅可比滤波观测（<code>WrenchObserver</code>）</strong>：构造<strong>显式排除腰部关节</strong>的纯
-<code>7</code> 自由度臂 Pinocchio 雅可比矩阵，使用解耦 <code>3×7</code>
-线速度正则阻尼（<code>lambda = 0.08</code>）与剩余角速度正则阻尼（<code>lambda = 0.35</code>）反演末端接触六维力/力矩；滤除小于
-<code>deadband = 0.12 Nm</code> 的关节微震并应用平滑系数
-<code>ema_alpha = 0.22</code>；针对 <code>SIM</code>
-无质量上肢配置显式置零重力项。</li>
-<li><strong>垂直触底判稳守卫（<code>TouchdownGuard</code>）</strong>：下降安置过程中激活小步距虚拟微探（下探
-<code>0.008 m</code>，速率
-<code>0.015 m/s</code>），实时监测竖直向上接触反力；仅当连续满足
-<code>fz &gt;= 0.90 N</code> 且平稳驻留 <code>0.08 s</code>
-后才判定可靠着台并下发双爪释放指令，防止空中过早松爪导致工件跌落倾翻。</li>
-</ul>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<p>下表列出上身规划、连续扫掠与柔顺着陆的核心契约；四套导纳剖面及标准胸前搬运位姿见折叠明细。</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>组件接口</th>
+<th>源码位置</th>
+<th>核心输入/输出契约</th>
+<th>冻结关键限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UpperBodyPlanner::plan_cartesian_49</code></td>
+<td><code>src/robot_app/algorithms/planning_core/upper_body_planner.hpp</code></td>
+<td><code>q_start</code> + 左右 TCP 目标 -&gt;
+<code>UpperPlanResult</code></td>
+<td>仅位置 <code>20 mm</code> 段误差；<code>49</code> 组
+<code>±30 mm</code>；<code>20 ms</code> / <code>&lt;= 100</code> 段</td>
+</tr>
+<tr>
+<td><code>CubicHermiteSpline</code> 重采样</td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/seed.py</code></td>
+<td>路点时刻、位置与速度 -&gt; 等距保速种子序列</td>
+<td>保持一阶时间导数连续，避免节点转折冲击</td>
+</tr>
+<tr>
+<td><code>DeviceCollisionQuery</code></td>
+<td><code>src/robot_app/modules/manipulation_runtime/infrastructure/native_bindings/device_collision.py</code></td>
+<td>手部连杆 + 工装 + 持物 -&gt; 扫掠间隙校验 /
+<code>DeviceCollision</code></td>
+<td>基于 Bernstein 速度上界自适应二分细分，仅规划期调用</td>
+</tr>
+<tr>
+<td><code>WrenchObserver</code></td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/control/wrench_observer.py</code></td>
+<td>实测关节力矩 -&gt; 操作系末端 <code>6D</code> 广义力
+<code>ObservedWrenches</code></td>
+<td>纯 <code>7</code>
+轴臂雅可比（排腰）；<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mtext mathvariant="normal">lin</mtext></msub><mo>=</mo><mn>0.08</mn></mrow><annotation encoding="application/x-tex">\lambda_{\text{lin}}=0.08</annotation></semantics></math>
+/
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mtext mathvariant="normal">ang</mtext></msub><mo>=</mo><mn>0.35</mn></mrow><annotation encoding="application/x-tex">\lambda_{\text{ang}}=0.35</annotation></semantics></math>
+/ 死区 <code>0.12 Nm</code></td>
+</tr>
+<tr>
+<td><code>TouchdownGuard</code></td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></td>
+<td><code>fz</code> 与关节速率 -&gt; <code>settled_contact</code>
+松爪允许信号</td>
+<td>下探 <code>0.008 m</code>
+(<code>0.015 m/s</code>)；<code>fz &gt;= 0.90 N</code> 持续
+<code>0.08 s</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 <details class="tech-details">
 <summary>
-查看 TaskAdmittanceSession 四套分阶段导纳控制剖面清单
+查看 TaskAdmittanceSession 四套分阶段导纳剖面与冻结姿态清单
 </summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
 </colgroup>
 <thead>
 <tr>
-<th>柔顺剖面标识</th>
-<th>适用作业阶段</th>
+<th>柔顺剖面 / 冻结资源标识</th>
+<th>源码位置 / 配置文件</th>
+<th>关键刚度阻尼 / 几何基准</th>
 <th>物理控制职责</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>FREE_GRAZE_COMPLIANCE_PROFILE</code></td>
-<td>空手逼近与预备区动作</td>
-<td>降低逼近过程轻微擦碰引起的瞬态接触峰值</td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></td>
+<td><code>mode='independent_arms'</code>；位移上限
+<code>0.035 m</code>；力死区 <code>3.5 N</code></td>
+<td>空手逼近与预备区动作，缓和轻度擦碰峰值</td>
 </tr>
 <tr>
 <td><code>PICK_SEAT_COMPLIANCE_PROFILE</code></td>
-<td>夹爪合拢贴紧工件端面</td>
-<td>吸收两侧指垫闭合对中偏差，确保双指均匀贴合</td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></td>
+<td><code>mode='independent_arms'</code>；位移上限
+<code>0.015 m</code>；力死区 <code>0.8 N</code></td>
+<td>夹爪合拢贴紧工件端面，吸收双指对中偏差</td>
 </tr>
 <tr>
 <td><code>HELD_TRANSPORT_COMPLIANCE_PROFILE</code></td>
-<td>携物移动行进阶段</td>
-<td>吸收双臂与腰部耦合运动产生的轻微内力拉扯</td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></td>
+<td><code>mode='bimanual_rigid'</code>；位移上限
+<code>0.012 m</code>；启动去皮 <code>0.08 s</code></td>
+<td>携物移动阶段吸收双臂与腰部耦合内力拉扯</td>
 </tr>
 <tr>
 <td><code>PLACE_TOUCHDOWN_PROFILE</code></td>
-<td>工装放置落地阶段</td>
-<td>顺应支撑表面轻微倾角误差，配合 <code>TouchdownGuard</code>
-判稳松爪</td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></td>
+<td><code>mode='bimanual_rigid'</code>；<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Z</mi><annotation encoding="application/x-tex">Z</annotation></semantics></math>
+向刚度 <code>90.0</code> / 阻尼 <code>48.0</code>；启用
+<code>TouchdownGuard</code></td>
+<td>顺应支撑面微倾角误差，确认 <code>fz &gt;= 0.90 N</code>
+驻留后松爪</td>
+</tr>
+<tr>
+<td><code>chest_carry_posture</code></td>
+<td><code>configs/manipulation/facri-chest-carry.json</code></td>
+<td>腰零、肩前举 <code>90°</code>、肘屈 <code>0.2 rad</code>，TCP 中心
+<code>base_link</code> 约 <code>(0.6589, 0, 0.3547) m</code></td>
+<td>搬运移动标准上肢目标，仍按本次实际夹持关系适配</td>
+</tr>
+<tr>
+<td>腰部三轴单真源硬范围</td>
+<td><code>resources/facri-upper-joint-limits.json</code></td>
+<td><code>pitch [-10°, +30°]</code>、<code>roll ±25°</code>、<code>yaw ±40°</code></td>
+<td>规划、<code>actuation</code>、<code>HAL/SAL</code> 与原生
+<code>MJCF</code> 一致生效</td>
 </tr>
 </tbody>
 </table>
 </div>
 </details>
-<h2 id="四上身规划狭窄空间-ik-与纯接触实证录像">四、上身规划、狭窄空间
-IK 与纯接触实证录像</h2>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<p>上述冻结设计已获得三层对照数据验证（证据层级严格按 <a
+href="../evidence/verification-ladder.html">五级验证阶梯</a>
+区分，不混同外推）：</p>
+<ul>
+<li><strong>关键约束消融对照（<code>20</code>
+组典型输入）</strong>：在完全相同的 <code>20</code>
+组生产输入上，<strong>仅放开双臂 <code>14</code> 轴位置限位但保留
+<code>10°</code> 末端姿态约束时通过率为
+<code>0 / 20</code></strong>；在保留腰部硬界与放开双臂的同时<strong>转为仅位置约束后，原目标通过率跃升至
+<code>20 / 20</code></strong>。</li>
+<li><strong>MuJoCo <code>4.0.1</code> 零 <code>&lt;weld&gt;</code>
+纯物理接触基准（<code>510 / 510</code>）</strong>：在取消全部刚性吸附外挂的纯物理双层垫片仿真下，合并
+<code>70 / 70</code> 调试与 <code>440 / 440</code> 验证样本实现
+<strong><code>510 / 510</code>（<code>100.0%</code>）全通过</strong>（覆盖
+<code>204 / 204</code> 次按压、<code>153 / 153</code> 次取料与
+<code>153 / 153</code> 次柔顺着台放置），累计 <code>859,974</code>
+个控制 tick（<code>6,879,792</code> 个 <code>0.625 ms</code>
+子步），离线 <code>589,400</code> 次 COAL 扫掠碰撞样本穿插数为
+<code>0</code>，指端最大实测速率
+<code>0.15716 m/s &lt;= 0.20 m/s</code>，悬停 <code>1.25 s</code>
+工件滑移跌落 <code>&lt;= 0.0020 mm</code>。</li>
+<li><strong><code>4</code> 机 <code>40</code> 操作 / <code>180</code>
+阶段与 <code>C</code> 站位历史对照</strong>：早期 <code>C</code>
+站位曾暴露 <code>4</code>
+项下放几何失败与时长异常（历史失败证据完整保留）；随后将 <code>C</code>
+站位前移 <code>10 cm</code>（累计
+<code>operation_advance_m = 0.262 m</code>）并设定释放抬高
+<code>release_height_m = 0.05 m</code>（支撑高度不变）后，<code>4</code>
+机完整 <code>40</code> 操作 / <code>180</code>
+阶段离线数值全数通过。</li>
+</ul>
 <p>下面三段 <code>PHYSICAL_SIM</code>
-实证录像展示了完整上身作业周期、受限通道内的 <code>49</code>
-候选阻尼最小二乘求解以及无外挂刚性焊接的纯物理接触导纳全过程（具体统计指标参见
-<a href="../evidence/verification-ladder.html">验证阶梯</a>）。</p>
+录像分别展示完整上身流水线、狭小通道 <code>49</code> 候选逆解以及
+<code>MuJoCo 4.0.1</code> 纯接触垫片抓放全过程：</p>
 <p><strong>MED-MANIP-01 ·
 完整上身作业流水线与阶段切换</strong>（<code>1280×800</code>、<code>30 fps</code>、<code>17.0 s</code>、<code>1x</code>
 原速、<code>PHYSICAL_SIM</code>）：</p>
@@ -266,6 +1119,16 @@ SHA256:cf6ed30400）</span><span
 class="doc-media-badge">PHYSICAL_SIM</span>
 </figcaption>
 </figure>
+<aside class="doc-callout doc-callout--warning" role="note">
+  <div class="doc-callout-title">WARNING · 风险边界</div>
+  <p><strong>能力边界声明</strong>： 1. 组合
+<code>50 mm + 5°</code>
+极限站位边界下仍存在净空不足导致的规划拒绝，不能放宽到位判据或碰撞容差凑通过。
+2. 离线 <code>40</code> 操作 / <code>180</code>
+阶段源几何数值通过不直接等价于实时设备几何更新、机身补偿或真实物理反馈环通过；连续生产资格仍需对应独立
+<code>case</code> 的完整物理记录支撑。</p>
+  
+</aside>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -277,19 +1140,24 @@ class="doc-media-badge">PHYSICAL_SIM</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#一17-自由度上身规划与-49-候选阻尼最小二乘-ik"
-id="toc-一17-自由度上身规划与-49-候选阻尼最小二乘-ik">一、17
-自由度上身规划与 49 候选阻尼最小二乘 IK</a></li>
-<li><a href="#二种子插值与连续扫掠碰撞核验"
-id="toc-二种子插值与连续扫掠碰撞核验">二、种子插值与连续扫掠碰撞核验</a></li>
-<li><a href="#三力矩观测touchdownguard-与纯接触任务柔顺控制"
-id="toc-三力矩观测touchdownguard-与纯接触任务柔顺控制">三、力矩观测、<code>TouchdownGuard</code>
-与纯接触任务柔顺控制</a></li>
-<li><a href="#四上身规划狭窄空间-ik-与纯接触实证录像"
-id="toc-四上身规划狭窄空间-ik-与纯接触实证录像">四、上身规划、狭窄空间
-IK 与纯接触实证录像</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与机制推演</a>
+<ul>
+<li><a href="#仅位置约束-17-轴加权-dls-与-49-候选顺序搜索"
+id="toc-仅位置约束-17-轴加权-dls-与-49-候选顺序搜索">3.1 仅位置约束
+<code>17</code> 轴加权 DLS 与 <code>49</code> 候选顺序搜索</a></li>
+<li><a href="#保速种子插值minkowski-扫掠检验与纯臂力控着陆"
+id="toc-保速种子插值minkowski-扫掠检验与纯臂力控着陆">3.2
+保速种子插值、Minkowski 扫掠检验与纯臂力控着陆</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -302,20 +1170,21 @@ IK 与纯接触实证录像</a></li>
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light dark" />
   <meta name="generator" content="facri-docs · report theme" />
-  <meta name="description" content="FACRI 现役算法活跃度台账，明确区分
-FACRI、C919 与历史 G1 AMO 原型的验证口径与边界。" />
+  <meta name="description" content="FACRI
+现役算法台账与软件工程合规总览，明确区分 C++20 实时核、Python
+整洁领域核、SIM_ONLY 隔离路径、待合入特性分支与已退役原型。" />
   <title>算法矩阵与活跃度总览 · FACRI 文档</title>
   <link rel="stylesheet" href="../assets/site-shell.css" />
   <link rel="stylesheet" href="../assets/theme-report.css" />
@@ -60,33 +61,507 @@ FACRI、C919 与历史 G1 AMO 原型的验证口径与边界。" />
       <header class="doc-title-block">
         <div class="eyebrow">核心算法手册</div>
         <h1 class="title">算法矩阵与活跃度总览</h1>
-        <p class="subtitle">区分现役生产算法、条件受控路径、规划原型与已退役路线</p>
+        <p class="subtitle">全栈算法核分布、设计范式分类、六维合规总览矩阵与能力边界</p>
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>算法核层位于单机 <code>4+1</code> 实时运行时的
+<h2 id="position">01 · 算法核全栈位置与调用边界</h2>
+<p>算法核层分布于单机 <code>4+1</code> 实时运行时的
 <code>P0</code>、<code>P1</code> 与 <code>P2</code>
 进程内部（<code>src/robot_app/algorithms/</code>
-与各模块域目录），上游消费经 <code>SensorAdaptersDomain</code>
-帧新鲜度校验的传感样本及 <code>LocalTaskRuntime</code>
-下发的原子能力目标，下游向 <code>ActionExecutor</code> 与
+与各运行模块域目录），以及独立外部模型推理网关
+<code>apps/model_gateway/</code>。上游承接经
+<code>SensorAdaptersDomain</code> 帧新鲜度校验、防倒退及
+<code>epoch</code> 核验的传感样本，以及 <code>LocalTaskRuntime</code>
+派发的原子能力目标；下游向 <code>ActionExecutor</code> 与
 <code>body_gateway</code>
-输出受限的关节位置、底盘速度及导纳修正指令。所有算法单元均禁止越权读取仿真真值或跨本体继承历史机型资格，完整架构与冻结运行基线见
+输出受物理限幅保护的关节参考、底盘扭转速度与柔顺导纳修正量。</p>
+<p>全站所有算法模块均严守三条架构红线：传感观测与位姿估计严格归属感知与状态估计层、规划与控制核严禁越权读取仿真真值、下肢步态资格严禁跨本体型号继承。系统整体平面划分、通信总线及冻结基线参见
 <a href="../architecture/overview.html">架构总览</a>、<a
 href="../architecture/component-map.html">组件地图</a> 与 <a
 href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="algo-full-stack-map" data-fig-uid="algo-full-stack-map-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/algo-full-stack-map.svg"
-alt="FACRI 全栈算法矩阵与跨层数据流总图" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-full-stack-map" viewBox="0 0 1200 610" width="1200" height="610" role="group" aria-labelledby="algo-full-stack-map-title-f0" aria-describedby="algo-full-stack-map-desc-f0">
+  <title id="algo-full-stack-map-title-f0">单机全算法流水线纯净交互枢纽（P1 感知 · P2 导航/操作 · P0 控制保护）</title>
+  <desc id="algo-full-stack-map-desc-f0">作为全站算法总控导航图，纯净展示 P1 空间感知、P2 导航与双臂操作、P0 步态与安全环 11 个核心算法模块。</desc>
+  <defs>
+    <pattern id="algo-full-stack-map-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-full-stack-map-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-full-stack-map-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-full-stack-map-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-full-stack-map-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-full-stack-map-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-full-stack-map-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="610" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="610" fill="url(#algo-full-stack-map-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="608.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="112.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">P1 · SPATIAL &amp; PERCEPTION (10 Hz)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">点云水平还原、ICP 定位与工件 6D 感知</text>
+  <rect x="36.0" y="210.0" width="1128.0" height="112.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="229.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">P2 · NAVIGATION RUNTIME (20 Hz)</text>
+  <text x="50.0" y="246.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">全局混合 A*、局部 MPPI 与终端视觉伺服</text>
+  <rect x="36.0" y="334.0" width="1128.0" height="108.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="353.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">P2/P0 · MANIPULATION &amp; ADMITTANCE</text>
+  <text x="50.0" y="370.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">17 轴 49 候选位置逆解与纯 7 轴导纳着陆</text>
+  <rect x="36.0" y="454.0" width="1128.0" height="106.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="473.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">P0 · LOCOMOTION &amp; REFLEX SAFETY</text>
+  <text x="50.0" y="490.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双足步态推理、判稳惯性切换与反射安全环</text>
+  <g class="arch-edge" data-from="a_waist_fk" data-to="a_icp" data-flow="p1_perc">
+    <path d="M 400.0 155.0 L 428.0 155.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-slate-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="a_icp" data-to="a_astar" data-flow="p1_perc,p2_nav">
+    <path d="M 600.0 184.0 L 600.0 211.0 Q 600.0 216.0 595.0 216.0 L 233.0 216.0 Q 228.0 216.0 228.0 221.0 L 228.0 250.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-slate-f0)"/>
+    <rect x="398.1" y="207.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="414.0" y="219.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">位姿</text>
+  </g>
+  <g class="arch-edge" data-from="a_perc" data-to="a_ik" data-flow="p1_perc,p2_manip">
+    <path d="M 972.0 184.0 L 972.0 337.0 Q 972.0 342.0 967.0 342.0 L 340.0 342.0 Q 335.0 342.0 335.0 347.0 L 335.0 372.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-slate-f0)"/>
+    <rect x="641.5" y="333.0" width="23.9" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="653.5" y="345.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">6D</text>
+  </g>
+  <g class="arch-edge" data-from="a_astar" data-to="a_mppi" data-flow="p2_nav">
+    <path d="M 400.0 279.0 L 428.0 279.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-ochre-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="a_mppi" data-to="a_servo" data-flow="p2_nav">
+    <path d="M 772.0 279.0 L 800.0 279.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-ochre-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="a_servo" data-to="a_ik" data-flow="p2_nav,p2_manip">
+    <path d="M 972.0 308.0 L 972.0 343.0 Q 972.0 348.0 967.0 348.0 L 445.0 348.0 Q 440.0 348.0 440.0 353.0 L 440.0 372.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-ochre-f0)"/>
+    <rect x="690.1" y="339.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="706.0" y="351.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">交接</text>
+  </g>
+  <g class="arch-edge" data-from="a_ik" data-to="a_admit" data-flow="p2_manip">
+    <path d="M 550.0 401.0 L 650.0 401.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-terracotta-f0)"/>
+    <rect x="584.1" y="392.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="600.0" y="404.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">轨迹</text>
+  </g>
+  <g class="arch-edge" data-from="a_admit" data-to="a_stab" data-flow="p2_manip,p0_ctrl">
+    <path d="M 865.0 430.0 L 865.0 455.0 Q 865.0 460.0 860.0 460.0 L 605.0 460.0 Q 600.0 460.0 600.0 465.0 L 600.0 490.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-forest-f0)"/>
+    <rect x="716.6" y="451.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="732.5" y="463.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">惯性</text>
+  </g>
+  <g class="arch-edge" data-from="a_policy" data-to="a_stab" data-flow="p0_ctrl">
+    <path d="M 400.0 519.0 L 428.0 519.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-forest-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="a_stab" data-to="a_reflex" data-flow="p0_ctrl">
+    <path d="M 772.0 519.0 L 800.0 519.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-full-stack-map-arrow-terracotta-f0)"/>
+  </g>
+  <g class="arch-node-card" data-node-id="a_waist_fk" aria-controls="algo-full-stack-map-f0-drawer-a_waist_fk">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_waist_fk" data-flows="all,p1_perc" aria-expanded="false" aria-label="腰部 FK 雷达水平还原（P1 · &lt;=2 ms TF 插值）" aria-controls="algo-full-stack-map-f0-drawer-a_waist_fk">
+      <rect class="arch-node-box" x="56.0" y="126.0" width="344.0" height="58.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="149.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">腰部 FK 雷达水平还原</text>
+      <text class="arch-node-role" x="68.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P1 · &lt;=2 ms TF 插值</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#principles" aria-label="前往「腰部 FK 雷达水平还原」对应章节">
+      <rect x="372.0" y="130.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="384.0" y="146.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_icp" aria-controls="algo-full-stack-map-f0-drawer-a_icp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_icp" data-flows="all,p1_perc,p2_nav" aria-expanded="false" aria-label="VoxelIcpLocalizer（P1 · 0.20 m 体素 ICP）" aria-controls="algo-full-stack-map-f0-drawer-a_icp">
+      <rect class="arch-node-box" x="428.0" y="126.0" width="344.0" height="58.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="440.0" y="149.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">VoxelIcpLocalizer</text>
+      <text class="arch-node-role" x="440.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P1 · 0.20 m 体素 ICP</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#flow" aria-label="前往「VoxelIcpLocalizer」对应章节">
+      <rect x="744.0" y="130.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="756.0" y="146.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_perc" aria-controls="algo-full-stack-map-f0-drawer-a_perc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_perc" data-flows="all,p1_perc,p2_manip" aria-expanded="false" aria-label="ZED + AprilTag + 3B（P1 · 单实例 6D 配准）" aria-controls="algo-full-stack-map-f0-drawer-a_perc">
+      <rect class="arch-node-box" x="800.0" y="126.0" width="344.0" height="58.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="812.0" y="149.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ZED + AprilTag + 3B</text>
+      <text class="arch-node-role" x="812.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">P1 · 单实例 6D 配准</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/workpiece-perception.html#flow" aria-label="前往「ZED + AprilTag + 3B」对应章节">
+      <rect x="1116.0" y="130.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1128.0" y="146.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_astar" aria-controls="algo-full-stack-map-f0-drawer-a_astar">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_astar" data-flows="all,p1_perc,p2_nav" aria-expanded="false" aria-label="HybridAStar 全局搜索（P2 · 15000 节点 · 倒车）" aria-controls="algo-full-stack-map-f0-drawer-a_astar">
+      <rect class="arch-node-box" x="56.0" y="250.0" width="344.0" height="58.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">HybridAStar 全局搜索</text>
+      <text class="arch-node-role" x="68.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P2 · 15000 节点 · 倒车</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#flow" aria-label="前往「HybridAStar 全局搜索」对应章节">
+      <rect x="372.0" y="254.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="384.0" y="270.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_mppi" aria-controls="algo-full-stack-map-f0-drawer-a_mppi">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_mppi" data-flows="all,p2_nav" aria-expanded="false" aria-label="MppiLocalPlanner + Box（P2 · 128 采样 · ESDF）" aria-controls="algo-full-stack-map-f0-drawer-a_mppi">
+      <rect class="arch-node-box" x="428.0" y="250.0" width="344.0" height="58.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="440.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">MppiLocalPlanner + Box</text>
+      <text class="arch-node-role" x="440.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P2 · 128 采样 · ESDF</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#paradigm" aria-label="前往「MppiLocalPlanner + Box」对应章节">
+      <rect x="744.0" y="254.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="756.0" y="270.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_servo" aria-controls="algo-full-stack-map-f0-drawer-a_servo">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_servo" data-flows="all,p2_manip,p2_nav" aria-expanded="false" aria-label="ConvergentTerminalServo（P2 · 同心三态 + 割线）" aria-controls="algo-full-stack-map-f0-drawer-a_servo">
+      <rect class="arch-node-box" x="800.0" y="250.0" width="344.0" height="58.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="812.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ConvergentTerminalServo</text>
+      <text class="arch-node-role" x="812.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">P2 · 同心三态 + 割线</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/spatial-and-navigation.html#principles" aria-label="前往「ConvergentTerminalServo」对应章节">
+      <rect x="1116.0" y="254.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1128.0" y="270.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_ik" aria-controls="algo-full-stack-map-f0-drawer-a_ik">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_ik" data-flows="all,p1_perc,p2_manip,p2_nav" aria-expanded="false" aria-label="49-Cand 17-DOF DLS IK（P2 · 位置优先无姿态约束）" aria-controls="algo-full-stack-map-f0-drawer-a_ik">
+      <rect class="arch-node-box" x="120.0" y="372.0" width="430.0" height="58.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="132.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">49-Cand 17-DOF DLS IK</text>
+      <text class="arch-node-role" x="132.0" y="418.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P2 · 位置优先无姿态约束</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#flow" aria-label="前往「49-Cand 17-DOF DLS IK」对应章节">
+      <rect x="522.0" y="376.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="534.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_admit" aria-controls="algo-full-stack-map-f0-drawer-a_admit">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_admit" data-flows="all,p0_ctrl,p2_manip" aria-expanded="false" aria-label="Wrench + TouchdownGuard（P2/P0 · 纯 7 轴雅可比）" aria-controls="algo-full-stack-map-f0-drawer-a_admit">
+      <rect class="arch-node-box" x="650.0" y="372.0" width="430.0" height="58.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="662.0" y="395.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Wrench + TouchdownGuard</text>
+      <text class="arch-node-role" x="662.0" y="418.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">P2/P0 · 纯 7 轴雅可比</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/manipulation-and-ik.html#principles" aria-label="前往「Wrench + TouchdownGuard」对应章节">
+      <rect x="1052.0" y="376.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1064.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_policy" aria-controls="algo-full-stack-map-f0-drawer-a_policy">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_policy" data-flows="all,p0_ctrl" aria-expanded="false" aria-label="PolicyRunner / Mjlab（P0 · 47-&gt;12 策略 · SIM）" aria-controls="algo-full-stack-map-f0-drawer-a_policy">
+      <rect class="arch-node-box" x="56.0" y="490.0" width="344.0" height="58.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="513.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">PolicyRunner / Mjlab</text>
+      <text class="arch-node-role" x="68.0" y="536.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">P0 · 47-&gt;12 策略 · SIM</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#flow" aria-label="前往「PolicyRunner / Mjlab」对应章节">
+      <rect x="372.0" y="494.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="384.0" y="510.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_stab" aria-controls="algo-full-stack-map-f0-drawer-a_stab">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_stab" data-flows="all,p0_ctrl,p2_manip" aria-expanded="false" aria-label="BodyStabilityMonitor（P0 · 判稳与操作惯性）" aria-controls="algo-full-stack-map-f0-drawer-a_stab">
+      <rect class="arch-node-box" x="428.0" y="490.0" width="344.0" height="58.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="440.0" y="513.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">BodyStabilityMonitor</text>
+      <text class="arch-node-role" x="440.0" y="536.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">P0 · 判稳与操作惯性</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/locomotion-and-state.html#principles" aria-label="前往「BodyStabilityMonitor」对应章节">
+      <rect x="744.0" y="494.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="756.0" y="510.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="a_reflex" aria-controls="algo-full-stack-map-f0-drawer-a_reflex">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="a_reflex" data-flows="all,p0_ctrl" aria-expanded="false" aria-label="LidarReflexRing（P0 · 1.2m 减速 / 0.45m 停）" aria-controls="algo-full-stack-map-f0-drawer-a_reflex">
+      <rect class="arch-node-box" x="800.0" y="490.0" width="344.0" height="58.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="812.0" y="513.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">LidarReflexRing</text>
+      <text class="arch-node-role" x="812.0" y="536.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">P0 · 1.2m 减速 / 0.45m 停</text>
+    </g>
+    <a class="arch-node-jump" href="../algorithms/overview.html#boundaries" data-same-page="true" aria-label="前往「LidarReflexRing」对应章节">
+      <rect x="1116.0" y="494.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1128.0" y="510.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="566.0" x2="1164.0" y2="566.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="588.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P1 空间与感知 (10 Hz)</text>
+  <rect x="232.4" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="254.4" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P2 导航规划与终端伺服</text>
+  <rect x="386.3" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="408.3" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">17 轴逆解 / 导纳 / 反射保护</text>
+  <rect x="563.9" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="585.9" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P0 双足策略与判稳</text>
+  <text x="1164.0" y="587.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">注: pft_workpiece_sr 位于特性分支 (BRANCH)，主线台账如实标明未合入</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGORITHM OVERVIEW · PURE INTERACTIVE HUB</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">单机全算法流水线纯净交互枢纽（P1 感知 · P2 导航/操作 · P0 控制保护）</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">11 算法核 · 剥离微字参数墙 · 点击卡片直达 L4 专章</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="p1_perc" aria-pressed="false">P1 空间定位与视觉感知</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="p2_nav" aria-pressed="false">P2 移动导航与终端伺服</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="p2_manip" aria-pressed="false">P2/P0 双臂逆解与柔顺导纳</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="p0_ctrl" aria-pressed="false">P0 双足步态与主动避碰</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>FACRI
-全栈算法矩阵与跨层数据流总图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+全栈算法矩阵与跨层数据流总图</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/algo-full-stack-map.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="algo-full-stack-map-f0-drawer-a_waist_fk" class="diagram-drawer-panel" data-node-drawer="a_waist_fk" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">腰部 FK 雷达水平还原</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 · 空间预处理 · 10 Hz 扫描</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「腰部 FK 雷达水平还原」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在进入体素配准前消除双足弯腰作业导致的激光雷达倾斜失真。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-IV Python 域 + C++ IMU 去畸变</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/spatial_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>compensate_waist_for_livox 抵消躯干俯仰/横滚畸变，帧龄 &lt;= 500 ms</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_icp" class="diagram-drawer-panel" data-node-drawer="a_icp" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">VoxelIcpLocalizer</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 · C++20 定位核 · 10 Hz · C++20</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「VoxelIcpLocalizer」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在工厂与机坪先验点云地图中实现抗遮挡实时全局定位。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 原生 C++20 算法核</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/lightning_loc/voxel_icp_localizer.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>输出 SpatialPosePod、tracking_score (0..100) 与周边最近净距</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_perc" class="diagram-drawer-panel" data-node-drawer="a_perc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ZED + AprilTag + 3B</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P1 · 工件感知 · 10 Hz + :18080</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ZED + AprilTag + 3B」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">完成靶标跟踪、开放词汇目标定位与单实例防混淆 6D 位姿估计。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>C++ Tag/ROI + Python 6D + BRANCH</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/perception/apriltag_tracker.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>YOLOv8-seg + FoundationPose (5+2) + LocateAnything-3B；pft_workpiece_sr 标为 BRANCH</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/workpiece-perception.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_astar" class="diagram-drawer-panel" data-node-drawer="a_astar" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">HybridAStar 全局搜索</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 · C++20 全局规划 · 按需触发 · C++20</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「HybridAStar 全局搜索」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为人形及特种无人车在静态障碍场中规划可行引导路径。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 原生 C++20 算法核</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/pct_nav/hybrid_astar.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>0.35 m 步长、1.2 m 转弯半径，支持窄道倒车与非完整运动学约束</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_mppi" class="diagram-drawer-panel" data-node-drawer="a_mppi" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">MppiLocalPlanner + Box</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 · 局部轨迹避障 · 20 Hz · HYBRID</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「MppiLocalPlanner + Box」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">结合三级拉出规划实现工位边缘脱困与动态局部避障。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>C++20 MPPI + Python box_route</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/pct_nav/mppi_local_planner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>15×0.1 s 滚动域、0.45 m ESDF 斥力；统一适配全向/差速/阿克曼底盘</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#paradigm">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_servo" class="diagram-drawer-panel" data-node-drawer="a_servo" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ConvergentTerminalServo</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 · Python 终段伺服 · 20 Hz · Python 域</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ConvergentTerminalServo」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在最后半米内无先验地图依赖下平稳停靠至目标工位或设备前。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-I/P-IV 零先验割线收敛</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>IDLE_IN_BAND/APPROACH/SETTLE 滞回 + b_xy 割线估计抵消地面滑移</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/spatial-and-navigation.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_ik" class="diagram-drawer-panel" data-node-drawer="a_ik" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">49-Cand 17-DOF DLS IK</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2 · C++20 上身规划 · 20 Hz · C++20</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「49-Cand 17-DOF DLS IK」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">先搜索全部 49 候选再完整打包执行，消除姿态过约束导致的 169 组无解失败。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 完整候选后执行</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/planning_core/upper_body_planner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>±30 mm 49 候选、&lt;=20 mm 精度、100 段@20ms、腰三轴硬限位、臂无位置限位</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_admit" class="diagram-drawer-panel" data-node-drawer="a_admit" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">Wrench + TouchdownGuard</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P2/P0 · 柔顺着陆 · 200 Hz · HYBRID</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「Wrench + TouchdownGuard」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在无 &lt;weld&gt; 纯接触环境中实现稳定压紧抓取与平滑触底释放。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>C++ 导纳执行 + Python 观测守卫</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/manipulation_runtime/domain/control/wrench_observer.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>剔除腰部耦合；0.12 Nm 死区；4 套导纳剖面；fz&gt;=0.90 N 驻留 0.08 s 释放</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/manipulation-and-ik.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_policy" class="diagram-drawer-panel" data-node-drawer="a_policy" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">PolicyRunner / Mjlab</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 · C++20 步态推理 · 50 Hz 推理 · SIM_ONLY</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「PolicyRunner / Mjlab」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">以纯 C++20 推理输出 12 维下肢关节目标并抑制加减速踝振。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II C++20 ONNX/MLP + 防呆斜率</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/policy_infer/policy_runner.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>非对称双向斜率限幅 + 0.14–0.24 rad 倾角衰减；明确标注 SIM_ONLY</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_stab" class="diagram-drawer-panel" data-node-drawer="a_stab" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">BodyStabilityMonitor</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 · 状态估计判稳 · 40 ms 窗口 · 10° 门禁</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「BodyStabilityMonitor」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">监测双足倾斜与偏移趋势并在操作/导航交接边沿安全切换动力学参数。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>滑窗状态机 + operation_snapshot</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/modules/state_estimation/domain/stability.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>操作期冻结上肢惯性张量，重锁后完整恢复原质量、armature 与腰部驱动</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/locomotion-and-state.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="algo-full-stack-map-f0-drawer-a_reflex" class="diagram-drawer-panel" data-node-drawer="a_reflex" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">LidarReflexRing</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">P0 · 反射安全环 · 50 Hz 带外保护</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「LidarReflexRing」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">独立于上层导航规划提供毫秒级贴近工位减速与防碰撞硬停。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 反应式安全护栏</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/safety/lidar_reflex_ring.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>1.20 m 线性减速、0.45 m 硬停；25° 接近锥内前向收窄至 0.08 m (0.15 m/s)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../algorithms/overview.html#boundaries" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2 id="一现役生产算法台账">一、现役生产算法台账</h2>
-<p>下表列出当前默认装配、持续经受离线与仿真检验的 <code>11</code>
-类核心算法单元与运行模块，全部遵循「传感器观测归感知与状态估计、规划与控制不越权读取仿真真值、下肢资格不跨本体继承」的基本原则：</p>
+<h2 id="ledger">02 · 现役生产算法台账</h2>
+<p>下表列出当前默认装配、经受离线几何回放与仿真物理检验的
+<code>11</code>
+类现役核心算法单元，所有路径均直接对应当前代码树内的真实实现文件：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -111,7 +586,7 @@ alt="FACRI 全栈算法矩阵与跨层数据流总图" loading="eager" decoding=
 <td><code>FacriMjlabPolicy</code>（<code>47</code> 维观测至
 <code>12</code> 维腿部控制）</td>
 <td><code>src/robot_app/backends/facri/mjlab_policy.py</code></td>
-<td>仅限 SIM 现役</td>
+<td><code>SIM_ONLY</code> 现役</td>
 <td><code>50 Hz</code> 推理、<code>0.8 s</code>
 步态相位；<code>REAL</code> 模式显式阻断</td>
 </tr>
@@ -188,7 +663,7 @@ alt="FACRI 全栈算法矩阵与跨层数据流总图" loading="eager" decoding=
 </tr>
 <tr>
 <td>立体相机与工件位姿</td>
-<td><code>ZedRgbd</code>、YOLOv8-seg、FoundationPose</td>
+<td><code>ZedRgbd</code>、YOLOv8-seg、FoundationPose、<code>AprilTagTracker</code></td>
 <td><code>src/robot_app/modules/perception_runtime/README.md</code></td>
 <td>现役与原生可选</td>
 <td>首帧 <code>5</code> 次迭代注册、跟踪 <code>2</code>
@@ -197,9 +672,203 @@ alt="FACRI 全栈算法矩阵与跨层数据流总图" loading="eager" decoding=
 </tbody>
 </table>
 </div>
-<h2
-id="二条件启用规划路线与历史原型界线">二、条件启用、规划路线与历史原型界线</h2>
-<p>仓库明确隔离当前生产主线与跨机种实验配置，下表列出非普适路径的生效条件及不可跨越的资格约束：</p>
+<h2 id="paradigm">03 · 软件工程实现范式与合规总览矩阵</h2>
+<p>对照源码组织可见，系统算法层并非单一语言堆砌，而是按「计算实时性、内存安全边界与外部依赖隔离」严格分层，现行代码树客观包含四类工程实现状态：</p>
+<ol type="1">
+<li><strong>纯 <code>C++20</code> 零分配实时核</strong>：运行在
+<code>P0</code>、<code>P1</code> 与 <code>P2</code> 进程实时主环内，包括
+<code>PolicyRunner</code>、<code>VoxelIcpLocalizer</code>、<code>HybridAStar</code>、<code>MppiLocalPlanner</code>、<code>PlanarAdjustment</code>、<code>UpperBodyPlanner</code>、<code>DlsIkSolver</code>、<code>AprilTagTracker</code>
+与
+<code>LidarReflexRing</code>。该类算子普遍采用值语义配置、预分配固定缓冲、<code>noexcept</code>
+状态推进与单写者无锁 IPC 交接，杜绝实时环动态内存抖动。</li>
+<li><strong><code>Python</code>
+六层整洁领域核</strong>：将高维业务语义、纯数学算子与外部适配器隔离于
+<code>contracts/</code>、<code>domain/</code>、<code>application/</code>、<code>infrastructure/</code>
+分层中，代表实现包括
+<code>ConvergentTerminalServo</code>、<code>WrenchObserver</code>、<code>TaskAdmittanceSession</code>、<code>TouchdownGuard</code>、<code>SalLidarIngress</code>
+与 <code>ResponseSampling</code>，通过 <code>assembly.py</code>
+与受控原生绑定联合调度，构成当前 <code>C++20 / Python</code>
+双栈受控演进（<code>HYBRID</code>）的主体。</li>
+<li><strong><code>SIM_ONLY</code>
+隔离标记路径</strong>：仅用于仿真动力学补偿与验证准入的模块，包括
+<code>FacriMjlabPolicy</code>（<code>src/robot_app/backends/facri/mjlab_policy.py</code>）、<code>src/robot_app/backends/facri/bound_control.py</code>
+及
+<code>operation_snapshot</code>（<code>simulation/backend/src/embodied_sim/modules/mujoco_world/upper_inertia.py</code>
+中的 <code>FixedUpperInertia</code>）。入口处均执行强制
+<code>origin == 'SIM'</code> 校验，严禁渗透至 <code>REAL</code>
+真机运行链。</li>
+<li><strong>特性分支未并入（<code>BRANCH</code>）</strong>：五阶段工件超分与细微螺母缺陷检测核心算子
+<code>pft_workpiece_sr</code> 当前驻留于特性分支
+<code>feat/workpiece-detection-debug-20261124</code>（提交
+<code>d3cddf263</code>），尚未合入当前
+<code>c919_ground_scene_modeling</code> 主线代码树。</li>
+</ol>
+<p>下表给出全站核心算法模块实现范式与六维软件工程合规审视矩阵，其中状态标签仅采用客观事实口径：<code>PASS</code>
+表示完全满足该维要求；<code>HYBRID</code> 表示内部保持整洁分层但存在
+<code>C++20 / Python</code> 双栈过渡并存；<code>SCOPED</code>
+表示条件隔离受限于 <code>SIM_ONLY</code>；<code>BRANCH</code>
+表示实现尚在特性分支未合入主线。</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table style="width:100%;">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th>核心算法模块</th>
+<th>工程范式与主要设计模式</th>
+<th>1. 领域纯洁性与依赖倒置</th>
+<th>2. 契约完备性与边界防呆</th>
+<th>3. 状态机与生命周期确定性</th>
+<th>4. 实时内存与并发安全性</th>
+<th>5. 离线可测性与失败留痕</th>
+<th>6. 单真源与债务透明度</th>
+<th>专章导览</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PolicyRunner</code> / <code>ObservationEncoder</code></td>
+<td>策略模式 + <code>dlopen</code> 适配器 + 固定滑窗编码器</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（三重 SHA-256 核验）</td>
+<td><code>PASS</code>（单调 <code>epoch</code> 重置）</td>
+<td><code>PASS</code>（<code>C++20</code> 预分配）</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code></td>
+<td><a
+href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a></td>
+</tr>
+<tr>
+<td><code>FacriMjlabPolicy</code> / <code>bound_control.py</code> /
+<code>operation_snapshot</code></td>
+<td>受控防腐层 + 快照状态切换器</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（<code>SIM</code> 强隔离拦截）</td>
+<td><code>PASS</code>（重锁边沿切换）</td>
+<td><code>PASS</code>（独立 <code>scratch</code>）</td>
+<td><code>PASS</code></td>
+<td><code>SCOPED</code>（<code>SIM_ONLY</code>）</td>
+<td><a
+href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a></td>
+</tr>
+<tr>
+<td><code>BodyStabilityMonitor</code></td>
+<td>纯谓词滑窗状态机 + 因果代数生成计数</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（<code>40 ms</code> / 零速带）</td>
+<td><code>PASS</code>（<code>standing_generation</code>）</td>
+<td><code>PASS</code>（<code>deque</code> 有界）</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code></td>
+<td><a
+href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a></td>
+</tr>
+<tr>
+<td><code>VoxelIcpLocalizer</code> / <code>SalLidarIngress</code></td>
+<td><code>C++20</code> 无状态局部内核 + <code>Python</code>
+运动学适配器</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（<code>500 ms</code> / <code>epoch</code>
+复位）</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（体素预分配）</td>
+<td><code>PASS</code></td>
+<td><code>HYBRID</code>（<code>C++20</code> + <code>Python</code>）</td>
+<td><a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a></td>
+</tr>
+<tr>
+<td><code>HybridAStar</code> / <code>MppiLocalPlanner</code> /
+<code>box_route</code> / <code>ResponseSampling</code></td>
+<td>多层策略接力管道 + 不可变构型约束</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（完整几何准入）</td>
+<td><code>PASS</code>（三层拉出回退）</td>
+<td><code>PASS</code>（<code>Mppi</code> 定长数组）</td>
+<td><code>PASS</code></td>
+<td><code>HYBRID</code>（<code>C++20</code> + <code>Python</code>）</td>
+<td><a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a></td>
+</tr>
+<tr>
+<td><code>PlanarAdjustment</code> /
+<code>ConvergentTerminalServo</code></td>
+<td><code>C++20</code> 调节核 + <code>Python</code>
+零先验滞回控制机</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（限幅 <code>b_xy</code> 边界）</td>
+<td><code>PASS</code>（三态同心滞回）</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code></td>
+<td><code>HYBRID</code>（双栈分工）</td>
+<td><a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a></td>
+</tr>
+<tr>
+<td><code>UpperBodyPlanner</code> / <code>DlsIkSolver</code></td>
+<td><code>C++20</code> <code>49</code> 候选模板搜索 + 值语义规划器</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（腰部硬界 + 单真源）</td>
+<td><code>PASS</code>（整组原子成败）</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code></td>
+<td><code>PASS</code></td>
+<td><a
+href="../algorithms/manipulation-and-ik.html">双臂规划与柔顺操作</a></td>
+</tr>
+<tr>
+<td><code>CubicHermite</code> / <code>DeviceCollisionQuery</code> /
+<code>WrenchObserver</code> / <code>TouchdownGuard</code></td>
+<td>纯数学扫掠代理 + 解耦力观测 + 守卫策略剖面</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（硬核版本与深度支持校验）</td>
+<td><code>PASS</code>（分段剖面状态绑定）</td>
+<td><code>HYBRID</code>（<code>Python</code> <code>P2</code> 调度）</td>
+<td><code>PASS</code></td>
+<td><code>HYBRID</code>（双栈协作）</td>
+<td><a
+href="../algorithms/manipulation-and-ik.html">双臂规划与柔顺操作</a></td>
+</tr>
+<tr>
+<td><code>LocateAnythingGateway</code> / <code>AprilTagTracker</code> /
+<code>ZedRgbd</code> / <code>FoundationPose</code></td>
+<td>安全代理网关（<code>O_NOFOLLOW</code>）+ <code>C</code> ABI 桥接 +
+<code>C++20</code> 跟踪器</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（<code>SHA-256</code> + 单实例）</td>
+<td><code>PASS</code>（取消排空 + 重试回收）</td>
+<td><code>PASS</code>（独立 <code>P1</code>/外部显存）</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code>（主线已接通）</td>
+<td><a
+href="../algorithms/workpiece-perception.html">工件视觉感知</a></td>
+</tr>
+<tr>
+<td><code>pft_workpiece_sr</code>（五阶段超分与螺母缺陷）</td>
+<td>五阶段光学与双线核验分支管道</td>
+<td><code>PASS</code></td>
+<td><code>PASS</code></td>
+<td><code>PASS</code></td>
+<td><code>SCOPED</code>（离线/网关执行）</td>
+<td><code>SCOPED</code></td>
+<td><code>BRANCH</code>（待并入主线）</td>
+<td><a
+href="../algorithms/workpiece-perception.html">工件视觉感知</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="boundaries">04 · 条件受控路径、待合入分支与退役红线</h2>
+<p>仓库明确隔离现役生产主线、条件受控配置、未并入特性与历史原型，审阅及验收时严禁混同各类资格：</p>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -219,10 +888,10 @@ id="二条件启用规划路线与历史原型界线">二、条件启用、规�
 <tbody>
 <tr>
 <td>条件受控路径</td>
-<td>零质量上肢 SIM 补偿与速度抑制器</td>
+<td>操作期固定上肢惯性（<code>operation_snapshot</code>）与速度抑制器</td>
 <td>仅在 <code>origin == 'SIM'</code>
-下激活；上肢导纳观测采用零重力配置，<code>FacriBodyBackend</code>
-对腿部策略轴施加双向加减速斜率限制与防倾覆衰减</td>
+下激活；<code>FacriBodyBackend</code>
+对腿部策略轴施加非对称斜率限幅与倾角衰减，操作期固定上肢空间惯性并在重锁确认后恢复导航动力学</td>
 <td>见 <a
 href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a> 与
 <a
@@ -232,63 +901,64 @@ href="../algorithms/manipulation-and-ik.html">双臂规划与柔顺操作</a></t
 <td>条件受控路径</td>
 <td><code>N02 / N03_DIAGNOSTIC_SIM_ONLY</code> 原生站立配置</td>
 <td>绑定诊断参数文件但仅限 <code>4</code> 组 × <code>6000</code>
-步离线诊断验证，未赋予应用级任务资格</td>
+步离线站立诊断对照，不赋予完整作业任务资格</td>
 <td>见 <code>src/robot_app/backends/facri/control_config.py</code></td>
 </tr>
 <tr>
 <td>分支开发中特性</td>
-<td>五阶段工件超分与螺母缺陷检测</td>
-<td>物理交互与控制台已有展示设计入口；<code>pft_workpiece_sr</code>
-完整算子位于分支
+<td>五阶段工件超分与螺母缺陷检测（<code>pft_workpiece_sr</code>）</td>
+<td>控制台面板已有对应展示入口设计；完整算子位于分支
 <code>feat/workpiece-detection-debug-20261124</code>（提交
-<code>d3cddf263</code>），尚未合入当前
-<code>c919_ground_scene_modeling</code> 主线工作树</td>
+<code>d3cddf263</code>），尚未并入当前工作树</td>
 <td>见 <a
 href="../algorithms/workpiece-perception.html">工件视觉感知</a> 与 <a
 href="../subsystems/interaction-and-gateway.html">交互网关与终端</a></td>
 </tr>
 <tr>
 <td>多机型场景规划</td>
-<td>C919 机坪 <code>T3</code> 零物理运动学引擎与异构 SAL</td>
+<td><code>C919</code> 机坪 <code>T3</code> 零物理运动学引擎与异构
+<code>SAL</code></td>
 <td>支撑
 <code>FACRI</code>、<code>RP1</code>、<code>G2</code>、<code>M20</code>
-与 <code>4</code> 台 UGV
-车体联合演练，纯运动学回路不可外推为动力学接触或真机验收</td>
+与 <code>4</code> 台 <code>UGV</code>
+联合调度演练，纯运动学回路不可外推为物理接触动力学或真机验收</td>
 <td>见 <a href="../evidence/simulation-engine.html">MuJoCo 4.0.1
 仿真引擎</a> 与 <a
-href="../evidence/verification-ladder.html">验证阶梯</a></td>
+href="../evidence/verification-ladder.html">五级验证阶梯</a></td>
 </tr>
 <tr>
 <td>已退役原型</td>
-<td>2026 年 10
+<td><code>2026</code> 年 <code>10</code>
 月批次（<code>G1 AMO</code>、<code>NeuPAN</code>、<code>ViSP PBVS</code>、<code>Pink/Clarabel</code>、<code>REVO2</code>、<code>Isaac Sim 6.1</code>、<code>Newton + UE5</code>）</td>
 <td>仅作架构演进档案留存。<strong><code>G1 AMO</code>
 的任何仿真或测试资格均不转移至 <code>FACRI</code>
-本体</strong>，各自遵循独立 HAL/SAL 适配边界</td>
+本体</strong>，各自遵循独立 <code>HAL</code> / <code>SAL</code>
+适配边界</td>
 <td>见 <a
 href="../engineering/historical-evolution.html">历史演进与已退役原型</a></td>
 </tr>
 </tbody>
 </table>
 </div>
-<h2 id="三跨章节阅读导引">三、跨章节阅读导引</h2>
+<h3 id="分域算法深描导引">分域算法深描导引</h3>
 <ol type="1">
-<li><strong>本体控制与判稳</strong>：阅读 <a
-href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a>，了解
-<code>FacriMjlabPolicy</code>、C++20
-<code>PolicyRunner</code>、斜率限制器与 IMU 判稳窗口。</li>
-<li><strong>定位与末端对接</strong>：阅读 <a
-href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a>，追踪
-LiDAR 腰部运动学外参补偿、MPPI 避障及
-<code>ConvergentTerminalServo</code> 数学收敛过程。</li>
-<li><strong>上身抓取与柔顺</strong>：阅读 <a
+<li><strong>下肢控制与静止判稳</strong>：阅读 <a
+href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a>，审视
+<code>FacriMjlabPolicy</code>、<code>PolicyRunner</code>、非对称斜率与倾角抑制公式、<code>operation_snapshot</code>
+切换与 <code>BodyStabilityMonitor</code> 滑窗条件。</li>
+<li><strong>三维定位与终端对接</strong>：阅读 <a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a>，追踪腰部运动学激光外参投影、<code>HybridA* -&gt; MPPI -&gt; box_route -&gt; ResponseSampling</code>
+接力管线与 <code>ConvergentTerminalServo</code> 同心三态收口定律。</li>
+<li><strong>上身逆解与纯接触柔顺</strong>：阅读 <a
 href="../algorithms/manipulation-and-ik.html">双臂规划与柔顺操作</a>，掌握
-<code>UpperBodyPlanner</code> 49 选 1 搜索、Minkowski
-碰撞检测与纯接触触底保护。</li>
-<li><strong>视觉与感知边界</strong>：阅读 <a
+<code>17</code> 轴仅位置约束 <code>49</code> 候选 <code>DLS</code>
+搜索、Minkowski 扫掠检验、纯 <code>7</code> 轴臂雅可比力观测及
+<code>510/510</code> 纯接触对照。</li>
+<li><strong>视觉网关与感知边界</strong>：阅读 <a
 href="../algorithms/workpiece-perception.html">工件视觉感知</a>，厘清
-<code>LocateAnything-3B</code>、ZED 2i、FoundationPose
-实装边界以及待合入分支的超分流程定位。</li>
+<code>LocateAnything-3B</code> 安全沙箱、<code>ZED 2i</code> /
+<code>FoundationPose</code> 单实例 <code>6D</code>
+配准及待并入超分分支边界。</li>
 </ol>
       </article>
 
@@ -301,14 +971,17 @@ href="../algorithms/workpiece-perception.html">工件视觉感知</a>，厘清
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#一现役生产算法台账"
-id="toc-一现役生产算法台账">一、现役生产算法台账</a></li>
-<li><a href="#二条件启用规划路线与历史原型界线"
-id="toc-二条件启用规划路线与历史原型界线">二、条件启用、规划路线与历史原型界线</a></li>
-<li><a href="#三跨章节阅读导引"
-id="toc-三跨章节阅读导引">三、跨章节阅读导引</a></li>
+<li><a href="#position" id="toc-position">01 ·
+算法核全栈位置与调用边界</a></li>
+<li><a href="#ledger" id="toc-ledger">02 · 现役生产算法台账</a></li>
+<li><a href="#paradigm" id="toc-paradigm">03 ·
+软件工程实现范式与合规总览矩阵</a></li>
+<li><a href="#boundaries" id="toc-boundaries">04 ·
+条件受控路径、待合入分支与退役红线</a>
+<ul>
+<li><a href="#分域算法深描导引"
+id="toc-分域算法深描导引">分域算法深描导引</a></li>
+</ul></li>
 </ul>
       </nav>
     </aside>
@@ -321,20 +994,21 @@ id="toc-三跨章节阅读导引">三、跨章节阅读导引</a></li>
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

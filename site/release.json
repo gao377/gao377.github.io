@@ -8,7 +8,7 @@
       "id": "home",
       "file": "index.html",
       "theme": "portal",
-      "source_sha256": "0e30afab0a6fd5187dbed7a592c0dda53a8c2d79c6d3a7fbc844c32e3d7c342f"
+      "source_sha256": "a9fb72b8092343d46ddca99b38937f5d139408100c2c5a4947b875ad8f96dd54"
     },
     {
       "id": "guides-quickstart",
@@ -38,97 +38,97 @@
       "id": "architecture-overview",
       "file": "architecture/overview.html",
       "theme": "interactive",
-      "source_sha256": "ff66fb7c8dff01d3f659d2e2a5ae3776bebd31d6458f0f8cce8bd2bb90389b4f"
+      "source_sha256": "994f0c052b6c3b8d37f452f3c3be1d4cfde43b1623f463589eef699bc617c1f4"
     },
     {
       "id": "architecture-component-map",
       "file": "architecture/component-map.html",
       "theme": "report",
-      "source_sha256": "100cea32343f6b11dce141e5c2d8877b7cd80a2df55d7b32452270415abf785e"
+      "source_sha256": "c31a0b13d3e75e30512ca5a23242d084025c3546268e9ce15b857d7eecf96992"
     },
     {
       "id": "architecture-interfaces",
       "file": "architecture/interfaces.html",
       "theme": "report",
-      "source_sha256": "b17fef623b57d26089faac3b8c0baa3e43cea7d0beeec35e3584af1b2113f3cf"
+      "source_sha256": "493b94ffbc19ccc79a935f730b631b856b4a196b44d0beea7b09440d0a406781"
     },
     {
       "id": "architecture-runtime-baselines",
       "file": "architecture/runtime-baselines.html",
       "theme": "report",
-      "source_sha256": "1170c06bbffec0382303c50054df13f036aecde7f2c8616000f21b9a3a628a9c"
+      "source_sha256": "9a96585928b233be6c51464fec56f7a3f98df5ddfcb7f4a5f0fd82b308b9bb55"
     },
     {
       "id": "subsystems-system-agent-and-rsi",
       "file": "subsystems/system-agent-and-rsi.html",
       "theme": "interactive",
-      "source_sha256": "7922188bd355fa276ece6f911721c5cb8c26a732deef7a409d65ee4147b0f224"
+      "source_sha256": "dcfe94f5eea2781d0561b4a2b72f5a32dee3ac7a7c4b00ce9facd476f95faf2d"
     },
     {
       "id": "subsystems-interaction-and-gateway",
       "file": "subsystems/interaction-and-gateway.html",
       "theme": "interactive",
-      "source_sha256": "fd252768ab16d0795256ae4ecfdb18ed9aed868661211d71c498540abff07f53"
+      "source_sha256": "09c398511b12c086943c70fb58a675ef1b0170a843125d44710c02e819bce21a"
     },
     {
       "id": "subsystems-facility-hal-equipment",
       "file": "subsystems/facility-hal-equipment.html",
       "theme": "interactive",
-      "source_sha256": "c438edc569ebdf93353f5359b560fe527ad8df9f87770bb3f64ffb5643df393d"
+      "source_sha256": "0fb7cdb48151ba18c0e5453ef2cd2041d3c25583bde17266e256b9d941841f45"
     },
     {
       "id": "subsystems-robot-multiprocess-cpp",
       "file": "subsystems/robot-multiprocess-cpp.html",
       "theme": "interactive",
-      "source_sha256": "cfa9043ecb1a0a8daa0efe813c89038d8481a5a2efb5ce6ac3d944b65942ecee"
+      "source_sha256": "8816a96260c6fe877866aad2b34cb6c9bcd7d77de88971cf81ad45e6983618db"
     },
     {
       "id": "subsystems-robot-embodiment-spec",
       "file": "subsystems/robot-embodiment-spec.html",
       "theme": "interactive",
-      "source_sha256": "f9efc7d32accc21ee38e2c65c80eced47759d2bffbfa77fc1db0aa8598f2f1e2"
+      "source_sha256": "f45cb1166346f8e857c8a80553dbf9b96c36a16c9f9ea4620b94bc10f2d57237"
     },
     {
       "id": "subsystems-robot-hal-sal-wire",
       "file": "subsystems/robot-hal-sal-wire.html",
       "theme": "interactive",
-      "source_sha256": "239d65a26035d6044a8e642622bd3625b578ff808338bae746d12b132c62dbbf"
+      "source_sha256": "7d62d3d421fd2d2f2049ac35ee2a7bef67e2ac9e383c34ad7f1209787174bb73"
     },
     {
       "id": "subsystems-robot-capabilities",
       "file": "subsystems/robot-capabilities.html",
       "theme": "interactive",
-      "source_sha256": "59b9945184e92a5386c394d128656cf593c5e87fd4960ae7094d5c1c471d88c4"
+      "source_sha256": "117285ae79c78f1751502fc384fb39d12a96da3a415be9174936922661e527c1"
     },
     {
       "id": "algorithms-overview",
       "file": "algorithms/overview.html",
       "theme": "report",
-      "source_sha256": "92c4eaca4585ace4f2f95c26a1e2be8b7e47e656cf972cb22aec268c908b99a0"
+      "source_sha256": "59ecc5ea0445c46cc355d7ef824fcee5f0b1cbb663c9376ba058fe2dd83298a1"
     },
     {
       "id": "algorithms-locomotion-and-state",
       "file": "algorithms/locomotion-and-state.html",
       "theme": "interactive",
-      "source_sha256": "0b1c3d9b7134715cee4c90637448e5337cfdf995f815a42437a938109ac00fde"
+      "source_sha256": "5c67309c229043879ef7d8f364e6882e09c27d394bed1dae26393011f32a2409"
     },
     {
       "id": "algorithms-spatial-and-navigation",
       "file": "algorithms/spatial-and-navigation.html",
       "theme": "interactive",
-      "source_sha256": "82ff693426add4326518b638c391ef847703e83809efdea7701c409e0b89bc96"
+      "source_sha256": "4a95c2890b8611b32f24d9615638f23a1474f273b96f055e39ea957feea781c2"
     },
     {
       "id": "algorithms-manipulation-and-ik",
       "file": "algorithms/manipulation-and-ik.html",
       "theme": "interactive",
-      "source_sha256": "4ef3d730c28a3f47aec496d2c969f1c0f53253816460e2b968f53da8c950bf4f"
+      "source_sha256": "e64740e2e4715537b473b752526aaf094fb1cd659e9597b0de9de996bf545df7"
     },
     {
       "id": "algorithms-workpiece-perception",
       "file": "algorithms/workpiece-perception.html",
       "theme": "interactive",
-      "source_sha256": "71ec0ee137347c372d4dc380339de82e3cb57d0be12b0716ae8288b366552ab0"
+      "source_sha256": "da6bafe10c1e607dcfe586d7750ca01658625e9ddc0ff97c9fe553634cebd779"
     },
     {
       "id": "evidence-simulation-engine",
@@ -158,7 +158,7 @@
       "id": "engineering-doc-pipeline",
       "file": "engineering/doc-pipeline.html",
       "theme": "article",
-      "source_sha256": "4f2f1f2fa4db98720d65777a7cc541aedd63d04f93add5fef5404f21d7f93b78"
+      "source_sha256": "490ec6b3a3615eb431595ff4e62d17d8cbf23b6ab14945c7a94c6ee2bf5eb8b6"
     },
     {
       "id": "engineering-dependencies-licenses",

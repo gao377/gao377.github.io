@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-perc-openvocab-sandbox" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="algo-perc-openvocab-sandbox-title" aria-describedby="algo-perc-openvocab-sandbox-desc">
+  <title id="algo-perc-openvocab-sandbox-title">LocateAnything-3B 开放词汇沙箱网关与只读显示 SHA-256 通道</title>
+  <desc id="algo-perc-openvocab-sandbox-desc">说明开放词汇大模型视觉推理如何经 ROI 节流、安全路径防逃逸检验与逐块哈希校验投射至只读显示面板。</desc>
+  <defs>
+    <pattern id="algo-perc-openvocab-sandbox-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-perc-openvocab-sandbox-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-perc-openvocab-sandbox-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#algo-perc-openvocab-sandbox-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="400.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">EDGE ROI &amp; QUOTA GUARD</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">端侧请求与车队带宽节流</text>
+  <rect x="414.0" y="86.0" width="376.0" height="400.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="428.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">MODELGATEWAY SANDBOX (:18080)</text>
+  <text x="428.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">路径防逃逸与开放词汇服务</text>
+  <rect x="818.0" y="86.0" width="346.0" height="400.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="832.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">READ-ONLY DISPLAY PROJECTION</text>
+  <text x="832.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SHA-256 检验与只读控制台</text>
+  <g class="arch-edge" data-from="perc_req" data-to="roi_gate" data-flow="inference">
+    <path d="M 211.0 234.0 L 211.0 320.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-ochre)"/>
+    <rect x="183.2" y="268.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="211.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">ROI 切片</text>
+  </g>
+  <g class="arch-edge" data-from="roi_gate" data-to="art_ref" data-flow="security">
+    <path d="M 364.0 357.0 L 393.0 357.0 Q 398.0 357.0 398.0 352.0 L 398.0 202.0 Q 398.0 197.0 403.0 197.0 L 436.0 197.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-terracotta)"/>
+    <rect x="368.2" y="268.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="398.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">media://</text>
+  </g>
+  <g class="arch-edge" data-from="art_ref" data-to="locate_3b" data-flow="inference">
+    <path d="M 602.0 234.0 L 602.0 320.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-ink)"/>
+    <rect x="576.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="602.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">校验通过</text>
+  </g>
+  <g class="arch-edge" data-from="locate_3b" data-to="sha_verify" data-flow="security">
+    <path d="M 768.0 357.0 L 797.0 357.0 Q 802.0 357.0 802.0 352.0 L 802.0 202.0 Q 802.0 197.0 807.0 197.0 L 840.0 197.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-slate)"/>
+    <rect x="781.2" y="268.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="802.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">候选框</text>
+  </g>
+  <g class="arch-edge" data-from="sha_verify" data-to="disp_panel" data-flow="security">
+    <path d="M 991.0 234.0 L 991.0 320.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-perc-openvocab-sandbox-arrow-forest)"/>
+    <rect x="965.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="991.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">只读叠加</text>
+  </g>
+  <g class="arch-node-card" data-node-id="perc_req">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="perc_req" data-flows="all,inference" aria-expanded="false" aria-label="PerceptionRuntime 请求（端侧按需图像切片）">
+      <rect class="arch-node-box" x="58.0" y="160.0" width="306.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">PerceptionRuntime 请求</text>
+      <text class="arch-node-role" x="70.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">端侧按需图像切片</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#flow" aria-label="前往「PerceptionRuntime 请求」对应章节">
+      <rect x="336.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="348.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="roi_gate">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="roi_gate" data-flows="all,inference,security" aria-expanded="false" aria-label="RoiGatewayGuard 节流（&lt;=2 流 · 640p · 15s）">
+      <rect class="arch-node-box" x="58.0" y="320.0" width="306.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">RoiGatewayGuard 节流</text>
+      <text class="arch-node-role" x="70.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">&lt;=2 流 · 640p · 15s</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#principles" aria-label="前往「RoiGatewayGuard 节流」对应章节">
+      <rect x="336.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="348.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="art_ref">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="art_ref" data-flows="all,inference,security" aria-expanded="false" aria-label="ArtifactRef + O_NOFOLLOW（media:// 沙箱防逃逸）">
+      <rect class="arch-node-box" x="436.0" y="160.0" width="332.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ArtifactRef + O_NOFOLLOW</text>
+      <text class="arch-node-role" x="448.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">media:// 沙箱防逃逸</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#paradigm" aria-label="前往「ArtifactRef + O_NOFOLLOW」对应章节">
+      <rect x="740.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="752.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="locate_3b">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="locate_3b" data-flows="all,inference,security" aria-expanded="false" aria-label="LocateAnything-3B 服务（:18080 开放词汇定位）">
+      <rect class="arch-node-box" x="436.0" y="320.0" width="332.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">LocateAnything-3B 服务</text>
+      <text class="arch-node-role" x="448.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18080 开放词汇定位</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#contracts" aria-label="前往「LocateAnything-3B 服务」对应章节">
+      <rect x="740.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="752.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sha_verify">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sha_verify" data-flows="all,security" aria-expanded="false" aria-label="只读显示 SHA-256 检验（readDisplayResource 逐块）">
+      <rect class="arch-node-box" x="840.0" y="160.0" width="302.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">只读显示 SHA-256 检验</text>
+      <text class="arch-node-role" x="852.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">readDisplayResource 逐块</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#principles" aria-label="前往「只读显示 SHA-256 检验」对应章节">
+      <rect x="1114.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1126.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="disp_panel">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="disp_panel" data-flows="all,security" aria-expanded="false" aria-label="平台 P03 感知只读面板（仅可视化观测）">
+      <rect class="arch-node-box" x="840.0" y="320.0" width="302.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">平台 P03 感知只读面板</text>
+      <text class="arch-node-role" x="852.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">仅可视化观测</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/workpiece-perception.html#evidence" aria-label="前往「平台 P03 感知只读面板」对应章节">
+      <rect x="1114.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">&lt;=2 流 / 640p ROI 防火墙</text>
+  <rect x="248.8" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="270.8" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">O_NOFOLLOW 防符号链接逃逸</text>
+  <rect x="437.8" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="459.8" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SHA-256 逐块只读投影</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">视觉大模型仅运行在 :18080 隔离显存池，绝不阻塞端侧 10 Hz AprilTag 与 200 Hz 控制</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 04A · OPEN-VOCAB SANDBOX &amp; DISPLAY GATEWAY</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">LocateAnything-3B 开放词汇沙箱网关与只读显示 SHA-256 通道</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">RoiGatewayGuard (&lt;=2 流) · O_NOFOLLOW · readDisplayResource</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

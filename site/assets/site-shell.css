@@ -585,7 +585,9 @@ figure.diagram-figure {
 }
 
 .doc-article .diagram-canvas img,
-.diagram-canvas img {
+.diagram-canvas img,
+.doc-article .diagram-canvas svg,
+.diagram-canvas svg {
   display: block;
   width: 100%;
   max-width: 100%;
@@ -594,8 +596,105 @@ figure.diagram-figure {
   border: 0;
 }
 
-figure.diagram-figure figcaption {
+/* ---------- Interactive SVG Nodes, Edges, Filter Bar & Accessible Focus ---------- */
+
+.interactive-arch-svg .arch-node {
+  cursor: pointer;
+}
+
+.interactive-arch-svg .arch-node-jump {
+  cursor: pointer;
+}
+
+.interactive-arch-svg .arch-node:focus-visible,
+.interactive-arch-svg .arch-node-jump:focus-visible {
+  outline: 3px solid #B04A1A;
+  outline-offset: 2px;
+}
+
+.interactive-arch-svg .arch-node:hover .arch-node-box {
+  stroke: #B04A1A;
+  stroke-width: 2;
+}
+
+.interactive-arch-svg .arch-node.is-selected .arch-node-box {
+  stroke: #B04A1A;
+  stroke-width: 2.4;
+}
+
+.interactive-arch-svg .arch-node-jump:hover rect {
+  stroke: #B04A1A;
+  fill: #FDF3EE;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .interactive-arch-svg .arch-node-card,
+  .interactive-arch-svg .arch-edge {
+    transition: opacity 150ms ease-out;
+  }
+}
+
+.interactive-arch-svg.has-node-highlight .arch-node-card:not(.is-highlighted):not(.is-neighbor):not(.is-selected),
+.interactive-arch-svg.has-node-highlight .arch-edge:not(.is-highlighted) {
+  opacity: 0.25;
+}
+
+.interactive-arch-svg .arch-node-card.is-dimmed,
+.interactive-arch-svg .arch-edge.is-dimmed {
+  opacity: 0.2;
+}
+
+.diagram-controls {
   margin-top: 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.85rem;
+}
+
+.diagram-flow-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.diagram-flow-btn {
+  font-family: var(--shell-font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.24rem 0.6rem;
+  min-block-size: 28px;
+  border: 1px solid var(--shell-rule);
+  background: var(--shell-bg);
+  color: var(--shell-ink-soft);
+  cursor: pointer;
+}
+
+.diagram-flow-btn:hover,
+.diagram-flow-btn:focus-visible {
+  border-color: var(--shell-accent);
+  color: var(--shell-accent);
+}
+
+.diagram-flow-btn.is-active,
+.diagram-flow-btn[aria-pressed="true"] {
+  border-color: var(--shell-accent);
+  background: var(--shell-bg);
+  color: var(--shell-accent);
+}
+
+.diagram-status-hint {
+  font-family: var(--shell-font-sans);
+  font-size: 0.8rem;
+  color: var(--shell-ink-soft);
+}
+
+figure.diagram-figure figcaption {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--shell-rule);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -606,6 +705,13 @@ figure.diagram-figure figcaption {
   color: var(--shell-ink-soft);
 }
 
+.diagram-caption-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.diagram-raw-link,
 .diagram-zoom-btn,
 .diagram-lightbox-zoom,
 .diagram-lightbox-close {
@@ -614,12 +720,16 @@ figure.diagram-figure figcaption {
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.28rem 0.68rem;
+  min-block-size: 28px;
   border: 1px solid var(--shell-rule);
   background: var(--shell-bg);
   color: var(--shell-ink);
+  text-decoration: none;
   cursor: pointer;
 }
 
+.diagram-raw-link:hover,
+.diagram-raw-link:focus-visible,
 .diagram-zoom-btn:hover,
 .diagram-zoom-btn:focus-visible,
 .diagram-lightbox-zoom:hover,
@@ -630,10 +740,233 @@ figure.diagram-figure figcaption {
   color: var(--shell-accent);
 }
 
+:where(
+  .diagram-flow-btn,
+  .diagram-tab,
+  .diagram-zoom-btn,
+  .diagram-raw-link,
+  .diagram-drawer-close,
+  .diagram-drawer-subview,
+  .diagram-drawer-link,
+  .diagram-lightbox-zoom,
+  .diagram-lightbox-close
+):focus-visible {
+  outline: 2px solid var(--shell-accent);
+  outline-offset: 2px;
+}
+
 .diagram-lightbox-zoom[aria-pressed="true"] {
   border-color: var(--shell-accent);
   background: var(--shell-surface);
   color: var(--shell-accent);
+}
+
+/* ---------- Diagram Tabs (single-row tablist + zero-chrome hidden="until-found" panels) ---------- */
+
+.diagram-tabs {
+  margin: 1.5rem 0;
+}
+
+.diagram-tablist {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--shell-rule);
+  margin-bottom: 0.85rem;
+  scrollbar-width: thin;
+}
+
+.diagram-tab {
+  position: relative;
+  flex: none;
+  font-family: var(--shell-font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  min-block-size: 36px;
+  border: 0;
+  background: transparent;
+  color: var(--shell-ink-soft);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.diagram-tab:hover {
+  color: var(--shell-ink);
+}
+
+.diagram-tab[aria-selected="true"] {
+  color: var(--shell-accent);
+}
+
+.diagram-tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  border-block-end: 3px solid var(--shell-accent);
+}
+
+.diagram-tabpanels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Outer panel shell MUST have zero padding/border/margin/background for hidden="until-found" */
+.diagram-tabpanel {
+  grid-area: 1 / 1;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.diagram-tabpanel-inner > figure.diagram-figure {
+  margin: 0;
+}
+
+/* ---------- Diagram Node Drawer Deck (hidden="until-found" zero-chrome wrapper) ---------- */
+
+.diagram-drawer-deck {
+  margin-top: 0.65rem;
+}
+
+.diagram-drawer-panel {
+  padding: 0;
+  border: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.diagram-drawer-card {
+  border: 1px solid var(--shell-rule);
+  border-top: 2px solid var(--shell-accent);
+  background: var(--shell-bg);
+  padding: 0.95rem 1.05rem;
+  margin-top: 0.5rem;
+  font-family: var(--shell-font-sans);
+}
+
+.diagram-drawer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+
+.diagram-drawer-title-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.diagram-drawer-title {
+  font-size: 1rem;
+  color: var(--shell-ink);
+}
+
+.diagram-drawer-badge {
+  font-family: var(--shell-font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--shell-badge);
+  color: var(--shell-badge);
+}
+
+.diagram-drawer-badge.is-partial {
+  border-color: var(--shell-accent);
+  color: var(--shell-accent);
+}
+
+.diagram-drawer-meta {
+  font-family: var(--shell-font-mono);
+  font-size: 0.76rem;
+  color: var(--shell-ink-soft);
+}
+
+.diagram-drawer-close {
+  font-family: var(--shell-font-mono);
+  font-size: 0.74rem;
+  padding: 0.2rem 0.55rem;
+  min-block-size: 26px;
+  border: 1px solid var(--shell-rule);
+  background: var(--shell-surface);
+  color: var(--shell-ink-soft);
+  cursor: pointer;
+}
+
+.diagram-drawer-summary {
+  margin: 0 0 0.7rem;
+  font-size: 0.9rem;
+  color: var(--shell-ink);
+}
+
+.diagram-drawer-specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.55rem 1rem;
+  margin: 0 0 0.8rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--shell-surface);
+  border: 1px solid var(--shell-rule);
+}
+
+.diagram-drawer-specs dt {
+  font-family: var(--shell-font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--shell-ink-soft);
+  margin-bottom: 0.15rem;
+}
+
+.diagram-drawer-specs dd {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--shell-ink);
+  overflow-wrap: anywhere;
+}
+
+.diagram-drawer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+}
+
+.diagram-drawer-subview,
+.diagram-drawer-link {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--shell-font-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  min-block-size: 28px;
+  border: 1px solid var(--shell-rule);
+  background: var(--shell-surface);
+  color: var(--shell-ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.diagram-drawer-link {
+  border-color: var(--shell-accent);
+  color: var(--shell-accent);
+}
+
+@supports (position-area: block-end) {
+  .diagram-hover-popover {
+    inset: auto;
+    margin: 0;
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
 }
 
 /* Native <dialog> modal: NO unconditional display, scroll containment via overscroll-behavior */
@@ -697,8 +1030,10 @@ dialog.diagram-lightbox[open] {
   gap: 0.5rem;
 }
 
-.diagram-lightbox-actions form {
-  margin: 0;
+.diagram-lightbox-zoom-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .diagram-lightbox-stage {
@@ -709,7 +1044,7 @@ dialog.diagram-lightbox[open] {
   background: var(--shell-surface);
 }
 
-.diagram-lightbox-stage img {
+.diagram-lightbox-stage svg {
   display: block;
   width: 100%;
   height: auto;
@@ -717,9 +1052,21 @@ dialog.diagram-lightbox[open] {
   border: 1px solid #D8D3C8;
 }
 
-dialog.diagram-lightbox[data-zoom="actual"] .diagram-lightbox-stage img {
-  width: max(100%, 1200px);
+dialog.diagram-lightbox[data-zoom="150"] .diagram-lightbox-stage svg {
+  width: 150%;
   max-width: none;
+}
+
+dialog.diagram-lightbox[data-zoom="200"] .diagram-lightbox-stage svg {
+  width: 200%;
+  max-width: none;
+}
+
+.diagram-lightbox-detail {
+  padding: 0.65rem 1rem;
+  border-top: 1px solid var(--shell-rule);
+  background: var(--shell-bg);
+  font-size: 0.86rem;
 }
 
 /* ---------- Collapsible Technical Disclosure (<details class="tech-details">) ---------- */

@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-nav-terminal-servo" viewBox="0 0 1200 550" width="1200" height="550" role="group" aria-labelledby="algo-nav-terminal-servo-title" aria-describedby="algo-nav-terminal-servo-desc">
+  <title id="algo-nav-terminal-servo-title">ConvergentTerminalServo 同心三态滞回区与零先验割线偏置估计</title>
+  <desc id="algo-nav-terminal-servo-desc">用几何同心三态示意图取代大段推演文字，阐明施密特滞回消抖、零先验割线偏置估计及停滞看门狗。</desc>
+  <defs>
+    <pattern id="algo-nav-terminal-servo-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-nav-terminal-servo-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-nav-terminal-servo-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="550" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="550" fill="url(#algo-nav-terminal-servo-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="548.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="400.0" height="412.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONCENTRIC THREE-STATE HYSTERESIS</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">同心三态滞回收敛几何区</text>
+  <rect x="464.0" y="86.0" width="700.0" height="412.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="478.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">SECANT BIAS &amp; COMMAND SHAPING</text>
+  <text x="478.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">零先验割线偏置估计与整形控制律</text>
+  <circle cx="228.0" cy="294.0" r="132.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.3" stroke-dasharray="5 4"/>
+  <circle cx="228.0" cy="294.0" r="84.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.3"/>
+  <circle cx="228.0" cy="294.0" r="40.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.3"/>
+  <g class="arch-edge" data-from="zone_approach" data-to="zone_idle" data-flow="zones">
+    <path d="M 392.0 409.0 L 415.0 409.0 Q 420.0 409.0 420.0 404.0 L 420.0 154.0 Q 420.0 149.0 415.0 149.0 L 392.0 149.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-forest)"/>
+    <rect x="394.2" y="270.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="420.0" y="282.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">滞回收敛</text>
+  </g>
+  <g class="arch-edge" data-from="zone_idle" data-to="zone_settle" data-flow="zones">
+    <path d="M 392.0 165.0 L 494.0 165.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-forest)"/>
+    <rect x="417.2" y="156.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="443.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">驻留判稳</text>
+  </g>
+  <g class="arch-edge" data-from="secant_bias" data-to="vel_floor" data-flow="estimator">
+    <path d="M 982.0 222.0 L 982.0 320.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-slate)"/>
+    <rect x="951.2" y="262.0" width="61.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="982.0" y="274.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">b_xy 偏置</text>
+  </g>
+  <g class="arch-edge" data-from="vel_floor" data-to="zone_approach" data-flow="estimator">
+    <path d="M 830.0 357.0 L 451.0 357.0 Q 446.0 357.0 446.0 362.0 L 446.0 404.0 Q 446.0 409.0 441.0 409.0 L 392.0 409.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-nav-terminal-servo-arrow-ochre)"/>
+    <rect x="612.2" y="348.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="638.0" y="360.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">补偿下限</text>
+  </g>
+  <g class="arch-edge" data-from="rate_watch" data-to="zone_settle" data-flow="estimator">
+    <path d="M 644.0 320.0 L 644.0 222.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-nav-terminal-servo-arrow-terracotta)"/>
+    <rect x="623.2" y="262.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="644.0" y="274.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">防卡滞</text>
+  </g>
+  <g class="arch-node-card" data-node-id="zone_idle">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zone_idle" data-flows="all,zones" aria-expanded="false" aria-label="IDLE_IN_BAND (内环死区)（滞回保持 · 防微震）">
+      <rect class="arch-node-box" x="76.0" y="118.0" width="316.0" height="62.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="88.0" y="141.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">IDLE_IN_BAND (内环死区)</text>
+      <text class="arch-node-role" x="88.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">滞回保持 · 防微震</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#principles" aria-label="前往「IDLE_IN_BAND (内环死区)」对应章节">
+      <rect x="364.0" y="122.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="376.0" y="138.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="zone_approach">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zone_approach" data-flows="all,estimator,zones" aria-expanded="false" aria-label="APPROACH (中距逼近)（零先验连续收敛）">
+      <rect class="arch-node-box" x="76.0" y="378.0" width="316.0" height="62.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="88.0" y="401.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">APPROACH (中距逼近)</text>
+      <text class="arch-node-role" x="88.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">零先验连续收敛</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#flow" aria-label="前往「APPROACH (中距逼近)」对应章节">
+      <rect x="364.0" y="382.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="376.0" y="398.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="zone_settle">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="zone_settle" data-flows="all,estimator,zones" aria-expanded="false" aria-label="SETTLE (终段稳态判停)（到位确认 · 交接锁）">
+      <rect class="arch-node-box" x="494.0" y="148.0" width="300.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="506.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SETTLE (终段稳态判停)</text>
+      <text class="arch-node-role" x="506.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">到位确认 · 交接锁</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#evidence" aria-label="前往「SETTLE (终段稳态判停)」对应章节">
+      <rect x="766.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="778.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="secant_bias">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="secant_bias" data-flows="all,estimator" aria-expanded="false" aria-label="b_xy 割线偏置估计器（在线抵消底盘滑移偏置）">
+      <rect class="arch-node-box" x="830.0" y="148.0" width="304.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="842.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">b_xy 割线偏置估计器</text>
+      <text class="arch-node-role" x="842.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">在线抵消底盘滑移偏置</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#principles" aria-label="前往「b_xy 割线偏置估计器」对应章节">
+      <rect x="1106.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1118.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rate_watch">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rate_watch" data-flows="all,estimator" aria-expanded="false" aria-label="ProgressWatch 卡滞监测（收敛速率门控）">
+      <rect class="arch-node-box" x="494.0" y="320.0" width="300.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="506.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ProgressWatch 卡滞监测</text>
+      <text class="arch-node-role" x="506.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">收敛速率门控</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#contracts" aria-label="前往「ProgressWatch 卡滞监测」对应章节">
+      <rect x="766.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="778.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="vel_floor">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="vel_floor" data-flows="all,estimator" aria-expanded="false" aria-label="CommandFloor 死区补偿（静摩擦突破下限）">
+      <rect class="arch-node-box" x="830.0" y="320.0" width="304.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="842.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">CommandFloor 死区补偿</text>
+      <text class="arch-node-role" x="842.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">静摩擦突破下限</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#paradigm" aria-label="前往「CommandFloor 死区补偿」对应章节">
+      <rect x="1106.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1118.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <circle cx="228.0" cy="294.0" r="4.5" fill="#16181D"/>
+  <text x="228.0" y="314.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.5" font-weight="700" fill="#16181D" text-anchor="middle">Target (0, 0)</text>
+  <line x1="36.0" y1="506.0" x2="1164.0" y2="506.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="528.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="104.0" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">内带滞回与 SETTLE 判停</text>
+  <rect x="246.8" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="268.8" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">中距逼近与速度下限</text>
+  <rect x="384.2" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="406.2" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">b_xy 割线滑移估计器</text>
+  <rect x="527.2" y="517.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="549.2" y="527.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ProgressWatch 收敛监测</text>
+  <text x="1164.0" y="527.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">无需离线摩擦标定，割线法利用连续两步实测位移差在线消除底盘侧滑偏置</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 02C · CONVERGENT TERMINAL SERVO</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">ConvergentTerminalServo 同心三态滞回区与零先验割线偏置估计</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">IDLE_IN_BAND / APPROACH / SETTLE · b_xy 割线估计</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

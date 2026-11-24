@@ -68,50 +68,906 @@ DAG，实施持股守恒与来源验证，并将自我反思与规则演化严�
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p><code>SystemApp</code>（<code>src/system_app/</code>）位于平台编排与演化平面，上游承接
-<code>InteractionGateway</code> 转交的人机操作意图与
-<code>CapabilitySynthesizer</code> 汇总的单机能力快照，下游通过 ROS 2
-动作、<code>StarFleetBus</code> 舰队总线与 <code>FacilityHAL</code>
-驱动异构机器人及工装设施完成多机协作。它不参与毫秒级关节伺服与单机局部避障，而是将任务编译、编队互斥仲裁、来源核验与离线规则演化严格隔离在四层受控边界之内。</p>
-<figure class="diagram-figure">
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>在多机协作产线与机场保障场景中，若沿用固定剧本脚本或让大模型直接输出关节控制指令，会在工程上触发三类结构性失效：</p>
+<ol type="1">
+<li><strong>异构载体静态剧本爆炸</strong>：现役双足
+<code>FACRI</code>、<code>RP1</code>、全向轮臂 <code>G2</code>、轮腿
+<code>M20</code> 与 <code>4</code>
+型机场特种车辆在底盘运动学、额定负载、作业高度和工装依赖上差异显著，任何硬编码派单一旦遇到单机离线或能力受限便会整线瘫痪。</li>
+<li><strong>多机转运持物守恒与通道死锁风险</strong>：跨工位搬运涉及「抓取
+→ 搬运 →
+交接/放置」及狭窄走廊会车，若编译期缺少持物引用守恒校验与独占通道互斥窗口注入，调度器可能出现同一工件逻辑复制、持物引用悬空或双机相向堵死。</li>
+<li><strong>在线自修改与幻觉污染安全底线</strong>：若允许自我反思模块直接热更在线控制器，或允许核验器采信仿真渲染真值来替代传感器观测，会破坏运行基线一致性并掩盖真实物理失败。</li>
+</ol>
+<p>为此，<code>SystemApp</code>
+将上层认知调度拆分为「在线确定性编译与仲裁（<code>DynamicCapabilityPlanner</code>
+→ <code>TeamRuntime</code> →
+<code>TeamVerifier</code>）」与「离线沙箱反思演化（<code>ReflectionEngine</code>
+→ <code>EvolutionManager</code>）」两套正交流程：限定在线生成输出上限为
+<code>[256, 2048]</code> 个令牌、<code>TeamPlanner</code>
+会话提案缓存不超过 <code>32</code> 项，并将 <code>TeamVerifier</code>
+锁定为纯来源核验谓词，绝不越权干预 <code>200 Hz</code> 端侧执行环。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p><code>SystemApp</code>（<code>src/system_app/</code>）位于平台编排与演化平面，运行于低频事件驱动时钟域（ROS
+2 动作客户端、<code>:18641</code> HTTP 舰队总线与 <code>:18642</code>
+<code>FacilityHAL</code> 网关），不介入毫秒级关节伺服。上游承接
+<code>InteractionGateway</code> 转交的任务请求与
+<code>CapabilitySynthesizer</code> 汇总的单机在线能力契约，下游驱动
+<code>RobotApp</code> 单机能力与外部工装设备执行多机
+<code>DAG</code>。</p>
+<figure class="diagram-figure" data-diagram-id="sub-system-online-dag" data-fig-uid="sub-system-online-dag-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/sub-system-agent-rsi.svg"
-alt="SystemApp 编排、舰队仲裁与受约束离线演化架构" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-system-online-dag" viewBox="0 0 1200 580" width="1200" height="580" role="group" aria-labelledby="sub-system-online-dag-title-f0" aria-describedby="sub-system-online-dag-desc-f0">
+  <title id="sub-system-online-dag-title-f0">SystemApp 在线编排流: 五维输入 -&gt; TeamPlanner -&gt; TeamRuntime -&gt; TeamVerifier</title>
+  <desc id="sub-system-online-dag-desc-f0">拆解在线任务编译与执行的完整功能流：上下文/记忆聚合、五维动态规划、幂等派发、工装协同与独立谓词核验。</desc>
+  <defs>
+    <pattern id="sub-system-online-dag-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-system-online-dag-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-system-online-dag-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-system-online-dag-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-system-online-dag-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-system-online-dag-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-system-online-dag-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="580" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="580" fill="url(#sub-system-online-dag-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="578.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="290.0" height="444.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">CONTEXT &amp; CATALOG</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">上下文与权威目录</text>
+  <rect x="352.0" y="86.0" width="812.0" height="444.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="366.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">ONLINE ORCHESTRATION DAG</text>
+  <text x="366.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">规划编译 -&gt; 互斥派发 -&gt; 独立核验</text>
+  <g class="arch-edge" data-from="cap_reg" data-to="team_plan" data-flow="plan">
+    <path d="M 306.0 180.0 L 386.0 180.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-online-dag-arrow-slate-f0)"/>
+    <rect x="330.1" y="171.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="346.0" y="183.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">契约</text>
+  </g>
+  <g class="arch-edge" data-from="know_mem" data-to="team_plan" data-flow="plan">
+    <path d="M 306.0 290.0 L 341.0 290.0 Q 346.0 290.0 346.0 285.0 L 346.0 199.0 Q 346.0 194.0 351.0 194.0 L 386.0 194.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-online-dag-arrow-slate-f0)"/>
+    <rect x="328.1" y="233.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="346.0" y="245.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">FTS5</text>
+  </g>
+  <g class="arch-edge" data-from="ctx_store" data-to="team_plan" data-flow="plan">
+    <path d="M 306.0 400.0 L 355.0 400.0 Q 360.0 400.0 360.0 395.0 L 360.0 213.0 Q 360.0 208.0 365.0 208.0 L 386.0 208.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-online-dag-arrow-slate-f0)"/>
+    <rect x="344.1" y="295.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="360.0" y="307.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">快照</text>
+  </g>
+  <g class="arch-edge" data-from="team_plan" data-to="team_rt" data-flow="dispatch">
+    <path d="M 556.0 226.0 L 556.0 272.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-online-dag-arrow-ink-f0)"/>
+    <rect x="541.1" y="240.0" width="29.9" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="556.0" y="252.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">DAG</text>
+  </g>
+  <g class="arch-edge" data-from="team_rt" data-to="equip_rt" data-flow="dispatch">
+    <path d="M 726.0 309.0 L 784.0 309.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-online-dag-arrow-ochre-f0)"/>
+    <rect x="739.1" y="300.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="755.0" y="312.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">工装</text>
+  </g>
+  <g class="arch-edge" data-from="team_rt" data-to="team_ver" data-flow="verify">
+    <path d="M 556.0 346.0 L 556.0 396.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-online-dag-arrow-forest-f0)"/>
+    <rect x="530.2" y="362.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="556.0" y="374.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">完整回执</text>
+  </g>
+  <g class="arch-edge" data-from="equip_rt" data-to="team_ver" data-flow="verify">
+    <path d="M 954.0 346.0 L 954.0 363.0 Q 954.0 368.0 949.0 368.0 L 645.0 368.0 Q 640.0 368.0 640.0 373.0 L 640.0 396.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-system-online-dag-arrow-ochre-f0)"/>
+    <rect x="776.2" y="359.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="797.0" y="371.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">设备态</text>
+  </g>
+  <g class="arch-edge" data-from="team_ver" data-to="evid_st" data-flow="verify">
+    <path d="M 726.0 433.0 L 784.0 433.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-online-dag-arrow-terracotta-f0)"/>
+    <rect x="734.1" y="424.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="755.0" y="436.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">JSONL</text>
+  </g>
+  <g class="arch-node-card" data-node-id="cap_reg" aria-controls="sub-system-online-dag-f0-drawer-cap_reg">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cap_reg" data-flows="all,plan" aria-expanded="false" aria-label="capability_registry（SkillCatalog 唯一契约）" aria-controls="sub-system-online-dag-f0-drawer-cap_reg">
+      <rect class="arch-node-box" x="56.0" y="146.0" width="250.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">capability_registry</text>
+      <text class="arch-node-role" x="68.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SkillCatalog 唯一契约</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#origins" data-same-page="true" aria-label="前往「capability_registry」对应章节">
+      <rect x="278.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="290.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="know_mem" aria-controls="sub-system-online-dag-f0-drawer-know_mem">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="know_mem" data-flows="all,plan" aria-expanded="false" aria-label="knowledge_memory（SQLite + FTS5 记忆）" aria-controls="sub-system-online-dag-f0-drawer-know_mem">
+      <rect class="arch-node-box" x="56.0" y="256.0" width="250.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="281.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">knowledge_memory</text>
+      <text class="arch-node-role" x="68.0" y="310.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SQLite + FTS5 记忆</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#flow" data-same-page="true" aria-label="前往「knowledge_memory」对应章节">
+      <rect x="278.0" y="260.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="290.0" y="276.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="ctx_store" aria-controls="sub-system-online-dag-f0-drawer-ctx_store">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="ctx_store" data-flows="all,plan" aria-expanded="false" aria-label="context_store（低频上下文快照）" aria-controls="sub-system-online-dag-f0-drawer-ctx_store">
+      <rect class="arch-node-box" x="56.0" y="366.0" width="250.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">context_store</text>
+      <text class="arch-node-role" x="68.0" y="420.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">低频上下文快照</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#flow" data-same-page="true" aria-label="前往「context_store」对应章节">
+      <rect x="278.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="290.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="team_plan" aria-controls="sub-system-online-dag-f0-drawer-team_plan">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="team_plan" data-flows="all,dispatch,plan" aria-expanded="false" aria-label="TeamPlanner (5D)（DAG 编译 · 持股守恒）" aria-controls="sub-system-online-dag-f0-drawer-team_plan">
+      <rect class="arch-node-box" x="386.0" y="152.0" width="340.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="398.0" y="177.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TeamPlanner (5D)</text>
+      <text class="arch-node-role" x="398.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">DAG 编译 · 持股守恒</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#principles" data-same-page="true" aria-label="前往「TeamPlanner (5D)」对应章节">
+      <rect x="698.0" y="156.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="710.0" y="172.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="team_rt" aria-controls="sub-system-online-dag-f0-drawer-team_rt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="team_rt" data-flows="all,dispatch,verify" aria-expanded="false" aria-label="TeamRuntime + Bus（幂等派发 · 互斥锁）" aria-controls="sub-system-online-dag-f0-drawer-team_rt">
+      <rect class="arch-node-box" x="386.0" y="272.0" width="340.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="398.0" y="297.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TeamRuntime + Bus</text>
+      <text class="arch-node-role" x="398.0" y="332.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">幂等派发 · 互斥锁</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#flow" data-same-page="true" aria-label="前往「TeamRuntime + Bus」对应章节">
+      <rect x="698.0" y="276.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="710.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="equip_rt" aria-controls="sub-system-online-dag-f0-drawer-equip_rt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="equip_rt" data-flows="all,dispatch,verify" aria-expanded="false" aria-label="equipment_runtime（:18642 离散设施代理）" aria-controls="sub-system-online-dag-f0-drawer-equip_rt">
+      <rect class="arch-node-box" x="784.0" y="272.0" width="340.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="796.0" y="297.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">equipment_runtime</text>
+      <text class="arch-node-role" x="796.0" y="332.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">:18642 离散设施代理</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#contracts" data-same-page="true" aria-label="前往「equipment_runtime」对应章节">
+      <rect x="1096.0" y="276.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1108.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="team_ver" aria-controls="sub-system-online-dag-f0-drawer-team_ver">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="team_ver" data-flows="all,verify" aria-expanded="false" aria-label="TeamVerifier（GoalPredicate 纯谓词）" aria-controls="sub-system-online-dag-f0-drawer-team_ver">
+      <rect class="arch-node-box" x="386.0" y="396.0" width="340.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="398.0" y="421.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TeamVerifier</text>
+      <text class="arch-node-role" x="398.0" y="456.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">GoalPredicate 纯谓词</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#paradigm" data-same-page="true" aria-label="前往「TeamVerifier」对应章节">
+      <rect x="698.0" y="400.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="710.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="evid_st" aria-controls="sub-system-online-dag-f0-drawer-evid_st">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="evid_st" data-flows="all,verify" aria-expanded="false" aria-label="evidence_store（JSONL 不可变证据）" aria-controls="sub-system-online-dag-f0-drawer-evid_st">
+      <rect class="arch-node-box" x="784.0" y="396.0" width="340.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="796.0" y="421.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">evidence_store</text>
+      <text class="arch-node-role" x="796.0" y="456.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">JSONL 不可变证据</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#evidence" data-same-page="true" aria-label="前往「evidence_store」对应章节">
+      <rect x="1096.0" y="400.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1108.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="536.0" x2="1164.0" y2="536.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="558.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">五维上下文与规划编译</text>
+  <rect x="230.1" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="252.1" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FacilityHAL 外设接口</text>
+  <rect x="379.8" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="401.8" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">GoalPredicate 独立核验</text>
+  <rect x="541.1" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="563.1" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">不可变审计证据仓</text>
+  <text x="1164.0" y="557.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">TeamPlanner 持有互斥锁与 32 项有界提案缓存，模糊请求触发澄清而不直接派单</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 01A · SYSTEMAPP ONLINE DAG</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">SystemApp 在线编排流: 五维输入 -&gt; TeamPlanner -&gt; TeamRuntime -&gt; TeamVerifier</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">P-I 六层整洁架构 · 持股守恒 · GoalPredicate 核验</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="plan" aria-pressed="false">五维上下文与 DAG 编译</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="dispatch" aria-pressed="false">互斥派发与工装驱动</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="verify" aria-pressed="false">独立谓词核验与落盘</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>SystemApp
-编排、舰队仲裁与受约束离线演化架构</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+在线编排与验证有向无环图</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-system-online-dag.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-system-online-dag-f0-drawer-cap_reg" class="diagram-drawer-panel" data-node-drawer="cap_reg" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">capability_registry</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 能力目录 · 只读模板加载</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「capability_registry」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为规划器提供合法技能词汇表与约束边界，防止非法参数编译进入任务图。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-I 六层整洁架构 + 单真源注册表</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/capability_registry/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>维护多机实例目录与 configs/skills/* 技能前置条件及参数绑定规则</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-online-dag-f0-drawer-know_mem" class="diagram-drawer-panel" data-node-drawer="know_mem" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">knowledge_memory</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 持久记忆 · 按地图版本隔离检索</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「knowledge_memory」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">向语义规划注入工位几何与历史流程记忆，支持多用户与多地图隔离。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>Repository 适配器 (SQLite/FTS5)</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/knowledge_memory/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>分 spatial / procedure / episode / kw 四域表；静态种子包注入工位几何</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-online-dag-f0-drawer-ctx_store" class="diagram-drawer-panel" data-node-drawer="ctx_store" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">context_store</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 状态聚合 · 原子快照读写</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「context_store」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保规划器基于真实最新上下文做决策，而不是凭过期状态盲目派单。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>来源与时效标签聚合</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/context_store/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>按 robot_id 聚合实时位姿、持物状态与健康度，带来源和捕获时间戳</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-online-dag-f0-drawer-team_plan" class="diagram-drawer-panel" data-node-drawer="team_plan" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">TeamPlanner (5D)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 动态规划 · 请求驱动编译</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「TeamPlanner (5D)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">融合五维上下文生成带跨机替补与走廊互斥窗口的任务图，模糊意图触发反问。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>门面 + 互斥锁 + 32 项有界缓存</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/team_planner/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>输出 NEEDS_CLARIFICATION | MACRO | COMPOSITE_DAG；编译期校验持股守恒</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-online-dag-f0-drawer-team_rt" class="diagram-drawer-panel" data-node-drawer="team_rt" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">TeamRuntime + Bus</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 编排执行 · 异步状态推进</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「TeamRuntime + Bus」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">推进任务图节点至 RobotApp ROS 2 端点与设备代理，支持任务级取消。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>幂等协调器 + 令牌锁</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/team_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>匹配 assignment/run/instance 三元身份；持 ResourceToken 防死锁；单机失败隔离</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-online-dag-f0-drawer-equip_rt" class="diagram-drawer-panel" data-node-drawer="equip_rt" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">equipment_runtime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 外设协同 · 有界轮询</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「equipment_runtime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">严守「设备完成不等于工件已被取走」，把物理交接责任清晰划归后续步骤。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>异步网关客户端</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/equipment_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>调用 FacilityHAL 执行 13 项标准动作并轮询 ready_to_pick 等终态回执</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-online-dag-f0-drawer-team_ver" class="diagram-drawer-panel" data-node-drawer="team_ver" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">TeamVerifier</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 独立核验 · 无副作用断言</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「TeamVerifier」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">独立于规划与执行器，返回 SATISFIED / UNSATISFIED / UNKNOWN 三值结论。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>纯函数谓词引擎</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/team_verifier/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>核验 HalOrigin 同源、地图归属、selected_arms 与持股守恒；防虚假通过</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-online-dag-f0-drawer-evid_st" class="diagram-drawer-panel" data-node-drawer="evid_st" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">evidence_store</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 审计留痕 · 追加落盘</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「evidence_store」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为每次协同作业建立不可篡改证据账本，支撑事后反思与合规审计。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>审计日志仓储</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/evidence_store/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>完整存储成功与失败步骤包、case_id 与原因码，供离线 RSI 消费</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-system-offline-rsi">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2
-id="动态能力规划器dynamiccapabilityplanner">动态能力规划器（<code>DynamicCapabilityPlanner</code>）</h2>
-<p>位于
-<code>src/system_app/modules/team_planner/domain/compilation/dynamic_capability_planner.py</code>
-的 <code>DynamicCapabilityPlanner</code>
-为每次编译请求动态组装上下文快照
-<code>DynamicPlanningContext</code>，不依赖硬编码脚本路线：</p>
+<p>在线主流程遵循「聚合上下文 → 受控编译与防呆分流 → 互斥与幂等派发 →
+独立谓词核验」四步顺序：</p>
 <ol type="1">
-<li><strong>三源上下文聚合</strong>：汇总场景静态知识包（<code>KnowledgePackContext</code>）、基于
-SQLite/FTS5
-的分域记忆检索、各机器人在线技能目录就绪状态（<code>CapabilityContract</code>）以及
-<code>FacilityHAL</code>
-设备实时状态（<code>FacilityDeviceState</code>）。</li>
-<li><strong>三类编译结果分流</strong>：面对缺参、歧义或目标不可达情形，输出
+<li><strong>三源上下文聚合与能力过滤</strong>：<code>src/system_app/modules/team_planner/domain/compilation/dynamic_capability_planner.py</code>
+汇总静态场景知识包（<code>KnowledgePackContext</code>）、<code>KnowledgeMemory</code>
+检索记录、<code>CapabilityContract</code> 实时就绪态与
+<code>FacilityHAL</code> 设备快照。</li>
+<li><strong>三类确定性分流</strong>：信息缺失或不可达时输出
 <code>NEEDS_CLARIFICATION</code>
-反问操作员并禁止盲目猜测；针对单一常规作业输出
-<code>MACRO_SKILL_PLAN</code>；针对跨工位或跨机协作输出带依赖边的
+主动反问操作员，禁止臆测参数；单机常规作业输出
+<code>MACRO_SKILL_PLAN</code>；跨工位协作输出带依赖边的
 <code>COMPOSITE_DAG_PLAN</code>。</li>
-<li><strong>跨机替补与互斥窗口注入</strong>：首选机器人能力下降或离线时，调用
-<code>resolve_agent_fallback</code> 依据 <code>EmbodimentSpec</code>
-同级能力筛选备选载体；生成拓扑前通过
-<code>_inject_resource_intervals</code>
-为狭窄通道与泊位自动插入互斥锁窗口（如 <code>factory.ch_corridor</code>
-或 <code>c919.dock.cargo_fwd</code>）。</li>
-<li><strong>持股守恒校验（<code>_verify_holding_conservation</code>）</strong>：在编译阶段校验所有搬运与交接任务的
-<code>holding_context_ref</code>，确保同一工件在空间转运过程中不会在无交接节点的情况下被逻辑复制或凭空丢失。</li>
+<li><strong>异构节点派发与走廊仲裁</strong>：<code>src/system_app/modules/team_runtime/runtime.py</code>
+统一调度
+<code>RobotAssignmentNode</code>、<code>EquipmentAssignmentNode</code>
+与 <code>PerceptionAssignmentNode</code>，并经
+<code>StarFleetBusState</code>（<code>src/system_app/fleet_bus/star_fleet_bus.py</code>）仲裁通道资源锁。</li>
+<li><strong>独立结果核验</strong>：<code>src/system_app/modules/team_verifier/domain/predicates.py</code>
+在节点与任务终结时执行无副作用谓词求值，输出
+<code>SATISFIED</code>、<code>UNSATISFIED</code> 或
+<code>UNKNOWN</code>。</li>
 </ol>
+<h2 id="principles">03 · 核心原理与内部机制</h2>
+<h3 id="在线编排三大不变量">在线编排三大不变量</h3>
+<ul>
+<li><strong>持股守恒不变量（<code>_verify_holding_conservation</code>）</strong>：编译期将工件
+<code>holding_context_ref</code> 视作线性守恒令牌。每条
+<code>manipulation.pick</code> 产生持物引用后，必须在同一机器人后续的
+<code>manipulation.place</code> 或显式交接边中消费并清空
+<code>remaining_responsibility</code>；无交接节点的分叉复制或持物状态丢失会在编译阶段直接拦截。</li>
+<li><strong>可重入资源互斥租约（<code>ResourceTokenMutexRegistry</code>）</strong>：<code>DynamicCapabilityPlanner</code>
+通过 <code>_inject_resource_intervals</code>
+为狭窄走廊与机坪泊位自动插入资源依赖边；运行时
+<code>StarFleetBusState</code> 维护带租约超时回收（默认
+<code>DEFAULT_RESOURCE_LEASE_TTL_S = 60.0 s</code>）的
+<code>ResourceTokenMutexRegistry</code>，确保同一时段至多一台机器人持有
+<code>factory.ch_corridor</code> 或 <code>c919.dock.cargo_fwd</code>
+等互斥资源。</li>
+<li><strong>来源同构与地图归属门禁（<code>TeamVerifier</code>）</strong>：<code>evaluate(goal, result, facts)</code>
+严格校验执行来源与观测来源一致性，即满足：</li>
+</ul>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">execution_origin</mtext><mo>∈</mo><mtext mathvariant="normal">allowed_origins</mtext><mo stretchy="false" form="postfix">)</mo><mo>∧</mo><mo stretchy="false" form="prefix">(</mo><mtext mathvariant="normal">observation_origin</mtext><mo>=</mo><mtext mathvariant="normal">execution_origin</mtext><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(\text{execution\_origin} \in \text{allowed\_origins}) \land (\text{observation\_origin} = \text{execution\_origin})</annotation></semantics></math></p>
+<p>任何将仿真渲染真值冒充为感知观测的结果均判为
+<code>UNKNOWN</code>（<code>GOAL_RESULT_ORIGIN_MISMATCH</code>）；对于
+<code>map_saved</code> 目标，还须同时命中 <code>spatial_runtime</code>
+产出的有效地图事实且满足 <code>robot_id</code> 与
+<code>instance_id</code> 双向匹配。</p>
+<h3 id="离线受约束反思与演化沙箱">离线受约束反思与演化沙箱</h3>
+<figure class="diagram-figure" data-diagram-id="sub-system-offline-rsi" data-fig-uid="sub-system-offline-rsi-f1">
+  <div class="diagram-canvas">
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-system-offline-rsi" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="sub-system-offline-rsi-title-f1" aria-describedby="sub-system-offline-rsi-desc-f1">
+  <title id="sub-system-offline-rsi-title-f1">SystemApp 离线 RSI 沙箱: 只读反思 -&gt; 候选演化 -&gt; 对照门禁 -&gt; 人工采纳</title>
+  <desc id="sub-system-offline-rsi-desc-f1">独立呈现离线 RSI 演化四阶段安全沙箱与 ModelGateway 并发配额隔离及人类审查采纳门禁。</desc>
+  <defs>
+    <pattern id="sub-system-offline-rsi-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-system-offline-rsi-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-system-offline-rsi-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#sub-system-offline-rsi-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="400.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONSTRAINED OFFLINE SANDBOX (NO ONLINE HOT-PATCHING)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">受约束离线自我演化安全回路</text>
+  <g class="arch-edge" data-from="rsi_evid" data-to="rsi_reflect" data-flow="diagnose">
+    <path d="M 374.0 197.0 L 444.0 197.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-terracotta-f1)"/>
+    <rect x="383.2" y="188.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="409.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">失败切片</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_reflect" data-to="rsi_model" data-flow="diagnose">
+    <path d="M 754.0 197.0 L 824.0 197.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-system-offline-rsi-arrow-slate-f1)"/>
+    <rect x="768.1" y="188.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="789.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">RSI=1</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_reflect" data-to="rsi_evol" data-flow="sandbox">
+    <path d="M 599.0 234.0 L 599.0 316.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-terracotta-f1)"/>
+    <rect x="583.1" y="266.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="599.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">假设</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_evol" data-to="rsi_sandbox" data-flow="gate">
+    <path d="M 754.0 353.0 L 824.0 353.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-forest-f1)"/>
+    <rect x="763.2" y="344.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="789.0" y="356.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">成对复验</text>
+  </g>
+  <g class="arch-edge" data-from="rsi_sandbox" data-to="rsi_adopt" data-flow="gate">
+    <path d="M 979.0 390.0 L 979.0 429.0 Q 979.0 434.0 974.0 434.0 L 224.0 434.0 Q 219.0 434.0 219.0 429.0 L 219.0 390.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-system-offline-rsi-arrow-terracotta-f1)"/>
+    <rect x="568.2" y="425.0" width="61.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="599.0" y="437.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">PASS 提交</text>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_evid" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_evid">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_evid" data-flows="all,diagnose" aria-expanded="false" aria-label="1. EvidenceStore 样本（真实失败包 (如 R4 V0)）" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_evid">
+      <rect class="arch-node-box" x="64.0" y="160.0" width="310.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">1. EvidenceStore 样本</text>
+      <text class="arch-node-role" x="76.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">真实失败包 (如 R4 V0)</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#evidence" data-same-page="true" aria-label="前往「1. EvidenceStore 样本」对应章节">
+      <rect x="346.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_reflect" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_reflect">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_reflect" data-flows="all,diagnose,sandbox" aria-expanded="false" aria-label="2. ReflectionEngine（只读诊断反思引擎）" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_reflect">
+      <rect class="arch-node-box" x="444.0" y="160.0" width="310.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">2. ReflectionEngine</text>
+      <text class="arch-node-role" x="456.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">只读诊断反思引擎</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#principles" data-same-page="true" aria-label="前往「2. ReflectionEngine」对应章节">
+      <rect x="726.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="738.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_model" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_model">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_model" data-flows="all,diagnose" aria-expanded="false" aria-label="3. ModelGateway (RSI)（:18080 · 并发上限 1）" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_model">
+      <rect class="arch-node-box" x="824.0" y="160.0" width="310.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="836.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">3. ModelGateway (RSI)</text>
+      <text class="arch-node-role" x="836.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">:18080 · 并发上限 1</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" aria-label="前往「3. ModelGateway (RSI)」对应章节">
+      <rect x="1106.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1118.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_evol" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_evol">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_evol" data-flows="all,gate,sandbox" aria-expanded="false" aria-label="4. EvolutionManager（候选补丁生命周期）" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_evol">
+      <rect class="arch-node-box" x="444.0" y="316.0" width="310.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="456.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">4. EvolutionManager</text>
+      <text class="arch-node-role" x="456.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">候选补丁生命周期</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#paradigm" data-same-page="true" aria-label="前往「4. EvolutionManager」对应章节">
+      <rect x="726.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="738.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_sandbox" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_sandbox">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_sandbox" data-flows="all,gate" aria-expanded="false" aria-label="5. L0–L3 离线对照门禁（R4 V0 FAIL -&gt; V1 PASS）" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_sandbox">
+      <rect class="arch-node-box" x="824.0" y="316.0" width="310.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="836.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">5. L0–L3 离线对照门禁</text>
+      <text class="arch-node-role" x="836.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">R4 V0 FAIL -&gt; V1 PASS</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#evidence" data-same-page="true" aria-label="前往「5. L0–L3 离线对照门禁」对应章节">
+      <rect x="1106.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1118.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="rsi_adopt" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_adopt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="rsi_adopt" data-flows="all,gate" aria-expanded="false" aria-label="6. 人类审查采纳/回滚（更新 SkillCatalog）" aria-controls="sub-system-offline-rsi-f1-drawer-rsi_adopt">
+      <rect class="arch-node-box" x="64.0" y="316.0" width="310.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="341.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">6. 人类审查采纳/回滚</text>
+      <text class="arch-node-role" x="76.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">更新 SkillCatalog</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#contracts" data-same-page="true" aria-label="前往「6. 人类审查采纳/回滚」对应章节">
+      <rect x="346.0" y="320.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="358.0" y="336.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ModelGateway 独立配额 (RSI=1)</text>
+  <rect x="283.7" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="305.7" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L0–L3 离线基线与对照复验</text>
+  <rect x="456.3" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="478.3" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">真实失败保留与人工采纳门禁</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">R4 V0 FAIL 样本通过对照验证后方可演进为 V1 PASS，原失败记录永久保留</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 01B · CONSTRAINED OFFLINE RSI SANDBOX</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">SystemApp 离线 RSI 沙箱: 只读反思 -&gt; 候选演化 -&gt; 对照门禁 -&gt; 人工采纳</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">严禁绕过离线门禁 · 严禁热改在线电机或保护参数</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="diagnose" aria-pressed="false">只读失败诊断</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="sandbox" aria-pressed="false">离线沙箱演化</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="gate" aria-pressed="false">人工审查门禁</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>离线自我反思与演化沙箱隔离架构</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-system-offline-rsi.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-system-offline-rsi-f1-drawer-rsi_evid" class="diagram-drawer-panel" data-node-drawer="rsi_evid" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">1. EvidenceStore 样本</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Offline RSI · 证据输入 · 只读历史切片</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「1. EvidenceStore 样本」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">从生产或仿真归档提取真实失败样本，禁止篡改历史计数。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>真实失败保留原则</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/evidence_store/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>保留原始请求、阶段回执与失败码 (如 RECEIVER_CONDITION_UNHANDLED)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-offline-rsi-f1-drawer-rsi_reflect" class="diagram-drawer-panel" data-node-drawer="rsi_reflect" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">2. ReflectionEngine</strong>
+        <span class="diagram-drawer-badge is-partial">P · 部分/规划</span>
+        <span class="diagram-drawer-meta">Offline RSI · 归因分析 · 只读分析 · 不写运行态</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「2. ReflectionEngine」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">定位失败属于意图解析偏差、前置条件缺失还是站位/工装冲突。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-I 六层架构只读引擎</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/reflection_engine/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>不自持硬件或执行锁；输出结构化故障根因与受影响技能假设</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-offline-rsi-f1-drawer-rsi_model" class="diagram-drawer-panel" data-node-drawer="rsi_model" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">3. ModelGateway (RSI)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Offline RSI · 推理资源 · 独立信号量配额=1</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「3. ModelGateway (RSI)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为离线诊断与候选补丁综合提供独立限流的模型计算能力。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>配额隔离守门</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/model_gateway/model_gateway_service/app.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>与主文本并发池隔离，确保离线反思绝不抢占在线语音/调度推理配额</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-offline-rsi-f1-drawer-rsi_evol" class="diagram-drawer-panel" data-node-drawer="rsi_evol" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">4. EvolutionManager</strong>
+        <span class="diagram-drawer-badge is-partial">P · 部分/规划</span>
+        <span class="diagram-drawer-meta">Offline RSI · 候选演化 · 候选 / 评估 / 回滚</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「4. EvolutionManager」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">组织候选修改并在离线环境生成可对照的变更清单。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>沙箱候选管理状态机</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/evolution_manager/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>生成技能契约或规划规则候选，严格禁止注入电机 PD 或安全保护参数</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-offline-rsi-f1-drawer-rsi_sandbox" class="diagram-drawer-panel" data-node-drawer="rsi_sandbox" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">5. L0–L3 离线对照门禁</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Offline RSI · 回归复验 · 基线 + 对照复验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「5. L0–L3 离线对照门禁」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">用客观离线验证挡住未验证推测进入线上系统。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>成对反例验证</dd></div>
+      <div><dt>源码路径</dt><dd><code>tools/verification/check_factory_runtime_baseline.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>验证新候选在复现原失败输入通过的同时，不引入冻结基线漂移</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-system-offline-rsi-f1-drawer-rsi_adopt" class="diagram-drawer-panel" data-node-drawer="rsi_adopt" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">6. 人类审查采纳/回滚</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Offline RSI · 发布批准 · 显式人工签发</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「6. 人类审查采纳/回滚」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">完成受控演进闭环，保持系统可回滚性与运行确定性。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>人机协同发布门禁</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/capability_registry/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>严禁自动热更新在线运行进程；经人工确认后版本化发布至 SkillCatalog</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-system-online-dag">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
+</figure>
+<p>平台将自我改进（<code>RSI</code>）严格隔离于离线分析与规则补丁候选层（对应
+<code>/rsi/*</code> 路由），遵循「只读取证 → 沙箱生成 → 对照复验 →
+人工采纳」四阶段状态机：</p>
+<ol type="1">
+<li><strong>只读根因诊断</strong>：<code>ReflectionEngine</code>（<code>src/system_app/modules/reflection_engine/runtime.py</code>）经由
+<code>ExpertIO</code> 注入的只读制品读取器消费
+<code>EvidenceStore</code>
+失败数据包，定位诸如工位接料前置条件缺失等根因，绝不篡改或清除历史失败计数。</li>
+<li><strong>受控生命周期与候选验证</strong>：<code>EvolutionManager</code>（<code>src/system_app/modules/evolution_manager/runtime.py</code>）在内部维护
+<code>NEW -&gt; READY -&gt; RUNNING -&gt; CLOSING -&gt; CLOSED</code>
+严格状态迁移，<code>analyze</code> 与 <code>propose</code> 按
+<code>request_id</code> 提供幂等回执，<code>adopt</code> 与
+<code>rollback</code> 则强制校验 <code>expected_active</code> 乐观锁及
+<code>validation_id</code> 验证凭证。</li>
+<li><strong>基线不可绕过约束</strong>：离线演化产出的补丁仅限编译规则与能力配置候选，不具备热更端侧
+<code>C++20</code> 控制器或绕过
+<code>tools/verification/check_factory_runtime_baseline.py</code>
+的权限。</li>
+</ol>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p><code>SystemApp</code> 各核心模块严格遵循 <strong>P-I
+六层整洁架构与防腐层范式</strong>：</p>
+<ul>
+<li><strong>严格同心圆分层</strong>：以
+<code>team_planner</code>、<code>team_runtime</code>、<code>knowledge_memory</code>、<code>reflection_engine</code>
+与 <code>evolution_manager</code> 为代表，统一划分为
+<code>contracts/</code>（不可变 <code>DTO</code>
+契约）、<code>domain/</code>（零 <code>I/O</code>
+纯函数编译与谓词引擎）、<code>application/</code>（用例编排与资源调度）、<code>infrastructure/</code>（<code>SQLite/FTS5</code>、HTTP
+与 ROS 2 适配器）、<code>lifecycle/</code> 与对外门面
+<code>runtime.py</code>。</li>
+<li><strong>确定性资源托管（<code>ExitStack</code>）</strong>：<code>src/system_app/assembly.py</code>
+中的 <code>run_system</code> 使用 Python 标准库 <code>ExitStack</code>
+统一注册信号恢复、节点销毁、<code>EquipmentRuntime</code>、网关与执行器关闭回调，保证部分启动失败或收到
+<code>SIGINT</code>/<code>SIGTERM</code> 时严格按逆序回收资源。</li>
+<li><strong>门面并发隔离与状态防重</strong>：<code>TeamPlanner</code>
+通过 <code>Lock</code> 实现单飞并发保护（忙时抛出
+<code>TEAM_PLANNER_BUSY</code>）并维护 <code>32</code> 项有界 FIFO
+提案缓存；<code>TeamRuntime</code> 使用 <code>RLock</code> 与
+<code>MissionRepository</code> 幂等准入保证重复 <code>request_id</code>
+不触发重复物理派发；<code>KnowledgeMemory</code> 通过
+<code>_scope</code> 校验强制隔离 <code>SYSTEM</code> 与
+<code>USER</code> 记忆命名空间。</li>
+</ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>合规状态</th>
+<th>工程依据与审视说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 领域纯洁性与依赖倒置</td>
+<td><code>PASS</code></td>
+<td><code>team_planner/domain</code>、<code>team_verifier/domain</code>
+与 <code>knowledge_memory/domain</code> 零
+<code>ROS 2</code>/<code>HTTP</code>/<code>SQLite</code>
+依赖，面向抽象契约编码</td>
+</tr>
+<tr>
+<td>2. 契约完备性与边界防呆</td>
+<td><code>PASS</code></td>
+<td><code>TeamPlanner</code> 校验令牌范围 <code>[256, 2048]</code>
+并通过 <code>NEEDS_CLARIFICATION</code>
+阻断缺参臆测；<code>TeamVerifier</code> 强制核验 <code>origin</code> 与
+<code>instance_id</code></td>
+</tr>
+<tr>
+<td>3. 状态机与生命周期确定性</td>
+<td><code>PASS</code></td>
+<td><code>EvolutionManager</code> 显式约束
+<code>NEW -&gt; READY -&gt; RUNNING -&gt; CLOSING -&gt; CLOSED</code>；<code>assembly.py</code>
+依托 <code>ExitStack</code> 实现逆序确定性退出</td>
+</tr>
+<tr>
+<td>4. 实时内存与并发安全性</td>
+<td><code>PASS</code></td>
+<td>属低频事件域，采用 <code>Lock</code>/<code>RLock</code>
+保护可变状态，<code>TeamPlanner</code> 提案缓存上限 <code>32</code>
+项，<code>TeamRuntime</code> 按 <code>request_id</code> 幂等去重</td>
+</tr>
+<tr>
+<td>5. 离线可测性与失败留痕</td>
+<td><code>PASS</code></td>
+<td>纯内存领域契约可脱离仿真器单元测试；<code>EvidenceStore</code> 与
+<code>ReflectionEngine</code> 完整保留原始失败日志与计数</td>
+</tr>
+<tr>
+<td>6. 单真源约束与过渡债务透明度</td>
+<td><code>SCOPED</code></td>
+<td>在线编译与核验模块全量现役（<code>I</code>）；<code>reflection_engine</code>
+与 <code>evolution_manager</code> 状态为
+<code>P</code>，明确受限于离线实验沙箱与人工采纳门禁</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>核心组件</th>
+<th>源码入口</th>
+<th>核心输入与输出契约</th>
+<th>冻结关键约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TeamPlanner</code></td>
+<td><code>src/system_app/modules/team_planner/runtime.py</code></td>
+<td>输入文本与 <code>DynamicPlanningContext</code>；输出规划提案或
+<code>NEEDS_CLARIFICATION</code></td>
+<td><code>max_output_tokens</code> 限
+<code>[256, 2048]</code>；提案缓存上限 <code>32</code> 项</td>
+</tr>
+<tr>
+<td><code>TeamRuntime</code></td>
+<td><code>src/system_app/modules/team_runtime/runtime.py</code></td>
+<td>接收 <code>TaskRequest</code> 与编译 <code>Plan</code>；返回
+<code>MissionReceipt</code> 与节点进度</td>
+<td>按 <code>request_id</code> 幂等准入；校验 <code>robot_scope</code>
+与 <code>equipment_scope</code></td>
+</tr>
+<tr>
+<td><code>TeamVerifier</code></td>
+<td><code>src/system_app/modules/team_verifier/domain/predicates.py</code></td>
+<td>消费 <code>GoalPredicate</code>、<code>ExecutionResult</code> 与
+<code>Facts</code>；返回 <code>GoalEvaluation</code></td>
+<td>仅输出 <code>SATISFIED</code> / <code>UNSATISFIED</code> /
+<code>UNKNOWN</code>；强核验 <code>origin</code> 一致性</td>
+</tr>
+<tr>
+<td><code>StarFleetBusState</code></td>
+<td><code>src/system_app/fleet_bus/star_fleet_bus.py</code></td>
+<td>提供互斥资源与遥测聚合 HTTP 端口 <code>:18641</code></td>
+<td><code>DEFAULT_RESOURCE_LEASE_TTL_S = 60.0 s</code>；<code>DEFAULT_TELEMETRY_STALE_S = 3.0 s</code></td>
+</tr>
+<tr>
+<td><code>EvolutionManager</code></td>
+<td><code>src/system_app/modules/evolution_manager/runtime.py</code></td>
+<td>承载 <code>analyze</code> / <code>propose</code> /
+<code>adopt</code> / <code>rollback</code> 离线演化用例</td>
+<td><code>adopt</code> 与 <code>rollback</code> 强制要求
+<code>expected_active</code> 与 <code>validation_id</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 <details class="tech-details">
 <summary>
-查看 DynamicPlanningContext 记忆表与编译输入细则
+查看 DynamicPlanningContext 记忆表、编译结果分流与同级替补细则
 </summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
@@ -154,6 +1010,15 @@ SQLite/FTS5
 </table>
 </div>
 </details>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
+<ul>
+<li><strong>多机编排与交互实证（<code>L3</code>
+<code>PHYSICAL_SIM</code>）</strong>：在 <code>SIT-F3</code>
+四机集成测试中，<code>TeamRuntime</code> 与 <code>StarFleetBus</code>
+连续调度 <code>robot_r1</code> 至 <code>robot_r4</code> 完成
+<code>16</code> 个工位周期，全程审计 <code>holding_context_ref</code>
+持物守恒；交互规划通路由 <code>MED-INT-01</code> 实证记录呈现。</li>
+</ul>
 <figure class="doc-video" data-media-id="MED-INT-01">
 <video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-INT-01.webp">
 <source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-skill-reactflow-dag.mp4" type="video/mp4" />
@@ -164,67 +1029,19 @@ SHA256:5ca8dbaccd）</span><span
 class="doc-media-badge">SYSTEM_ORCHESTRATION_UI</span>
 </figcaption>
 </figure>
-<h2
-id="多机运行时与舰队总线teamruntime-starfleetbus">多机运行时与舰队总线（<code>TeamRuntime</code>
-&amp; <code>StarFleetBus</code>）</h2>
-<p>编译通过的 DAG 交由
-<code>src/system_app/modules/team_runtime/runtime.py</code>
-调度推进，并由运行于 <code>:18641</code> 的
-<code>StarFleetBusState</code> 统筹通道互斥：</p>
 <ul>
-<li><strong>异构节点统一派发</strong>：<code>TeamRuntime</code> 区分处理
-<code>RobotAssignmentNode</code>（通过 ROS 2
-<code>/system/execute_assignment</code> 或 HTTP 舰队总线派发给单机）与
-<code>EquipmentAssignmentNode</code>（经 <code>equipment_runtime</code>
-分派至 <code>:18642</code> <code>FacilityHAL</code> 网关）。</li>
-<li><strong>舰队互斥锁仲裁（<code>StarFleetBus</code>）</strong>：<code>StarFleetBusState</code>
-内建 <code>ResourceTokenMutexRegistry</code>，通过
-<code>/api/fleet/resources/{id}/{acquire,release}</code> 与
-<code>/api/fleet/corridor/*</code>
-接口严格仲裁多机对充电走廊、工位过道及机场泊位的独占访问，防止通道相向死锁。</li>
-<li><strong>执行回执核对与超时清理</strong>：<code>ExecutionResults</code>
-监听器核对回执事件中的
-<code>assignment_id</code>、<code>run_id</code>、<code>capability_id</code>
-与节点绑定
-<code>instance_id</code>；若上游机器人实例发生重建更换，旧实例残留回执将被强制拒绝。</li>
-</ul>
-<h2
-id="严格来源与结果验证器teamverifier">严格来源与结果验证器（<code>TeamVerifier</code>）</h2>
-<p>位于
-<code>src/system_app/modules/team_verifier/domain/predicates.py</code>
-的断言引擎在每个任务步骤或任务节点终结时返回
-<code>SATISFIED</code>、<code>UNSATISFIED</code> 或
-<code>UNKNOWN</code>：</p>
-<ul>
-<li><strong>来源一致性硬门禁</strong>：严格比对任务执行回执来源（<code>origin</code>）与外部观测证明来源（例如同属
-<code>SIM_SAL</code> 或同属
-<code>REAL_HAL</code>），严禁将仿真渲染位姿或设计图数据伪造为真实感知证据。</li>
-<li><strong>空间地图与多臂归属核验</strong>：同步检查
-<code>spatial_runtime</code>
-报告的地图参考系归属、<code>selected_arms</code>
-实际启用臂标识、<code>holding_context_ref</code> 持物引用以及
-<code>remaining_responsibility</code>
-交接责任剩余量，避免出现操作成功假象。</li>
-</ul>
-<h2
-id="受约束的离线自我反思与演化reflectionengine-evolutionmanager">受约束的离线自我反思与演化（<code>ReflectionEngine</code>
-&amp; <code>EvolutionManager</code>）</h2>
-<p>FACRI
-将自我改进机制（RSI）严格限定在<strong>离线受约束实验与编译上下文规则层</strong>（对应前端
-<code>P07</code> <code>RsiLab</code> 与 <code>/api/rsi/*</code>
-路由），遵循以下三项安全铁律：</p>
-<ul>
-<li><strong>只读分析真实失败证据</strong>：<code>ReflectionEngine</code>
-消费 <code>EvidenceStore</code> 留存的历史失败数据包（例如工厂
-<code>robot_r4</code> <code>V0</code> 试验中因接料前置条件未覆写而触发的
-<code>RECEIVER_CONDITION_UNHANDLED</code>
-错误实录），结合结构化日志提炼失效上下文，绝不隐藏或删改原始失败计数。</li>
-<li><strong>候选生成与对照验证分离</strong>：<code>EvolutionManager</code>（<code>src/system_app/modules/evolution_manager/</code>）针对分析出的短板在隔离目录产出规则或能力补丁候选（如补齐接收端检测与位姿容差策略），并触发受控批量对照仿真测试；只有通过全部门禁对比（例如
-<code>robot_r4</code> <code>V1</code>
-全流程稳定通过），候选补丁才获得人类工程师审查采纳或版本回滚选项。</li>
-<li><strong>严禁绕过运行基线检查</strong>：任何离线反思与演化流程均不具备热更修改在线机器人控制器、绕过
-<code>check_factory_runtime_baseline.py</code>
-校验或改动实时保护阈值的权限。</li>
+<li><strong>离线 RSI <code>V0 FAIL</code> 与 <code>V1 PASS</code>
+诚实对照（<code>L3</code>）</strong>：在工厂连续物理仿真对照中，<code>MED-RSI-01</code>（<code>case_id</code>:
+<code>FACTORY-20261123T013011-a56a</code>，<code>20x</code> 加速，原片
+<code>273.67 s</code>）如实归档了 <code>robot_r4</code> 在
+<code>V0</code> 基线下因接收工位前置条件未覆写而触发
+<code>RECEIVER_CONDITION_UNHANDLED</code> 中止的原始负样本；经
+<code>ReflectionEngine</code> 与 <code>EvolutionManager</code>
+在离线沙箱定位并生成补丁后，<code>MED-SYS-03</code>（<code>case_id</code>:
+<code>FACTORY-20261123T015358-4026</code>，<code>20x</code> 加速，原片
+<code>1553.75 s</code>）复测验证 <code>robot_r4</code> 连续跑通
+<code>arrive_a</code> 至 <code>home</code> 全部 <code>9</code>
+项业务目标并判定为 <code>PASS</code>。</li>
 </ul>
 <figure class="doc-video" data-media-id="MED-RSI-01">
 <video controls playsinline loading="lazy" preload="none" width="1280" height="708" poster="../assets/posters/MED-RSI-01.webp">
@@ -247,6 +1064,14 @@ SHA256:3b4a8a2fd7）</span><span
 class="doc-media-badge">PHYSICAL_SIM</span>
 </figcaption>
 </figure>
+<ul>
+<li><strong>证据边界与不可外推红线</strong>：<code>TeamPlanner</code> 与
+<code>TeamVerifier</code>
+仅证明语义图编排、互斥仲裁与来源核验正确性；离线 <code>RSI</code> 通过的
+<code>V1</code> 补丁仍受限在 <code>SIM</code>
+仿真层级（<code>L3</code>），不得跳过 <code>L4</code>
+现场标定直接认定具备真机物理资格，且严禁在运行链中自动篡改冻结调度参数。</li>
+</ul>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -258,19 +1083,22 @@ class="doc-media-badge">PHYSICAL_SIM</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#动态能力规划器dynamiccapabilityplanner"
-id="toc-动态能力规划器dynamiccapabilityplanner">动态能力规划器（<code>DynamicCapabilityPlanner</code>）</a></li>
-<li><a href="#多机运行时与舰队总线teamruntime-starfleetbus"
-id="toc-多机运行时与舰队总线teamruntime-starfleetbus">多机运行时与舰队总线（<code>TeamRuntime</code>
-&amp; <code>StarFleetBus</code>）</a></li>
-<li><a href="#严格来源与结果验证器teamverifier"
-id="toc-严格来源与结果验证器teamverifier">严格来源与结果验证器（<code>TeamVerifier</code>）</a></li>
-<li><a
-href="#受约束的离线自我反思与演化reflectionengine-evolutionmanager"
-id="toc-受约束的离线自我反思与演化reflectionengine-evolutionmanager">受约束的离线自我反思与演化（<code>ReflectionEngine</code>
-&amp; <code>EvolutionManager</code>）</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与内部机制</a>
+<ul>
+<li><a href="#在线编排三大不变量"
+id="toc-在线编排三大不变量">在线编排三大不变量</a></li>
+<li><a href="#离线受约束反思与演化沙箱"
+id="toc-离线受约束反思与演化沙箱">离线受约束反思与演化沙箱</a></li>
+</ul></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -283,20 +1111,21 @@ id="toc-受约束的离线自我反思与演化reflectionengine-evolutionmanager
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

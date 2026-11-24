@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-facility-wal-fsm" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="sub-facility-wal-fsm-title" aria-describedby="sub-facility-wal-fsm-desc">
+  <title id="sub-facility-wal-fsm-title">AckJournal WAL 预写日志提交与崩溃 PENDING -&gt; UNKNOWN 恢复状态机</title>
+  <desc id="sub-facility-wal-fsm-desc">展示工装请求经预写日志持久化、驱动执行及异常重启后将未决状态强制收敛为 UNKNOWN 的确定性状态迁移。</desc>
+  <defs>
+    <pattern id="sub-facility-wal-fsm-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-facility-wal-fsm-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-facility-wal-fsm-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#sub-facility-wal-fsm-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="190.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">NORMAL COMMIT FLOW</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">正常请求受理 -&gt; WAL 落盘 -&gt; 真实终态写回</text>
+  <rect x="36.0" y="294.0" width="1128.0" height="192.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="313.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CRASH RECOVERY FLOW</text>
+  <text x="50.0" y="330.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">进程崩溃或断电重启恢复路径</text>
+  <g class="arch-edge" data-from="wal_req" data-to="wal_pending" data-flow="normal">
+    <path d="M 298.0 182.0 L 336.0 182.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-slate)"/>
+    <rect x="296.2" y="173.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="317.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">先落盘</text>
+  </g>
+  <g class="arch-edge" data-from="wal_pending" data-to="wal_exec" data-flow="normal">
+    <path d="M 584.0 182.0 L 622.0 182.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-ochre)"/>
+    <rect x="587.1" y="173.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="603.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">驱动</text>
+  </g>
+  <g class="arch-edge" data-from="wal_exec" data-to="wal_done" data-flow="normal">
+    <path d="M 862.0 182.0 L 900.0 182.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-forest)"/>
+    <rect x="855.2" y="173.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="881.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">实测真值</text>
+  </g>
+  <g class="arch-edge" data-from="wal_pending" data-to="wal_crash" data-flow="recovery">
+    <path d="M 460.0 218.0 L 460.0 356.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-facility-wal-fsm-arrow-terracotta)"/>
+    <rect x="429.3" y="278.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="460.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">未终结重启</text>
+  </g>
+  <g class="arch-edge" data-from="wal_crash" data-to="wal_unknown" data-flow="recovery">
+    <path d="M 676.0 393.0 L 760.0 393.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-wal-fsm-arrow-terracotta)"/>
+    <rect x="687.3" y="384.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="718.0" y="396.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">禁伪造成功</text>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_req">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_req" data-flows="all,normal" aria-expanded="false" aria-label="1. POST /commands 接入（幂等 request_id 校验）">
+      <rect class="arch-node-box" x="58.0" y="146.0" width="240.0" height="72.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">1. POST /commands 接入</text>
+      <text class="arch-node-role" x="70.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">幂等 request_id 校验</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#contracts" aria-label="前往「1. POST /commands 接入」对应章节">
+      <rect x="270.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="282.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_pending">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_pending" data-flows="all,normal,recovery" aria-expanded="false" aria-label="2. AckJournal PENDING（预写日志先落盘）">
+      <rect class="arch-node-box" x="336.0" y="146.0" width="248.0" height="72.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">2. AckJournal PENDING</text>
+      <text class="arch-node-role" x="348.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">预写日志先落盘</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#principles" aria-label="前往「2. AckJournal PENDING」对应章节">
+      <rect x="556.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="568.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_exec">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_exec" data-flows="all,normal" aria-expanded="false" aria-label="3. IFacilityHalDriver 执行（13+1 标准动作映射）">
+      <rect class="arch-node-box" x="622.0" y="146.0" width="240.0" height="72.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="634.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">3. IFacilityHalDriver 执行</text>
+      <text class="arch-node-role" x="634.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">13+1 标准动作映射</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#flow" aria-label="前往「3. IFacilityHalDriver 执行」对应章节">
+      <rect x="834.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="846.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_done">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_done" data-flows="all,normal" aria-expanded="false" aria-label="4. 终态 SUCCEEDED / FAILED（真实 completion_field）">
+      <rect class="arch-node-box" x="900.0" y="146.0" width="240.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="912.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">4. 终态 SUCCEEDED / FAILED</text>
+      <text class="arch-node-role" x="912.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">真实 completion_field</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#evidence" aria-label="前往「4. 终态 SUCCEEDED / FAILED」对应章节">
+      <rect x="1112.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1124.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_crash">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_crash" data-flows="all,recovery" aria-expanded="false" aria-label="5. 进程崩溃或断电重放（扫描未终结 PENDING）">
+      <rect class="arch-node-box" x="336.0" y="356.0" width="340.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">5. 进程崩溃或断电重放</text>
+      <text class="arch-node-role" x="348.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">扫描未终结 PENDING</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#principles" aria-label="前往「5. 进程崩溃或断电重放」对应章节">
+      <rect x="648.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="660.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="wal_unknown">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="wal_unknown" data-flows="all,recovery" aria-expanded="false" aria-label="6. 强制判为 UNKNOWN（严禁伪造成功状态）">
+      <rect class="arch-node-box" x="760.0" y="356.0" width="360.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="772.0" y="381.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">6. 强制判为 UNKNOWN</text>
+      <text class="arch-node-role" x="772.0" y="416.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">严禁伪造成功状态</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#paradigm" aria-label="前往「6. 强制判为 UNKNOWN」对应章节">
+      <rect x="1092.0" y="360.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1104.0" y="376.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">WAL PENDING 预写</text>
+  <rect x="218.6" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="240.6" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">真实终态 SUCCEEDED / FAILED</text>
+  <rect x="419.9" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="441.9" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">崩溃恢复强制 UNKNOWN</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">遇 UNKNOWN 回执须按原 request_id 查状态，绝不盲目重发引发双倍动作</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 03B · ACKJIOURNAL WAL RECOVERY FSM</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">AckJournal WAL 预写日志提交与崩溃 PENDING -&gt; UNKNOWN 恢复状态机</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">先落盘后执行 · 崩溃重启绝不伪造成功</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

@@ -68,61 +68,857 @@
       </header>
 
       <article class="doc-article">
-<h2 id="定位与上下游边界">定位与上下游边界</h2>
-<p>交互网关、语音运行时与模型推理网关共同构筑外部人机界面与底层实时系统之间的三层流量与资源防火墙：上游承接控制台页面、语音终端及视觉裁剪上传请求，下游受控桥接
-<code>SystemApp</code>、<code>StarFleetBus</code> 与独立 GPU 模型
-Worker。这组服务不持有单机运动控制权，也不直接读取仿真物理真值，确保高并发
-HTTP 请求、大分辨率视频流与大模型推理波动均无法冲击核心调度节拍。</p>
-<figure class="diagram-figure">
+<h2 id="origins">01 · 需求来源与工程背景</h2>
+<p>在多机具身平台运行过程中，若让外部 HTTP
+控制台、实时语音流与多路视觉推理直接共享 <code>SystemApp</code>
+与底盘控制资源，会引发三类系统级阻塞：</p>
+<ol type="1">
+<li><strong>HTTP 同步调用拖垮 ROS
+调度时钟</strong>：<code>ThreadingHTTPServer</code>
+每次请求若直接同步阻塞在 ROS 2
+回调或模型等待中，并发前端轮询会在数秒内耗尽工作线程池并饿死任务反馈处理。</li>
+<li><strong>大模型推理抢占 GPU 显存与算力</strong>：主文本规划、离线
+<code>RSI</code> 反思、语音 <code>ASR</code>/<code>TTS</code>
+与向量检索若无硬配额隔离，批处理离线反思会把交互响应延迟推高至数秒甚至数十秒，造成人机对话僵死。</li>
+<li><strong>高分辨率 RGB-D 视频流与路径逃逸隐患</strong>：<code>4</code>
+至 <code>9</code> 台机器人同时回传未裁剪原始 RGB-D
+视频流会瞬间挤占宿主机与总线带宽；同时，若允许推理服务直接接受任意本地路径或符号链接
+<code>image_url</code>，会引入未授权文件读取风险。</li>
+</ol>
+<p>为此，平台在系统外围构建了三层有界守门防线：<code>:8090</code>
+<code>InteractionGateway</code> 负责有界异步排空、<code>:8088</code>
+<code>InteractionRuntime</code>
+托管语音与导览流式状态、<code>:18080</code> <code>ModelGateway</code>
+联合 <code>RoiGatewayGuard</code>
+锁定推理配额、安全引用与视觉像素上限。</p>
+<h2 id="flow">02 · 架构位置与总功能流</h2>
+<p>本子系统处于平台边缘人机交互与推理防火墙平面，横跨
+<code>src/system_app/interaction_gateway/</code>、<code>src/system_app/modules/interaction_runtime/</code>、<code>src/system_app/fleet_bus/roi_gateway_guard.py</code>
+与独立进程 <code>apps/model_gateway/</code>。上游承接 Web
+控制台、语音麦克风终端及端侧视觉裁剪报文，下游受控桥接
+<code>SystemApp</code> 与 GPU 模型
+Worker，全程不持有单机运动租约，也不直接读取仿真物理真值。</p>
+<figure class="diagram-figure" data-diagram-id="sub-gateway-async-drain" data-fig-uid="sub-gateway-async-drain-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/arch-communication-fabric.svg"
-alt="跨域通信与网关流控总线" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-gateway-async-drain" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="sub-gateway-async-drain-title-f0" aria-describedby="sub-gateway-async-drain-desc-f0">
+  <title id="sub-gateway-async-drain-title-f0">交互网关异步排空通路: 语音/UI 接入 -&gt; Queue(32) -&gt; 20 ms Drain -&gt; SSE</title>
+  <desc id="sub-gateway-async-drain-desc-f0">阐明语音流与控制台文本请求如何经 Origin 门禁进入 32 项有界队列并按 20 ms 周期平滑排空。</desc>
+  <defs>
+    <pattern id="sub-gateway-async-drain-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-gateway-async-drain-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-gateway-async-drain-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#sub-gateway-async-drain-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="300.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">INGRESS CLIENTS</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">人机前端入口</text>
+  <rect x="368.0" y="86.0" width="464.0" height="420.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="382.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">BOUNDED BACKPRESSURE GATEWAY (:8090)</text>
+  <text x="382.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">有界队列与 20 ms 排空适配器</text>
+  <rect x="864.0" y="86.0" width="300.0" height="420.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="878.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">DOWNSTREAM &amp; READ-ONLY PUSH</text>
+  <text x="878.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">编排消费与 SSE 推流</text>
+  <g class="arch-edge" data-from="voice_ui" data-to="gw_origin" data-flow="ingress">
+    <path d="M 314.0 197.0 L 339.0 197.0 Q 344.0 197.0 344.0 192.0 L 344.0 179.0 Q 344.0 174.0 349.0 174.0 L 400.0 174.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-slate-f0)"/>
+    <rect x="344.2" y="165.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="372.0" y="177.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">ASR 文本</text>
+  </g>
+  <g class="arch-edge" data-from="web_c01" data-to="gw_origin" data-flow="ingress">
+    <path d="M 314.0 357.0 L 351.0 357.0 Q 356.0 357.0 356.0 352.0 L 356.0 195.0 Q 356.0 190.0 361.0 190.0 L 400.0 190.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-slate-f0)"/>
+    <rect x="328.2" y="264.5" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="356.0" y="276.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">C01 指令</text>
+  </g>
+  <g class="arch-edge" data-from="gw_origin" data-to="gw_queue" data-flow="drain">
+    <path d="M 600.0 208.0 L 600.0 250.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-terracotta-f0)"/>
+    <rect x="567.2" y="220.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="600.0" y="232.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">Origin OK</text>
+  </g>
+  <g class="arch-edge" data-from="gw_queue" data-to="gw_drain" data-flow="drain">
+    <path d="M 600.0 318.0 L 600.0 360.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-ink-f0)"/>
+    <rect x="577.2" y="330.0" width="45.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="600.0" y="342.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">&lt;=8/拍</text>
+  </g>
+  <g class="arch-edge" data-from="gw_drain" data-to="sys_bus" data-flow="drain">
+    <path d="M 800.0 394.0 L 835.0 394.0 Q 840.0 394.0 840.0 389.0 L 840.0 223.0 Q 840.0 218.0 845.0 218.0 L 886.0 218.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-gateway-async-drain-arrow-forest-f0)"/>
+    <rect x="812.2" y="297.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="840.0" y="309.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">8 s 超时</text>
+  </g>
+  <g class="arch-edge" data-from="sys_bus" data-to="sse_hub" data-flow="stream">
+    <path d="M 1014.0 256.0 L 1014.0 330.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-gateway-async-drain-arrow-slate-f0)"/>
+    <rect x="988.2" y="284.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="1014.0" y="296.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">状态回执</text>
+  </g>
+  <g class="arch-edge" data-from="sse_hub" data-to="voice_ui" data-flow="stream">
+    <path d="M 886.0 388.0 L 853.0 388.0 Q 848.0 388.0 848.0 393.0 L 848.0 471.0 Q 848.0 476.0 843.0 476.0 L 191.0 476.0 Q 186.0 476.0 186.0 471.0 L 186.0 234.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-gateway-async-drain-arrow-slate-f0)"/>
+    <rect x="489.2" y="467.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="517.0" y="479.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">只读 SSE</text>
+  </g>
+  <g class="arch-node-card" data-node-id="voice_ui" aria-controls="sub-gateway-async-drain-f0-drawer-voice_ui">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="voice_ui" data-flows="all,ingress,stream" aria-expanded="false" aria-label="InteractionRuntime (:8088)（VAD / ASR / TTS 流）" aria-controls="sub-gateway-async-drain-f0-drawer-voice_ui">
+      <rect class="arch-node-box" x="58.0" y="160.0" width="256.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">InteractionRuntime (:8088)</text>
+      <text class="arch-node-role" x="70.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">VAD / ASR / TTS 流</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#flow" data-same-page="true" aria-label="前往「InteractionRuntime (:8088)」对应章节">
+      <rect x="286.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="298.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="web_c01" aria-controls="sub-gateway-async-drain-f0-drawer-web_c01">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="web_c01" data-flows="all,ingress" aria-expanded="false" aria-label="Web 协作台 C01 入口（:18640 · 条件写入）" aria-controls="sub-gateway-async-drain-f0-drawer-web_c01">
+      <rect class="arch-node-box" x="58.0" y="320.0" width="256.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Web 协作台 C01 入口</text>
+      <text class="arch-node-role" x="70.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18640 · 条件写入</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#origins" data-same-page="true" aria-label="前往「Web 协作台 C01 入口」对应章节">
+      <rect x="286.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="298.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_origin" aria-controls="sub-gateway-async-drain-f0-drawer-gw_origin">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_origin" data-flows="all,drain,ingress" aria-expanded="false" aria-label="Origin 与鉴权守门（:8090 · 拒绝跨源）" aria-controls="sub-gateway-async-drain-f0-drawer-gw_origin">
+      <rect class="arch-node-box" x="400.0" y="140.0" width="400.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="412.0" y="165.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">Origin 与鉴权守门</text>
+      <text class="arch-node-role" x="412.0" y="194.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">:8090 · 拒绝跨源</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true" aria-label="前往「Origin 与鉴权守门」对应章节">
+      <rect x="772.0" y="144.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="784.0" y="160.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_queue" aria-controls="sub-gateway-async-drain-f0-drawer-gw_queue">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_queue" data-flows="all,drain" aria-expanded="false" aria-label="有界队列 Queue(32)（maxsize=32 · 背压保护）" aria-controls="sub-gateway-async-drain-f0-drawer-gw_queue">
+      <rect class="arch-node-box" x="400.0" y="250.0" width="400.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="412.0" y="275.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">有界队列 Queue(32)</text>
+      <text class="arch-node-role" x="412.0" y="304.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">maxsize=32 · 背压保护</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true" aria-label="前往「有界队列 Queue(32)」对应章节">
+      <rect x="772.0" y="254.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="784.0" y="270.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_drain" aria-controls="sub-gateway-async-drain-f0-drawer-gw_drain">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_drain" data-flows="all,drain" aria-expanded="false" aria-label="20 ms Drain 排空器（每次 &lt;=8 条 · 8s 超时）" aria-controls="sub-gateway-async-drain-f0-drawer-gw_drain">
+      <rect class="arch-node-box" x="400.0" y="360.0" width="400.0" height="68.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="412.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">20 ms Drain 排空器</text>
+      <text class="arch-node-role" x="412.0" y="414.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">每次 &lt;=8 条 · 8s 超时</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#paradigm" data-same-page="true" aria-label="前往「20 ms Drain 排空器」对应章节">
+      <rect x="772.0" y="364.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="784.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sys_bus" aria-controls="sub-gateway-async-drain-f0-drawer-sys_bus">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sys_bus" data-flows="all,drain,stream" aria-expanded="false" aria-label="TeamPlanner 调度消费（5D 编译 / 取消）" aria-controls="sub-gateway-async-drain-f0-drawer-sys_bus">
+      <rect class="arch-node-box" x="886.0" y="180.0" width="256.0" height="76.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="898.0" y="205.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TeamPlanner 调度消费</text>
+      <text class="arch-node-role" x="898.0" y="242.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">5D 编译 / 取消</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#flow" data-same-page="true" aria-label="前往「TeamPlanner 调度消费」对应章节">
+      <rect x="1114.0" y="184.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sse_hub" aria-controls="sub-gateway-async-drain-f0-drawer-sse_hub">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sse_hub" data-flows="all,stream" aria-expanded="false" aria-label="LiveHub SSE 只读流（/api/live/stream）" aria-controls="sub-gateway-async-drain-f0-drawer-sse_hub">
+      <rect class="arch-node-box" x="886.0" y="330.0" width="256.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="898.0" y="355.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">LiveHub SSE 只读流</text>
+      <text class="arch-node-role" x="898.0" y="392.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">/api/live/stream</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#contracts" data-same-page="true" aria-label="前往「LiveHub SSE 只读流」对应章节">
+      <rect x="1114.0" y="334.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="1126.0" y="350.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Origin 与回环安全门禁</text>
+  <rect x="233.6" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="255.6" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Queue(32) 与 SSE 只读推流</text>
+  <rect x="413.8" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="435.8" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">20 ms 平滑排空调度</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">Queue(maxsize=32) 与 20 ms drain() 彻底吸收突发流量，防止阻塞 GIL</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 02A · INTERACTION GATEWAY ASYNC DRAIN</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">交互网关异步排空通路: 语音/UI 接入 -&gt; Queue(32) -&gt; 20 ms Drain -&gt; SSE</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">127.0.0.1:8090 / :8088 · 背压有界生产者-消费者</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>跨域通信与网关流控总线</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="ingress" aria-pressed="false">语音与控制台接入</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="drain" aria-pressed="false">Queue(32) 异步排空</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="stream" aria-pressed="false">LiveHub 只读推流</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>交互网关有界异步排空与语音交互流</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-gateway-async-drain.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-gateway-async-drain-f0-drawer-voice_ui" class="diagram-drawer-panel" data-node-drawer="voice_ui" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">InteractionRuntime (:8088)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Gateway · 语音入口 · 实时音频分帧</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「InteractionRuntime (:8088)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把连续声学流转为规范文本意图，避免阻塞下游规划线程。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>流式音频状态适配器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/interaction_runtime/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>处理 /api/audio/{transcribe,speak} 与 /api/say，内置回声门禁与短时记忆</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-gateway-async-drain-f0-drawer-web_c01" class="diagram-drawer-panel" data-node-drawer="web_c01" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">Web 协作台 C01 入口</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Gateway · Web 入口 · 人机交互事件</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「Web 协作台 C01 入口」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为操作员提供统一文字指令入口，不直接构造底层控制包。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>单一条件语义输入栏</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/web/index.html</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅在 LIVE 且显式启用控制时激活；提交自然语言指令或任务取消请求</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#origins" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-gateway-async-drain-f0-drawer-gw_origin" class="diagram-drawer-panel" data-node-drawer="gw_origin" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">Origin 与鉴权守门</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">InteractionGateway · 边界 · 每请求校验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「Origin 与鉴权守门」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在 HTTP 入口处阻断跨站请求伪造与未授权写入。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>守门代理模式</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅监听 127.0.0.1:8090；拦截跨源 Origin 与非法方法，保护本地编排接口</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-gateway-async-drain-f0-drawer-gw_queue" class="diagram-drawer-panel" data-node-drawer="gw_queue" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">有界队列 Queue(32)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">InteractionGateway · 缓冲 · O(1) 并发入队</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「有界队列 Queue(32)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">将突发语音识别或用户连击请求限制在固定容量缓冲区内。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>背压有界生产者-消费者</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/bindings.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>队列满载时提供确定性背压响应，防止突发请求堆积撑爆系统内存</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-gateway-async-drain-f0-drawer-gw_drain" class="diagram-drawer-panel" data-node-drawer="gw_drain" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">20 ms Drain 排空器</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">InteractionGateway · 排空 · 20 ms 周期排空</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「20 ms Drain 排空器」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">平滑调度突发交互请求并限制单次排空开销，维持 GIL 响应度。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>批处理步进排空</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/api.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>每 20 ms 最多排空 8 条入队请求；单条编排超时上限 8 s</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-gateway-async-drain-f0-drawer-sse_hub" class="diagram-drawer-panel" data-node-drawer="sse_hub" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">LiveHub SSE 只读流</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">InteractionGateway · 推送 · 非阻塞状态广播</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「LiveHub SSE 只读流」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保多客户端同步观测态势而不会反过来拖慢调度循环。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>发布-订阅只读推流</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/display_routes.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>向 :8088 与 :18640 单向广播系统任务与对话状态，不包含控制句柄</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-gateway-async-drain-f0-drawer-sys_bus" class="diagram-drawer-panel" data-node-drawer="sys_bus" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">TeamPlanner 调度消费</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 下游接收 · 按任务编排</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「TeamPlanner 调度消费」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把语音与文字意图转化为结构化多机协同计划。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>解耦下游消费者</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/team_planner/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅接收经队列整形后的合法语义请求，与 200 Hz 端侧控制环彻底隔离</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-model-roi-firewall">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
-<h2
-id="interactiongateway有界排队与跨域防护8090"><code>InteractionGateway</code>：有界排队与跨域防护（<code>:8090</code>）</h2>
-<p><code>src/system_app/interaction_gateway/server.py</code>
-默认绑定回环地址 <code>127.0.0.1:8090</code>，是平台 Web
-前端与外部脚本访问 <code>SystemApp</code> 的核心 HTTP
-代理，并与系统智能体运行时保持严格异步边界：</p>
-<figure class="diagram-figure">
+<p>人机交互主干由两个独立边界共同承载（具体流程分两段）：</p>
+<ul>
+<li><strong>HTTP-to-ROS 有界异步桥接（<code>:8090</code>
+<code>InteractionGateway</code>）</strong>：<code>src/system_app/interaction_gateway/server.py</code>
+默认绑定回环地址
+<code>127.0.0.1:8090</code>（非回环地址强制要求非空鉴权令牌
+<code>REMOTE_GATEWAY_TOKEN_REQUIRED</code>），将 HTTP 请求体上限锁定在
+<code>1_000_000 B</code> 并拒绝任何跨源 <code>Origin</code>
+请求。所有涉及 ROS 状态变动的调用投入容量为
+<code>Queue(maxsize=32)</code> 的内部队列并绑定
+<code>Future(timeout=8 s)</code>；<code>SystemApp</code> 主循环通过
+<code>node.create_timer(0.02, self.drain)</code> 以 <code>20 ms</code>
+周期每次最多消费 <code>8</code> 条请求，在过载或超时时立即通过
+<code>future.cancel()</code> 阻止已排队变更延后误执行。</li>
+<li><strong>语音导览与 SSE 实时推送（<code>:8088</code>
+<code>InteractionRuntime</code>）</strong>：<code>src/system_app/modules/interaction_runtime/runtime.py</code>
+依托内部消息总线调度 <code>VAD</code> 端点检测、<code>ASR</code>
+识别、意图路由与 <code>TTS</code> 合成，限制内存请求缓存上限为
+<code>request_limit = 1024</code>，并通过
+<code>LiveHub</code>（<code>/api/live/stream</code>）及
+<code>TourEngine</code>
+向控制台推送受控播报与轮次状态；<code>/operator/broadcast-mode</code>
+还支持在 <code>concise</code>（<code>60 s</code> / <code>50</code>
+字）与 <code>detailed</code>（<code>30 s</code> / <code>90</code>
+字）播报窗之间切换。</li>
+</ul>
+<h2 id="principles">03 · 核心原理与内部机制</h2>
+<figure class="diagram-figure" data-diagram-id="sub-model-roi-firewall" data-fig-uid="sub-model-roi-firewall-f1">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/sub-system-agent-rsi.svg"
-alt="SystemApp 交互路由与调度流向" loading="lazy" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-model-roi-firewall" viewBox="0 0 1200 560" width="1200" height="560" role="group" aria-labelledby="sub-model-roi-firewall-title-f1" aria-describedby="sub-model-roi-firewall-desc-f1">
+  <title id="sub-model-roi-firewall-title-f1">ModelGateway (:18080) 配额信号量与 RoiGatewayGuard 视觉防火墙</title>
+  <desc id="sub-model-roi-firewall-desc-f1">展示推理网关如何通过角色信号量与安全沙箱防逃逸，以及车队总线如何对端侧 ROI 视频流施加租约与分辨率上限。</desc>
+  <defs>
+    <pattern id="sub-model-roi-firewall-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-model-roi-firewall-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-model-roi-firewall-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="560" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="560" fill="url(#sub-model-roi-firewall-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="558.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="420.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">MODELGATEWAY QUOTA &amp; SANDBOX (:18080)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">多泳道并发信号量与文件引用防逃逸</text>
+  <rect x="604.0" y="86.0" width="560.0" height="420.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">ROI BANDWIDTH &amp; DISPLAY FIREWALL</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">端侧 ROI 租约流控与只读哈希验证</text>
+  <g class="arch-edge" data-from="caller_sdk" data-to="mgw_sem" data-flow="model_quota">
+    <path d="M 292.0 185.0 L 322.0 185.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-slate-f1)"/>
+    <rect x="283.1" y="176.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="307.0" y="188.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">Bearer</text>
+  </g>
+  <g class="arch-edge" data-from="mgw_sem" data-to="mgw_sandbox" data-flow="model_quota">
+    <path d="M 437.0 222.0 L 437.0 261.0 Q 437.0 266.0 432.0 266.0 L 315.0 266.0 Q 310.0 266.0 310.0 271.0 L 310.0 310.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-terracotta-f1)"/>
+    <rect x="343.7" y="257.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="373.5" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">media://</text>
+  </g>
+  <g class="arch-edge" data-from="robot_roi" data-to="roi_guard" data-flow="roi_guard">
+    <path d="M 870.0 185.0 L 900.0 185.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-ochre-f1)"/>
+    <rect x="855.2" y="176.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="885.0" y="188.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">15 s TTL</text>
+  </g>
+  <g class="arch-edge" data-from="roi_guard" data-to="disp_ro" data-flow="roi_guard">
+    <path d="M 1020.0 222.0 L 1020.0 261.0 Q 1020.0 266.0 1015.0 266.0 L 895.0 266.0 Q 890.0 266.0 890.0 271.0 L 890.0 310.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-model-roi-firewall-arrow-forest-f1)"/>
+    <rect x="928.2" y="257.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="955.0" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">SHA-256</text>
+  </g>
+  <g class="arch-edge" data-from="mgw_sandbox" data-to="disp_ro" data-flow="model_quota">
+    <path d="M 440.0 347.0 L 760.0 347.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-model-roi-firewall-arrow-slate-f1)"/>
+    <rect x="574.2" y="338.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="600.0" y="350.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">只读投影</text>
+  </g>
+  <g class="arch-node-card" data-node-id="caller_sdk" aria-controls="sub-model-roi-firewall-f1-drawer-caller_sdk">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="caller_sdk" data-flows="all,model_quota" aria-expanded="false" aria-label="ModelGatewayClient SDK（embodied_core 客户端）" aria-controls="sub-model-roi-firewall-f1-drawer-caller_sdk">
+      <rect class="arch-node-box" x="62.0" y="148.0" width="230.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="74.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">ModelGatewayClient SDK</text>
+      <text class="arch-node-role" x="74.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">embodied_core 客户端</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#contracts" data-same-page="true" aria-label="前往「ModelGatewayClient SDK」对应章节">
+      <rect x="264.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="276.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mgw_sem" aria-controls="sub-model-roi-firewall-f1-drawer-mgw_sem">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mgw_sem" data-flows="all,model_quota" aria-expanded="false" aria-label="分角色并发信号量（文本 2 · RSI 1 · 视 1）" aria-controls="sub-model-roi-firewall-f1-drawer-mgw_sem">
+      <rect class="arch-node-box" x="322.0" y="148.0" width="230.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="334.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">分角色并发信号量</text>
+      <text class="arch-node-role" x="334.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">文本 2 · RSI 1 · 视 1</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true" aria-label="前往「分角色并发信号量」对应章节">
+      <rect x="524.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mgw_sandbox" aria-controls="sub-model-roi-firewall-f1-drawer-mgw_sandbox">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mgw_sandbox" data-flows="all,model_quota" aria-expanded="false" aria-label="O_NOFOLLOW 安全沙箱（media:// + SHA-256）" aria-controls="sub-model-roi-firewall-f1-drawer-mgw_sandbox">
+      <rect class="arch-node-box" x="180.0" y="310.0" width="260.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="192.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">O_NOFOLLOW 安全沙箱</text>
+      <text class="arch-node-role" x="192.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">media:// + SHA-256</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#paradigm" data-same-page="true" aria-label="前往「O_NOFOLLOW 安全沙箱」对应章节">
+      <rect x="412.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="424.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="robot_roi" aria-controls="sub-model-roi-firewall-f1-drawer-robot_roi">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="robot_roi" data-flows="all,roi_guard" aria-expanded="false" aria-label="RoiGatewayClient (P1)（端侧按需采图请求）" aria-controls="sub-model-roi-firewall-f1-drawer-robot_roi">
+      <rect class="arch-node-box" x="630.0" y="148.0" width="240.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="642.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">RoiGatewayClient (P1)</text>
+      <text class="arch-node-role" x="642.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">端侧按需采图请求</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#flow" data-same-page="true" aria-label="前往「RoiGatewayClient (P1)」对应章节">
+      <rect x="842.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="854.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="roi_guard" aria-controls="sub-model-roi-firewall-f1-drawer-roi_guard">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="roi_guard" data-flows="all,roi_guard" aria-expanded="false" aria-label="RoiGatewayGuard（&lt;=2 流 · 640×480 · 15s）" aria-controls="sub-model-roi-firewall-f1-drawer-roi_guard">
+      <rect class="arch-node-box" x="900.0" y="148.0" width="240.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="912.0" y="173.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">RoiGatewayGuard</text>
+      <text class="arch-node-role" x="912.0" y="208.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">&lt;=2 流 · 640×480 · 15s</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true" aria-label="前往「RoiGatewayGuard」对应章节">
+      <rect x="1112.0" y="152.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1124.0" y="168.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="disp_ro" aria-controls="sub-model-roi-firewall-f1-drawer-disp_ro">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="disp_ro" data-flows="all,model_quota,roi_guard" aria-expanded="false" aria-label="DisplayRoutes 只读通道（/display/perception/*）" aria-controls="sub-model-roi-firewall-f1-drawer-disp_ro">
+      <rect class="arch-node-box" x="760.0" y="310.0" width="260.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="772.0" y="335.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">DisplayRoutes 只读通道</text>
+      <text class="arch-node-role" x="772.0" y="370.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">/display/perception/*</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#evidence" data-same-page="true" aria-label="前往「DisplayRoutes 只读通道」对应章节">
+      <rect x="992.0" y="314.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1004.0" y="330.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="516.0" x2="1164.0" y2="516.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="538.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">分角色信号量隔离</text>
+  <rect x="208.5" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="230.5" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">O_NOFOLLOW + SHA-256 沙箱</text>
+  <rect x="401.2" y="527.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="423.2" y="537.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">2 流 / 640p ROI 门禁</text>
+  <text x="1164.0" y="537.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">视觉和反思并发严格隔离，绝不因后台推理任务导致主控语音或前端卡死</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 02B · MODEL QUOTA &amp; ROI FIREWALL</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">ModelGateway (:18080) 配额信号量与 RoiGatewayGuard 视觉防火墙</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">文本 2 / RSI 1 / 视 1 · O_NOFOLLOW · &lt;=2 流 640×480</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
   </div>
-  <figcaption><span>SystemApp 交互路由与调度流向</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="model_quota" aria-pressed="false">ModelGateway :18080 配额防线</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="roi_guard" aria-pressed="false">RoiGatewayGuard 视觉防火墙</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
+  </div>
+  <figcaption><span>ModelGateway 配额信号量与 RoiGatewayGuard
+防火墙</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-model-roi-firewall.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-model-roi-firewall-f1-drawer-caller_sdk" class="diagram-drawer-panel" data-node-drawer="caller_sdk" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ModelGatewayClient SDK</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Shared SDK · 调用方 · 异步 Bearer 请求</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ModelGatewayClient SDK」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">封装重试、超时与 Bearer Token 凭据头，杜绝各模块各自裸连推理后端。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>共享轻量客户端代理</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/model_gateway/client.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>供 interaction_runtime、team_planner、reflection_engine 与感知服务统一调用</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#contracts" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-model-roi-firewall-f1-drawer-mgw_sem" class="diagram-drawer-panel" data-node-drawer="mgw_sem" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">分角色并发信号量</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ModelGateway :18080 · 限流 · 全队列上限 32</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「分角色并发信号量」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在网关入口按调用方角色分配独立并发槽位，确保高优先级交互永不阻塞。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>多泳道信号量隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/model_gateway/model_gateway_service/app.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>主文本 2、RSI 1、ASR/TTS/Embedding 各 1，防止离线反思饿死在线语音</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-model-roi-firewall-f1-drawer-mgw_sandbox" class="diagram-drawer-panel" data-node-drawer="mgw_sandbox" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">O_NOFOLLOW 安全沙箱</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">ModelGateway · 文件校验 · 单次读取校验</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「O_NOFOLLOW 安全沙箱」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">阻止畸形 media:// 引用读取沙箱外敏感文件或注入非法图像载荷。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>防符号链接逃逸代理</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/model_gateway/model_gateway_vision/server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>强制使用 O_NOFOLLOW 打开本地媒体引用并核对 SHA-256 摘要，防路径穿越</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#paradigm" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-model-roi-firewall-f1-drawer-robot_roi" class="diagram-drawer-panel" data-node-drawer="robot_roi" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">RoiGatewayClient (P1)</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp P1 · 视觉源 · &lt;=10 Hz 按需触发</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「RoiGatewayClient (P1)」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">在端侧完成感兴趣区域裁剪后再上报，降低网络与网关负载。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>边缘裁剪预滤波</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/algorithms/perception/roi_gateway_client.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>从 ZED 2i / RealSense 裁剪目标 ROI 区域，严禁全量无压缩视频流直推总线</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#flow" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-model-roi-firewall-f1-drawer-roi_guard" class="diagram-drawer-panel" data-node-drawer="roi_guard" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">RoiGatewayGuard</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">StarFleetBus · 租约门禁 · 15.0 s TTL 租约</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「RoiGatewayGuard」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">防止多机同时开启高清视觉回传造成网络拥塞与前端卡顿。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>租约配额守门模式</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/fleet_bus/roi_gateway_guard.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>全局并发最多 2 路视频流、分辨率硬上限 640×480、租约过期自动回收</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-model-roi-firewall-f1-drawer-disp_ro" class="diagram-drawer-panel" data-node-drawer="disp_ro" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">DisplayRoutes 只读通道</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Gateway · 只读展示 · 单向静态/流代理</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「DisplayRoutes 只读通道」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把视觉调试结果安全投射到浏览器控制台，同时隔离任何反向控制写操作。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>SHA-256 逐块校验投影</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/display_routes.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>经 readDisplayResource 核验长度与哈希后送往平台 P03 感知面板</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-gateway-async-drain">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#evidence" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
+<p>为同时保障推理服务确定性、文件系统沙箱安全与无线/总线带宽可控，网关层在
+<code>:18080</code> 与总线守卫内实施三项核心约束机制：</p>
+<ol type="1">
+<li><strong>按工作负载信号量隔离与有界排队（<code>ModelGateway :18080</code>）</strong>：<code>apps/model_gateway/model_gateway_service/app.py</code>
+与 <code>apps/model_gateway/README.md</code> 强制实行分角色 Bearer Token
+鉴权（空调用方注册表直接拒绝全部推理），并按调用目的分配独立并发信号量：主文本规划上限
+<code>2</code> 并发、离线 <code>RSI</code> 反思上限 <code>1</code>
+并发、<code>ASR</code>/<code>TTS</code>/Embedding 各上限 <code>1</code>
+并发；共享同一后端 <code>base_url</code> 时共享配额池，全局排队上限
+<code>32</code>、单调用方排队上限 <code>8</code>，队满立即拒绝，且流式
+<code>SSE</code> 截断绝对不返回伪造的完成态
+<code>ModelResult</code>。</li>
+<li><strong>五字段 <code>ArtifactRef</code> 与 <code>O_NOFOLLOW</code>
+零逃逸校验</strong>：视觉消息禁止传入外部
+<code>image_url</code>、<code>data:</code> URI 或原始本地路径，仅允许
+<code>media://&lt;root_name&gt;/&lt;relative_posix_path&gt;</code>
+逻辑引用配合五字段
+<code>ArtifactRef</code>（<code>artifact_id</code>、<code>uri</code>、<code>media_type</code>、<code>origin</code>、非空
+<code>sha256</code>）。服务端结合调用方授权 <code>media_roots</code> 与
+<code>scopes</code>，以 <code>dir_fd</code> 配合 <code>O_NOFOLLOW</code>
+逐级打开常规文件并复核字节大小、不变描述符元数据、MIME
+与像素上限，彻底阻断目录穿越与软链逃逸。</li>
+<li><strong>基于租约与像素预算的流控守卫（<code>RoiGatewayGuard</code>）</strong>：<code>src/system_app/fleet_bus/roi_gateway_guard.py</code>
+维护受 <code>RLock</code> 保护的 <code>VideoStreamLease</code>
+注册表：</li>
+</ol>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><mo>∑</mo><mtext mathvariant="normal">active</mtext></munder><mtext mathvariant="normal">stream</mtext><mo>≤</mo><mn>2</mn><mo>,</mo><mspace width="1.0em"></mspace><mi>w</mi><mo>×</mo><mi>h</mi><mo>≤</mo><mn>640</mn><mo>×</mo><mn>480</mn><mo>=</mo><mn>307</mn><mo>,</mo><mn>200</mn><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> px</mtext></mrow><mo>,</mo><mspace width="1.0em"></mspace><msub><mtext mathvariant="normal">fps</mtext><mtext mathvariant="normal">eff</mtext></msub><mo>=</mo><mrow><mi mathvariant="normal">min</mi><mo>&#8289;</mo></mrow><mo stretchy="false" form="prefix">(</mo><msub><mtext mathvariant="normal">fps</mtext><mtext mathvariant="normal">req</mtext></msub><mo>,</mo><mn>15.0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\sum_{\text{active}} \text{stream} \le 2, \quad w \times h \le 640 \times 480 = 307{,}200\text{ px}, \quad \text{fps}_{\text{eff}} = \min(\text{fps}_{\text{req}}, 15.0)</annotation></semantics></math></p>
+<p>租约默认有效期
+<code>DEFAULT_LEASE_TTL_S = 15.0 s</code>，每次请求前先执行
+<code>_evict_expired(now)</code> 惰性回收过期租约；端侧
+<code>RoiGatewayClient</code>（<code>src/robot_app/algorithms/perception/roi_gateway_client.hpp</code>）同步约束单包上限
+<code>kMaxRoiPayloadBytes = 512000 B</code>，与服务侧形成双端带宽防线。</p>
+<h2 id="paradigm">04 · 软件工程实现范式与合规审视</h2>
+<p>本子系统集中体现了 <strong>P-III
+动态插件/守门代理与有界适配器范式</strong>：</p>
 <ul>
-<li><strong>有界异步桥接队列</strong>：涉及 ROS 服务或动作的 HTTP
-请求均投递至容量限制为 <code>Queue(maxsize=32)</code>
-的内部队列，不直接阻塞 Web 线程池；<code>SystemApp</code> 主循环以
-<code>20 ms</code> 周期执行 <code>drain()</code>，每次心跳最多消费
-<code>8</code> 条请求并设置 <code>8 s</code> <code>Future</code>
-超时上限，在突发高负载时快速拒绝过载而不拖垮调度时钟。</li>
-<li><strong>跨域请求拦截</strong>：网关中间件直接拒绝携带跨源
-<code>Origin</code>
-请求头的浏览器请求，防止未受信任页面越权下发任务指令。</li>
+<li><strong>有界生产者-消费者适配器（<code>InteractionGateway</code>）</strong>：Web
+线程只负责鉴权校验与
+<code>queue.put_nowait</code>，<code>SystemApp</code> 执行器单线程按
+<code>20 ms</code> / <code>8</code> 条固定预算排空队列，并在
+<code>TimeoutError</code> 时调用 <code>future.cancel()</code>
+消除「超时已返回但后端延迟执行」的幽灵写入隐患。</li>
+<li><strong>舱壁隔离与只读身份门禁（<code>ModelGateway</code>）</strong>：启动网关与打开交互页面不加载任何模型或拉起
+GPU
+Worker；每个部署项必须绑定不可变模型身份、分词器与量化指纹，且禁止在逻辑模型不可用时悄悄映射到其他模型。</li>
+<li><strong>生命周期显式接管与异常收口（<code>InteractionRuntime</code>）</strong>：通过
+<code>prerun() -&gt; run() -&gt; stop()</code> 与
+<code>ComponentOwner</code> 管理节点和 <code>ModelGateway</code>
+上下文作用域（<code>model_scope</code>），任何子组件初始化失败均触发回滚清理并将异常记入
+<code>shutdown_errors</code>。</li>
 </ul>
-<h2
-id="interactionruntime语音交互与导览引擎8088"><code>InteractionRuntime</code>：语音交互与导览引擎（<code>:8088</code>）</h2>
-<p>位于 <code>src/system_app/modules/interaction_runtime/</code>
-的交互运行时负责全部多轮人机对话体验：</p>
-<ul>
-<li><strong>语音管线与流式推送</strong>：托管 VAD 语音端点检测、ASR
-语音识别、意图解析与 TTS
-语音合成调用，配合短时对话记忆消除代词指代歧义；并通过
-<code>LiveHub</code> SSE
-长连接通道（<code>/api/live/stream</code>）向前端控制台 <code>P08</code>
-观众页及 <code>P09</code>–<code>P17</code>
-运维页面实时推送轮次状态与快照。</li>
-<li><strong>导览与播报控制</strong>：内置 <code>TourEngine</code>
-管理讲解点位与检查点回溯，并依据 <code>/operator/ui-state</code>
-播报模式控制简明或详细语音输出，辅助操作员完成导览、取消与健康状态核查。</li>
-</ul>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>合规状态</th>
+<th>工程依据与审视说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 领域纯洁性与依赖倒置</td>
+<td><code>PASS</code></td>
+<td><code>InteractionGateway</code> 与 <code>ModelGateway</code> 仅依赖
+<code>embodied_core.model_gateway</code> 与
+<code>embodied_core.mission_serialization</code> 公共线契约</td>
+</tr>
+<tr>
+<td>2. 契约完备性与边界防呆</td>
+<td><code>PASS</code></td>
+<td>强制校验 Bearer 令牌、跨源 <code>Origin</code>、<code>1 MB</code>
+报文上限、<code>O_NOFOLLOW</code> + <code>sha256</code> 工件引用及
+<code>ROI</code> 像素预算</td>
+</tr>
+<tr>
+<td>3. 状态机与生命周期确定性</td>
+<td><code>PASS</code></td>
+<td><code>InteractionRuntime</code> 具备
+<code>prerun</code>/<code>run</code>/<code>stop</code>
+幂等状态锁；<code>Future</code> 超时原子取消待排空变更；<code>WS</code>
+语音流核验递增序号与摘要</td>
+</tr>
+<tr>
+<td>4. 实时内存与并发安全性</td>
+<td><code>PASS</code></td>
+<td><code>Queue(maxsize=32)</code>、全局 <code>32</code>/单方
+<code>8</code> 排队上限、<code>request_limit = 1024</code> 及最多
+<code>2</code> 路视频流租约彻底杜绝内存与带宽无界膨胀</td>
+</tr>
+<tr>
+<td>5. 离线可测性与失败留痕</td>
+<td><code>PASS</code></td>
+<td><code>create_app(settings, transport=...)</code> 支持注入
+<code>httpx</code> 测试传输；<code>ASR</code>
+错误绝不伪装为空文本成功，保留完整取消与超时事件</td>
+</tr>
+<tr>
+<td>6. 单真源约束与过渡债务透明度</td>
+<td><code>PASS</code></td>
+<td><code>embodied_core/model_gateway/client.py</code>
+统一线类型；明确标注模型 Worker 需独立完成权重与引擎资格校验方可执行
+<code>enabled</code> 启用</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="contracts">05 · 核心接口契约与冻结参数</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>网关 / 运行时</th>
+<th>监听地址 / 源码路径</th>
+<th>核心治理参数</th>
+<th>安全与退避机制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>InteractionGateway</code></td>
+<td><code>127.0.0.1:8090</code>（<code>src/system_app/interaction_gateway/server.py</code>）</td>
+<td><code>Queue(maxsize=32)</code>、<code>20 ms drain()</code>（至多
+<code>8</code> 条/拍）、<code>8 s</code> 超时</td>
+<td>拒绝跨源 <code>Origin</code>；单请求上限
+<code>1_000_000 B</code>；活动任务未完阻断
+<code>/agent/reset</code></td>
+</tr>
+<tr>
+<td><code>InteractionRuntime</code></td>
+<td><code>127.0.0.1:8088</code>（<code>src/system_app/modules/interaction_runtime/runtime.py</code>）</td>
+<td><code>request_limit = 1024</code>、SSE
+<code>/api/live/stream</code>、<code>30 s</code>/<code>60 s</code>
+播报窗</td>
+<td><code>VAD</code>/<code>ASR</code>/<code>TTS</code>
+托管于内部总线，隔离对话状态与底盘控制权</td>
+</tr>
+<tr>
+<td><code>ModelGateway</code></td>
+<td><code>127.0.0.1:18080</code>（<code>apps/model_gateway/model_gateway_service/app.py</code>）</td>
+<td>文本 <code>&lt;= 2</code>、<code>RSI &lt;= 1</code>、语音/向量各
+<code>&lt;= 1</code>；队列 <code>32</code>/<code>8</code></td>
+<td>Bearer 分角色白名单、<code>O_NOFOLLOW</code> +
+<code>sha256</code>、<code>WS</code> 指令上限
+<code>16 KiB</code>/<code>128 KiB</code></td>
+</tr>
+<tr>
+<td><code>RoiGatewayGuard</code></td>
+<td><code>src/system_app/fleet_bus/roi_gateway_guard.py</code></td>
+<td>最多 <code>2</code> 路活跃流、单帧
+<code>&lt;= 307200 px</code>、<code>15.0 fps</code>、<code>TTL = 15.0 s</code></td>
+<td>租约到期自动淘汰；端侧 <code>RoiGatewayClient</code> 同步限制单包
+<code>512000 B</code></td>
+</tr>
+</tbody>
+</table>
+</div>
 <details class="tech-details">
 <summary>
-查看 InteractionGateway 与 InteractionRuntime 暴露路由全量清单
+查看 InteractionGateway、InteractionRuntime 与 ModelGateway
+暴露路由全量清单
 </summary>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
@@ -154,89 +950,22 @@ id="interactionruntime语音交互与导览引擎8088"><code>InteractionRuntime<
 <td>语音、导览与 SSE 通道</td>
 <td><code>/api/audio/{transcribe,speak}</code>、<code>/api/say</code>、<code>/api/tour/{view,operation}</code>、<code>/api/task/cancel</code>、<code>/api/live/stream</code>、<code>/api/health</code></td>
 </tr>
+<tr>
+<td><code>ModelGateway</code>（<code>127.0.0.1:18080</code>）</td>
+<td>推理、语音与治理路由</td>
+<td><code>/v1/chat/completions</code>、<code>/v1/models</code>、<code>/gateway/v1/speech</code>、<code>/gateway/v1/requests/{request_id}/cancel</code>、<code>/gateway/v1/workers/{model_ref}/reconcile</code>、<code>/health/{live,ready}</code></td>
+</tr>
 </tbody>
 </table>
 </div>
 </details>
-<h2
-id="modelgateway本地模型配额与鉴权守门18080"><code>ModelGateway</code>：本地模型配额与鉴权守门（<code>:18080</code>）</h2>
-<p><code>apps/model_gateway/README.md</code>
-所在模块统一托管底层大模型推理与多模态感知后端（包括
-<code>model_gateway_service</code> 与基于
-<code>nvidia/LocateAnything-3B</code> / <code>xiaomi-lens-0</code> 的
-<code>model_gateway_vision</code>），防止多机并发推理抢占 GPU
-显存与计算核：</p>
-<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
-<table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
-<thead>
-<tr>
-<th>资源治理维度</th>
-<th>冻结限流与安全策略</th>
-<th>实现机制说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>调用方鉴权</strong></td>
-<td>分角色 Bearer Token 认证</td>
-<td>不同调用来源持有独立令牌及专属配额上限，未授权请求直接拒绝</td>
-</tr>
-<tr>
-<td><strong>按工作负载并发限制</strong></td>
-<td>主文本规划最多 <code>2</code> 并发；RSI 反思最多 <code>1</code>
-并发；ASR/TTS/Embedding 各最多 <code>1</code> 并发</td>
-<td>通过信号量硬性锁定重负载进程并发数，保证交互文本响应不被离线任务饿死</td>
-</tr>
-<tr>
-<td><strong>全局队列容限</strong></td>
-<td>全局等待队列上限 <code>32</code>，单调用方排队上限
-<code>8</code></td>
-<td>队满立即返回饱和拒绝，支持
-<code>/gateway/v1/requests/{request_id}/cancel</code> 显式取消</td>
-</tr>
-<tr>
-<td><strong>安全工件引用</strong></td>
-<td>仅允许 <code>media://&lt;root_name&gt;/&lt;rel_path&gt;</code>
-逻辑引用与五字段 <code>ArtifactRef</code></td>
-<td>开启 <code>O_NOFOLLOW</code> 禁止软链逃逸，并在推理读入前强制复核
-SHA-256 摘要一致性</td>
-</tr>
-<tr>
-<td><strong>Worker 健康调和</strong></td>
-<td>暴露 <code>/health/{live,ready}</code> 与
-<code>/gateway/v1/workers/{model_ref}/reconcile</code></td>
-<td>独立检测 <code>vLLM</code>、音频与视觉 Worker
-存活并按策略拉起/隔离</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="roigatewayguard-与工件视觉感知管线"><code>RoiGatewayGuard</code>
-与工件视觉感知管线</h2>
-<p>在多机并行运行场景下，若多台机器人同时持续回传高分辨率原始 RGB-D
-视频流，极易耗尽宿主机与总线带宽。系统在
-<code>src/system_app/fleet_bus/roi_gateway_guard.py</code>
-与单机感知端联合部署了严格的 ROI 流控与位姿校验规则：</p>
+<h2 id="evidence">06 · 实测效果与能力边界</h2>
 <ul>
-<li><strong>流数量与像素上限守护</strong>：<code>RoiGatewayGuard</code>
-默认锁定全局最多同时存在 <code>2</code>
-路活跃视频流（<code>DEFAULT_MAX_ACTIVE_STREAMS = 2</code>），单帧裁剪兴趣区域像素总量限制在
-<code>640 × 480</code>（<code>DEFAULT_MAX_ROI_PIXELS = 307200</code>）以内，流租约默认
-TTL 为 <code>15.0 s</code>（<code>DEFAULT_LEASE_TTL_S</code>）；单机侧
-<code>RoiGatewayClient</code>（<code>roi_gateway_client.hpp</code>）同样限制单包字节上限
-<code>kMaxRoiPayloadBytes = 512000 B</code>。</li>
-<li><strong>工件 6D 位姿感知流水线</strong>：依据 <a
-href="../algorithms/workpiece-perception.html">工件视觉感知</a>
-规范，工件识别遵循
-<code>RGB-D + CameraInfo -&gt; YOLOv8-seg 分割 -&gt; FoundationPose 注册/跟踪 -&gt; T_camera_object -&gt; 同时刻 TF 变换 -&gt; ObjectObservation(operation_frame)</code>
-流程。首帧执行 <code>5</code> 次迭代注册、后续帧执行 <code>2</code>
-次迭代跟踪，并且严格要求当前仅存在唯一匹配工件实例；若出现零匹配、多实例冲突、帧序倒退或
-<code>epoch</code> 跳变，立即丢弃结果并重置跟踪器。</li>
+<li><strong>交互与视觉网关协作实证（<code>L3</code>）</strong>：<code>MED-PERC-01</code>
+记录了受限带宽下工件视觉识别与 6D 位姿跟踪管线（见 <a
+href="../algorithms/workpiece-perception.html">工件视觉定位与五阶段超分检测</a>）同交互与模型网关协作的在线运行实况，确认
+<code>RoiGatewayGuard</code>
+在不阻塞控制心跳的前提下完成目标感知回传。</li>
 </ul>
 <figure class="doc-video" data-media-id="MED-PERC-01">
 <video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-PERC-01.webp">
@@ -248,6 +977,12 @@ SHA256:471e5bb387）</span><span
 class="doc-media-badge">SYSTEM_INTERACTION_AND_GROUNDING</span>
 </figcaption>
 </figure>
+<ul>
+<li><strong>证据边界与安全约束</strong>：本节网关组件在
+<code>L0</code>–<code>L3</code>
+层级已验证异步排队、令牌鉴权、符号链接拦截与 <code>ROI</code>
+像素限流逻辑；但网关自身<strong>不生成</strong>图像采集时间戳或新鲜度证明，亦不具备赋予视觉模型真机（<code>L4</code>）验收资格的能力，任何生产推理部署必须先通过独立的权重指纹与真机现场核验。</li>
+</ul>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -259,17 +994,16 @@ class="doc-media-badge">SYSTEM_INTERACTION_AND_GROUNDING</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#定位与上下游边界"
-id="toc-定位与上下游边界">定位与上下游边界</a></li>
-<li><a href="#interactiongateway有界排队与跨域防护8090"
-id="toc-interactiongateway有界排队与跨域防护8090"><code>InteractionGateway</code>：有界排队与跨域防护（<code>:8090</code>）</a></li>
-<li><a href="#interactionruntime语音交互与导览引擎8088"
-id="toc-interactionruntime语音交互与导览引擎8088"><code>InteractionRuntime</code>：语音交互与导览引擎（<code>:8088</code>）</a></li>
-<li><a href="#modelgateway本地模型配额与鉴权守门18080"
-id="toc-modelgateway本地模型配额与鉴权守门18080"><code>ModelGateway</code>：本地模型配额与鉴权守门（<code>:18080</code>）</a></li>
-<li><a href="#roigatewayguard-与工件视觉感知管线"
-id="toc-roigatewayguard-与工件视觉感知管线"><code>RoiGatewayGuard</code>
-与工件视觉感知管线</a></li>
+<li><a href="#origins" id="toc-origins">01 · 需求来源与工程背景</a></li>
+<li><a href="#flow" id="toc-flow">02 · 架构位置与总功能流</a></li>
+<li><a href="#principles" id="toc-principles">03 ·
+核心原理与内部机制</a></li>
+<li><a href="#paradigm" id="toc-paradigm">04 ·
+软件工程实现范式与合规审视</a></li>
+<li><a href="#contracts" id="toc-contracts">05 ·
+核心接口契约与冻结参数</a></li>
+<li><a href="#evidence" id="toc-evidence">06 ·
+实测效果与能力边界</a></li>
 </ul>
       </nav>
     </aside>
@@ -282,20 +1016,21 @@ id="toc-roigatewayguard-与工件视觉感知管线"><code>RoiGatewayGuard</code
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

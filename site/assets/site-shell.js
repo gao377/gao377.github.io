@@ -237,51 +237,365 @@
     });
   });
 
-  // 8. Native Diagram Lightbox Modal (<dialog closedby="any"> + fallback)
-  var lightbox = document.getElementById('diagram-lightbox');
-  var lightboxImg = document.getElementById('diagram-lightbox-img');
-  var lightboxTitle = document.getElementById('diagram-lightbox-title');
-  var zoomToggle = lightbox && lightbox.querySelector('[data-diagram-zoom-toggle]');
+  // 8. Interactive Diagram Tabs (modern-web-guidance tabs + search-hidden-content)
+  function activateDiagramTab(tabsRoot, targetPanelId, focusTab) {
+    var tabs = Array.from(tabsRoot.querySelectorAll('[role="tab"]'));
+    var panels = Array.from(tabsRoot.querySelectorAll('[data-tab-panel]'));
+    tabs.forEach(function (tab) {
+      var selected = tab.getAttribute('data-tab-panel-id') === targetPanelId;
+      tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+      tab.setAttribute('tabindex', selected ? '0' : '-1');
+      if (selected) {
+        if (typeof tab.scrollIntoView === 'function') {
+          try {
+            tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          } catch (e) {}
+        }
+        if (focusTab) tab.focus();
+      }
+    });
+    panels.forEach(function (panel) {
+      if (panel.id === targetPanelId) {
+        panel.removeAttribute('hidden');
+      } else {
+        panel.setAttribute('hidden', 'until-found');
+      }
+    });
+  }
 
-  if (lightbox && lightboxImg && typeof lightbox.showModal === 'function') {
+  document.querySelectorAll('[data-diagram-tabs]').forEach(function (tabsRoot) {
+    var tabs = Array.from(tabsRoot.querySelectorAll('[role="tab"]'));
+    var panels = Array.from(tabsRoot.querySelectorAll('[data-tab-panel]'));
+    if (!tabs.length || !panels.length) return;
+
+    if (!untilFoundSupported) {
+      panels.forEach(function (panel) {
+        panel.removeAttribute('hidden');
+      });
+    }
+
+    tabs.forEach(function (tab, idx) {
+      tab.addEventListener('click', function () {
+        var pid = tab.getAttribute('data-tab-panel-id');
+        if (pid) activateDiagramTab(tabsRoot, pid, false);
+      });
+      tab.addEventListener('keydown', function (e) {
+        var nextIdx = -1;
+        if (e.key === 'ArrowRight') nextIdx = (idx + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + tabs.length) % tabs.length;
+        else if (e.key === 'Home') nextIdx = 0;
+        else if (e.key === 'End') nextIdx = tabs.length - 1;
+        if (nextIdx >= 0) {
+          e.preventDefault();
+          var nextPid = tabs[nextIdx].getAttribute('data-tab-panel-id');
+          if (nextPid) activateDiagramTab(tabsRoot, nextPid, true);
+        }
+      });
+    });
+
+    tabsRoot.addEventListener('beforematch', function (e) {
+      var panel = e.target.closest('[data-tab-panel]');
+      if (panel && panel.id) {
+        activateDiagramTab(tabsRoot, panel.id, false);
+      }
+    });
+  });
+
+  // 9. Interactive Inline SVG Diagrams + Edge Highlight + Filter + Drawers
+  function wireSvgInteractions(svg, onNodeToggle, onNodeHover) {
+    var nodes = Array.from(svg.querySelectorAll('.arch-node[data-node-id]'));
+    var edges = Array.from(svg.querySelectorAll('.arch-edge'));
+    var nodeCards = Array.from(svg.querySelectorAll('.arch-node-card[data-node-id]'));
+
+    function setHighlight(activeId) {
+      if (!activeId) {
+        svg.classList.remove('has-node-highlight');
+        nodeCards.forEach(function (card) {
+          card.classList.remove('is-highlighted', 'is-neighbor');
+        });
+        edges.forEach(function (edge) {
+          edge.classList.remove('is-highlighted');
+        });
+        if (onNodeHover) onNodeHover(null);
+        return;
+      }
+      var neighbors = new Set();
+      edges.forEach(function (edge) {
+        var from = edge.getAttribute('data-from');
+        var to = edge.getAttribute('data-to');
+        var connected = from === activeId || to === activeId;
+        edge.classList.toggle('is-highlighted', connected);
+        if (connected) {
+          if (from && from !== activeId) neighbors.add(from);
+          if (to && to !== activeId) neighbors.add(to);
+        }
+      });
+      svg.classList.add('has-node-highlight');
+      nodeCards.forEach(function (card) {
+        var cid = card.getAttribute('data-node-id');
+        card.classList.toggle('is-highlighted', cid === activeId);
+        card.classList.toggle('is-neighbor', neighbors.has(cid));
+      });
+      if (onNodeHover) onNodeHover(activeId);
+    }
+
+    nodes.forEach(function (node) {
+      var nid = node.getAttribute('data-node-id');
+      node.addEventListener('click', function () {
+        onNodeToggle(node, nid);
+      });
+      node.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onNodeToggle(node, nid);
+        } else if (e.key === ' ') {
+          e.preventDefault();
+        }
+      });
+      node.addEventListener('keyup', function (e) {
+        if (e.key === ' ') {
+          e.preventDefault();
+          onNodeToggle(node, nid);
+        }
+      });
+      node.addEventListener('mouseenter', function () {
+        setHighlight(nid);
+      });
+      node.addEventListener('mouseleave', function () {
+        setHighlight(null);
+      });
+      node.addEventListener('focus', function () {
+        setHighlight(nid);
+      });
+      node.addEventListener('blur', function () {
+        setHighlight(null);
+      });
+    });
+  }
+
+  function openNodeDrawer(fig, nodeId, shouldToggle) {
+    var svg = fig.querySelector('.interactive-arch-svg');
+    if (!svg) return;
+    var targetDrawer = fig.querySelector('[data-node-drawer="' + nodeId + '"]');
+    var targetNode = svg.querySelector('.arch-node[data-node-id="' + nodeId + '"]');
+    var hintEl = fig.querySelector('[data-diagram-hint]');
+    var currentlyOpen = targetDrawer && !targetDrawer.hasAttribute('hidden');
+    var nextOpen = shouldToggle ? !currentlyOpen : true;
+
+    fig.querySelectorAll('[data-node-drawer]').forEach(function (drawer) {
+      if (nextOpen && drawer === targetDrawer) {
+        drawer.removeAttribute('hidden');
+      } else if (untilFoundSupported) {
+        drawer.setAttribute('hidden', 'until-found');
+      }
+    });
+    svg.querySelectorAll('.arch-node[data-node-id]').forEach(function (node) {
+      var isThis = nextOpen && node.getAttribute('data-node-id') === nodeId;
+      node.setAttribute('aria-expanded', isThis ? 'true' : 'false');
+      node.classList.toggle('is-selected', isThis);
+      var card = node.closest('.arch-node-card');
+      if (card) card.classList.toggle('is-selected', isThis);
+    });
+    if (hintEl) {
+      if (nextOpen && targetNode) {
+        hintEl.textContent = '已展开：' + (targetNode.getAttribute('aria-label') || nodeId);
+      } else {
+        hintEl.textContent = '点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开';
+      }
+    }
+  }
+
+  document.querySelectorAll('figure.diagram-figure').forEach(function (fig) {
+    var svg = fig.querySelector('.interactive-arch-svg');
+    if (!svg) return;
+    var hintEl = fig.querySelector('[data-diagram-hint]');
+    var defaultHint = hintEl ? hintEl.textContent : '';
+
+    if (!untilFoundSupported) {
+      fig.querySelectorAll('[data-node-drawer]').forEach(function (drawer) {
+        drawer.removeAttribute('hidden');
+      });
+    }
+
+    wireSvgInteractions(
+      svg,
+      function (_node, nid) {
+        openNodeDrawer(fig, nid, true);
+      },
+      function (hoverId) {
+        if (!hintEl) return;
+        if (hoverId) {
+          var hNode = svg.querySelector('.arch-node[data-node-id="' + hoverId + '"]');
+          if (hNode) hintEl.textContent = hNode.getAttribute('aria-label') || hoverId;
+        } else {
+          var selected = svg.querySelector('.arch-node.is-selected');
+          hintEl.textContent = selected
+            ? '已展开：' + (selected.getAttribute('aria-label') || '')
+            : defaultHint;
+        }
+      }
+    );
+
+    fig.querySelectorAll('[data-flow-filter]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var flow = btn.getAttribute('data-flow-filter') || 'all';
+        fig.querySelectorAll('[data-flow-filter]').forEach(function (b) {
+          var active = b === btn;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        svg.querySelectorAll('.arch-edge').forEach(function (edge) {
+          var edgeFlows = (edge.getAttribute('data-flow') || 'all').split(',').map(function (s) {
+            return s.trim();
+          });
+          var match = flow === 'all' || edgeFlows.indexOf(flow) >= 0;
+          edge.classList.toggle('is-dimmed', !match);
+        });
+        svg.querySelectorAll('.arch-node-card').forEach(function (card) {
+          var node = card.querySelector('.arch-node');
+          var nFlows = ((node && node.getAttribute('data-flows')) || 'all').split(',').map(function (s) {
+            return s.trim();
+          });
+          var match = flow === 'all' || nFlows.indexOf(flow) >= 0;
+          card.classList.toggle('is-dimmed', !match);
+        });
+      });
+    });
+
+    fig.querySelectorAll('[data-drawer-close]').forEach(function (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        var drawer = closeBtn.closest('[data-node-drawer]');
+        var nid = drawer && drawer.getAttribute('data-node-drawer');
+        if (nid) openNodeDrawer(fig, nid, true);
+      });
+    });
+
+    fig.querySelectorAll('[data-subview-target]').forEach(function (subBtn) {
+      subBtn.addEventListener('click', function () {
+        var targetStem = subBtn.getAttribute('data-subview-target');
+        if (!targetStem) return;
+        var targetFig = document.querySelector('figure.diagram-figure[data-diagram-id="' + targetStem + '"]');
+        if (!targetFig) return;
+        var tabPanel = targetFig.closest('[data-tab-panel]');
+        var tabsRoot = tabPanel && tabPanel.closest('[data-diagram-tabs]');
+        if (tabsRoot && tabPanel && tabPanel.id) {
+          activateDiagramTab(tabsRoot, tabPanel.id, false);
+        }
+        targetFig.scrollIntoView({ behavior: reducedMotionQuery && reducedMotionQuery.matches ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+
+    fig.addEventListener('beforematch', function (e) {
+      var drawer = e.target.closest('[data-node-drawer]');
+      if (drawer) {
+        var nid = drawer.getAttribute('data-node-drawer');
+        if (nid) openNodeDrawer(fig, nid, false);
+      }
+    });
+  });
+
+  // 10. Interactive Diagram Lightbox (<dialog closedby="any"> + fallback)
+  var lightbox = document.getElementById('diagram-lightbox');
+  var lightboxStage = document.getElementById('diagram-lightbox-stage');
+  var lightboxDetail = document.getElementById('diagram-lightbox-detail');
+  var lightboxTitle = document.getElementById('diagram-lightbox-title');
+  var lightboxCloseBtn = lightbox && lightbox.querySelector('[data-lightbox-close]');
+
+  function cloneSvgWithModalSuffix(svg) {
+    var clone = svg.cloneNode(true);
+    var idMap = {};
+    clone.querySelectorAll('[id]').forEach(function (el) {
+      var oldId = el.getAttribute('id');
+      var newId = oldId + '-modal';
+      idMap[oldId] = newId;
+      el.setAttribute('id', newId);
+    });
+    ['aria-labelledby', 'aria-describedby'].forEach(function (attr) {
+      var val = clone.getAttribute(attr);
+      if (val && idMap[val]) clone.setAttribute(attr, idMap[val]);
+    });
+    var xml = clone.outerHTML;
+    Object.keys(idMap).forEach(function (oldId) {
+      var escaped = oldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      xml = xml.replace(new RegExp('url\\(#' + escaped + '\\)', 'g'), 'url(#' + idMap[oldId] + ')');
+    });
+    var wrap = document.createElement('div');
+    wrap.innerHTML = xml;
+    return wrap.firstElementChild;
+  }
+
+  function setLightboxZoom(zoomVal) {
+    if (!lightbox) return;
+    lightbox.setAttribute('data-zoom', zoomVal);
+    lightbox.querySelectorAll('[data-lightbox-zoom]').forEach(function (btn) {
+      var active = btn.getAttribute('data-lightbox-zoom') === zoomVal;
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      btn.classList.toggle('is-active', active);
+    });
+  }
+
+  if (lightbox && lightboxStage && typeof lightbox.showModal === 'function') {
     document.querySelectorAll('[data-diagram-zoom]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var fig = btn.closest('figure');
-        var img = fig && fig.querySelector('img');
-        if (!img) return;
+        var fig = btn.closest('figure.diagram-figure');
+        var svg = fig && fig.querySelector('.interactive-arch-svg');
+        if (!svg) return;
         var capSpan = fig.querySelector('figcaption span');
-        var title = (capSpan && capSpan.textContent.trim()) || img.getAttribute('alt') || '架构矢量图预览';
-        lightboxImg.src = img.currentSrc || img.getAttribute('src') || '';
-        lightboxImg.alt = img.getAttribute('alt') || title;
+        var title = (capSpan && capSpan.textContent.trim()) || '架构矢量图预览';
         if (lightboxTitle) lightboxTitle.textContent = title;
-        lightbox.removeAttribute('data-zoom');
-        if (zoomToggle) {
-          zoomToggle.setAttribute('aria-pressed', 'false');
-          zoomToggle.textContent = '1:1 原始尺寸';
+        lightboxStage.innerHTML = '';
+        if (lightboxDetail) {
+          lightboxDetail.innerHTML = '';
+          lightboxDetail.hidden = true;
         }
+        var modalSvg = cloneSvgWithModalSuffix(svg);
+        if (!modalSvg) return;
+        lightboxStage.appendChild(modalSvg);
+        wireSvgInteractions(
+          modalSvg,
+          function (node, nid) {
+            modalSvg.querySelectorAll('.arch-node').forEach(function (n) {
+              var isThis = n === node;
+              n.setAttribute('aria-expanded', isThis ? 'true' : 'false');
+              n.classList.toggle('is-selected', isThis);
+            });
+            var srcCard = fig.querySelector('[data-node-drawer="' + nid + '"] .diagram-drawer-card');
+            if (lightboxDetail && srcCard) {
+              lightboxDetail.innerHTML = '';
+              var cardClone = srcCard.cloneNode(true);
+              var closeInside = cardClone.querySelector('[data-drawer-close]');
+              if (closeInside) closeInside.remove();
+              lightboxDetail.appendChild(cardClone);
+              lightboxDetail.hidden = false;
+            }
+          },
+          null
+        );
+        setLightboxZoom('fit');
         lightbox.showModal();
       });
     });
 
-    if (zoomToggle) {
-      zoomToggle.addEventListener('click', function () {
-        var isActual = lightbox.getAttribute('data-zoom') === 'actual';
-        if (isActual) {
-          lightbox.removeAttribute('data-zoom');
-          zoomToggle.setAttribute('aria-pressed', 'false');
-          zoomToggle.textContent = '1:1 原始尺寸';
-        } else {
-          lightbox.setAttribute('data-zoom', 'actual');
-          zoomToggle.setAttribute('aria-pressed', 'true');
-          zoomToggle.textContent = '适配窗口';
-        }
+    lightbox.querySelectorAll('[data-lightbox-zoom]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setLightboxZoom(btn.getAttribute('data-lightbox-zoom') || 'fit');
+      });
+    });
+
+    if (lightboxCloseBtn) {
+      lightboxCloseBtn.addEventListener('click', function () {
+        lightbox.close();
       });
     }
 
     lightbox.addEventListener('close', function () {
       lightbox.returnValue = '';
-      lightbox.removeAttribute('data-zoom');
-      lightboxImg.removeAttribute('src');
+      setLightboxZoom('fit');
+      lightboxStage.innerHTML = '';
+      if (lightboxDetail) {
+        lightboxDetail.innerHTML = '';
+        lightboxDetail.hidden = true;
+      }
     });
 
     if (!('closedBy' in HTMLDialogElement.prototype)) {

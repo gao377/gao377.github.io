@@ -1,121 +1,181 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660" role="img" aria-labelledby="diagram-title diagram-desc">
-  <title id="diagram-title">传统单机黑盒 / 吸附仿真 vs FACRI 契约分层三联范式对比</title>
-  <desc id="diagram-desc">对比传统具身系统在控制实时性、多机型代码耦合与仿真物理可信度上的三重割裂，以及 FACRI 的工程解法。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="portal-paradigm-contrast" viewBox="0 0 1200 570" width="1200" height="570" role="group" aria-labelledby="portal-paradigm-contrast-title" aria-describedby="portal-paradigm-contrast-desc">
+  <title id="portal-paradigm-contrast-title">传统单体耦合 / 吸附作弊 vs FACRI 契约分层三联范式对比</title>
+  <desc id="portal-paradigm-contrast-desc">以三列低密度对比呈现 FACRI 针对大模型时延抖动、多机型分支膨胀与仿真作弊的三重工程解法。</desc>
   <defs>
-    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+    <pattern id="portal-paradigm-contrast-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
       <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
     </pattern>
-    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="portal-paradigm-contrast-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
     </marker>
-    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="portal-paradigm-contrast-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
     </marker>
-    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="portal-paradigm-contrast-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
     </marker>
-    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="portal-paradigm-contrast-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
     </marker>
-    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="portal-paradigm-contrast-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
     </marker>
-    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+    <marker id="portal-paradigm-contrast-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
       <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
     </marker>
   </defs>
-  <rect x="0" y="0" width="1200" height="660" fill="#FAFAF7"/>
-  <rect x="0" y="0" width="1200" height="660" fill="url(#dot-grid)"/>
-  <rect x="0.75" y="0.75" width="1198.5" height="658.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
-  <rect x="36.0" y="90.0" width="360.0" height="514.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
-  <text x="50.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONTRAST 01 · TIMING ISOLATION</text>
-  <text x="50.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">割裂一 · 自主推理与硬实时控制</text>
-  <rect x="50.0" y="270.0" width="332.0" height="320.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
-  <text x="64.0" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">FACRI ENGINEERING SOLUTION</text>
-  <text x="64.0" y="306.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FACRI解法: 快慢双环 + 4+1 进程墙</text>
-  <rect x="420.0" y="90.0" width="360.0" height="514.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
-  <text x="434.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONTRAST 02 · EMBODIMENT CONTRACT</text>
-  <text x="434.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">割裂二 · 多机型扩展与代码耦合</text>
-  <rect x="434.0" y="270.0" width="332.0" height="320.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
-  <text x="448.0" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">FACRI ENGINEERING SOLUTION</text>
-  <text x="448.0" y="306.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FACRI解法: 唯一规格 Pod + 单调收敛</text>
-  <rect x="804.0" y="90.0" width="360.0" height="514.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
-  <text x="818.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONTRAST 03 · PHYSICAL TRUTH</text>
-  <text x="818.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">割裂三 · 仿真帧率与移行可信度</text>
-  <rect x="818.0" y="270.0" width="332.0" height="320.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
-  <text x="832.0" y="289.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">FACRI ENGINEERING SOLUTION</text>
-  <text x="832.0" y="306.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FACRI解法: 纯物理接触 + 五级证据链</text>
-  <rect x="50.0" y="144.0" width="332.0" height="92.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
-  <text x="62.0" y="162.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.5" font-weight="700" fill="#B04A1A" letter-spacing="0.05em">LEGACY ANTI-PATTERN</text>
-  <text x="62.0" y="180.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">传统黑盒耦合: 推理抖动穿透总线</text>
-  <text x="62.0" y="196.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">VLM / LLM 耗时波动 0.5–5 s</text>
-  <text x="62.0" y="211.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">直接串联电机 PD 环路或阻塞主线程</text>
-  <text x="62.0" y="227.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">总线超期引发跌倒 / 碰撞连锁崩溃</text>
-  <rect x="62.0" y="324.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="74.0" y="344.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">SystemApp (Python 0.0002 s GIL)</text>
-  <text x="74.0" y="360.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">Queue 32 有界异步 · 故障限于本任务</text>
-  <rect x="62.0" y="410.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="74.0" y="430.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">ROS 2 + task_cmd_ring.shm</text>
-  <text x="74.0" y="446.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">epoch / stamp_ns 新鲜度严格校验</text>
-  <rect x="62.0" y="496.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="74.0" y="516.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">robot_body_rt (P0 · 200 Hz FIFO)</text>
-  <text x="74.0" y="532.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">250 ms 死人开关 · 超时仅切 LOCAL_HOLD</text>
-  <rect x="434.0" y="144.0" width="332.0" height="92.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
-  <text x="446.0" y="162.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.5" font-weight="700" fill="#B04A1A" letter-spacing="0.05em">LEGACY ANTI-PATTERN</text>
-  <text x="446.0" y="180.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">传统分支拷贝: 一机一套控制源码</text>
-  <text x="446.0" y="196.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">双足 / 四足 / 特种车各自复制节点</text>
-  <text x="446.0" y="211.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">关节索引与夹爪语义硬编码进总线</text>
-  <text x="446.0" y="227.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">旧型号权限混入新机型引发误越界</text>
-  <rect x="446.0" y="324.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="458.0" y="344.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">9 构型 description.yaml</text>
-  <text x="458.0" y="360.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">双足 / 4WS / 轮腿 / 4 UGV 声明描述</text>
-  <rect x="446.0" y="410.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="458.0" y="430.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">EmbodimentSpecPod (0x454D4553)</text>
-  <text x="458.0" y="446.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">9 组关节切片 · CRC32 · SalWire 48 轴</text>
-  <rect x="446.0" y="496.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="458.0" y="516.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">CapabilitySynthesizer (L1 ∧ HAL ∧ L2)</text>
-  <text x="458.0" y="532.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">下游只可收窄 · 零源码改动统一接入</text>
-  <rect x="818.0" y="144.0" width="332.0" height="92.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
-  <text x="830.0" y="162.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.5" font-weight="700" fill="#B04A1A" letter-spacing="0.05em">LEGACY ANTI-PATTERN</text>
-  <text x="830.0" y="180.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">传统吸附作弊: 高帧率掩盖力学失效</text>
-  <text x="830.0" y="196.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">用 &lt;weld&gt; 刚性吸附伪造抓握成功</text>
-  <text x="830.0" y="211.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">RTF 门限强行切断长尾多机故障</text>
-  <text x="830.0" y="227.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">渲染精修模型混充碰撞与真机资质</text>
-  <rect x="830.0" y="324.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="842.0" y="344.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">MuJoCo 4.0.1 双层垫片 condim=6</text>
-  <text x="842.0" y="360.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">510/510 零吸附整机验证 · 纯力控触底</text>
-  <rect x="830.0" y="410.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="842.0" y="430.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">废除 RTF 0.5 自动停机门禁</text>
-  <text x="842.0" y="446.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">RTF&gt;1 为研发目标 · 操作员唯一停机主权</text>
-  <rect x="830.0" y="496.0" width="308.0" height="66.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
-  <text x="842.0" y="516.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">L0–L4 分层证据与 preview_only</text>
-  <text x="842.0" y="532.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">保留 R4 V0 FAIL · 严禁跨代跨级外推</text>
-  <path d="M 216.0 236.0 L 216.0 268.0" fill="none" stroke="#B04A1A" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-terracotta)"/>
-  <path d="M 216.0 390.0 L 216.0 408.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <path d="M 216.0 476.0 L 216.0 494.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <path d="M 600.0 236.0 L 600.0 268.0" fill="none" stroke="#B04A1A" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-terracotta)"/>
-  <path d="M 600.0 390.0 L 600.0 408.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <path d="M 600.0 476.0 L 600.0 494.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <path d="M 984.0 236.0 L 984.0 268.0" fill="none" stroke="#B04A1A" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-terracotta)"/>
-  <path d="M 984.0 390.0 L 984.0 408.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <path d="M 984.0 476.0 L 984.0 494.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
-  <rect x="189.8" y="243.0" width="52.4" height="17.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.80" fill-opacity="0.95"/>
-  <text x="216.0" y="255.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#B04A1A" text-anchor="middle">契约重构</text>
-  <rect x="573.8" y="243.0" width="52.4" height="17.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.80" fill-opacity="0.95"/>
-  <text x="600.0" y="255.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#B04A1A" text-anchor="middle">契约重构</text>
-  <rect x="957.8" y="243.0" width="52.4" height="17.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.80" fill-opacity="0.95"/>
-  <text x="984.0" y="255.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#B04A1A" text-anchor="middle">契约重构</text>
-  <line x1="36.0" y1="614.0" x2="1164.0" y2="614.0" stroke="#D8D3C8" stroke-width="1.00"/>
-  <text x="36.0" y="636.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
-  <rect x="82.0" y="625.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
-  <text x="104.0" y="635.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">传统紧耦合 / 作弊反模式</text>
-  <rect x="243.6" y="625.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
-  <text x="265.6" y="635.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FACRI 契约分层与物理实证方案</text>
-  <line x1="437.8" y1="631.0" x2="455.8" y2="631.0" stroke="#B04A1A" stroke-width="2.00"/>
-  <text x="459.8" y="635.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">架构解耦跃迁</text>
-  <text x="1164.0" y="635.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">每一列对比均对应门户《范式对比》与核心不变量</text>
-  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">PARADIGM CONTRAST · THREE ARCHITECTURAL BREAKS</text>
-  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">传统单机黑盒 / 吸附仿真 vs FACRI 契约分层三联范式对比</text>
-  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">反脆弱解耦 · 声明式构型 · 零 &lt;weld&gt; 物理接触</text>
-  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+  <rect x="0" y="0" width="1200" height="570" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="570" fill="url(#portal-paradigm-contrast-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="568.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="360.0" height="434.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONTRAST 01 · TIMING</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">自主推理与硬实时控制</text>
+  <rect x="420.0" y="86.0" width="360.0" height="434.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="434.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONTRAST 02 · EMBODIMENT</text>
+  <text x="434.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">多机型扩展与代码耦合</text>
+  <rect x="804.0" y="86.0" width="360.0" height="434.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="818.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">CONTRAST 03 · PHYSICAL TRUTH</text>
+  <text x="818.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">仿真帧率与移行可信度</text>
+  <g class="arch-edge" data-from="anti_llm" data-to="sol_queue" data-flow="timing">
+    <path d="M 216.0 214.0 L 216.0 266.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-paradigm-contrast-arrow-terracotta)"/>
+    <rect x="190.2" y="231.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="216.0" y="243.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">解耦跃迁</text>
+  </g>
+  <g class="arch-edge" data-from="sol_queue" data-to="sol_p0" data-flow="timing">
+    <path d="M 216.0 334.0 L 216.0 386.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-paradigm-contrast-arrow-forest)"/>
+    <rect x="183.2" y="351.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="216.0" y="363.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">epoch/SHM</text>
+  </g>
+  <g class="arch-edge" data-from="anti_branch" data-to="sol_pod" data-flow="embodiment">
+    <path d="M 600.0 214.0 L 600.0 266.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-paradigm-contrast-arrow-terracotta)"/>
+    <rect x="574.2" y="231.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="600.0" y="243.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">契约收口</text>
+  </g>
+  <g class="arch-edge" data-from="sol_pod" data-to="sol_synth" data-flow="embodiment">
+    <path d="M 600.0 334.0 L 600.0 386.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-paradigm-contrast-arrow-forest)"/>
+    <rect x="574.2" y="351.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="600.0" y="363.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">单调交集</text>
+  </g>
+  <g class="arch-edge" data-from="anti_weld" data-to="sol_contact" data-flow="truth">
+    <path d="M 984.0 214.0 L 984.0 266.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-paradigm-contrast-arrow-terracotta)"/>
+    <rect x="963.2" y="231.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="984.0" y="243.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">去吸附</text>
+  </g>
+  <g class="arch-edge" data-from="sol_contact" data-to="sol_ladder" data-flow="truth">
+    <path d="M 984.0 334.0 L 984.0 386.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-paradigm-contrast-arrow-forest)"/>
+    <rect x="963.1" y="351.0" width="41.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="984.0" y="363.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">L0–L4</text>
+  </g>
+  <g class="arch-node-card" data-node-id="anti_llm">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="anti_llm" data-flows="all,timing" aria-expanded="false" aria-label="反模式：黑盒串行耦合（0.5–5s 抖动穿透总线）">
+      <rect class="arch-node-box" x="56.0" y="146.0" width="320.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">反模式：黑盒串行耦合</text>
+      <text class="arch-node-role" x="68.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">0.5–5s 抖动穿透总线</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/overview.html" aria-label="前往「反模式：黑盒串行耦合」对应章节">
+      <rect x="348.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="360.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sol_queue">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sol_queue" data-flows="all,timing" aria-expanded="false" aria-label="解法：有界异步队列（Queue(32) · 0.2ms GIL）">
+      <rect class="arch-node-box" x="56.0" y="266.0" width="320.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="291.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">解法：有界异步队列</text>
+      <text class="arch-node-role" x="68.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Queue(32) · 0.2ms GIL</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#flow" aria-label="前往「解法：有界异步队列」对应章节">
+      <rect x="348.0" y="270.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="360.0" y="286.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sol_p0">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sol_p0" data-flows="all,timing" aria-expanded="false" aria-label="解法：4+1 硬实时环（P0 200 Hz · LOCAL_HOLD）">
+      <rect class="arch-node-box" x="56.0" y="386.0" width="320.0" height="68.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="411.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">解法：4+1 硬实时环</text>
+      <text class="arch-node-role" x="68.0" y="440.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">P0 200 Hz · LOCAL_HOLD</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「解法：4+1 硬实时环」对应章节">
+      <rect x="348.0" y="390.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="360.0" y="406.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="anti_branch">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="anti_branch" data-flows="all,embodiment" aria-expanded="false" aria-label="反模式：一机一源码（分支拷贝与硬编码）">
+      <rect class="arch-node-box" x="440.0" y="146.0" width="320.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="452.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">反模式：一机一源码</text>
+      <text class="arch-node-role" x="452.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">分支拷贝与硬编码</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-embodiment-spec.html#origins" aria-label="前往「反模式：一机一源码」对应章节">
+      <rect x="732.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="744.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sol_pod">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sol_pod" data-flows="all,embodiment" aria-expanded="false" aria-label="解法：EmbodimentSpecPod（0x454D4553 · 9 组切片）">
+      <rect class="arch-node-box" x="440.0" y="266.0" width="320.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="452.0" y="291.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">解法：EmbodimentSpecPod</text>
+      <text class="arch-node-role" x="452.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">0x454D4553 · 9 组切片</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-embodiment-spec.html#contracts" aria-label="前往「解法：EmbodimentSpecPod」对应章节">
+      <rect x="732.0" y="270.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="744.0" y="286.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sol_synth">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sol_synth" data-flows="all,embodiment" aria-expanded="false" aria-label="解法：单调能力收敛（L1 ∧ HAL ∧ L2）">
+      <rect class="arch-node-box" x="440.0" y="386.0" width="320.0" height="68.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="452.0" y="411.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">解法：单调能力收敛</text>
+      <text class="arch-node-role" x="452.0" y="440.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">L1 ∧ HAL ∧ L2</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-embodiment-spec.html#principles" aria-label="前往「解法：单调能力收敛」对应章节">
+      <rect x="732.0" y="390.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="744.0" y="406.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="anti_weld">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="anti_weld" data-flows="all,truth" aria-expanded="false" aria-label="反模式：吸附与假绿（&lt;weld&gt; 伪造 + RTF 截断）">
+      <rect class="arch-node-box" x="824.0" y="146.0" width="320.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="836.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">反模式：吸附与假绿</text>
+      <text class="arch-node-role" x="836.0" y="200.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">&lt;weld&gt; 伪造 + RTF 截断</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/simulation-engine.html" aria-label="前往「反模式：吸附与假绿」对应章节">
+      <rect x="1116.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1128.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sol_contact">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sol_contact" data-flows="all,truth" aria-expanded="false" aria-label="解法：纯接触力学栈（condim=6 · 510/510）">
+      <rect class="arch-node-box" x="824.0" y="266.0" width="320.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="836.0" y="291.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">解法：纯接触力学栈</text>
+      <text class="arch-node-role" x="836.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">condim=6 · 510/510</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/simulation-engine.html" aria-label="前往「解法：纯接触力学栈」对应章节">
+      <rect x="1116.0" y="270.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1128.0" y="286.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sol_ladder">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sol_ladder" data-flows="all,truth" aria-expanded="false" aria-label="解法：L0–L4 治权阶梯（保留失败 · 人工停机）">
+      <rect class="arch-node-box" x="824.0" y="386.0" width="320.0" height="68.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="836.0" y="411.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">解法：L0–L4 治权阶梯</text>
+      <text class="arch-node-role" x="836.0" y="440.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">保留失败 · 人工停机</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://evidence/verification-ladder.html" aria-label="前往「解法：L0–L4 治权阶梯」对应章节">
+      <rect x="1116.0" y="390.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1128.0" y="406.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="526.0" x2="1164.0" y2="526.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="548.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">传统紧耦合 / 作弊反模式</text>
+  <rect x="243.6" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="265.6" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">中间契约 / 物理支撑层</text>
+  <rect x="394.4" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="416.4" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FACRI 工程确定性解法</text>
+  <text x="1164.0" y="547.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">点击任意对照卡片展开具体参数、代码位置与治权红线</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">PORTAL VIEW 04 · THREE ARCHITECTURAL CONTRASTS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">传统单体耦合 / 吸附作弊 vs FACRI 契约分层三联范式对比</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">时序隔离 · 构型复用 · 纯接触物理可信</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
 </svg>

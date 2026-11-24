@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-hal-sal-bridge" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="sub-hal-sal-bridge-title" aria-describedby="sub-hal-sal-bridge-desc">
+  <title id="sub-hal-sal-bridge-title">IHalDriver 6 插件动态加载、SalWire v2 与四级传感器防腐校验网</title>
+  <desc id="sub-hal-sal-bridge-desc">展示端侧同一套控制二进制如何经 C ABI 插件动态切换仿真与五型真机，并在入口拦截脏帧与错代包。</desc>
+  <defs>
+    <pattern id="sub-hal-sal-bridge-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-hal-sal-bridge-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-hal-sal-bridge-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#sub-hal-sal-bridge-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="540.0" height="450.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">P0 GATEWAY &amp; PLUGIN LOADER</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">动态插件加载与标定校验</text>
+  <rect x="604.0" y="86.0" width="560.0" height="450.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="618.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">SALWIRE V2 &amp; ANTI-CORRUPTION</text>
+  <text x="618.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">零拷贝线协议、四级过滤与带外急停</text>
+  <g class="arch-edge" data-from="bgw" data-to="plug_load" data-flow="sim_path,real_path">
+    <path d="M 296.0 172.0 L 316.0 172.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-ink)"/>
+  </g>
+  <g class="arch-edge" data-from="plug_load" data-to="so_sim" data-flow="sim_path">
+    <path d="M 380.0 206.0 L 380.0 221.0 Q 380.0 226.0 375.0 226.0 L 183.0 226.0 Q 178.0 226.0 178.0 231.0 L 178.0 248.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-slate)"/>
+    <rect x="252.2" y="217.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="279.0" y="229.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">SIM_SAL</text>
+  </g>
+  <g class="arch-edge" data-from="plug_load" data-to="so_real" data-flow="real_path">
+    <path d="M 434.0 206.0 L 434.0 248.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta)"/>
+    <rect x="404.2" y="218.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="434.0" y="230.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">REAL_HAL</text>
+  </g>
+  <g class="arch-edge" data-from="so_sim" data-to="sal_v2" data-flow="sim_path">
+    <path d="M 296.0 266.0 L 585.0 266.0 Q 590.0 266.0 590.0 261.0 L 590.0 187.0 Q 590.0 182.0 595.0 182.0 L 628.0 182.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-slate)"/>
+    <rect x="425.1" y="257.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="443.0" y="269.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">mmap</text>
+  </g>
+  <g class="arch-edge" data-from="so_sim" data-to="phys_carrier" data-flow="sim_path">
+    <path d="M 178.0 316.0 L 178.0 386.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-hal-sal-bridge-arrow-forest)"/>
+  </g>
+  <g class="arch-edge" data-from="so_real" data-to="phys_carrier" data-flow="real_path">
+    <path d="M 434.0 316.0 L 434.0 386.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta)"/>
+    <rect x="404.2" y="342.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="434.0" y="354.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">CAN/ECAT</text>
+  </g>
+  <g class="arch-edge" data-from="sal_v2" data-to="sa_filter" data-flow="filter">
+    <path d="M 874.0 182.0 L 900.0 182.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta)"/>
+    <rect x="860.2" y="173.0" width="53.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="887.0" y="185.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">4 级校验</text>
+  </g>
+  <g class="arch-edge" data-from="oob_udp" data-to="bgw" data-flow="filter">
+    <path d="M 690.0 358.0 L 589.0 358.0 Q 584.0 358.0 584.0 353.0 L 584.0 113.0 Q 584.0 108.0 579.0 108.0 L 183.0 108.0 Q 178.0 108.0 178.0 113.0 L 178.0 138.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-hal-sal-bridge-arrow-terracotta)"/>
+    <rect x="347.3" y="99.0" width="67.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="381.0" y="111.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">ESTOP 覆盖</text>
+  </g>
+  <g class="arch-node-card" data-node-id="bgw">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="bgw" data-flows="all,filter,real_path,sim_path" aria-expanded="false" aria-label="body_gateway (P0)（唯一身体命令出口）">
+      <rect class="arch-node-box" x="60.0" y="138.0" width="236.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="163.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">body_gateway (P0)</text>
+      <text class="arch-node-role" x="72.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">唯一身体命令出口</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#flow" aria-label="前往「body_gateway (P0)」对应章节">
+      <rect x="268.0" y="142.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="280.0" y="158.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="plug_load">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="plug_load" data-flows="all,real_path,sim_path" aria-expanded="false" aria-label="PluginLoader (C ABI)（URDF SHA-256 验签）">
+      <rect class="arch-node-box" x="316.0" y="138.0" width="236.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="328.0" y="163.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">PluginLoader (C ABI)</text>
+      <text class="arch-node-role" x="328.0" y="192.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">URDF SHA-256 验签</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#paradigm" aria-label="前往「PluginLoader (C ABI)」对应章节">
+      <rect x="524.0" y="142.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="536.0" y="158.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="so_sim">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="so_sim" data-flows="all,sim_path" aria-expanded="false" aria-label="libsal_shm.so（HalOrigin::SIM_SAL）">
+      <rect class="arch-node-box" x="60.0" y="248.0" width="236.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="72.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">libsal_shm.so</text>
+      <text class="arch-node-role" x="72.0" y="302.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">HalOrigin::SIM_SAL</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#flow" aria-label="前往「libsal_shm.so」对应章节">
+      <rect x="268.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="280.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="so_real">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="so_real" data-flows="all,real_path" aria-expanded="false" aria-label="5 型实机 HAL .so（HalOrigin::REAL_HAL）">
+      <rect class="arch-node-box" x="316.0" y="248.0" width="236.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="328.0" y="273.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">5 型实机 HAL .so</text>
+      <text class="arch-node-role" x="328.0" y="302.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">HalOrigin::REAL_HAL</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「5 型实机 HAL .so」对应章节">
+      <rect x="524.0" y="252.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="536.0" y="268.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="phys_carrier">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="phys_carrier" data-flows="all,real_path,sim_path" aria-expanded="false" aria-label="物理仿真 / 实机本体（MuJoCo 4.0.1 / 关节电机）">
+      <rect class="arch-node-box" x="120.0" y="386.0" width="372.0" height="72.0" rx="3.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="132.0" y="411.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">物理仿真 / 实机本体</text>
+      <text class="arch-node-role" x="132.0" y="444.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#16181D">MuJoCo 4.0.1 / 关节电机</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#evidence" aria-label="前往「物理仿真 / 实机本体」对应章节">
+      <rect x="464.0" y="390.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="476.0" y="406.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_v2">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_v2" data-flows="all,filter,sim_path" aria-expanded="false" aria-label="SalWire v2 线格式（state_cmd + lidar.shm）">
+      <rect class="arch-node-box" x="628.0" y="146.0" width="246.0" height="72.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="640.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalWire v2 线格式</text>
+      <text class="arch-node-role" x="640.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">state_cmd + lidar.shm</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「SalWire v2 线格式」对应章节">
+      <rect x="846.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="858.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sa_filter">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sa_filter" data-flows="all,filter" aria-expanded="false" aria-label="SensorAdapters 防腐层（4 级脏帧拦截网）">
+      <rect class="arch-node-box" x="900.0" y="146.0" width="242.0" height="72.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="912.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">SensorAdapters 防腐层</text>
+      <text class="arch-node-role" x="912.0" y="204.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">4 级脏帧拦截网</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#principles" aria-label="前往「SensorAdapters 防腐层」对应章节">
+      <rect x="1114.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="oob_udp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="oob_udp" data-flows="all,filter" aria-expanded="false" aria-label="32 B SafetyFrame 直通（UDP :18749 覆盖急停）">
+      <rect class="arch-node-box" x="690.0" y="320.0" width="390.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="702.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">32 B SafetyFrame 直通</text>
+      <text class="arch-node-role" x="702.0" y="382.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">UDP :18749 覆盖急停</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#principles" aria-label="前往「32 B SafetyFrame 直通」对应章节">
+      <rect x="1052.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1064.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SIM_SAL 仿真映射插件</text>
+  <rect x="236.2" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="258.2" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">REAL_HAL / 防腐拦截 / 32B 急停</text>
+  <rect x="444.9" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="466.9" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">SalWire v2 定长总线</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">四级防腐依次检查: 魔数/CRC32 -&gt; epoch 一致 -&gt; 序列递增 -&gt; std::isfinite</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 06 · IHALDRIVER &amp; SALWIRE V2 BRIDGE</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">IHalDriver 6 插件动态加载、SalWire v2 与四级传感器防腐校验网</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">PluginLoader (C ABI) · SensorAdapters ACL · 32 B OOB SafetyFrame</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

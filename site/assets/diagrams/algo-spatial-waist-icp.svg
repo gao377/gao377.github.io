@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="algo-spatial-waist-icp" viewBox="0 0 1200 540" width="1200" height="540" role="group" aria-labelledby="algo-spatial-waist-icp-title" aria-describedby="algo-spatial-waist-icp-desc">
+  <title id="algo-spatial-waist-icp-title">动态腰部 FK 水平还原与 VoxelIcpLocalizer 10 Hz 定位流</title>
+  <desc id="algo-spatial-waist-icp-desc">展示雷达点云经 IMU 去畸变、腰部正运动学水平反旋和 0.20 m 体素 ICP 输出带净距定位槽的完整过程。</desc>
+  <defs>
+    <pattern id="algo-spatial-waist-icp-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="algo-spatial-waist-icp-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="algo-spatial-waist-icp-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="540" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="540" fill="url(#algo-spatial-waist-icp-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="538.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="350.0" height="400.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">INGRESS &amp; DESKEW</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">零拷贝扫描接入与运动去畸变</text>
+  <rect x="414.0" y="86.0" width="376.0" height="400.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="428.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">WAIST FK LEVELING &amp; VOXEL ICP</text>
+  <text x="428.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">弯腰俯仰角反旋与点面体素配准</text>
+  <rect x="818.0" y="86.0" width="346.0" height="400.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="832.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">POSE POD &amp; MAP ISOLATION</text>
+  <text x="832.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">定位输出与多高度地图隔离</text>
+  <g class="arch-edge" data-from="lidar_raw" data-to="imu_deskew" data-flow="deskew">
+    <path d="M 211.0 234.0 L 211.0 320.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-slate)"/>
+    <rect x="184.2" y="268.0" width="53.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="211.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">&lt;=500ms</text>
+  </g>
+  <g class="arch-edge" data-from="imu_deskew" data-to="waist_fk" data-flow="deskew">
+    <path d="M 364.0 357.0 L 393.0 357.0 Q 398.0 357.0 398.0 352.0 L 398.0 202.0 Q 398.0 197.0 403.0 197.0 L 436.0 197.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-ochre)"/>
+    <rect x="377.2" y="268.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="398.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">去畸变</text>
+  </g>
+  <g class="arch-edge" data-from="waist_fk" data-to="voxel_icp" data-flow="icp">
+    <path d="M 602.0 234.0 L 602.0 320.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-forest)"/>
+    <rect x="576.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="602.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">水平点云</text>
+  </g>
+  <g class="arch-edge" data-from="voxel_icp" data-to="pose_pod" data-flow="icp">
+    <path d="M 768.0 357.0 L 797.0 357.0 Q 802.0 357.0 802.0 352.0 L 802.0 202.0 Q 802.0 197.0 807.0 197.0 L 840.0 197.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#algo-spatial-waist-icp-arrow-forest)"/>
+    <rect x="769.2" y="268.0" width="65.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="802.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">0.20m ICP</text>
+  </g>
+  <g class="arch-edge" data-from="pose_pod" data-to="reloc_srv" data-flow="icp">
+    <path d="M 991.0 234.0 L 991.0 320.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#algo-spatial-waist-icp-arrow-terracotta)"/>
+    <rect x="965.2" y="268.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="991.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">地图版本</text>
+  </g>
+  <g class="arch-node-card" data-node-id="lidar_raw">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="lidar_raw" data-flows="all,deskew" aria-expanded="false" aria-label="SalLidarWire 原始点云（6000 点 · &lt;=500 ms 龄）">
+      <rect class="arch-node-box" x="58.0" y="160.0" width="306.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SalLidarWire 原始点云</text>
+      <text class="arch-node-role" x="70.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">6000 点 · &lt;=500 ms 龄</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#origins" aria-label="前往「SalLidarWire 原始点云」对应章节">
+      <rect x="336.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="348.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="imu_deskew">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="imu_deskew" data-flows="all,deskew" aria-expanded="false" aria-label="ImuDeskewBuffer 去畸变（&lt;=2 ms IMU/TF 插值）">
+      <rect class="arch-node-box" x="58.0" y="320.0" width="306.0" height="74.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ImuDeskewBuffer 去畸变</text>
+      <text class="arch-node-role" x="70.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">&lt;=2 ms IMU/TF 插值</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#flow" aria-label="前往「ImuDeskewBuffer 去畸变」对应章节">
+      <rect x="336.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="348.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="waist_fk">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="waist_fk" data-flows="all,deskew,icp" aria-expanded="false" aria-label="compensate_waist_for_livox（弯腰齐次水平还原）">
+      <rect class="arch-node-box" x="436.0" y="160.0" width="332.0" height="74.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">compensate_waist_for_livox</text>
+      <text class="arch-node-role" x="448.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">弯腰齐次水平还原</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#principles" aria-label="前往「compensate_waist_for_livox」对应章节">
+      <rect x="740.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="752.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="voxel_icp">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="voxel_icp" data-flows="all,icp" aria-expanded="false" aria-label="VoxelIcpLocalizer（0.20 m 体素配准）">
+      <rect class="arch-node-box" x="436.0" y="320.0" width="332.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="448.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">VoxelIcpLocalizer</text>
+      <text class="arch-node-role" x="448.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">0.20 m 体素配准</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#paradigm" aria-label="前往「VoxelIcpLocalizer」对应章节">
+      <rect x="740.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="752.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="pose_pod">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="pose_pod" data-flows="all,icp" aria-expanded="false" aria-label="SpatialPosePod 输出（tracking 0..100 + 净距）">
+      <rect class="arch-node-box" x="840.0" y="160.0" width="302.0" height="74.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="185.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SpatialPosePod 输出</text>
+      <text class="arch-node-role" x="852.0" y="220.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">tracking 0..100 + 净距</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#contracts" aria-label="前往「SpatialPosePod 输出」对应章节">
+      <rect x="1114.0" y="164.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1126.0" y="180.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="reloc_srv">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="reloc_srv" data-flows="all,icp" aria-expanded="false" aria-label="地图版本隔离与重定位（apron != cabin 隔离）">
+      <rect class="arch-node-box" x="840.0" y="320.0" width="302.0" height="74.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="852.0" y="345.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">地图版本隔离与重定位</text>
+      <text class="arch-node-role" x="852.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">apron != cabin 隔离</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/spatial-and-navigation.html#evidence" aria-label="前往「地图版本隔离与重定位」对应章节">
+      <rect x="1114.0" y="324.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="340.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="496.0" x2="1164.0" y2="496.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="518.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">C++20 去畸变接入</text>
+  <rect x="210.3" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="232.3" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">Python 腰部 FK 水平还原</text>
+  <rect x="376.7" y="507.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="398.7" y="517.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">C++20 VoxelICP 与状态槽</text>
+  <text x="1164.0" y="517.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">双足前倾弯腰 30° 操作时，腰部水平还原可防止扫描地面投影抬升导致定位跳变</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L4 ALGO 02A · WAIST-COMPENSATED LIDAR &amp; VOXEL ICP</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">动态腰部 FK 水平还原与 VoxelIcpLocalizer 10 Hz 定位流</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">compensate_waist_for_livox · 0.20 m 体素 · &lt;=2 ms TF</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

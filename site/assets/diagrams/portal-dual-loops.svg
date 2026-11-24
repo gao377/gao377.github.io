@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="portal-dual-loops" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="portal-dual-loops-title" aria-describedby="portal-dual-loops-desc">
+  <title id="portal-dual-loops-title">左慢离线演化 (RSI) vs 右快确定性物理控制 (200 Hz) 双回路</title>
+  <desc id="portal-dual-loops-desc">左侧展示 1–10 s 离线证据反思与人工采纳慢回路，右侧展示 5 ms 硬实时采样、推理、保护与驱动快回路。</desc>
+  <defs>
+    <pattern id="portal-dual-loops-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="portal-dual-loops-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="portal-dual-loops-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="portal-dual-loops-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="portal-dual-loops-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="portal-dual-loops-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="portal-dual-loops-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#portal-dual-loops-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="520.0" height="452.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SLOW LOOP · 1–10 s OFFLINE RSI SANDBOX</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">受约束离线自我演化回路（严禁在线热写电机参数）</text>
+  <rect x="644.0" y="86.0" width="520.0" height="452.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="658.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">FAST LOOP · 200 Hz (5 ms) HARD REALTIME</text>
+  <text x="658.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">确定性物理控制闭环（高层推理波动零穿透）</text>
+  <g class="arch-edge" data-from="ev_store" data-to="reflect" data-flow="slow_rsi">
+    <path d="M 296.0 212.0 L 296.0 240.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-loops-arrow-terracotta)"/>
+    <rect x="251.4" y="217.0" width="89.3" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="296.0" y="229.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">V0 FAIL 原始包</text>
+  </g>
+  <g class="arch-edge" data-from="reflect" data-to="evol_mgr" data-flow="slow_rsi">
+    <path d="M 296.0 306.0 L 296.0 334.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-loops-arrow-terracotta)"/>
+    <rect x="270.2" y="311.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="296.0" y="323.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">根因诊断</text>
+  </g>
+  <g class="arch-edge" data-from="evol_mgr" data-to="skill_cat" data-flow="slow_rsi">
+    <path d="M 296.0 400.0 L 296.0 428.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-loops-arrow-terracotta)"/>
+    <rect x="262.3" y="405.0" width="67.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="296.0" y="417.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">L0–L3 审查</text>
+  </g>
+  <g class="arch-edge" data-from="skill_cat" data-to="sal_sample" data-flow="slow_rsi">
+    <path d="M 506.0 461.0 L 595.0 461.0 Q 600.0 461.0 600.0 456.0 L 600.0 184.0 Q 600.0 179.0 605.0 179.0 L 694.0 179.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#portal-dual-loops-arrow-ochre)"/>
+    <rect x="554.4" y="311.0" width="91.1" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="600.0" y="323.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">仅版本化更新契约</text>
+  </g>
+  <g class="arch-edge" data-from="sal_sample" data-to="policy_ik" data-flow="fast_rt">
+    <path d="M 904.0 212.0 L 904.0 240.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-loops-arrow-forest)"/>
+    <rect x="865.3" y="217.0" width="77.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="904.0" y="229.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">sim_time_ns</text>
+  </g>
+  <g class="arch-edge" data-from="policy_ik" data-to="prot_core" data-flow="fast_rt">
+    <path d="M 904.0 306.0 L 904.0 334.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-loops-arrow-forest)"/>
+    <rect x="859.3" y="311.0" width="89.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="904.0" y="323.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">7-DOF / 50 Hz</text>
+  </g>
+  <g class="arch-edge" data-from="prot_core" data-to="sal_cmd" data-flow="fast_rt">
+    <path d="M 904.0 400.0 L 904.0 428.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-loops-arrow-forest)"/>
+    <rect x="862.3" y="405.0" width="83.3" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="904.0" y="417.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">250 ms 看门狗</text>
+  </g>
+  <g class="arch-edge" data-from="sal_cmd" data-to="sal_sample" data-flow="fast_rt">
+    <path d="M 1114.0 461.0 L 1137.0 461.0 Q 1142.0 461.0 1142.0 456.0 L 1142.0 184.0 Q 1142.0 179.0 1137.0 179.0 L 1114.0 179.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#portal-dual-loops-arrow-forest)"/>
+  </g>
+  <g class="arch-node-card" data-node-id="ev_store">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="ev_store" data-flows="all,slow_rsi" aria-expanded="false" aria-label="1. 真实失败证据（EvidenceStore JSONL）">
+      <rect class="arch-node-box" x="86.0" y="146.0" width="420.0" height="66.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="98.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">1. 真实失败证据</text>
+      <text class="arch-node-role" x="98.0" y="198.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">EvidenceStore JSONL</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#evidence" aria-label="前往「1. 真实失败证据」对应章节">
+      <rect x="478.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="490.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="reflect">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="reflect" data-flows="all,slow_rsi" aria-expanded="false" aria-label="2. 只读诊断反思（ReflectionEngine）">
+      <rect class="arch-node-box" x="86.0" y="240.0" width="420.0" height="66.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="98.0" y="265.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">2. 只读诊断反思</text>
+      <text class="arch-node-role" x="98.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">ReflectionEngine</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#principles" aria-label="前往「2. 只读诊断反思」对应章节">
+      <rect x="478.0" y="244.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="490.0" y="260.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="evol_mgr">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="evol_mgr" data-flows="all,slow_rsi" aria-expanded="false" aria-label="3. 沙箱对照演化（EvolutionManager）">
+      <rect class="arch-node-box" x="86.0" y="334.0" width="420.0" height="66.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="98.0" y="359.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">3. 沙箱对照演化</text>
+      <text class="arch-node-role" x="98.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">EvolutionManager</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#paradigm" aria-label="前往「3. 沙箱对照演化」对应章节">
+      <rect x="478.0" y="338.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="490.0" y="354.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="skill_cat">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="skill_cat" data-flows="all,slow_rsi" aria-expanded="false" aria-label="4. 人工采纳发布（SkillCatalog）">
+      <rect class="arch-node-box" x="86.0" y="428.0" width="420.0" height="66.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="98.0" y="453.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">4. 人工采纳发布</text>
+      <text class="arch-node-role" x="98.0" y="480.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">SkillCatalog</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/system-agent-and-rsi.html#contracts" aria-label="前往「4. 人工采纳发布」对应章节">
+      <rect x="478.0" y="432.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="490.0" y="448.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_sample">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_sample" data-flows="all,fast_rt,slow_rsi" aria-expanded="false" aria-label="1. 状态采样 (5 ms)（SalSampleWire v2）">
+      <rect class="arch-node-box" x="694.0" y="146.0" width="420.0" height="66.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="706.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">1. 状态采样 (5 ms)</text>
+      <text class="arch-node-role" x="706.0" y="198.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SalSampleWire v2</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#contracts" aria-label="前往「1. 状态采样 (5 ms)」对应章节">
+      <rect x="1086.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1098.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="policy_ik">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="policy_ik" data-flows="all,fast_rt" aria-expanded="false" aria-label="2. 策略与导纳计算（PolicyRunner + IK）">
+      <rect class="arch-node-box" x="694.0" y="240.0" width="420.0" height="66.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="706.0" y="265.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">2. 策略与导纳计算</text>
+      <text class="arch-node-role" x="706.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">PolicyRunner + IK</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://algorithms/locomotion-and-state.html#flow" aria-label="前往「2. 策略与导纳计算」对应章节">
+      <rect x="1086.0" y="244.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1098.0" y="260.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="prot_core">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="prot_core" data-flows="all,fast_rt" aria-expanded="false" aria-label="3. 本地保护仲裁（ProtectionCore · 32B）">
+      <rect class="arch-node-box" x="694.0" y="334.0" width="420.0" height="66.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="706.0" y="359.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">3. 本地保护仲裁</text>
+      <text class="arch-node-role" x="706.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">ProtectionCore · 32B</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/runtime-baselines.html" aria-label="前往「3. 本地保护仲裁」对应章节">
+      <rect x="1086.0" y="338.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1098.0" y="354.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sal_cmd">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sal_cmd" data-flows="all,fast_rt" aria-expanded="false" aria-label="4. 指令下发闭环（SalCommandWire v2）">
+      <rect class="arch-node-box" x="694.0" y="428.0" width="420.0" height="66.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="706.0" y="453.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">4. 指令下发闭环</text>
+      <text class="arch-node-role" x="706.0" y="480.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">SalCommandWire v2</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/robot-hal-sal-wire.html#flow" aria-label="前往「4. 指令下发闭环」对应章节">
+      <rect x="1086.0" y="432.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1098.0" y="448.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">离线 RSI 沙箱与安全仲裁</text>
+  <rect x="244.5" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="266.5" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">200 Hz 硬实时闭环</text>
+  <line x1="376.6" y1="563.0" x2="394.6" y2="563.0" stroke="#8A5A19" stroke-width="1.80" stroke-dasharray="4 3"/>
+  <text x="398.6" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">受控契约发布边界（非实时注入）</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">双回路以 SkillCatalog 离线签发版本为唯一交接点，彻底隔离时延抖动</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">PORTAL VIEW 02 · SLOW RSI LOOP VS FAST 200 HZ LOOP</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">左慢离线演化 (RSI) vs 右快确定性物理控制 (200 Hz) 双回路</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">离线沙箱演进绝不穿透实时闭环</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

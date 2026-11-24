@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-northbound-contracts" viewBox="0 0 1200 570" width="1200" height="570" role="group" aria-labelledby="arch-northbound-contracts-title" aria-describedby="arch-northbound-contracts-desc">
+  <title id="arch-northbound-contracts-title">北向强类型语义契约: 84 份 ROS 2 V2–V5 IDL 与五大 HTTP/WS 网关</title>
+  <desc id="arch-northbound-contracts-desc">独立拆出北向语义通信层，呈现 84 份 ROS 2 IDL 分类与五大 HTTP/WebSocket 网关的鉴权及限流边界。</desc>
+  <defs>
+    <pattern id="arch-northbound-contracts-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arch-northbound-contracts-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arch-northbound-contracts-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="570" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="570" fill="url(#arch-northbound-contracts-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="568.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="400.0" height="430.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">ROS 2 IDL · src/embodied_interfaces/ (84 份)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">强类型跨节点服务、动作与消息定义</text>
+  <rect x="464.0" y="86.0" width="700.0" height="430.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="478.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">HTTP &amp; WEBSOCKET GATEWAYS (5 大服务网关)</text>
+  <text x="478.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">回环端口 · Origin 拦截 · 有界队列与并发配额</text>
+  <g class="arch-edge" data-from="gw_interact" data-to="idl_srv" data-flow="ros_idl">
+    <path d="M 488.0 188.0 L 445.0 188.0 Q 440.0 188.0 440.0 193.0 L 440.0 291.0 Q 440.0 296.0 435.0 296.0 L 414.0 296.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-slate)"/>
+    <rect x="411.2" y="233.0" width="57.5" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="440.0" y="245.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">编译/查询</text>
+  </g>
+  <g class="arch-edge" data-from="gw_fleet" data-to="idl_action" data-flow="bridge">
+    <path d="M 488.0 276.0 L 455.0 276.0 Q 450.0 276.0 450.0 271.0 L 450.0 193.0 Q 450.0 188.0 445.0 188.0 L 414.0 188.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-ink)"/>
+    <rect x="434.1" y="223.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="450.0" y="235.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">派发</text>
+  </g>
+  <g class="arch-edge" data-from="gw_fleet" data-to="idl_msg" data-flow="ros_idl">
+    <path d="M 488.0 312.0 L 455.0 312.0 Q 450.0 312.0 450.0 317.0 L 450.0 399.0 Q 450.0 404.0 445.0 404.0 L 414.0 404.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-northbound-contracts-arrow-ink)"/>
+    <rect x="434.1" y="349.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="450.0" y="361.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">状态</text>
+  </g>
+  <g class="arch-edge" data-from="gw_voice" data-to="gw_interact" data-flow="http_gw">
+    <path d="M 826.0 188.0 L 804.0 188.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-slate)"/>
+    <rect x="799.1" y="179.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="815.0" y="191.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">入队</text>
+  </g>
+  <g class="arch-edge" data-from="gw_interact" data-to="gw_fleet" data-flow="http_gw">
+    <path d="M 646.0 226.0 L 646.0 258.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-ink)"/>
+    <rect x="630.1" y="233.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="646.0" y="245.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">调度</text>
+  </g>
+  <g class="arch-edge" data-from="gw_fleet" data-to="gw_facility" data-flow="http_gw">
+    <path d="M 804.0 296.0 L 826.0 296.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-northbound-contracts-arrow-ochre)"/>
+    <rect x="799.1" y="287.0" width="31.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="815.0" y="299.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">外设</text>
+  </g>
+  <g class="arch-edge" data-from="gw_interact" data-to="gw_model" data-flow="http_gw">
+    <path d="M 540.0 226.0 L 540.0 366.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-northbound-contracts-arrow-terracotta)"/>
+    <rect x="516.1" y="287.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="540.0" y="299.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">Bearer</text>
+  </g>
+  <g class="arch-node-card" data-node-id="idl_action">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="idl_action" data-flows="all,bridge" aria-expanded="false" aria-label="ROS 2 .action (6 份)（ExecuteAssignment/Cap）">
+      <rect class="arch-node-box" x="58.0" y="150.0" width="356.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="175.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ROS 2 .action (6 份)</text>
+      <text class="arch-node-role" x="70.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">ExecuteAssignment/Cap</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/interfaces.html" aria-label="前往「ROS 2 .action (6 份)」对应章节">
+      <rect x="386.0" y="154.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="398.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="idl_srv">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="idl_srv" data-flows="all,ros_idl" aria-expanded="false" aria-label="ROS 2 .srv (22 份)（Assess / Plan / Memory）">
+      <rect class="arch-node-box" x="58.0" y="258.0" width="356.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="283.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ROS 2 .srv (22 份)</text>
+      <text class="arch-node-role" x="70.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Assess / Plan / Memory</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/interfaces.html" aria-label="前往「ROS 2 .srv (22 份)」对应章节">
+      <rect x="386.0" y="262.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="398.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="idl_msg">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="idl_msg" data-flows="all,ros_idl" aria-expanded="false" aria-label="ROS 2 .msg (56 份)（Task / Body / Goal）">
+      <rect class="arch-node-box" x="58.0" y="366.0" width="356.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ROS 2 .msg (56 份)</text>
+      <text class="arch-node-role" x="70.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Task / Body / Goal</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/interfaces.html" aria-label="前往「ROS 2 .msg (56 份)」对应章节">
+      <rect x="386.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="398.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_interact">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_interact" data-flows="all,http_gw,ros_idl" aria-expanded="false" aria-label="InteractionGateway（:8090 · Queue(32)）">
+      <rect class="arch-node-box" x="488.0" y="150.0" width="316.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="500.0" y="175.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">InteractionGateway</text>
+      <text class="arch-node-role" x="500.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">:8090 · Queue(32)</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#flow" aria-label="前往「InteractionGateway」对应章节">
+      <rect x="776.0" y="154.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="788.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_voice">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_voice" data-flows="all,http_gw" aria-expanded="false" aria-label="InteractionRuntime（:8088 · SSE / ASR / TTS）">
+      <rect class="arch-node-box" x="826.0" y="150.0" width="316.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="838.0" y="175.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">InteractionRuntime</text>
+      <text class="arch-node-role" x="838.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:8088 · SSE / ASR / TTS</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#flow" aria-label="前往「InteractionRuntime」对应章节">
+      <rect x="1114.0" y="154.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1126.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_fleet">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_fleet" data-flows="all,bridge,http_gw,ros_idl" aria-expanded="false" aria-label="StarFleetBus（:18641 · 互斥 / ROI）">
+      <rect class="arch-node-box" x="488.0" y="258.0" width="316.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="500.0" y="283.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">StarFleetBus</text>
+      <text class="arch-node-role" x="500.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18641 · 互斥 / ROI</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://architecture/interfaces.html" aria-label="前往「StarFleetBus」对应章节">
+      <rect x="776.0" y="262.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="788.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_facility">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_facility" data-flows="all,http_gw" aria-expanded="false" aria-label="FacilityHAL Gateway（:18642 · Bearer / WAL）">
+      <rect class="arch-node-box" x="826.0" y="258.0" width="316.0" height="76.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="838.0" y="283.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FacilityHAL Gateway</text>
+      <text class="arch-node-role" x="838.0" y="320.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">:18642 · Bearer / WAL</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#flow" aria-label="前往「FacilityHAL Gateway」对应章节">
+      <rect x="1114.0" y="262.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1126.0" y="278.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="gw_model">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="gw_model" data-flows="all,http_gw" aria-expanded="false" aria-label="ModelGateway（:18080 · O_NOFOLLOW）">
+      <rect class="arch-node-box" x="488.0" y="366.0" width="654.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="500.0" y="391.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ModelGateway</text>
+      <text class="arch-node-role" x="500.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">:18080 · O_NOFOLLOW</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/interaction-and-gateway.html#principles" aria-label="前往「ModelGateway」对应章节">
+      <rect x="1114.0" y="370.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="386.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="526.0" x2="1164.0" y2="526.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="548.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.20"/>
+  <text x="104.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ROS 2 IDL 与语义网关</text>
+  <rect x="231.7" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="253.7" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FacilityHAL 工装鉴权网关</text>
+  <rect x="403.0" y="537.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="425.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">ModelGateway 安全沙箱与配额</text>
+  <text x="1164.0" y="547.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">84 份 IDL 清点与 5 大网关路由明细见《跨层接口与通信契约》折叠表</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 06 · NORTHBOUND SEMANTIC CONTRACTS</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">北向强类型语义契约: 84 份 ROS 2 V2–V5 IDL 与五大 HTTP/WS 网关</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">56 .msg · 22 .srv · 6 .action · 5 Gateways (Loopback + Origin)</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

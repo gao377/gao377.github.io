@@ -68,13 +68,444 @@ HAL 动态库的精确映射</p>
 <p>本页以当前工作树实际目录为依据，建立从顶层源码目录到系统编排模块与端侧
 <code>C++20</code>
 多进程二进制的映射关系，帮助开发者快速定位功能归属与跨层边界。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="arch-software-stack" data-fig-uid="arch-software-stack-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/arch-software-stack.svg"
-alt="FACRI 统一软件栈与跨层部署拓扑图" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="arch-software-stack" viewBox="0 0 1200 610" width="1200" height="610" role="group" aria-labelledby="arch-software-stack-title-f0" aria-describedby="arch-software-stack-desc-f0">
+  <title id="arch-software-stack-title-f0">仓库顶层源码目录单向依赖 DAG 与零反向耦合边界</title>
+  <desc id="arch-software-stack-desc-f0">展示扁平化仓库顶层目录的单向依赖关系、公共接口与无锁原语底座以及严格的零反向耦合边界。</desc>
+  <defs>
+    <pattern id="arch-software-stack-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arch-software-stack-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arch-software-stack-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arch-software-stack-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arch-software-stack-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arch-software-stack-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arch-software-stack-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="610" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="610" fill="url(#arch-software-stack-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="608.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="260.0" height="470.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">CONFIG &amp; LAUNCH</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">只读配置与宿主机启动</text>
+  <rect x="320.0" y="86.0" width="844.0" height="108.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="334.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">APPS LAYER · apps/</text>
+  <text x="334.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">表现与推理服务</text>
+  <rect x="320.0" y="206.0" width="844.0" height="108.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="334.0" y="225.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SYSTEM &amp; FACILITY</text>
+  <text x="334.0" y="242.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">系统编排与工装网关</text>
+  <rect x="320.0" y="326.0" width="844.0" height="104.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="334.0" y="345.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">SHARED CONTRACT &amp; ZERO-COPY CORE</text>
+  <text x="334.0" y="362.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">公共契约与零拷贝底座 (零反向耦合)</text>
+  <rect x="320.0" y="442.0" width="844.0" height="114.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="334.0" y="461.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">ROBOT EDGE · src/robot_app/</text>
+  <text x="334.0" y="478.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">端侧 4+1 多进程与 HAL 后端</text>
+  <g class="arch-edge" data-from="cfg_center" data-to="sys_modules" data-flow="config">
+    <path d="M 276.0 187.0 L 293.0 187.0 Q 298.0 187.0 298.0 192.0 L 298.0 269.0 Q 298.0 274.0 303.0 274.0 L 344.0 274.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-software-stack-arrow-ochre-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="deploy_cli" data-to="robot_edge" data-flow="config">
+    <path d="M 276.0 397.0 L 293.0 397.0 Q 298.0 397.0 298.0 402.0 L 298.0 507.0 Q 298.0 512.0 303.0 512.0 L 344.0 512.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-software-stack-arrow-ochre-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="app_collab" data-to="sys_gw_bus" data-flow="north">
+    <path d="M 536.0 182.0 L 536.0 209.0 Q 536.0 214.0 541.0 214.0 L 737.0 214.0 Q 742.0 214.0 742.0 219.0 L 742.0 246.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-software-stack-arrow-slate-f0)"/>
+    <rect x="609.2" y="205.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="639.0" y="217.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">HTTP/SSE</text>
+  </g>
+  <g class="arch-edge" data-from="app_model" data-to="sys_modules" data-flow="north">
+    <path d="M 948.0 182.0 L 948.0 199.0 Q 948.0 204.0 943.0 204.0 L 475.0 204.0 Q 470.0 204.0 470.0 209.0 L 470.0 246.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arch-software-stack-arrow-slate-f0)"/>
+    <rect x="685.1" y="195.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="709.0" y="207.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">:18080</text>
+  </g>
+  <g class="arch-edge" data-from="sys_gw_bus" data-to="fac_hal" data-flow="north">
+    <path d="M 868.0 274.0 L 888.0 274.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-software-stack-arrow-ochre-f0)"/>
+    <rect x="854.1" y="265.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="878.0" y="277.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">:18642</text>
+  </g>
+  <g class="arch-edge" data-from="sys_modules" data-to="shared_idl" data-flow="south">
+    <path d="M 470.0 302.0 L 470.0 362.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-software-stack-arrow-terracotta-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="robot_edge" data-to="shared_idl" data-flow="south">
+    <path d="M 536.0 482.0 L 536.0 418.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-software-stack-arrow-forest-f0)"/>
+    <rect x="495.4" y="441.0" width="81.2" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#2C5E3F" stroke-width="0.8"/>
+    <text x="536.0" y="453.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#2C5E3F" text-anchor="middle">仅向共享层依赖</text>
+  </g>
+  <g class="arch-edge" data-from="robot_edge" data-to="shared_core" data-flow="south">
+    <path d="M 948.0 482.0 L 948.0 418.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arch-software-stack-arrow-forest-f0)"/>
+  </g>
+  <g class="arch-node-card" data-node-id="cfg_center" aria-controls="arch-software-stack-f0-drawer-cfg_center">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="cfg_center" data-flows="all,config" aria-expanded="false" aria-label="configs/ 只读配置中心（9 构型 · 双场景 · 技能）" aria-controls="arch-software-stack-f0-drawer-cfg_center">
+      <rect class="arch-node-box" x="56.0" y="150.0" width="220.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="175.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">configs/ 只读配置中心</text>
+      <text class="arch-node-role" x="68.0" y="210.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">9 构型 · 双场景 · 技能</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/component-map.html" data-same-page="true" aria-label="前往「configs/ 只读配置中心」对应章节">
+      <rect x="248.0" y="154.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="260.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="deploy_cli" aria-controls="arch-software-stack-f0-drawer-deploy_cli">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="deploy_cli" data-flows="all,config" aria-expanded="false" aria-label="deployment/ &amp; facrictl（统一启停与发布校验）" aria-controls="arch-software-stack-f0-drawer-deploy_cli">
+      <rect class="arch-node-box" x="56.0" y="360.0" width="220.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="68.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">deployment/ &amp; facrictl</text>
+      <text class="arch-node-role" x="68.0" y="420.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">统一启停与发布校验</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/quickstart.html" aria-label="前往「deployment/ &amp; facrictl」对应章节">
+      <rect x="248.0" y="364.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="260.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="app_collab" aria-controls="arch-software-stack-f0-drawer-app_collab">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="app_collab" data-flows="all,north" aria-expanded="false" aria-label="apps/collaboration_platform（WebGL 只读控制台）" aria-controls="arch-software-stack-f0-drawer-app_collab">
+      <rect class="arch-node-box" x="344.0" y="126.0" width="384.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="356.0" y="149.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">apps/collaboration_platform</text>
+      <text class="arch-node-role" x="356.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">WebGL 只读控制台</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" aria-label="前往「apps/collaboration_platform」对应章节">
+      <rect x="700.0" y="130.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="712.0" y="146.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="app_model" aria-controls="arch-software-stack-f0-drawer-app_model">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="app_model" data-flows="all,north" aria-expanded="false" aria-label="apps/model_gateway（:18080 · 推理网关）" aria-controls="arch-software-stack-f0-drawer-app_model">
+      <rect class="arch-node-box" x="756.0" y="126.0" width="384.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="768.0" y="149.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">apps/model_gateway</text>
+      <text class="arch-node-role" x="768.0" y="170.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18080 · 推理网关</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#principles" aria-label="前往「apps/model_gateway」对应章节">
+      <rect x="1112.0" y="130.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1124.0" y="146.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sys_modules" aria-controls="arch-software-stack-f0-drawer-sys_modules">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sys_modules" data-flows="all,config,north,south" aria-expanded="false" aria-label="src/system_app/modules（12 核心编排与演化域）" aria-controls="arch-software-stack-f0-drawer-sys_modules">
+      <rect class="arch-node-box" x="344.0" y="246.0" width="252.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="356.0" y="269.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">src/system_app/modules</text>
+      <text class="arch-node-role" x="356.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">12 核心编排与演化域</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/system-agent-and-rsi.html#flow" aria-label="前往「src/system_app/modules」对应章节">
+      <rect x="568.0" y="250.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="580.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sys_gw_bus" aria-controls="arch-software-stack-f0-drawer-sys_gw_bus">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sys_gw_bus" data-flows="all,north" aria-expanded="false" aria-label="fleet_bus &amp; gateway（:18641 / :8090）" aria-controls="arch-software-stack-f0-drawer-sys_gw_bus">
+      <rect class="arch-node-box" x="616.0" y="246.0" width="252.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="628.0" y="269.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">fleet_bus &amp; gateway</text>
+      <text class="arch-node-role" x="628.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">:18641 / :8090</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/interaction-and-gateway.html#flow" aria-label="前往「fleet_bus &amp; gateway」对应章节">
+      <rect x="840.0" y="250.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="852.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_hal" aria-controls="arch-software-stack-f0-drawer-fac_hal">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_hal" data-flows="all,north" aria-expanded="false" aria-label="src/facility_hal/（:18642 · 三驱 + WAL）" aria-controls="arch-software-stack-f0-drawer-fac_hal">
+      <rect class="arch-node-box" x="888.0" y="246.0" width="252.0" height="56.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="900.0" y="269.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">src/facility_hal/</text>
+      <text class="arch-node-role" x="900.0" y="290.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">:18642 · 三驱 + WAL</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/facility-hal-equipment.html#flow" aria-label="前往「src/facility_hal/」对应章节">
+      <rect x="1112.0" y="250.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="1124.0" y="266.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="shared_idl" aria-controls="arch-software-stack-f0-drawer-shared_idl">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="shared_idl" data-flows="all,south" aria-expanded="false" aria-label="src/embodied_interfaces（84 份 ROS 2 IDL）" aria-controls="arch-software-stack-f0-drawer-shared_idl">
+      <rect class="arch-node-box" x="344.0" y="362.0" width="384.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="356.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">src/embodied_interfaces</text>
+      <text class="arch-node-role" x="356.0" y="406.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">84 份 ROS 2 IDL</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/interfaces.html" aria-label="前往「src/embodied_interfaces」对应章节">
+      <rect x="700.0" y="366.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="712.0" y="382.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="shared_core" aria-controls="arch-software-stack-f0-drawer-shared_core">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="shared_core" data-flows="all,south" aria-expanded="false" aria-label="src/embodied_core/（Header-Only C++20）" aria-controls="arch-software-stack-f0-drawer-shared_core">
+      <rect class="arch-node-box" x="756.0" y="362.0" width="384.0" height="56.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="768.0" y="385.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">src/embodied_core/</text>
+      <text class="arch-node-role" x="768.0" y="406.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">Header-Only C++20</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#principles" aria-label="前往「src/embodied_core/」对应章节">
+      <rect x="1112.0" y="366.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1124.0" y="382.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="robot_edge" aria-controls="arch-software-stack-f0-drawer-robot_edge">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="robot_edge" data-flows="all,config,south" aria-expanded="false" aria-label="src/robot_app/（4+1 进程 · 14 域 · 6 .so）" aria-controls="arch-software-stack-f0-drawer-robot_edge">
+      <rect class="arch-node-box" x="344.0" y="482.0" width="796.0" height="60.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="356.0" y="505.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">src/robot_app/</text>
+      <text class="arch-node-role" x="356.0" y="530.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">4+1 进程 · 14 域 · 6 .so</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「src/robot_app/」对应章节">
+      <rect x="1112.0" y="486.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1124.0" y="502.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="566.0" x2="1164.0" y2="566.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="588.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="104.0" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">只读配置 / 启动 / FacilityHAL</text>
+  <rect x="276.4" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="298.4" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">apps/ 交互与模型服务</text>
+  <rect x="425.2" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="447.2" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">公共契约与 zero-copy 核心</text>
+  <rect x="601.4" y="577.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="623.4" y="587.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">robot_app C++20 引擎</text>
+  <text x="1164.0" y="587.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">依赖门禁: 两端仅经公共契约交互</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ARCH 04 · REPOSITORY DEPENDENCY DAG</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">仓库顶层源码目录单向依赖 DAG 与零反向耦合边界</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">apps/ -&gt; system_app/ -&gt; shared_core &lt;- robot_app/ (零反向导入)</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="config" aria-pressed="false">只读配置与启动依赖</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="north" aria-pressed="false">北向应用与系统层依赖</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="south" aria-pressed="false">公共契约与端侧依赖</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>FACRI
-统一软件栈与跨层部署拓扑图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+统一软件栈与跨层部署拓扑图</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/arch-software-stack.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="arch-software-stack-f0-drawer-cfg_center" class="diagram-drawer-panel" data-node-drawer="cfg_center" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">configs/ 只读配置中心</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Config · 单一真源 · 静态声明资产</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「configs/ 只读配置中心」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">向系统编排、启动脚本与端侧构型综合提供统一的声明式元数据。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>只读权威声明中心</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/facri/description.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>存放 robots/*、scenes/manifests/*、skills/* 与 runtime/ 资源权重</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/component-map.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-deploy_cli" class="diagram-drawer-panel" data-node-drawer="deploy_cli" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">deployment/ &amp; facrictl</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Launch · 宿主机编排 · 会话生命周期管理</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「deployment/ &amp; facrictl」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">负责容器装配、环境预检与物理会话所有者锁管理。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>CLI 分派门面</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/system_entry.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>包含 factory_system、embodied_system、c919_system、cell 与伴生清单制备</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/quickstart.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-app_collab" class="diagram-drawer-panel" data-node-drawer="app_collab" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">apps/collaboration_platform</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Apps · 前端表现 · 独立代理服务</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「apps/collaboration_platform」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">承担全平台可视化态势、三维只读视口与离线回放代理。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>严格禁止反向导入 robot_app</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/hybridctl</code></dd></div>
+      <div><dt>核心契约</dt><dd>含 web/ 与 backend modules；严禁创建第二套任务或物理运行器</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-app_model" class="diagram-drawer-panel" data-node-drawer="app_model" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">apps/model_gateway</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Apps · 模型推理 · 异步并发池</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「apps/model_gateway」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">隔离大模型显存与推理队列波动，统一向系统与端侧提供限流推理接口。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>独立推理网关进程</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/model_gateway/model_gateway_service/app.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>拆分为 model_gateway_service、audio 与 vision 三组服务端点</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-sys_modules" class="diagram-drawer-panel" data-node-drawer="sys_modules" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">src/system_app/modules</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 业务核 · Python 3 + SQLite</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「src/system_app/modules」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">实现系统侧语义理解、任务图编制、结果核验与受约束离线演化。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-I 六层整洁架构</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/assembly.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>含 team_{planner,runtime,verifier}、knowledge_memory、reflection 与 evolution 等 12 模块</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/system-agent-and-rsi.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-sys_gw_bus" class="diagram-drawer-panel" data-node-drawer="sys_gw_bus" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">fleet_bus &amp; gateway</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">SystemApp · 通信边缘 · HTTP / UDP / ROS 2</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「fleet_bus &amp; gateway」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">承接表现层指令、管理多机互斥资源并桥接 ROS 2 系统端点。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>有界网关 + 互斥总线</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/interaction_gateway/server.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>包含 InteractionGateway、StarFleetBus、SafetyPulse、RoiGatewayGuard 与 ROS 适配</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/interaction-and-gateway.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-fac_hal" class="diagram-drawer-panel" data-node-drawer="fac_hal" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">src/facility_hal/</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">FacilityHAL · 独立网关 · HTTP + 预写日志</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「src/facility_hal/」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">为产线工位和机场设施提供统一鉴权与崩溃可恢复的控制网关。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-III 策略模式 + WAL</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/facility_hal/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>提供 mujoco、modbus_plc 与 mockup 三驱动，与 SalWire 物理分离</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/facility-hal-equipment.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-shared_idl" class="diagram-drawer-panel" data-node-drawer="shared_idl" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">src/embodied_interfaces</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Shared Contract · 北向 · 编译期强类型契约</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「src/embodied_interfaces」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">作为北向唯一接口包消除系统层与单机层之间的隐式字典耦合。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>跨进程接口定义单源</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_interfaces</code></dd></div>
+      <div><dt>核心契约</dt><dd>56 .msg + 22 .srv + 6 .action (V2–V5)，供 system_app 与 robot_app 共同依赖</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../architecture/interfaces.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-shared_core" class="diagram-drawer-panel" data-node-drawer="shared_core" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">src/embodied_core/</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Shared Core · 南向底座 · 零依赖无锁原语</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「src/embodied_core/」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">定义端侧进程间通信及硬件线协议二进制布局，确保零反向依赖。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 二进制原语底座</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>固化 sal_wire、embodiment_spec、safety_frame、seqlock、spsc_queue 与 model_gateway SDK</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="arch-software-stack-f0-drawer-robot_edge" class="diagram-drawer-panel" data-node-drawer="robot_edge" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">src/robot_app/</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">RobotApp · 端侧引擎 · CMake C++20 + ROS 桥</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「src/robot_app/」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">包含监管器、4 个工作进程、14 个运行模块、11 个算法目录与 10 个后端目录。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II / P-III / P-IV</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/CMakeLists.txt</code></dd></div>
+      <div><dt>核心契约</dt><dd>仅消费 embodied_core 与 embodied_interfaces，绝不反向依赖 system_app</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
 <h2 id="顶层工作区源码总览">顶层工作区源码总览</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
@@ -162,13 +593,374 @@ href="../subsystems/system-agent-and-rsi.html">系统智能体与受约束离线
 href="../subsystems/robot-multiprocess-cpp.html">单机 C++20 4+1
 多进程实时架构</a>及 <a href="../subsystems/robot-hal-sal-wire.html">HAL
 硬件抽象层与 SalWire v2 协议</a>）。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="sub-robot-4plus1-topology" data-fig-uid="sub-robot-4plus1-topology-f1">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/sub-robot-multiprocess-4plus1.svg"
-alt="单机 C++20 4+1 多进程实时隔离架构图" loading="lazy" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-robot-4plus1-topology" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="sub-robot-4plus1-topology-title-f1" aria-describedby="sub-robot-4plus1-topology-desc-f1">
+  <title id="sub-robot-4plus1-topology-title-f1">robot_supervisor 硬件核组探测与 P0–P3 进程隔离墙</title>
+  <desc id="sub-robot-4plus1-topology-desc-f1">剥离冗长 SHM 文件清单后，专注呈现拓扑探测、比例核组分配、P0 不静默重启策略及 P0–P3 实时边界。</desc>
+  <defs>
+    <pattern id="sub-robot-4plus1-topology-dot-grid-f1" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-robot-4plus1-topology-arrow-ink-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-terracotta-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-forest-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-slate-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-ochre-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-robot-4plus1-topology-arrow-mute-f1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#sub-robot-4plus1-topology-dot-grid-f1)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="134.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">+1 SUPERVISOR · src/robot_app/supervisor/</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">拓扑探测、比例分配与 25 ms 心跳监管</text>
+  <rect x="36.0" y="234.0" width="1128.0" height="304.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="253.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">4 ISOLATED WORKER PROCESSES · C++20</text>
+  <text x="50.0" y="270.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0–P3 独立进程与统一模块生命周期契约</text>
+  <g class="arch-edge" data-from="sup_probe" data-to="sup_alloc" data-flow="supervision">
+    <path d="M 398.0 170.0 L 430.0 170.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ink-f1)"/>
+    <rect x="393.2" y="161.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="414.0" y="173.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">核拓扑</text>
+  </g>
+  <g class="arch-edge" data-from="sup_alloc" data-to="sup_rt" data-flow="supervision">
+    <path d="M 770.0 170.0 L 802.0 170.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ink-f1)"/>
+    <rect x="765.2" y="161.0" width="41.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="786.0" y="173.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">绑核表</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p0" data-flow="supervision">
+    <path d="M 900.0 204.0 L 900.0 243.0 Q 900.0 248.0 895.0 248.0 L 192.0 248.0 Q 187.0 248.0 187.0 253.0 L 187.0 286.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-4plus1-topology-arrow-terracotta-f1)"/>
+    <rect x="512.8" y="239.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="543.5" y="251.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">禁静默重启</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p1" data-flow="workers">
+    <path d="M 930.0 204.0 L 930.0 249.0 Q 930.0 254.0 925.0 254.0 L 470.0 254.0 Q 465.0 254.0 465.0 259.0 L 465.0 286.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-slate-f1)"/>
+    <rect x="669.7" y="245.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#1E4D8C" stroke-width="0.8"/>
+    <text x="697.5" y="257.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#1E4D8C" text-anchor="middle">80ms拉起</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p2" data-flow="workers">
+    <path d="M 960.0 204.0 L 960.0 255.0 Q 960.0 260.0 955.0 260.0 L 748.0 260.0 Q 743.0 260.0 743.0 265.0 L 743.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ochre-f1)"/>
+    <rect x="823.7" y="251.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="851.5" y="263.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">80ms拉起</text>
+  </g>
+  <g class="arch-edge" data-from="sup_rt" data-to="proc_p3" data-flow="workers">
+    <path d="M 1017.0 204.0 L 1017.0 286.0" fill="none" stroke="#16181D" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-robot-4plus1-topology-arrow-ink-f1)"/>
+    <rect x="989.2" y="236.0" width="55.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#16181D" stroke-width="0.8"/>
+    <text x="1017.0" y="248.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#16181D" text-anchor="middle">80ms拉起</text>
+  </g>
+  <g class="arch-edge" data-from="proc_p0" data-to="mod_tmpl" data-flow="workers">
+    <path d="M 187.0 362.0 L 187.0 447.0 Q 187.0 452.0 192.0 452.0 L 280.0 452.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-4plus1-topology-arrow-forest-f1)"/>
+  </g>
+  <g class="arch-edge" data-from="proc_p2" data-to="mod_tmpl" data-flow="workers">
+    <path d="M 743.0 362.0 L 743.0 418.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-robot-4plus1-topology-arrow-ochre-f1)"/>
+    <rect x="713.2" y="381.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="743.0" y="393.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">noexcept</text>
+  </g>
+  <g class="arch-node-card" data-node-id="sup_probe" aria-controls="sub-robot-4plus1-topology-f1-drawer-sup_probe">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sup_probe" data-flows="all,supervision" aria-expanded="false" aria-label="TopologyProbe（CPU / SMT / IRQ 探测）" aria-controls="sub-robot-4plus1-topology-f1-drawer-sup_probe">
+      <rect class="arch-node-box" x="58.0" y="136.0" width="340.0" height="68.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="161.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">TopologyProbe</text>
+      <text class="arch-node-role" x="70.0" y="190.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">CPU / SMT / IRQ 探测</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「TopologyProbe」对应章节">
+      <rect x="370.0" y="140.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="382.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sup_alloc" aria-controls="sub-robot-4plus1-topology-f1-drawer-sup_alloc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sup_alloc" data-flows="all,supervision" aria-expanded="false" aria-label="ProportionalAllocator（0.35 / 0.25 / 0.30 / 0.10）" aria-controls="sub-robot-4plus1-topology-f1-drawer-sup_alloc">
+      <rect class="arch-node-box" x="430.0" y="136.0" width="340.0" height="68.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="442.0" y="161.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">ProportionalAllocator</text>
+      <text class="arch-node-role" x="442.0" y="190.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">0.35 / 0.25 / 0.30 / 0.10</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#principles" aria-label="前往「ProportionalAllocator」对应章节">
+      <rect x="742.0" y="140.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="754.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="sup_rt" aria-controls="sub-robot-4plus1-topology-f1-drawer-sup_rt">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="sup_rt" data-flows="all,supervision,workers" aria-expanded="false" aria-label="SupervisorRuntime（25ms 心跳 · 80ms 退避）" aria-controls="sub-robot-4plus1-topology-f1-drawer-sup_rt">
+      <rect class="arch-node-box" x="802.0" y="136.0" width="340.0" height="68.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="814.0" y="161.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">SupervisorRuntime</text>
+      <text class="arch-node-role" x="814.0" y="190.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">25ms 心跳 · 80ms 退避</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#paradigm" aria-label="前往「SupervisorRuntime」对应章节">
+      <rect x="1114.0" y="140.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1126.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p0" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p0">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p0" data-flows="all,supervision,workers" aria-expanded="false" aria-label="P0 · robot_body_rt（200 Hz FIFO · mlockall）" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p0">
+      <rect class="arch-node-box" x="58.0" y="286.0" width="258.0" height="76.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P0 · robot_body_rt</text>
+      <text class="arch-node-role" x="70.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">200 Hz FIFO · mlockall</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「P0 · robot_body_rt」对应章节">
+      <rect x="288.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="300.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p1" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p1">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p1" data-flows="all,workers" aria-expanded="false" aria-label="P1 · robot_spatial_perc（10 Hz · nice=-5 大核）" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p1">
+      <rect class="arch-node-box" x="336.0" y="286.0" width="258.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="348.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P1 · robot_spatial_perc</text>
+      <text class="arch-node-role" x="348.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">10 Hz · nice=-5 大核</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「P1 · robot_spatial_perc」对应章节">
+      <rect x="566.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="578.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p2" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p2">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p2" data-flows="all,workers" aria-expanded="false" aria-label="P2 · robot_motion_plan（50/20 Hz 规划协调）" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p2">
+      <rect class="arch-node-box" x="614.0" y="286.0" width="258.0" height="76.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="626.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P2 · robot_motion_plan</text>
+      <text class="arch-node-role" x="626.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">50/20 Hz 规划协调</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「P2 · robot_motion_plan」对应章节">
+      <rect x="844.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="856.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="proc_p3" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p3">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="proc_p3" data-flows="all,workers" aria-expanded="false" aria-label="P3 · robot_task_agent（10 Hz · ROS 2 边界）" aria-controls="sub-robot-4plus1-topology-f1-drawer-proc_p3">
+      <rect class="arch-node-box" x="892.0" y="286.0" width="250.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="904.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">P3 · robot_task_agent</text>
+      <text class="arch-node-role" x="904.0" y="348.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">10 Hz · ROS 2 边界</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#flow" aria-label="前往「P3 · robot_task_agent」对应章节">
+      <rect x="1114.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="1126.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="mod_tmpl" aria-controls="sub-robot-4plus1-topology-f1-drawer-mod_tmpl">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="mod_tmpl" data-flows="all,workers" aria-expanded="false" aria-label="IModuleThread 模板方法（configure-&gt;start-&gt;step）" aria-controls="sub-robot-4plus1-topology-f1-drawer-mod_tmpl">
+      <rect class="arch-node-box" x="280.0" y="418.0" width="640.0" height="68.0" rx="3.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="292.0" y="443.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">IModuleThread 模板方法</text>
+      <text class="arch-node-role" x="292.0" y="472.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#16181D">configure-&gt;start-&gt;step</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-multiprocess-cpp.html#paradigm" aria-label="前往「IModuleThread 模板方法」对应章节">
+      <rect x="892.0" y="422.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="904.0" y="438.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P0 200 Hz FIFO (不静默重启)</text>
+  <rect x="270.8" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="292.8" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P1 空间感知 (10 Hz)</text>
+  <rect x="410.3" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="432.3" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P2 规划协调 (50/20 Hz)</text>
+  <rect x="571.7" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="593.7" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">监管心跳与安全制动</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">跨进程无锁共享内存槽位与环形队列结构见本页下一幅《SHM 无锁通信信道》专图</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 04A · C++20 4+1 TOPOLOGY &amp; CORE BINDING</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">robot_supervisor 硬件核组探测与 P0–P3 进程隔离墙</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">1 Supervisor + 4 Workers · IModuleThread 模板方法</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="supervision" aria-pressed="false">守护探测与绑核监护</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="workers" aria-pressed="false">P0–P3 进程隔离域</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>单机 C++20 4+1
-多进程实时隔离架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+多进程实时隔离架构图</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/sub-robot-4plus1-topology.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="sub-robot-4plus1-topology-f1-drawer-sup_probe" class="diagram-drawer-panel" data-node-drawer="sup_probe" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">TopologyProbe</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">+1 Supervisor · 探测 · 启动期一次性扫描</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「TopologyProbe」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">自动摸清边缘工控机真实物理核拓扑，避免硬编码核号导致性能劣化。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>硬件拓扑感知策略</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/supervisor/topology_probe.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>扫描 /sys/devices/system/cpu 与 /proc/interrupts，识别大核簇、SMT 兄弟核与高 IRQ 核</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f1-drawer-sup_alloc" class="diagram-drawer-panel" data-node-drawer="sup_alloc" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">ProportionalAllocator</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">+1 Supervisor · 绑核 · 按构型比例分配</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「ProportionalAllocator」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">将稀缺无 SMT 大核优先留给 P0 硬实时控制，并按构型动态均衡四进程算力。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>比例算力治理解析器</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/supervisor/resource_allocator.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>依据 configs/runtime/process_resource_weights.yaml 分配 CPU/MEM，纯底盘自动回拨 P0 冗余核</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#principles">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f1-drawer-sup_rt" class="diagram-drawer-panel" data-node-drawer="sup_rt" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">SupervisorRuntime</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">+1 Supervisor · 监护 · 25 ms 巡检周期</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「SupervisorRuntime」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">保持非实时分支高可用的同时，严守 P0 实时核崩溃绝不盲目自启的安全底线。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>差异化故障重启策略</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/supervisor/supervisor_runtime.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>P1–P3 退出按 80 ms 退避自动拉起；P0_CRITICAL 禁止静默重启，立即安全制动</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#paradigm">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f1-drawer-proc_p0" class="diagram-drawer-panel" data-node-drawer="proc_p0" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P0 · robot_body_rt</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P0 · 硬实时核 · 0.35 CPU / 0.20 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P0 · robot_body_rt」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">锁死物理内存页并独占无超线程大核，保证 5 ms 伺服控制确定性。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>isolated_no_smt · 禁静默重启</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/body_rt_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>承载 sensor_adapters、state_estimation、action_executor、body_gateway 与 50 Hz 保护</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="sub-robot-shm-channels">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f1-drawer-proc_p1" class="diagram-drawer-panel" data-node-drawer="proc_p1" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P1 · robot_spatial_perc</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P1 · 空间感知 · 0.25 CPU / 0.35 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P1 · robot_spatial_perc」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">吸收点云配准与图像检测的内存与算力尖峰，不干扰 P0 周期。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>计算密集型进程隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/spatial_perc_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行 spatial_runtime (VoxelICP) 与 perception_runtime (AprilTag/ROI)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f1-drawer-proc_p2" class="diagram-drawer-panel" data-node-drawer="proc_p2" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P2 · robot_motion_plan</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P2 · 规划求解 · 0.30 CPU / 0.30 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P2 · robot_motion_plan」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">隔离 MPPI 采样与 49 候选逆解搜索的百毫秒级耗时波动。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>规划求解进程隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/motion_plan_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行 motion_coordinator (50 Hz)、navigation_runtime (20 Hz) 与 49-Cand IK</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f1-drawer-proc_p3" class="diagram-drawer-panel" data-node-drawer="proc_p3" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">P3 · robot_task_agent</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Worker P3 · 任务与审计 · 0.10 CPU / 0.15 MEM</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「P3 · robot_task_agent」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">把 ROS 2 通信与 JSONL 磁盘写入隔离在低优先级小核进程。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>网络与磁盘 IO 隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/processes/task_agent_main.cpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行 config_client、local_task_runtime 与 evidence_buffer (JSONL 落盘)</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#flow">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="sub-robot-4plus1-topology-f1-drawer-mod_tmpl" class="diagram-drawer-panel" data-node-drawer="mod_tmpl" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">IModuleThread 模板方法</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Core Pattern · 统一契约 · noexcept step_once</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「IModuleThread 模板方法」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">约束全部 C++20 模块生命周期，在运行期禁用堆分配与异常抛出。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>P-II 模板方法模式 + 值语义 Domain</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/embodied_core/include/embodied_core/module_thread.hpp</code></dd></div>
+      <div><dt>核心契约</dt><dd>规范 configure -&gt; on_start(epoch) -&gt; step_once(now_ns) noexcept -&gt; on_stop()</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-multiprocess-cpp.html#paradigm">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
 <details class="tech-details">
 <summary>
@@ -335,20 +1127,21 @@ id="toc-系统层与端侧-41-运行拓扑">系统层与端侧 <code>4+1</code>
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>

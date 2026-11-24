@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="sub-facility-topology" viewBox="0 0 1200 580" width="1200" height="580" role="group" aria-labelledby="sub-facility-topology-title" aria-describedby="sub-facility-topology-desc">
+  <title id="sub-facility-topology-title">FacilityHAL (:18642) 与 200 Hz SalWire 双总线物理剥离拓扑</title>
+  <desc id="sub-facility-topology-desc">说明为何将秒级离散工装与机场地勤设施通过 FacilityHAL HTTP 网关独立管理，与机器人本体 SalWire 总线完全解耦。</desc>
+  <defs>
+    <pattern id="sub-facility-topology-dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="sub-facility-topology-arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="sub-facility-topology-arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="580" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="580" fill="url(#sub-facility-topology-dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="578.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="720.0" height="444.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">FACILITY HTTP BOUNDARY (:18642)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">离散工装网关与三大后端策略驱动</text>
+  <rect x="784.0" y="86.0" width="380.0" height="444.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="798.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">PARALLEL ROBOT REALTIME</text>
+  <text x="798.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">平行隔离的机器人 200 Hz 本体总线</text>
+  <g class="arch-edge" data-from="equip_client" data-to="fac_http" data-flow="facility_http">
+    <path d="M 374.0 181.0 L 414.0 181.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-topology-arrow-ochre)"/>
+    <rect x="370.1" y="172.0" width="47.7" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="394.0" y="184.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">Bearer</text>
+  </g>
+  <g class="arch-edge" data-from="fac_http" data-to="fac_drv_mj" data-flow="facility_http">
+    <path d="M 500.0 216.0 L 500.0 243.0 Q 500.0 248.0 495.0 248.0 L 169.0 248.0 Q 164.0 248.0 164.0 253.0 L 164.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-topology-arrow-ochre)"/>
+    <rect x="317.1" y="239.0" width="29.9" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="332.0" y="251.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">SIM</text>
+  </g>
+  <g class="arch-edge" data-from="fac_http" data-to="fac_drv_plc" data-flow="facility_http">
+    <path d="M 572.0 216.0 L 572.0 249.0 Q 572.0 254.0 567.0 254.0 L 401.0 254.0 Q 396.0 254.0 396.0 259.0 L 396.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#sub-facility-topology-arrow-ochre)"/>
+    <rect x="466.1" y="245.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="484.0" y="257.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">REAL</text>
+  </g>
+  <g class="arch-edge" data-from="fac_http" data-to="fac_drv_mock" data-flow="facility_http">
+    <path d="M 644.0 216.0 L 644.0 249.0 Q 644.0 254.0 639.0 254.0 L 633.0 254.0 Q 628.0 254.0 628.0 259.0 L 628.0 286.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-facility-topology-arrow-ochre)"/>
+    <rect x="626.1" y="226.0" width="35.8" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#8A5A19" stroke-width="0.8"/>
+    <text x="644.0" y="238.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#8A5A19" text-anchor="middle">MOCK</text>
+  </g>
+  <g class="arch-edge" data-from="p0_sal" data-to="hal_wall" data-flow="robot_rt">
+    <path d="M 974.0 244.0 L 974.0 326.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#sub-facility-topology-arrow-terracotta)"/>
+    <rect x="943.3" y="276.0" width="61.4" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="974.0" y="288.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">零交叉依赖</text>
+  </g>
+  <g class="arch-node-card" data-node-id="equip_client">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="equip_client" data-flows="all,facility_http" aria-expanded="false" aria-label="equipment_runtime（SystemApp 设施客户端）">
+      <rect class="arch-node-box" x="64.0" y="146.0" width="310.0" height="70.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="76.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">equipment_runtime</text>
+      <text class="arch-node-role" x="76.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">SystemApp 设施客户端</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#flow" aria-label="前往「equipment_runtime」对应章节">
+      <rect x="346.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="358.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_http">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_http" data-flows="all,facility_http" aria-expanded="false" aria-label="FacilityHAL HTTP (:18642)（Origin + WAL 网关）">
+      <rect class="arch-node-box" x="414.0" y="146.0" width="316.0" height="70.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="426.0" y="171.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">FacilityHAL HTTP (:18642)</text>
+      <text class="arch-node-role" x="426.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">Origin + WAL 网关</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#paradigm" aria-label="前往「FacilityHAL HTTP (:18642)」对应章节">
+      <rect x="702.0" y="150.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="714.0" y="166.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_drv_mj">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_drv_mj" data-flows="all,facility_http" aria-expanded="false" aria-label="MuJoCo 设施驱动（16 产线 / 8 机场设施）">
+      <rect class="arch-node-box" x="58.0" y="286.0" width="212.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="70.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">MuJoCo 设施驱动</text>
+      <text class="arch-node-role" x="70.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">16 产线 / 8 机场设施</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#principles" aria-label="前往「MuJoCo 设施驱动」对应章节">
+      <rect x="242.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="254.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_drv_plc">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_drv_plc" data-flows="all,facility_http" aria-expanded="false" aria-label="Modbus PLC 驱动（真实工业设备总线）">
+      <rect class="arch-node-box" x="290.0" y="286.0" width="212.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="302.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">Modbus PLC 驱动</text>
+      <text class="arch-node-role" x="302.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">真实工业设备总线</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#contracts" aria-label="前往「Modbus PLC 驱动」对应章节">
+      <rect x="474.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="486.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="fac_drv_mock">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="fac_drv_mock" data-flows="all,facility_http" aria-expanded="false" aria-label="Mockup 仿真驱动（离线无物理快速测试）">
+      <rect class="arch-node-box" x="522.0" y="286.0" width="212.0" height="74.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="534.0" y="311.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">Mockup 仿真驱动</text>
+      <text class="arch-node-role" x="534.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">离线无物理快速测试</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#origins" aria-label="前往「Mockup 仿真驱动」对应章节">
+      <rect x="706.0" y="290.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="718.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="p0_sal">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="p0_sal" data-flows="all,robot_rt" aria-expanded="false" aria-label="RobotApp P0 + SalWire（200 Hz 48 轴实时环）">
+      <rect class="arch-node-box" x="812.0" y="166.0" width="324.0" height="78.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="824.0" y="191.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">RobotApp P0 + SalWire</text>
+      <text class="arch-node-role" x="824.0" y="230.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">200 Hz 48 轴实时环</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#flow" aria-label="前往「RobotApp P0 + SalWire」对应章节">
+      <rect x="1108.0" y="170.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="1120.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="hal_wall">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="hal_wall" data-flows="all,robot_rt" aria-expanded="false" aria-label="双总线物理剥离红线（秒级 PLC 绝不入 SalWire）">
+      <rect class="arch-node-box" x="812.0" y="326.0" width="324.0" height="78.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="824.0" y="351.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">双总线物理剥离红线</text>
+      <text class="arch-node-role" x="824.0" y="390.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">秒级 PLC 绝不入 SalWire</text>
+    </g>
+    <a class="arch-node-jump" href="handbook://subsystems/facility-hal-equipment.html#origins" aria-label="前往「双总线物理剥离红线」对应章节">
+      <rect x="1108.0" y="330.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1120.0" y="346.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="536.0" x2="1164.0" y2="536.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="558.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="104.0" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">FacilityHAL 与三驱动策略</text>
+  <rect x="253.2" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="275.2" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">200 Hz SalWire 平行总线</text>
+  <rect x="418.6" y="547.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="440.6" y="557.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">WAL 网关与物理剥离红线</text>
+  <text x="1164.0" y="557.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">离散秒级 PLC 设施绝不塞入 200 Hz SalWire 48 轴实时共享内存槽</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">L3 SUBSYSTEM 03A · FACILITYHAL &amp; SALWIRE SEPARATION</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">FacilityHAL (:18642) 与 200 Hz SalWire 双总线物理剥离拓扑</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">13+1 标准工装契约 · MuJoCo / Modbus / Mockup 三驱动策略</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

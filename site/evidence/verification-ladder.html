@@ -69,13 +69,391 @@
 <code>case_id</code> 与不可跨越的外推边界，系统层 RSI 演化逻辑见 <a
 href="../subsystems/system-agent-and-rsi.html">SystemAgent
 与受控演化</a>。</p>
-<figure class="diagram-figure">
+<figure class="diagram-figure" data-diagram-id="evidence-verification-ladder" data-fig-uid="evidence-verification-ladder-f0">
   <div class="diagram-canvas">
-    <img src="../assets/diagrams/evidence-verification-ladder.svg"
-alt="L0 至 L4 五级工程验证阶梯与反外推边界" loading="eager" decoding="async" />
+    <svg xmlns="http://www.w3.org/2000/svg" class="interactive-arch-svg" data-diagram-id="evidence-verification-ladder" viewBox="0 0 1200 590" width="1200" height="590" role="group" aria-labelledby="evidence-verification-ladder-title-f0" aria-describedby="evidence-verification-ladder-desc-f0">
+  <title id="evidence-verification-ladder-title-f0">L0–L4 五级证据阶梯跃迁门禁与四条禁止跨级/跨代外推红线</title>
+  <desc id="evidence-verification-ladder-desc-f0">展示五级证据阶梯的递进范围以及四条禁止跨级外推、跨代继承、混用外观碰撞和篡改失败记录的红线。</desc>
+  <defs>
+    <pattern id="evidence-verification-ladder-dot-grid-f0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="evidence-verification-ladder-arrow-ink-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="evidence-verification-ladder-arrow-terracotta-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="evidence-verification-ladder-arrow-forest-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="evidence-verification-ladder-arrow-slate-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="evidence-verification-ladder-arrow-ochre-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="evidence-verification-ladder-arrow-mute-f0" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="590" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="590" fill="url(#evidence-verification-ladder-dot-grid-f0)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="588.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="86.0" width="1128.0" height="254.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="50.0" y="105.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">ASCENDING VERIFICATION LADDER (L0 -&gt; L4)</text>
+  <text x="50.0" y="122.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">逐级递增证据范畴（低级验证绝不替代高级实证）</text>
+  <rect x="36.0" y="356.0" width="1128.0" height="180.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="375.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">FOUR UNBREAKABLE GOVERNANCE REDLINES</text>
+  <text x="50.0" y="392.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">四条不可逾越工程治理红线</text>
+  <g class="arch-edge" data-from="tier_l0" data-to="tier_l1" data-flow="ladder">
+    <path d="M 262.0 282.0 L 265.9 282.0 Q 269.0 282.0 269.0 278.9 L 269.0 259.1 Q 269.0 256.0 272.1 256.0 L 276.0 256.0" fill="none" stroke="#1E4D8C" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-slate-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l1" data-to="tier_l2" data-flow="ladder">
+    <path d="M 486.0 256.0 L 489.9 256.0 Q 493.0 256.0 493.0 252.8 L 493.0 233.2 Q 493.0 230.0 496.1 230.0 L 500.0 230.0" fill="none" stroke="#8A5A19" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-ochre-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l2" data-to="tier_l3" data-flow="ladder">
+    <path d="M 710.0 230.0 L 713.9 230.0 Q 717.0 230.0 717.0 226.8 L 717.0 207.2 Q 717.0 204.0 720.1 204.0 L 724.0 204.0" fill="none" stroke="#2C5E3F" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-forest-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l3" data-to="tier_l4" data-flow="ladder">
+    <path d="M 934.0 204.0 L 937.9 204.0 Q 941.0 204.0 941.0 200.8 L 941.0 181.2 Q 941.0 178.0 944.1 178.0 L 948.0 178.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#evidence-verification-ladder-arrow-terracotta-f0)"/>
+  </g>
+  <g class="arch-edge" data-from="tier_l3" data-to="red_extrap" data-flow="redlines">
+    <path d="M 829.0 242.0 L 829.0 379.0 Q 829.0 384.0 824.0 384.0 L 189.0 384.0 Q 184.0 384.0 184.0 389.0 L 184.0 412.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#evidence-verification-ladder-arrow-terracotta-f0)"/>
+    <rect x="476.7" y="375.0" width="59.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="506.5" y="387.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">L3 != L4</text>
+  </g>
+  <g class="arch-edge" data-from="tier_l4" data-to="red_honest" data-flow="redlines">
+    <path d="M 1051.0 216.0 L 1051.0 379.0 Q 1051.0 384.0 1046.0 384.0 L 1022.0 384.0 Q 1017.0 384.0 1017.0 389.0 L 1017.0 412.0" fill="none" stroke="#B04A1A" stroke-width="1.65" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#evidence-verification-ladder-arrow-terracotta-f0)"/>
+    <rect x="1025.2" y="291.0" width="51.6" height="17.0" rx="2.0" fill="#FAFAF7" fill-opacity="0.96" stroke="#B04A1A" stroke-width="0.8"/>
+    <text x="1051.0" y="303.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.6" font-weight="600" fill="#B04A1A" text-anchor="middle">真实留痕</text>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l0" aria-controls="evidence-verification-ladder-f0-drawer-tier_l0">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l0" data-flows="all,ladder" aria-expanded="false" aria-label="L0 · 静态契约与零步体检（28 文档 · 84 IDL · 0 步）" aria-controls="evidence-verification-ladder-f0-drawer-tier_l0">
+      <rect class="arch-node-box" x="52.0" y="244.0" width="210.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="64.0" y="269.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L0 · 静态契约与零步体检</text>
+      <text class="arch-node-role" x="64.0" y="306.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">28 文档 · 84 IDL · 0 步</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" data-same-page="true" aria-label="前往「L0 · 静态契约与零步体检」对应章节">
+      <rect x="234.0" y="248.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="246.0" y="264.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l1" aria-controls="evidence-verification-ladder-f0-drawer-tier_l1">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l1" data-flows="all,ladder" aria-expanded="false" aria-label="L1 · 原生单元与接触回归（CTest + 448 对接触）" aria-controls="evidence-verification-ladder-f0-drawer-tier_l1">
+      <rect class="arch-node-box" x="276.0" y="218.0" width="210.0" height="76.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+      <text class="arch-node-title" x="288.0" y="243.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L1 · 原生单元与接触回归</text>
+      <text class="arch-node-role" x="288.0" y="280.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#1E4D8C">CTest + 448 对接触</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" data-same-page="true" aria-label="前往「L1 · 原生单元与接触回归」对应章节">
+      <rect x="458.0" y="222.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.85"/>
+      <text x="470.0" y="238.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#1E4D8C" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l2" aria-controls="evidence-verification-ladder-f0-drawer-tier_l2">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l2" data-flows="all,ladder" aria-expanded="false" aria-label="L2 · C919 T3 运动学编排（9 异构体 · 零重力）" aria-controls="evidence-verification-ladder-f0-drawer-tier_l2">
+      <rect class="arch-node-box" x="500.0" y="192.0" width="210.0" height="76.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+      <text class="arch-node-title" x="512.0" y="217.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L2 · C919 T3 运动学编排</text>
+      <text class="arch-node-role" x="512.0" y="254.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#8A5A19">9 异构体 · 零重力</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" data-same-page="true" aria-label="前往「L2 · C919 T3 运动学编排」对应章节">
+      <rect x="682.0" y="196.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#8A5A19" stroke-width="0.85"/>
+      <text x="694.0" y="212.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#8A5A19" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l3" aria-controls="evidence-verification-ladder-f0-drawer-tier_l3">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l3" data-flows="all,ladder,redlines" aria-expanded="false" aria-label="L3 · 多进程纯接触闭环（510/510 + SIT-F3）" aria-controls="evidence-verification-ladder-f0-drawer-tier_l3">
+      <rect class="arch-node-box" x="724.0" y="166.0" width="210.0" height="76.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+      <text class="arch-node-title" x="736.0" y="191.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L3 · 多进程纯接触闭环</text>
+      <text class="arch-node-role" x="736.0" y="228.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#2C5E3F">510/510 + SIT-F3</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" data-same-page="true" aria-label="前往「L3 · 多进程纯接触闭环」对应章节">
+      <rect x="906.0" y="170.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.85"/>
+      <text x="918.0" y="186.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#2C5E3F" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="tier_l4" aria-controls="evidence-verification-ladder-f0-drawer-tier_l4">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="tier_l4" data-flows="all,ladder,redlines" aria-expanded="false" aria-label="L4 · 真机对等同步验收（Domain 126 R1 锁步）" aria-controls="evidence-verification-ladder-f0-drawer-tier_l4">
+      <rect class="arch-node-box" x="948.0" y="140.0" width="206.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="960.0" y="165.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.0" font-weight="700" fill="#16181D">L4 · 真机对等同步验收</text>
+      <text class="arch-node-role" x="960.0" y="202.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">Domain 126 R1 锁步</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/real-peer-sync.html" aria-label="前往「L4 · 真机对等同步验收」对应章节">
+      <rect x="1126.0" y="144.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1138.0" y="160.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_extrap" aria-controls="evidence-verification-ladder-f0-drawer-red_extrap">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_extrap" data-flows="all,redlines" aria-expanded="false" aria-label="红线 01 · 严禁跨级外推（L3 SIM != L4 REAL）" aria-controls="evidence-verification-ladder-f0-drawer-red_extrap">
+      <rect class="arch-node-box" x="54.0" y="412.0" width="260.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="66.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 01 · 严禁跨级外推</text>
+      <text class="arch-node-role" x="66.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">L3 SIM != L4 REAL</text>
+    </g>
+    <a class="arch-node-jump" href="../evidence/verification-ladder.html" data-same-page="true" aria-label="前往「红线 01 · 严禁跨级外推」对应章节">
+      <rect x="286.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="298.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_inherit" aria-controls="evidence-verification-ladder-f0-drawer-red_inherit">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_inherit" data-flows="all" aria-expanded="false" aria-label="红线 02 · 严禁跨代继承（G1 资格不转 FACRI）" aria-controls="evidence-verification-ladder-f0-drawer-red_inherit">
+      <rect class="arch-node-box" x="332.0" y="412.0" width="260.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="344.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 02 · 严禁跨代继承</text>
+      <text class="arch-node-role" x="344.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">G1 资格不转 FACRI</text>
+    </g>
+    <a class="arch-node-jump" href="../subsystems/robot-embodiment-spec.html#origins" aria-label="前往「红线 02 · 严禁跨代继承」对应章节">
+      <rect x="564.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="576.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_preview" aria-controls="evidence-verification-ladder-f0-drawer-red_preview">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_preview" data-flows="all" aria-expanded="false" aria-label="红线 03 · 展示隔离碰撞（r180 preview_only）" aria-controls="evidence-verification-ladder-f0-drawer-red_preview">
+      <rect class="arch-node-box" x="610.0" y="412.0" width="260.0" height="76.0" rx="3.0" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.35"/>
+      <text class="arch-node-title" x="622.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 03 · 展示隔离碰撞</text>
+      <text class="arch-node-role" x="622.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#434853">r180 preview_only</text>
+    </g>
+    <a class="arch-node-jump" href="../guides/platform-ui.html" aria-label="前往「红线 03 · 展示隔离碰撞」对应章节">
+      <rect x="842.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#D8D3C8" stroke-width="0.85"/>
+      <text x="854.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#16181D" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <g class="arch-node-card" data-node-id="red_honest" aria-controls="evidence-verification-ladder-f0-drawer-red_honest">
+    <g class="arch-node" role="button" tabindex="0" data-node-id="red_honest" data-flows="all,redlines" aria-expanded="false" aria-label="红线 04 · 真实留痕与主权（保留 V0 FAIL · 手动停机）" aria-controls="evidence-verification-ladder-f0-drawer-red_honest">
+      <rect class="arch-node-box" x="888.0" y="412.0" width="258.0" height="76.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+      <text class="arch-node-title" x="900.0" y="437.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">红线 04 · 真实留痕与主权</text>
+      <text class="arch-node-role" x="900.0" y="474.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#B04A1A">保留 V0 FAIL · 手动停机</text>
+    </g>
+    <a class="arch-node-jump" href="../architecture/runtime-baselines.html" aria-label="前往「红线 04 · 真实留痕与主权」对应章节">
+      <rect x="1118.0" y="416.0" width="24.0" height="24.0" rx="2.0" fill="#FAFAF7" stroke="#B04A1A" stroke-width="0.85"/>
+      <text x="1130.0" y="432.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="11.5" font-weight="700" fill="#B04A1A" text-anchor="middle">↗</text>
+    </a>
+  </g>
+  <line x1="36.0" y1="546.0" x2="1164.0" y2="546.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="568.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L0–L1 静态与原语验证</text>
+  <rect x="230.9" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="252.9" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L2 零物理运动学</text>
+  <rect x="352.4" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="374.4" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L3 多进程纯接触</text>
+  <rect x="473.8" y="557.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="495.8" y="567.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">L4 真机与治理红线</text>
+  <text x="1164.0" y="567.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">每项技术声称须精确标注 L0–L4 等级、case_id 与 HalOrigin</text>
+  <text x="36.0" y="30.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">EVIDENCE 02 · VERIFICATION LADDER &amp; GOVERNANCE REDLINES</text>
+  <text x="36.0" y="56.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="19.5" font-weight="700" fill="#16181D">L0–L4 五级证据阶梯跃迁门禁与四条禁止跨级/跨代外推红线</text>
+  <text x="1164.0" y="54.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">L0 Static -&gt; L1 Unit -&gt; L2 Kinematic -&gt; L3 Pure Contact -&gt; L4 Real-Peer</text>
+  <line x1="36.0" y1="70.0" x2="1164.0" y2="70.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>
+  </div>
+  <div class="diagram-controls">
+    <div class="diagram-flow-filters" role="group" aria-label="数据流过滤">
+  <button type="button" class="diagram-flow-btn is-active" data-flow-filter="all" aria-pressed="true">全部</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="ladder" aria-pressed="false">L0–L4 五级证据跃迁阶梯</button>
+  <button type="button" class="diagram-flow-btn" data-flow-filter="redlines" aria-pressed="false">四条不可逾越治理红线</button>
+</div>
+    <span class="diagram-status-hint" data-diagram-hint>点击任意模块卡片查看源码路径与契约，或按 Enter / Space 展开</span>
   </div>
   <figcaption><span>L0 至 L4
-五级工程验证阶梯与反外推边界</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+五级工程验证阶梯与反外推边界</span><span class="diagram-caption-actions"><a class="diagram-raw-link" href="../assets/diagrams/evidence-verification-ladder.svg" target="_blank" rel="noopener">原始 SVG</a><button type="button" class="diagram-zoom-btn" data-diagram-zoom>全屏交互</button></span></figcaption>
+  <div class="diagram-drawer-deck">
+<div id="evidence-verification-ladder-f0-drawer-tier_l0" class="diagram-drawer-panel" data-node-drawer="tier_l0" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">L0 · 静态契约与零步体检</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Tier L0 · 静态门禁 · 零物理步长</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「L0 · 静态契约与零步体检」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保文档声明、基线摘要、源码目录与配置清单结构一致且无违规。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>构建期只读核验</dd></div>
+      <div><dt>源码路径</dt><dd><code>tools/docs/check_architecture.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>运行 check_docs / check_architecture / check_factory_runtime_baseline；不跑物理</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-tier_l1" class="diagram-drawer-panel" data-node-drawer="tier_l1" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">L1 · 原生单元与接触回归</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Tier L1 · 单元测试 · 纯内存 / 单步回放</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「L1 · 原生单元与接触回归」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">验证各模块核心算法与无锁原语在隔离输入下的行为正确性。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>确定性数值回归</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/robot_app/CMakeLists.txt</code></dd></div>
+      <div><dt>核心契约</dt><dd>C++20 算法单测、pytest unit 与 448 对 condim=6 接触回归；不证连续多工位</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-tier_l2" class="diagram-drawer-panel" data-node-drawer="tier_l2" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">L2 · C919 T3 运动学编排</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Tier L2 · 运动学推演 · 零步 MJCF 编译</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「L2 · C919 T3 运动学编排」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">证实异构机坪多机协同规划与资产绑定逻辑无结构冲突。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>五层拓扑与 DAG 校验</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/c919_system.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>验证 9 异构体 (UGV vy==0)、8 设施锁与 G1–G4 门禁；零接触力学与重力</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-tier_l3" class="diagram-drawer-panel" data-node-drawer="tier_l3" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">L3 · 多进程纯接触闭环</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Tier L3 · SIM 物理闭环 · 4×4+1 封闭回路</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「L3 · 多进程纯接触闭环」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">证明端到端软件栈与纯接触物理引擎在连续多机循环中真实协同有效。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>连续物理多机集成</dd></div>
+      <div><dt>源码路径</dt><dd><code>tests/integration/test_factory_4robot_multiprocess_closed_loop.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>包含 510/510 纯接触、SIT-F3 (16 工位循环) 与 R4 V0-&gt;V1；仍属 SIM_SAL 域</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-tier_l4" class="diagram-drawer-panel" data-node-drawer="tier_l4" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">L4 · 真机对等同步验收</strong>
+        <span class="diagram-drawer-badge is-partial">P · 部分/规划</span>
+        <span class="diagram-drawer-meta">Tier L4 · 物理真机 · 现场逐机标定监管</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「L4 · 真机对等同步验收」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">最高等级实证层级，仅当真实硬件在场执行并留存审计记录时方可签发。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>REAL_HAL 现场验收</dd></div>
+      <div><dt>源码路径</dt><dd><code>deployment/prepare_real_peer_release.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>facrictl start --real 下 R1 对等锁步与真实传感器闭环；需独立签发</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/real-peer-sync.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-red_extrap" class="diagram-drawer-panel" data-node-drawer="red_extrap" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">红线 01 · 严禁跨级外推</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Redline 01 · 反外推 · 强制标注证据等级</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「红线 01 · 严禁跨级外推」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">防止把静态编译或离线运动学测试误报为全真物理或实机合格。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>证据界限隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>tools/verification/check_factory_runtime_baseline.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>L0–L2 不得充当物理成功；L3 SIM 通过绝不直接等价为 L4 真机放行</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../evidence/verification-ladder.html" data-same-page="true">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-red_inherit" class="diagram-drawer-panel" data-node-drawer="red_inherit" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">红线 02 · 严禁跨代继承</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Redline 02 · 资产隔离 · 构型身份锁定</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「红线 02 · 严禁跨代继承」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">避免旧代机型历史遗留参数在未标定情况下误注入新机器人控制环。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>历史归档隔离</dd></div>
+      <div><dt>源码路径</dt><dd><code>configs/robots/g1/description.yaml</code></dd></div>
+      <div><dt>核心契约</dt><dd>2026-10 G1 AMO / REVO2 资格与标定参数绝对不转给 FACRI 或异构新机型</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../subsystems/robot-embodiment-spec.html#origins">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-red_preview" class="diagram-drawer-panel" data-node-drawer="red_preview" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">红线 03 · 展示隔离碰撞</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Redline 03 · 渲染边界 · 只读渲染隔离</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「红线 03 · 展示隔离碰撞」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">确保美观的可视化模型不会未经动力学审核就改变碰撞几何。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>视觉-物理资产解耦</dd></div>
+      <div><dt>源码路径</dt><dd><code>apps/collaboration_platform/web/index.html</code></dd></div>
+      <div><dt>核心契约</dt><dd>Three.js r180 精修外观模型标为 preview_only，绝不自动赋予物理碰撞资格</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      
+      <a class="diagram-drawer-link" href="../guides/platform-ui.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+<div id="evidence-verification-ladder-f0-drawer-red_honest" class="diagram-drawer-panel" data-node-drawer="red_honest" hidden="until-found">
+  <div class="diagram-drawer-card">
+    <div class="diagram-drawer-head">
+      <div class="diagram-drawer-title-wrap">
+        <strong class="diagram-drawer-title">红线 04 · 真实留痕与主权</strong>
+        <span class="diagram-drawer-badge is-impl">I · 功能实现</span>
+        <span class="diagram-drawer-meta">Redline 04 · 治权诚实 · 全历史账本保留</span>
+      </div>
+      <button type="button" class="diagram-drawer-close" data-drawer-close aria-label="收起「红线 04 · 真实留痕与主权」详情">收起 ×</button>
+    </div>
+    <p class="diagram-drawer-summary">维护工程验证可信度，所有实验正反两面证据均公开可查。</p>
+    <dl class="diagram-drawer-specs">
+      <div><dt>工程范式</dt><dd>不可篡改审计原则</dd></div>
+      <div><dt>源码路径</dt><dd><code>src/system_app/modules/evidence_store/runtime.py</code></dd></div>
+      <div><dt>核心契约</dt><dd>完整保留 R4 V0 FAIL 与真实计数；废除 RTF 0.5 停机，禁止篡改基线 JSON</dd></div>
+    </dl>
+    <div class="diagram-drawer-actions">
+      <button type="button" class="diagram-drawer-subview" data-subview-target="evidence-mujoco-contact-stack">切换关联子图 ▸</button>
+      <a class="diagram-drawer-link" href="../architecture/runtime-baselines.html">前往对应专章 ↗</a>
+    </div>
+  </div>
+</div>
+</div>
 </figure>
 <h2
 id="一五级验证阶梯l0-l4与反外推原则">一、五级验证阶梯（<code>L0</code> –
@@ -307,20 +685,21 @@ id="toc-三诚实保留故障证据r4-能力-v0-fail-与-v1-pass-对照">三、�
   </div>
 </footer>
 
-  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title" data-zoom="fit">
     <div class="diagram-lightbox-frame">
       <header class="diagram-lightbox-bar">
         <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
         <div class="diagram-lightbox-actions">
-          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
-          <form method="dialog">
-            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
-          </form>
+          <div class="diagram-lightbox-zoom-group" role="group" aria-label="缩放比例">
+            <button type="button" class="diagram-lightbox-zoom is-active" data-lightbox-zoom="fit" aria-pressed="true">适配窗口</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="150" aria-pressed="false">150%</button>
+            <button type="button" class="diagram-lightbox-zoom" data-lightbox-zoom="200" aria-pressed="false">200%</button>
+          </div>
+          <button type="button" class="diagram-lightbox-close" data-lightbox-close autofocus aria-label="关闭大图">关闭</button>
         </div>
       </header>
-      <div class="diagram-lightbox-stage">
-        <img id="diagram-lightbox-img" alt="" />
-      </div>
+      <div class="diagram-lightbox-stage" id="diagram-lightbox-stage"></div>
+      <div class="diagram-lightbox-detail" id="diagram-lightbox-detail" hidden></div>
     </div>
   </dialog>
 </body>
