@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · report theme" />
+  <meta name="description" content="盘点 FACRI
+平台全部语言生态的真实已声明依赖版本、开源/私有许可边界以及第三方快照离线校验规则。" />
+  <title>依赖矩阵与许可合规 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-report.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-report">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html" aria-current="page">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">研发工程与演进</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../engineering/development-workflow.html">研发规程与测试验证流程</a></li>
+        <li><a href="../engineering/doc-pipeline.html">受控中文写作与文档构建流水线</a></li>
+        <li><a href="../engineering/dependencies-licenses.html" aria-current="page">系统依赖、镜像与第三方许可</a></li>
+        <li><a href="../engineering/historical-evolution.html">历史原型演进与封存索引</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../engineering/development-workflow.html">工程</a></li>
+    <li><a href="../engineering/dependencies-licenses.html" aria-current="page">系统依赖、镜像与第三方许可</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">研发工程与演进</div>
+        <h1 class="title">依赖矩阵与许可合规</h1>
+        <p class="subtitle">区分自有私有 ROS 2
+包、隔离模型工作容器、前端底座与外部固定快照</p>
+      </header>
+
+      <article class="doc-article">
+<p>本页汇总项目各子系统在
+<code>package.xml</code>、<code>pyproject.toml</code>、<code>package.json</code>
+及 <code>requirements*.txt</code>
+中明确声明的依赖版本与许可归属。第一方自研代码维持私有许可，第三方向组件遵循各自原开源协议；公开文档站点<strong>不随站分发</strong>设备专有
+SDK、神经网络权重二进制、大型仿真网格或录包资产。</p>
+<h2
+id="一第一方私有软件包的模块与协议边界">一、第一方私有软件包的模块与协议边界</h2>
+<p>根据各模块 <code>package.xml</code> 清单，6 个核心 ROS 2
+软件包的名称、版本与构建系统如下：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>包名与清单路径</th>
+<th>版本与构建方式</th>
+<th>声明许可与核心编译依赖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>embodied_core</code>（<code>src/embodied_core/package.xml</code>）</td>
+<td><code>0.1.0</code> · <code>ament_python</code></td>
+<td><code>Proprietary</code>；运行依赖 <code>python3-yaml</code></td>
+</tr>
+<tr>
+<td><code>embodied_interfaces</code>（<code>src/embodied_interfaces/package.xml</code>）</td>
+<td><code>0.1.0</code> · <code>ament_cmake</code></td>
+<td><code>Proprietary</code>；编译
+<code>rosidl_default_generators</code>，依赖
+<code>geometry_msgs</code>、<code>sensor_msgs</code>，定义
+<code>84</code> 份 IDL（<code>56</code> <code>msg</code> /
+<code>22</code> <code>srv</code> / <code>6</code>
+<code>action</code>）</td>
+</tr>
+<tr>
+<td><code>embodiment_runtime</code>（<code>src/embodiment_runtime/package.xml</code>）</td>
+<td><code>0.1.0</code> · <code>ament_python</code></td>
+<td><code>Proprietary</code>；依赖
+<code>embodied_core</code>、<code>python3-yaml</code></td>
+</tr>
+<tr>
+<td><code>facility_hal</code>（<code>src/facility_hal/package.xml</code>）</td>
+<td><code>0.1.0</code> · <code>ament_python</code></td>
+<td><code>Proprietary</code>；场景无关设施 HAL 与 HTTP/1.1 网关，依赖
+<code>embodied_core</code>、<code>python3-yaml</code></td>
+</tr>
+<tr>
+<td><code>robot_app</code>（<code>src/robot_app/package.xml</code>）</td>
+<td><code>0.1.0</code> · <code>ament_python</code> + C++20
+<code>Makefile</code></td>
+<td><code>Proprietary</code>；依赖
+<code>embodied_core</code>、<code>embodiment_runtime</code>、<code>embodied_interfaces</code>、<code>rclpy</code>、<code>sensor_msgs</code>、<code>geometry_msgs</code>、<code>tf2_ros</code>、<code>action_msgs</code>、<code>message_filters</code>、<code>ament_index_python</code></td>
+</tr>
+<tr>
+<td><code>system_app</code>（<code>src/system_app/package.xml</code>）</td>
+<td><code>0.1.0</code> · <code>ament_python</code></td>
+<td><code>Proprietary</code>；依赖
+<code>embodied_core</code>、<code>embodied_interfaces</code>、<code>rclpy</code>、<code>python3-yaml</code>、<code>python3-jsonschema</code>、<code>python3-jieba</code>、<code>ament_index_python</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="二python模型服务与前端生态系统版本基线">二、Python、模型服务与前端生态系统版本基线</h2>
+<p>仓库按运行时职责拆分为独立 Python
+环境与浏览器前端工程，严禁跨容器混装二进制扩展（例如不得混用宿主机
+Python 与模型容器中带的 CUDA/PyTorch 编译库）：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>子系统与清单位置</th>
+<th>运行定位</th>
+<th>已验证声明依赖及固定版本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>控制台服务端
+<code>embodied-hybrid</code>（<code>apps/collaboration_platform/pyproject.toml</code>）</td>
+<td>只读车队观测、实机/仿真回放与 <code>hybridctl</code> CLI</td>
+<td>Python
+<code>&gt;=3.10</code>、<code>fastapi &gt;=0.115,&lt;1</code>、<code>uvicorn &gt;=0.30,&lt;1</code>、<code>websockets &gt;=13,&lt;16</code>、<code>httpx &gt;=0.27,&lt;1</code>；可选
+<code>navigation-overview</code>: <code>ir-sim ==2.12.0</code>；开发
+<code>pytest &gt;=8,&lt;9</code></td>
+</tr>
+<tr>
+<td>前端三维控制台
+<code>embodied-hybrid-console</code>（<code>apps/collaboration_platform/web/package.json</code>）</td>
+<td><code>:18640</code> Three.js 视口、节点图编排与时序曲线</td>
+<td><code>react ^19.1.0</code>、<code>react-dom ^19.1.0</code>、<code>three 0.186.1</code>、<code>@xyflow/react ^12.8.0</code>、<code>uplot ^1.6.32</code>、<code>urdf-loader 0.13.1</code>、<code>meshoptimizer 1.1.1</code>、<code>@dagrejs/dagre ^1.1.5</code>、<code>lucide-react ^0.468.0</code>、<code>@soundtouchjs/core 2.1.1</code>、<code>typescript ^5.8.3</code>、<code>vite ^6.3.5</code></td>
+</tr>
+<tr>
+<td>模型统一网关
+<code>embodied-model-gateway</code>（<code>apps/model_gateway/pyproject.toml</code>、<code>requirements-gateway.txt</code>）</td>
+<td>回环鉴权 HTTP 接口与独立音视频工作者进程编排</td>
+<td><code>fastapi &gt;=0.100,&lt;1</code>、<code>httpx &gt;=0.27,&lt;1</code>、<code>jsonschema &gt;=4,&lt;5</code>、<code>uvicorn &gt;=0.30,&lt;1</code>、<code>websockets &gt;=14,&lt;17</code>、<code>Pillow &gt;=10,&lt;13</code></td>
+</tr>
+<tr>
+<td>语音与对话模型容器（<code>apps/model_gateway/worker_services/requirements.txt</code>）</td>
+<td><code>talk-system</code> GPU 容器内 LLM / ASR / TTS 三推理服务</td>
+<td>基础镜像 <code>nvcr.io/nvidia/pytorch:25.08-py3</code>（自带
+<code>torch 2.11</code> / CUDA /
+cuDNN）、<code>vllm ==0.25.1</code>、<code>transformers ==5.14.1</code>、<code>fastapi ==0.136.3</code>、<code>uvicorn ==0.51.0</code>、<code>Pillow &gt;=10.0</code>
+及同目录 <code>vllm-omni</code> 可编辑包</td>
+</tr>
+<tr>
+<td>仿真与导航工具链（<code>tools/navigation_irsim/requirements.txt</code>、<code>tools/navigation_visualization/requirements.txt</code>）</td>
+<td>二维激光仿真校验与三维调试预览工具</td>
+<td><code>ir-sim ==2.12.0</code>、<code>numpy &lt;2</code>、<code>tornado &gt;=6,&lt;7</code>、<code>viser ==1.0.30</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="三外部模型权重底层-c-库与离线哈希核验">三、外部模型权重、底层
+C++ 库与离线哈希核验</h2>
+<ul>
+<li><strong>视觉与感知权重修订锁定</strong>：
+<ul>
+<li><code>nvidia/LocateAnything-3B</code> 固定修订
+<code>c32291ca5e996f5a7a485845b4f57a233936bba0</code>。</li>
+<li><code>xiaomi</code> Lens 固定修订
+<code>68f57cdde1a19f751e78b18af04efa8ca8bd7fce</code>（源仓库锁定提交
+<code>9ecbee757b5b807a485845aeed44ed8cfec10bae</code>）。</li>
+<li>工件 <code>YOLOv8-seg + FoundationPose</code>
+原生管线沿用贡献源码包（Apache 2.0，见
+<code>src/robot_app/modules/perception_runtime/README.md</code>）与
+<code>v0.1.0</code> ONNX 发布校验
+<code>8d749f9e5953054432201450f724368243b4e16b2441042db766df306ae2433b</code>。</li>
+</ul></li>
+<li><strong>对讲语音与多模态服务权重</strong>：<code>Qwen--Qwen3.8-27B-FP8</code>（端口
+<code>9527</code>）、<code>Qwen3-ASR-0.6B</code>（端口
+<code>9528</code>）与 <code>Qwen3-TTS-12Hz-0.6B-CustomVoice</code>（端口
+<code>9529</code>）。</li>
+<li><strong>C++20
+底层算法编译库</strong>：<code>tools/deployment/build_pct_sdk.sh</code>
+从静态源码构建 <code>gtsam-4.1.1</code> 与
+<code>osqp</code>，原生多进程核心采用纯
+<code>g++ -std=c++20 -pthread -ldl -lm</code>
+无额外强耦合容器框架依赖，可在运行时按需 <code>dlopen</code> 加载
+<code>onnxruntime</code>。</li>
+<li><strong>离线校验入口与声明留存</strong>：全部平铺进入仓库
+<code>thirdparty/</code> 的源码目录及补丁均记录于
+<code>docs/manifests/upstreams.json</code>、<code>docs/upstreams.json</code>、<code>docs/vendor-files.json</code>
+与 <code>THIRD_PARTY_NOTICES.md</code>，可通过
+<code>python3 scripts/verify_sources.py</code> 离线核对全部文件与补丁
+<code>SHA-256</code>。对于改造过的第三方适配器（如设备通信或局部规划修正），均保留原始仓库
+URL、修改说明与版本号，不将魔改版本混标为上游原版。</li>
+</ul>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../engineering/doc-pipeline.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">受控中文写作与文档构建流水线</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../engineering/historical-evolution.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">历史原型演进与封存索引</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一第一方私有软件包的模块与协议边界"
+id="toc-一第一方私有软件包的模块与协议边界">一、第一方私有软件包的模块与协议边界</a></li>
+<li><a href="#二python模型服务与前端生态系统版本基线"
+id="toc-二python模型服务与前端生态系统版本基线">二、Python、模型服务与前端生态系统版本基线</a></li>
+<li><a href="#三外部模型权重底层-c-库与离线哈希核验"
+id="toc-三外部模型权重底层-c-库与离线哈希核验">三、外部模型权重、底层
+C++ 库与离线哈希核验</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

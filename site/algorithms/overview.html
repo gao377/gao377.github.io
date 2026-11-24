@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · report theme" />
+  <meta name="description" content="FACRI 现役算法活跃度台账，明确区分
+FACRI、C919 与历史 G1 AMO 原型的验证口径与边界。" />
+  <title>算法矩阵与活跃度总览 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-report.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-report">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html" aria-current="page">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心算法手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../algorithms/overview.html" aria-current="page">算法活跃度台账与模块归属</a></li>
+        <li><a href="../algorithms/locomotion-and-state.html">足式步态控制与本体状态估计</a></li>
+        <li><a href="../algorithms/spatial-and-navigation.html">空间定位、规划与终端视觉伺服</a></li>
+        <li><a href="../algorithms/manipulation-and-ik.html">双臂操作规划与柔顺导纳控制</a></li>
+        <li><a href="../algorithms/workpiece-perception.html">工件视觉定位与五阶段超分检测</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../algorithms/overview.html">算法</a></li>
+    <li><a href="../algorithms/overview.html" aria-current="page">算法活跃度台账与模块归属</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心算法手册</div>
+        <h1 class="title">算法矩阵与活跃度总览</h1>
+        <p class="subtitle">区分现役生产算法、条件受控路径、规划原型与已退役路线</p>
+      </header>
+
+      <article class="doc-article">
+<p>本页汇整仓库内现役算法模块的职责边界、代码落点与资格状态，避免将实验室原型或历史机型结论混入当前工厂生产口径。整体架构与模块边界见
+<a href="../architecture/overview.html">架构总览</a> 与 <a
+href="../architecture/component-map.html">组件地图</a>，操作运行基线见
+<a
+href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>。</p>
+<figure>
+<img src="../assets/diagrams/algorithm-map.svg"
+alt="算法模块与数据流全景" />
+<figcaption aria-hidden="true">算法模块与数据流全景</figcaption>
+</figure>
+<h2 id="一现役生产算法台账">一、现役生产算法台账</h2>
+<p>下表列出当前默认装配、持续经受离线与仿真检验的 11
+类核心算法单元与运行模块，全部遵循「传感器观测归感知与状态估计、规划与控制不越权读取仿真真值、下肢资格不跨本体继承」的基本原则。</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>域</th>
+<th>现役算法与核心类</th>
+<th>验证代码路径</th>
+<th>运行状态</th>
+<th>边界说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>下肢步态</td>
+<td><code>FacriMjlabPolicy</code>（47 维观测至 12 维腿部控制）</td>
+<td><code>src/robot_app/backends/facri/mjlab_policy.py</code></td>
+<td>仅限 SIM 现役</td>
+<td>50 Hz 推理、<code>0.8 s</code> 步态相位；REAL 模式显式阻断</td>
+</tr>
+<tr>
+<td>在线推理内核</td>
+<td><code>PolicyRunner</code> 与
+<code>ObservationEncoder</code>（C++20）</td>
+<td><code>src/robot_app/algorithms/policy_infer/policy_runner.hpp</code></td>
+<td>多进程常驻现役</td>
+<td><code>10</code> 帧 × <code>100</code> 维历史栈，支持
+<code>onnxruntime</code> 动态加载与内建 MLP</td>
+</tr>
+<tr>
+<td>躯干判稳</td>
+<td><code>StateEstimationDomain</code> 与
+<code>BodyStabilityMonitor</code></td>
+<td><code>src/robot_app/modules/state_estimation/domain/stability.py</code></td>
+<td>生产门禁现役</td>
+<td><code>40 ms</code> 最大数据年龄、<code>80 ms</code>
+最大间隔、倾角上限 <code>10°</code></td>
+</tr>
+<tr>
+<td>三维定位</td>
+<td><code>VoxelIcpLocalizer</code> 与 <code>SalLidarIngress</code></td>
+<td><code>src/robot_app/modules/spatial_runtime/infrastructure/ros/sal_lidar.py</code></td>
+<td>生产现役</td>
+<td><code>0.20 m</code> 体素降采样、动态腰部运动学外参补偿</td>
+</tr>
+<tr>
+<td>粗规划与局部避障</td>
+<td><code>HybridAStar</code>、<code>MppiLocalPlanner</code>、<code>PlanarAdjustment</code></td>
+<td><code>src/robot_app/modules/navigation_runtime/domain.cpp</code></td>
+<td>生产现役</td>
+<td>集成 <code>ResponseSampling</code> 与离线对接三阶段回退</td>
+</tr>
+<tr>
+<td>末端精密对接</td>
+<td><code>ConvergentTerminalServo</code></td>
+<td><code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code></td>
+<td>生产现役</td>
+<td>零先验在线割线偏置学习，三状态平滑收敛</td>
+</tr>
+<tr>
+<td>双臂与腰部规划</td>
+<td><code>UpperBodyPlanner</code> 与
+<code>DlsIkSolver</code>（C++20）</td>
+<td><code>src/robot_app/algorithms/planning_core/upper_body_planner.hpp</code></td>
+<td>生产现役</td>
+<td><code>17</code> 维上身阻尼最小二乘、49 组双手/单手 TCP 偏移搜索</td>
+</tr>
+<tr>
+<td>力矩观测与柔顺</td>
+<td><code>WrenchObserver</code>、<code>TaskAdmittanceSession</code>、<code>TouchdownGuard</code></td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/control/admittance.py</code></td>
+<td>纯接触现役</td>
+<td>四套任务柔顺剖面、<code>0.90 N</code> 垂直触底持续
+<code>0.08 s</code> 判稳</td>
+</tr>
+<tr>
+<td>连续扫掠碰撞检查</td>
+<td><code>DeviceCollisionQuery</code>（Minkowski 包络二分）</td>
+<td><code>src/robot_app/modules/manipulation_runtime/infrastructure/native_bindings/device_collision.py</code></td>
+<td>强制执行前门禁</td>
+<td>结合 Bernstein 导数上界与自适应中点细分</td>
+</tr>
+<tr>
+<td>开放词汇接地</td>
+<td><code>LocateAnythingGateway</code>（<code>LocateAnything-3B</code>）与
+<code>LensDetector</code></td>
+<td><code>src/robot_app/modules/perception_runtime/infrastructure/models/locateanything_gateway.py</code></td>
+<td>现役按需网关</td>
+<td>回环 HTTP 与 Bearer 鉴权，输出归一化像素框与点位</td>
+</tr>
+<tr>
+<td>立体相机与工件位姿</td>
+<td><code>ZedRgbd</code>、YOLOv8-seg、FoundationPose</td>
+<td><code>src/robot_app/modules/perception_runtime/README.md</code></td>
+<td>现役与原生可选</td>
+<td>首帧 <code>5</code> 次迭代注册、跟踪 <code>2</code>
+次迭代，<code>0.2 s</code> 时效上限</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="二条件启用规划路线与历史原型界线">二、条件启用、规划路线与历史原型界线</h2>
+<p>仓库明确隔离当前生产主线与跨机种实验配置，下表列出四类非普适路径的生效条件及不可跨越的资格约束。</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>分类</th>
+<th>对象</th>
+<th>实际约束与当前定位</th>
+<th>详细说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>条件受控路径</td>
+<td>零质量上肢 SIM 补偿与速度抑制器</td>
+<td>仅在 <code>origin == 'SIM'</code>
+下激活；上肢导纳观测采用零重力配置，<code>FacriBodyBackend</code>
+对腿部策略轴施加双向加减速斜率限制与防倾覆衰减</td>
+<td>见 <a
+href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a> 与
+<a
+href="../algorithms/manipulation-and-ik.html">双臂规划与柔顺操作</a></td>
+</tr>
+<tr>
+<td>条件受控路径</td>
+<td><code>N02 / N03_DIAGNOSTIC_SIM_ONLY</code> 原生站立配置</td>
+<td>绑定诊断参数文件但仅限 4 组 × <code>6000</code>
+步离线诊断验证，未赋予应用级任务资格</td>
+<td>见 <code>src/robot_app/backends/facri/control_config.py</code></td>
+</tr>
+<tr>
+<td>分支开发中特性</td>
+<td>五阶段工件超分与螺母缺陷检测</td>
+<td>物理交互与控制台已有展示设计入口；<code>pft_workpiece_sr</code>
+完整算子位于分支
+<code>feat/workpiece-detection-debug-20261124</code>（提交
+<code>d3cddf263</code>），尚未合入当前
+<code>c919_ground_scene_modeling</code> 主线工作树</td>
+<td>见 <a
+href="../algorithms/workpiece-perception.html">工件视觉感知</a> 与 <a
+href="../subsystems/interaction-and-gateway.html">交互网关与终端</a></td>
+</tr>
+<tr>
+<td>多机型场景规划</td>
+<td>C919 机坪 <code>T3</code> 零物理运动学引擎与异构 SAL</td>
+<td>支撑
+<code>FACRI</code>、<code>RP1</code>、<code>G2</code>、<code>M20</code>
+与 4 台 UGV
+车体联合演练，纯运动学回路不可外推为动力学接触或真机验收</td>
+<td>见 <a href="../evidence/simulation-engine.html">MuJoCo 4.0.1
+仿真引擎</a> 与 <a
+href="../evidence/verification-ladder.html">验证阶梯</a></td>
+</tr>
+<tr>
+<td>已退役原型</td>
+<td>2026 年 10
+月批次（<code>G1 AMO</code>、<code>NeuPAN</code>、<code>ViSP PBVS</code>、<code>Pink/Clarabel</code>、<code>REVO2</code>、<code>Isaac Sim 6.1</code>、<code>Newton + UE5</code>）</td>
+<td>仅作架构演进档案留存。<strong><code>G1 AMO</code>
+的任何仿真或测试资格均不转移至 <code>FACRI</code>
+本体</strong>，各自遵循独立 HAL/SAL 适配边界</td>
+<td>见 <a
+href="../engineering/historical-evolution.html">历史演进与已退役原型</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="三跨章节阅读导引">三、跨章节阅读导引</h2>
+<ol type="1">
+<li><strong>本体控制与判稳</strong>：阅读 <a
+href="../algorithms/locomotion-and-state.html">下肢策略与状态估计</a>，了解
+<code>FacriMjlabPolicy</code>、C++20
+<code>PolicyRunner</code>、斜率限制器与 IMU 判稳窗口。</li>
+<li><strong>定位与末端对接</strong>：阅读 <a
+href="../algorithms/spatial-and-navigation.html">空间定位与终端导航</a>，追踪
+LiDAR 腰部运动学外参补偿、MPPI 避障及
+<code>ConvergentTerminalServo</code> 数学收敛过程。</li>
+<li><strong>上身抓取与柔顺</strong>：阅读 <a
+href="../algorithms/manipulation-and-ik.html">双臂规划与柔顺操作</a>，掌握
+<code>UpperBodyPlanner</code> 49 选 1 搜索、Minkowski
+碰撞检测与纯接触触底保护。</li>
+<li><strong>视觉与感知边界</strong>：阅读 <a
+href="../algorithms/workpiece-perception.html">工件视觉感知</a>，厘清
+<code>LocateAnything-3B</code>、ZED 2i、FoundationPose
+实装边界以及待合入分支的超分流程定位。</li>
+</ol>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../subsystems/robot-capabilities.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">机器人能力提供者与接入契约</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../algorithms/locomotion-and-state.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">足式步态控制与本体状态估计</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一现役生产算法台账"
+id="toc-一现役生产算法台账">一、现役生产算法台账</a></li>
+<li><a href="#二条件启用规划路线与历史原型界线"
+id="toc-二条件启用规划路线与历史原型界线">二、条件启用、规划路线与历史原型界线</a></li>
+<li><a href="#三跨章节阅读导引"
+id="toc-三跨章节阅读导引">三、跨章节阅读导引</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

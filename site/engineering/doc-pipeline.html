@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · article theme" />
+  <meta name="description" content="说明 FACRI 工程手册在 docs/handbook/
+下的元数据模型、双轨静态生成管线 tools/docs/build.py 及全量静态质量门禁
+check_docs.py。" />
+  <title>文档架构与构建管线 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-article.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-article">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html" aria-current="page">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">研发工程与演进</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../engineering/development-workflow.html">研发规程与测试验证流程</a></li>
+        <li><a href="../engineering/doc-pipeline.html" aria-current="page">受控中文写作与文档构建流水线</a></li>
+        <li><a href="../engineering/dependencies-licenses.html">系统依赖、镜像与第三方许可</a></li>
+        <li><a href="../engineering/historical-evolution.html">历史原型演进与封存索引</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../engineering/development-workflow.html">工程</a></li>
+    <li><a href="../engineering/doc-pipeline.html" aria-current="page">受控中文写作与文档构建流水线</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">研发工程与演进</div>
+        <h1 class="title">文档架构与构建管线</h1>
+        <p class="subtitle">从散落 web 文档与 answer-me-with-html
+迁至双轨模板、单一清单与受控校验</p>
+      </header>
+
+      <article class="doc-article">
+<p>新版工程手册以 <code>docs/handbook/</code> 作为单一权威源（Single
+Source of Truth），配合 <code>docs/manifests/</code>
+下的结构化清单与图表构建最终静态站点。旧版 <code>docs/web/</code> 下依赖
+<code>answer-me-with-html</code>（<code>0.4.14</code>）的零散文档已停止继续扩张，全面切换为由仓库自持的
+<code>tools/docs/</code> 双轨编译与质量校验体系。</p>
+<h2 id="一目录分层与-docsmanifests-单一事实清单">一、目录分层与
+<code>docs/manifests/</code> 单一事实清单</h2>
+<p>构建体系把文档内容、导航拓扑、系统账本与外部视频索引拆分为正交层，杜绝人工维护多份不一致数字：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>清单文件</th>
+<th>职责定位</th>
+<th>被消费方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/manifests/navigation.yaml</code></td>
+<td>定义全部 6
+大板块（导览、架构、子系统、核心算法、仿真与实证、工程与演进）共 28
+篇手册的层级与路由</td>
+<td>由 <code>build.py</code>
+渲染全站侧边栏、上下页导航与门户卡片入口</td>
+</tr>
+<tr>
+<td><code>docs/manifests/architecture-map.json</code></td>
+<td>登记 <code>14</code> 个机器人域模块（<code>13</code> 已实现 +
+<code>1</code> 规划）、<code>12</code> 个系统域模块（<code>8</code>
+已实现 + <code>4</code> 规划）、<code>4+1</code>
+可执行程序、<code>6</code> 个 HAL 插件及 <code>84</code> 份 ROS
+接口文件统计</td>
+<td>由 <code>tools/docs/check_architecture.py</code> 与
+<code>check_docs.py</code> 反向核验文内数量声称</td>
+</tr>
+<tr>
+<td><code>docs/manifests/media-manifest.json</code></td>
+<td>集中保管全部 <code>12</code> 条 <code>MED-*</code> 视频的
+<code>media-v2.1</code> Release
+地址、时长、加速比、证据分级、<code>case_id</code> 与
+<code>SHA-256</code></td>
+<td>由 <code>build.py</code> 自动替换正文内的
+<code>&lt;!-- media:MED-... --&gt;</code> 与
+<code>&lt;!-- media-gallery:all --&gt;</code> 指令</td>
+</tr>
+<tr>
+<td><code>docs/manifests/upstreams.json</code></td>
+<td>固化外部算法与框架来源提交、版本与开源许可</td>
+<td>为 <a
+href="../engineering/dependencies-licenses.html">依赖与许可合规</a>
+提供可机读来源索引</td>
+</tr>
+<tr>
+<td><code>docs/manifests/diagrams/*.svg</code></td>
+<td>存放跨章节工程架构矢量图（例如
+<code>algorithm-map.svg</code>、<code>portal-architecture-manifesto.svg</code>）</td>
+<td>经相对路径 <code>../../manifests/diagrams/&lt;name&gt;.svg</code>
+嵌入正文并随输出打包</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="二双轨模板与-html5-构建流程toolsdocsbuild.py">二、双轨模板与
+HTML5 构建流程（<code>tools/docs/build.py</code>）</h2>
+<p>构建入口 <code>tools/docs/build.py</code> 调用 Pandoc 与受控模板将
+Markdown 编译为静态 HTML5，并支持独立页面调试或 DOCX 导出：</p>
+<ol type="1">
+<li><strong>双主题模板轨（<code>tools/docs/templates/</code>）</strong>：
+<ul>
+<li><strong>Portal
+门户轨（<code>tools/docs/templates/portal/</code>）</strong>：服务
+<code>theme: portal</code>
+的主页（<code>docs/handbook/index.md</code>），采用卡片式导览栅格与系统架构摘要视图。</li>
+<li><strong>Shell
+手册轨（<code>tools/docs/templates/shell/</code>）</strong>：统一承载
+<code>theme: article</code>、<code>theme: report</code>、<code>theme: interactive</code>
+三种内容版式，挂载
+<code>site-shell.css</code>、<code>site-shell.js</code> 及各自版式
+CSS，提供目录锚点跟踪、代码块复制、交互式表格排版与
+<code>&lt;figure class="doc-video"&gt;</code> 播放器容器。</li>
+</ul></li>
+<li><strong>标准构建与单页预览指令</strong>：</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> tools/docs/check_docs.py</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> tools/docs/check_architecture.py</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> tools/docs/build.py <span class="at">--output</span> site</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> tools/docs/build.py <span class="at">--page</span> algorithms/overview.md <span class="at">--check-only</span></span></code></pre></div>
+<p>生成结束后，<code>build.py</code> 的 <code>verify_output()</code>
+还会二次扫描目标 HTML 目录，确认全量 <code>.md</code>
+内部链接均已改写为有效 <code>.html</code>
+路由、本地媒体与矢量图无缺漏、且成品中不含二进制裸文件错误引用。</p>
+<h2
+id="三自动化文本规范与质量校验check_docs.py">三、自动化文本规范与质量校验（<code>check_docs.py</code>）</h2>
+<p>每次合入文档修改前，所有 <code>docs/handbook/**/*.md</code>
+必须零错误通过 <code>tools/docs/check_docs.py</code>
+及中文排版校验器：</p>
+<ol type="1">
+<li><strong>元数据键检查</strong>：Frontmatter 必须完整提供
+<code>title</code>、<code>subtitle</code>、<code>lang: zh-CN</code>、<code>theme</code>、<code>section</code>、<code>order</code>、<code>description</code>
+七项字段；<code>theme</code> 仅允许
+<code>portal</code>、<code>article</code>、<code>report</code>、<code>interactive</code>。</li>
+<li><strong>禁止裸写媒体标签</strong>：Markdown 原文中不得出现手写
+<code>&lt;video&gt;</code> HTML 标签，所有视频必须使用受控注释指令
+<code>&lt;!-- media:MED-XXX-NN --&gt;</code> 或
+<code>&lt;!-- media-gallery:all --&gt;</code>。</li>
+<li><strong>跨页链接与仓库路径核验</strong>：跨页链接只能使用指向
+<code>docs/handbook/</code> 内部相对 <code>.md</code> 文件的路径（如
+<code>../architecture/overview.md</code>）；任何形如
+<code>`src/...`</code>、<code>`apps/...`</code>、<code>`tests/...`</code>
+的无通配符行内代码路径，必须在当前工作树磁盘上真实存在。</li>
+<li><strong>受控中文与隐私红线</strong>：遵循
+<code>docs/development/style-overrides.md</code>
+规定，正文段落严禁人工硬换行（每段单行）、中西文与数字/行内代码间保留标准空格、中文引述使用直角引号「」与全角括号（）；严格区分时点与期限措辞（时间点一律用「截至」，时限使用「期限」或「超时上限」），并禁止出现黑话词汇、第二人称代词，以及任何开发者本机绝对路径、未脱敏缓存目录名或外部访问凭据。</li>
+</ol>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../engineering/development-workflow.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">研发规程与测试验证流程</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../engineering/dependencies-licenses.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">系统依赖、镜像与第三方许可</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一目录分层与-docsmanifests-单一事实清单"
+id="toc-一目录分层与-docsmanifests-单一事实清单">一、目录分层与
+<code>docs/manifests/</code> 单一事实清单</a></li>
+<li><a href="#二双轨模板与-html5-构建流程toolsdocsbuild.py"
+id="toc-二双轨模板与-html5-构建流程toolsdocsbuild.py">二、双轨模板与
+HTML5 构建流程（<code>tools/docs/build.py</code>）</a></li>
+<li><a href="#三自动化文本规范与质量校验check_docs.py"
+id="toc-三自动化文本规范与质量校验check_docs.py">三、自动化文本规范与质量校验（<code>check_docs.py</code>）</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

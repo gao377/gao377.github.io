@@ -1,0 +1,202 @@
+/* ==========================================================================
+   FACRI / huashu-md-html · interactive theme (adapted for site-shell)
+   Dark paper: #1a1916 | Accent: #2c5e3f / #6fb38a | Collapsible <details> + TOC
+   ========================================================================== */
+
+:root {
+  --font-sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", -apple-system, sans-serif;
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "IBM Plex Mono", Menlo, monospace;
+
+  --color-ink: light-dark(#1f201d, #ece9df);
+  --color-ink-soft: light-dark(#4a4d47, #c0bdb2);
+  --color-ink-mute: light-dark(#767972, #898578);
+  --color-rule: light-dark(#e3e1da, #34322b);
+  --color-rule-strong: light-dark(#c8c5bb, #4a4842);
+  --color-paper: light-dark(#fbfaf6, #1a1916);
+  --color-paper-soft: light-dark(#f3f1e9, #22211c);
+  --color-accent: light-dark(#2c5e3f, #6fb38a);
+  --color-link: light-dark(#2c5e3f, #88c5a3);
+  --color-link-hover: light-dark(#1a3e28, #b3dcc4);
+  --color-code-bg: light-dark(#2a2c25, #22211c);
+  --color-code-ink: #e8e6dc;
+}
+
+@supports not (color: light-dark(white, black)) {
+  :root {
+    --color-ink: #1f201d;
+    --color-ink-soft: #4a4d47;
+    --color-ink-mute: #767972;
+    --color-rule: #e3e1da;
+    --color-rule-strong: #c8c5bb;
+    --color-paper: #fbfaf6;
+    --color-paper-soft: #f3f1e9;
+    --color-accent: #2c5e3f;
+    --color-link: #2c5e3f;
+    --color-link-hover: #1a3e28;
+    --color-code-bg: #2a2c25;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-ink: #ece9df;
+      --color-ink-soft: #c0bdb2;
+      --color-ink-mute: #898578;
+      --color-rule: #34322b;
+      --color-rule-strong: #4a4842;
+      --color-paper: #1a1916;
+      --color-paper-soft: #22211c;
+      --color-accent: #6fb38a;
+      --color-link: #88c5a3;
+      --color-link-hover: #b3dcc4;
+      --color-code-bg: #22211c;
+    }
+  }
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+@media (min-width: 1200px) { html { font-size: 17px; } }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  line-height: 1.8;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  text-wrap: pretty;
+}
+
+.doc-title-block {
+  margin-bottom: 2.3em;
+  padding-bottom: 1.3em;
+  border-bottom: 1px solid var(--color-rule-strong);
+}
+.doc-title-block .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  margin: 0 0 0.55em;
+}
+.doc-title-block .title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+  line-height: 1.22;
+  margin: 0 0 0.35em;
+}
+.doc-title-block .subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.08rem;
+  color: var(--color-ink-soft);
+  margin: 0;
+}
+
+.doc-article {
+  max-width: 780px;
+}
+
+.doc-article h1, .doc-article h2, .doc-article h3, .doc-article h4 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.32;
+  color: var(--color-ink);
+  scroll-margin-top: 5rem;
+}
+.doc-article h2 {
+  font-size: 1.4rem;
+  margin: 2.2em 0 0.65em;
+  padding-top: 0.6em;
+  border-top: 1px solid var(--color-rule);
+}
+.doc-article h2:first-child { border-top: none; padding-top: 0; }
+.doc-article h3 { font-size: 1.18rem; margin: 1.7em 0 0.5em; }
+.doc-article p { margin: 0 0 1.1em; }
+
+.doc-article a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+.doc-article a:hover { color: var(--color-link-hover); }
+
+.doc-article details {
+  margin: 1.4em 0;
+  padding: 0.65em 1em;
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper-soft);
+}
+.doc-article details[open] { background: var(--color-paper); }
+.doc-article summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-serif);
+  padding: 0.2em 0;
+}
+
+.doc-article blockquote {
+  margin: 1.4em 0;
+  padding: 0.7em 1.2em;
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-paper-soft);
+  color: var(--color-ink-soft);
+}
+
+code, kbd, samp { font-family: var(--font-mono); font-size: 0.86em; }
+.doc-article :not(pre) > code {
+  background: var(--color-paper-soft);
+  color: var(--color-ink);
+  padding: 0.1em 0.36em;
+  border: 1px solid var(--color-rule);
+}
+.doc-article pre {
+  margin: 1.4em 0;
+  padding: 1em 1.2em;
+  background: var(--color-code-bg);
+  color: var(--color-code-ink);
+  overflow-x: auto;
+  line-height: 1.6;
+  font-size: 0.88rem;
+  position: relative;
+}
+.doc-article pre code { background: transparent; padding: 0; color: inherit; }
+
+.copy-btn {
+  position: absolute;
+  top: 0.55em;
+  right: 0.55em;
+  padding: 0.22em 0.6em;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--code-ink, #e8e6dc);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.doc-article table { width: 100%; margin: 1.5em 0; border-collapse: collapse; font-size: 0.93em; font-variant-numeric: tabular-nums; }
+.doc-article thead { background: var(--color-paper-soft); border-top: 2px solid var(--color-ink); border-bottom: 1px solid var(--color-rule-strong); }
+.doc-article tbody tr { border-bottom: 1px solid var(--color-rule); }
+.doc-article tbody tr:last-child { border-bottom: 2px solid var(--color-ink); }
+.doc-article th, .doc-article td { text-align: left; padding: 0.55em 0.8em; vertical-align: top; }
+.doc-article th { font-weight: 600; font-size: 0.86em; }
+
+.doc-article img { max-width: 100%; height: auto; display: block; margin: 1.2em auto; }
+
+#TOC::before {
+  content: "本页目录";
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  margin-bottom: 0.65rem;
+}
+#TOC ul { list-style: none; padding-left: 0; margin: 0; }
+#TOC ul ul { padding-left: 0.9rem; border-left: 1px solid var(--color-rule); margin: 0.2rem 0; }
+#TOC li { margin: 0.3rem 0; }
+#TOC a { color: var(--color-ink-soft); text-decoration: none; }
+#TOC a:hover { color: var(--color-accent); }

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="详述单机 IHalDriver C++
+插件抽象边界、libsal_shm 与 5 类真实硬件插件、SalWire v2
+定长零拷贝线格式与 CRC32 及标定安全检验逻辑。" />
+  <title>HAL 硬件抽象层与 SalWire v2 协议 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心子系统手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../subsystems/system-agent-and-rsi.html">系统智能体编排与 RSI 演化</a></li>
+        <li><a href="../subsystems/interaction-and-gateway.html">交互语音入口与模型网关</a></li>
+        <li><a href="../subsystems/facility-hal-equipment.html">工装网关与设备运行时</a></li>
+        <li><a href="../subsystems/robot-multiprocess-cpp.html">端侧 C++20 4+1 多进程运行时</a></li>
+        <li><a href="../subsystems/robot-embodiment-spec.html">声明式构型与单调能力综合</a></li>
+        <li><a href="../subsystems/robot-hal-sal-wire.html" aria-current="page">IHalDriver 插件与 SalWire v2</a></li>
+        <li><a href="../subsystems/robot-capabilities.html">机器人能力提供者与接入契约</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+    <li><a href="../subsystems/robot-hal-sal-wire.html" aria-current="page">IHalDriver 插件与 SalWire v2</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心子系统手册</div>
+        <h1 class="title">HAL 硬件抽象层与 SalWire v2 协议</h1>
+        <p class="subtitle">IHalDriver 插件 ABI、6 大动态库后端、8192 B
+state_cmd.shm 与 128 KiB lidar.shm</p>
+      </header>
+
+      <article class="doc-article">
+<p>单机控制器能够在「宿主机 MuJoCo 物理仿真」与「实机关节 CAN/EtherCAT
+总线」之间无缝切换而无需重新编译核心算法进程，完全归功于两道严格冻结的硬件解耦境界：上承控制器逻辑的
+C++ 插件接口
+<code>IHalDriver</code>，以及下接仿真/真机桥接通道的二进制线协议
+<code>SalWire</code> v2。</p>
+<figure>
+<img src="../assets/diagrams/body-adapter.svg"
+alt="本体硬件适配与共享内存边界" />
+<figcaption aria-hidden="true">本体硬件适配与共享内存边界</figcaption>
+</figure>
+<h2 id="ihaldriver-抽象边界与-6-大动态库插件"><code>IHalDriver</code>
+抽象边界与 <code>6</code> 大动态库插件</h2>
+<p><code>src/robot_app/include/robot_app/hal/i_hal_driver.hpp</code>
+定义了标准虚基类 <code>IHalDriver</code> 及基于 C 语言符号
+<code>create_hal_driver(const char* profile_json)</code> /
+<code>destroy_hal_driver(IHalDriver*)</code> 的动态加载入口（由
+<code>src/robot_app/algorithms/hal/plugin_loader.cpp</code>
+运行时按配置名载入
+<code>.so</code>）。每型驱动必须强制显式声明自身的运行出身与能力约束：</p>
+<ul>
+<li><strong>可信出身标识（<code>HalOrigin</code>）</strong>：返回
+<code>HalOrigin::SIM_SAL</code>（物理仿真后端）或
+<code>HalOrigin::REAL_HAL</code>（实物硬件后端），作为跨层追踪执行真实来源的基础依据。</li>
+<li><strong>启动前标定核验（<code>probe_and_verify_calibration</code>）</strong>：在
+<code>start(epoch, out_error)</code> 拉起控制循环前，强制核查预期 URDF
+SHA-256
+摘要与现场标定文件是否完整匹配，校验失败则拒绝激活驱动输出。</li>
+<li><strong>五种标准控制模式（<code>JointCtrlMode</code>）</strong>：<code>kDisabled</code>（失能）、<code>kPositionPd</code>（位置
+PD 伺服）、<code>kVelocityPd</code>（速度 PD
+伺服）、<code>kTorque</code>（纯力矩前馈）与
+<code>kDampingHold</code>（高阻尼安全保持）；配合紧急保护入口
+<code>engage_safe_stop()</code>。</li>
+</ul>
+<p>依据 <code>src/robot_app/CMakeLists.txt</code>
+编译产物清单，平台目前内建并注册以下 <code>6</code> 个动态加载后端：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>共享库名称</th>
+<th>对应源码目录</th>
+<th>报告 <code>HalOrigin</code></th>
+<th>适用本体与硬件对接说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>libsal_shm.so</code></td>
+<td><code>backends/sal_shm/</code></td>
+<td><code>HalOrigin::SIM_SAL</code></td>
+<td>通用场景无关 MuJoCo 仿真驱动，直接读写 <code>SalWire</code> v2
+<code>/dev/shm/embodied_sal/</code></td>
+</tr>
+<tr>
+<td><code>libhal_facri.so</code></td>
+<td><code>backends/facri/</code></td>
+<td><code>HalOrigin::REAL_HAL</code></td>
+<td><code>FACRI</code> 31 轴双足人形真机总线硬件驱动与异步同步接口</td>
+</tr>
+<tr>
+<td><code>libhal_g2.so</code></td>
+<td><code>backends/g2/</code></td>
+<td><code>HalOrigin::REAL_HAL</code></td>
+<td><code>G2</code> 32 轴全向四轮转向双臂机器人实物控制器驱动</td>
+</tr>
+<tr>
+<td><code>libhal_m20.so</code></td>
+<td><code>backends/m20/</code></td>
+<td><code>HalOrigin::REAL_HAL</code></td>
+<td><code>M20</code> 16 轴轮腿混合四足机器狗硬件驱动</td>
+</tr>
+<tr>
+<td><code>libhal_rp1.so</code></td>
+<td><code>backends/rp1/</code></td>
+<td><code>HalOrigin::REAL_HAL</code></td>
+<td><code>RP1</code> 40 轴客舱服务双足与灵巧手真机驱动</td>
+</tr>
+<tr>
+<td><code>libhal_ugv_can.so</code></td>
+<td><code>backends/ugv_can/</code></td>
+<td><code>HalOrigin::REAL_HAL</code></td>
+<td>C919 机坪专用地面车辆（牵引、叉车、传送带、摆渡）SocketCAN 驱动</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="salwire-v2-定长零拷贝共享内存协议"><code>SalWire</code> v2
+定长零拷贝共享内存协议</h2>
+<p>在所有仿真场景（<code>sal_transport: "shm_v2"</code>）中，仿真器后端与各机器人
+<code>robot_body_rt</code> 进程通过
+<code>/dev/shm/embodied_sal/&lt;run_id&gt;/&lt;robot_id&gt;/</code>
+目录下的两个固定尺寸 mmap
+文件交换高频姿态、关节指令与三维点云。所有结构体在
+<code>src/embodied_core/include/embodied_core/sal_wire.hpp</code> 中均以
+<code>#pragma pack(push, 1)</code> 紧密排列并附带编译期
+<code>static_assert</code> 字节核查与末端 CRC32 IEEE 校验：</p>
+<h3 id="关节与控制指令通道state_cmd.shm总容量-8192-b">1.
+关节与控制指令通道：<code>state_cmd.shm</code>（总容量
+<code>8192 B</code>）</h3>
+<ul>
+<li><strong>上半区观测槽位（偏移 <code>0</code> 处序列锁，偏移
+<code>8 B</code> 写入 <code>SalSampleWire</code>，精确长度
+<code>1472 B</code>）</strong>：魔数
+<code>0x454D5341</code>（<code>"EMSA"</code>），承载
+<code>epoch</code>、<code>active_dofs</code>（上限
+<code>48</code>）、单调帧序
+<code>seq</code>、<code>sim_time_ns</code>、全部关节
+<code>q/dq/tau_est[48]</code>、底盘六自由度与速度、IMU
+四元数/角速度/加速度、左右腕六维力
+<code>wrist_wrench_{l,r}[6]</code>、机构行程与限位标志
+<code>mech_flags</code>（上下限位、锁栓吸合、IMU/腕力有效位）、抓取真实物理状态
+<code>grasp_state_flags</code>（左右闭爪、防滑持握确认
+<code>kGraspStateHeldVerified</code>、接触支撑位）、<code>held_object_hash</code>
+与故障字 <code>fault_word</code>。</li>
+<li><strong>下半区控制槽位（偏移 <code>4096</code> 处序列锁，偏移
+<code>4104 B</code> 写入 <code>SalCommandWire</code>，精确长度
+<code>2052 B</code>）</strong>：魔数
+<code>0x454D5343</code>（<code>"EMSC"</code>），承载
+<code>epoch</code>、<code>seq</code>、<code>host_monotonic_ns</code>、逐关节模式
+<code>modes[48]</code>、参考量
+<code>q_ref/dq_ref/kp/kd/tau_ff[48]</code>、底盘目标速度
+<code>base_twist[3]</code>、特装机构位置
+<code>mechanism_target</code>、传送带速度
+<code>belt_speed_mps</code>、夹爪动作 <code>grasp_cmd_flags</code>
+以及模式控制位
+<code>cmd_flags</code>（<code>kCmdFlagUseBaseTwist</code>、<code>kCmdFlagMechanismActive</code>、<code>kCmdFlagEstopHold</code>、<code>kCmdFlagOperationActive</code>）。</li>
+</ul>
+<h3 id="三维激光雷达点云通道lidar.shm总容量-131072-b-128-kib">2.
+三维激光雷达点云通道：<code>lidar.shm</code>（总容量
+<code>131072 B</code> / <code>128 KiB</code>）</h3>
+<ul>
+<li><strong>单帧定长雷达包（偏移 <code>8 B</code> 写入
+<code>SalLidarWire</code>，精确长度
+<code>96068 B</code>）</strong>：魔数
+<code>0x454D4C44</code>（<code>"EMLD"</code>），包含
+<code>epoch</code>、<code>point_count</code>、<code>seq</code>、<code>sim_time_ns</code>、<code>frame_id[32]</code>
+以及最多 <code>6000</code> 个 <code>16 B</code> 的
+<code>SalLidarPointXYZI</code> 点（<code>x/y/z/intensity</code> 均为
+<code>float32</code>），由仿真渲染/传感器线程直接写入并供 P1 进程中的
+<code>VoxelIcpLocalizer</code> 零拷贝读取。</li>
+</ul>
+<h2
+id="输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新鲜度门禁与双层安全防线</h2>
+<p><code>src/robot_app/modules/sensor_adapters/domain.hpp</code> 中的
+<code>SensorAdaptersDomain</code> 对每条读入的 <code>HalSample</code>
+执行严格检验，不放行任何脏数据进入控制回路：</p>
+<ol type="1">
+<li><strong>数值与结构完整校验</strong>：检查
+<code>verify_sal_sample_wire()</code> CRC32 一致性，以及
+<code>q</code>、<code>dq</code>、IMU
+和位姿分量是否全部为有限浮点数，异常直接递增
+<code>nonfinite_rejected</code> 并拒绝更新总线。</li>
+<li><strong>代际（<code>epoch</code>）与帧序防回退检查</strong>：拒绝与
+<code>expected_epoch_</code>
+不一致或序列号倒退（<code>stale_seq_dropped</code>）的历史残帧，防止重连或仿真重启瞬间发生位置阶跃跳变。</li>
+<li><strong>带外急停覆盖权</strong>：不论上层规划软件发送了何种
+<code>SalCommandWire</code> 目标，一旦 <code>protection_runtime</code>
+通过 <code>18749</code> UDP 端口接收到针对本机位掩码的
+<code>SafetyFrame</code> 急停信号或检测超时触发
+<code>LOCAL_HOLD</code>，<code>body_gateway</code> 将强制置位
+<code>estop_hold = true</code>
+并对下发执行器施加零速度及安全阻尼控制。</li>
+</ol>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../subsystems/robot-embodiment-spec.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">声明式构型与单调能力综合</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../subsystems/robot-capabilities.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">机器人能力提供者与接入契约</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#ihaldriver-抽象边界与-6-大动态库插件"
+id="toc-ihaldriver-抽象边界与-6-大动态库插件"><code>IHalDriver</code>
+抽象边界与 <code>6</code> 大动态库插件</a></li>
+<li><a href="#salwire-v2-定长零拷贝共享内存协议"
+id="toc-salwire-v2-定长零拷贝共享内存协议"><code>SalWire</code> v2
+定长零拷贝共享内存协议</a>
+<ul>
+<li><a href="#关节与控制指令通道state_cmd.shm总容量-8192-b"
+id="toc-关节与控制指令通道state_cmd.shm总容量-8192-b">1.
+关节与控制指令通道：<code>state_cmd.shm</code>（总容量
+<code>8192 B</code>）</a></li>
+<li><a href="#三维激光雷达点云通道lidar.shm总容量-131072-b-128-kib"
+id="toc-三维激光雷达点云通道lidar.shm总容量-131072-b-128-kib">2.
+三维激光雷达点云通道：<code>lidar.shm</code>（总容量
+<code>131072 B</code> / <code>128 KiB</code>）</a></li>
+</ul></li>
+<li><a href="#输入验证帧新鲜度门禁与双层安全防线"
+id="toc-输入验证帧新鲜度门禁与双层安全防线">输入验证、帧新鲜度门禁与双层安全防线</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

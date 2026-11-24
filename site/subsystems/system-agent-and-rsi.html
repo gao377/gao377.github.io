@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="解析 SystemApp
+如何基于场景知识包、记忆检索与实时能力快照编译可执行
+DAG，实施持股守恒与来源验证，并将自我反思与规则演化严格约束在离线实验沙箱内。" />
+  <title>系统智能体与受约束离线 RSI · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心子系统手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">系统智能体编排与 RSI 演化</a></li>
+        <li><a href="../subsystems/interaction-and-gateway.html">交互语音入口与模型网关</a></li>
+        <li><a href="../subsystems/facility-hal-equipment.html">工装网关与设备运行时</a></li>
+        <li><a href="../subsystems/robot-multiprocess-cpp.html">端侧 C++20 4+1 多进程运行时</a></li>
+        <li><a href="../subsystems/robot-embodiment-spec.html">声明式构型与单调能力综合</a></li>
+        <li><a href="../subsystems/robot-hal-sal-wire.html">IHalDriver 插件与 SalWire v2</a></li>
+        <li><a href="../subsystems/robot-capabilities.html">机器人能力提供者与接入契约</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+    <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">系统智能体编排与 RSI 演化</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心子系统手册</div>
+        <h1 class="title">系统智能体与受约束离线 RSI</h1>
+        <p class="subtitle">DynamicCapabilityPlanner、TeamRuntime、TeamVerifier
+与 Reflection/Evolution 离线沙箱边界</p>
+      </header>
+
+      <article class="doc-article">
+<p><code>SystemApp</code>（<code>src/system_app/</code>）位于平台编排与演化平面，承担将人类操作员高层意图转化为多机可执行任务拓扑、仲裁共享通道资源，以及在安全离线边界内持续改进策略规则的核心职责。它不参与毫秒级关节控制，却确保整个异构编队在语义正确性与物理可到达性之间保持一致。</p>
+<figure>
+<img src="../assets/diagrams/agent-global.svg" alt="全局协作架构图" />
+<figcaption aria-hidden="true">全局协作架构图</figcaption>
+</figure>
+<h2
+id="动态能力规划器dynamiccapabilityplanner">动态能力规划器（<code>DynamicCapabilityPlanner</code>）</h2>
+<p>位于
+<code>src/system_app/modules/team_planner/domain/compilation/dynamic_capability_planner.py</code>
+的 <code>DynamicCapabilityPlanner</code>
+不依赖写死的脚本路线，而是为每次编译请求动态组装上下文快照
+<code>DynamicPlanningContext</code>：</p>
+<ol type="1">
+<li><strong>三源上下文聚合</strong>：实时汇总场景静态知识包（<code>KnowledgePackContext</code>）、基于
+SQLite/FTS5
+的分域记忆检索（<code>spatial_annotation</code>、<code>procedure</code>、<code>episode</code>、<code>knowledge</code>
+四张知识表）、各机器人在线技能目录就绪状态（<code>CapabilityContract</code>）以及
+<code>FacilityHAL</code>
+设备实时状态（<code>FacilityDeviceState</code>）。</li>
+<li><strong>三类编译结果分流</strong>：面对缺参、歧义或目标不可达情形，明确输出
+<code>NEEDS_CLARIFICATION</code>
+反问操作员而禁止盲目猜测；针对单一常规作业输出
+<code>MACRO_SKILL_PLAN</code>；针对跨工位或跨机协作输出带依赖边的
+<code>COMPOSITE_DAG_PLAN</code>。</li>
+<li><strong>跨机替补与共享资源互斥注入</strong>：当首选机器人能力下降或离线时，调用
+<code>resolve_agent_fallback</code> 依据 <code>EmbodimentSpec</code>
+同级能力筛选备选载体；在生成拓扑前通过
+<code>_inject_resource_intervals</code>
+为狭窄通道、停机泊位自动插入互斥锁窗口（如
+<code>factory.ch_corridor</code> 或
+<code>c919.dock.cargo_fwd</code>）。</li>
+<li><strong>持股守恒校验（<code>_verify_holding_conservation</code>）</strong>：在编译阶段即校验所有搬运与交接任务的
+<code>holding_context_ref</code>，确保同一工件在空间转运过程中不会在无交接节点的情况下被逻辑复制或凭空丢失。</li>
+</ol>
+<figure class="doc-video" data-media-id="MED-INT-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-INT-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-skill-reactflow-dag.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>多机技能有向无环图编排与执行状态界面（1x · 15.0 s ·
+SHA256:5ca8dbaccd）</span><span
+class="doc-media-badge">SYSTEM_ORCHESTRATION_UI</span>
+</figcaption>
+</figure>
+<h2
+id="多机运行时与舰队总线teamruntime-starfleetbus">多机运行时与舰队总线（<code>TeamRuntime</code>
+&amp; <code>StarFleetBus</code>）</h2>
+<figure>
+<img src="../assets/diagrams/agent-team.svg"
+alt="编队级多智能体协作流程" />
+<figcaption aria-hidden="true">编队级多智能体协作流程</figcaption>
+</figure>
+<p>编译通过的 DAG 交由
+<code>src/system_app/modules/team_runtime/runtime.py</code>
+调度推进：</p>
+<ul>
+<li><strong>异构节点统一派发</strong>：<code>TeamRuntime</code> 区分处理
+<code>RobotAssignmentNode</code>（通过 ROS 2
+<code>/system/execute_assignment</code> 或 HTTP 舰队总线派发给单机）与
+<code>EquipmentAssignmentNode</code>（经 <code>equipment_runtime</code>
+分派至 <code>:18642</code> <code>FacilityHAL</code> 网关）。</li>
+<li><strong>舰队互斥锁仲裁（<code>StarFleetBus</code>）</strong>：运行于
+<code>:18641</code> 的 <code>StarFleetBusState</code> 内建
+<code>ResourceTokenMutexRegistry</code>，通过
+<code>/api/fleet/resources/{id}/{acquire,release}</code> 与
+<code>/api/fleet/corridor/*</code>
+接口严格仲裁多机对充电走廊、工位过道及机场泊位的独占访问，防止通道相向死锁。</li>
+<li><strong>执行回执核对与超时清理</strong>：<code>ExecutionResults</code>
+监听器核对回执事件中的
+<code>assignment_id</code>、<code>run_id</code>、<code>capability_id</code>
+与节点绑定
+<code>instance_id</code>；若上游机器人实例发生重建更换，旧实例残留回执将被强制拒绝。</li>
+</ul>
+<h2
+id="严格来源与结果验证器teamverifier">严格来源与结果验证器（<code>TeamVerifier</code>）</h2>
+<p>位于
+<code>src/system_app/modules/team_verifier/domain/predicates.py</code>
+的断言引擎在每个任务步骤或任务节点终结时返回
+<code>SATISFIED</code>、<code>UNSATISFIED</code> 或
+<code>UNKNOWN</code>：</p>
+<ul>
+<li><strong>来源一致性硬门禁</strong>：严格比对任务执行回执来源（<code>origin</code>）与外部观测证明来源（例如同属
+<code>SIM_SAL</code> 或同属
+<code>REAL_HAL</code>），严禁将仿真渲染位姿或设计图假数据伪造为真实感知证据。</li>
+<li><strong>空间地图与多臂归属核验</strong>：同步检查
+<code>spatial_runtime</code>
+报告的地图参考系归属、<code>selected_arms</code>
+实际启用臂标识、<code>holding_context_ref</code> 持物引用以及
+<code>remaining_responsibility</code>
+交接责任剩余量，避免出现操作成功假象。</li>
+</ul>
+<h2
+id="受约束的离线自我反思与演化reflectionengine-evolutionmanager">受约束的离线自我反思与演化（<code>ReflectionEngine</code>
+&amp; <code>EvolutionManager</code>）</h2>
+<figure>
+<img src="../assets/diagrams/agent-evolution.svg"
+alt="受约束离线自我演化流程图" />
+<figcaption aria-hidden="true">受约束离线自我演化流程图</figcaption>
+</figure>
+<p>FACRI
+将自我改进机制（RSI）严格限定在<strong>离线受约束实验与编译上下文规则层</strong>（对应前端
+<code>P07</code> <code>RsiLab</code> 与 <code>/api/rsi/*</code>
+路由），遵循以下三项安全铁律：</p>
+<ul>
+<li><strong>只读分析真实失败证据</strong>：<code>ReflectionEngine</code>
+消费 <code>EvidenceStore</code> 留存的历史失败数据包，例如在工厂
+<code>robot_r4</code> <code>V0</code> 试验中因接料前置条件未覆写而触发的
+<code>RECEIVER_CONDITION_UNHANDLED</code>
+错误实录，结合结构化日志提炼失效上下文，而不隐藏或删改原始失败计数。</li>
+<li><strong>候选生成与对照验证分离</strong>：<code>EvolutionManager</code>（<code>src/system_app/modules/evolution_manager/</code>）针对分析出的短板在隔离目录产出规则或能力补丁候选（如补齐接收端检测与位姿容差策略），并触发受控批量对照仿真测试；只有通过全部门禁对比（例如
+<code>robot_r4</code> <code>V1</code>
+全流程稳定通过），候选补丁才获得人类工程师审查采纳或版本回滚选项。</li>
+<li><strong>严禁在线绕行修改运行基线</strong>：任何离线反思与演化流程均不具备热更修改在线机器人控制器、绕过
+<code>check_factory_runtime_baseline.py</code>
+校验或改动实时保护阈值的权限。</li>
+</ul>
+<figure class="doc-video" data-media-id="MED-RSI-01">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="708" poster="../assets/posters/MED-RSI-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-r4-rsi-v0-fail-evidence-20x.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>robot_r4 初始 V0 策略失败实证（20x 加速）（20x · 13.8 s / 原片
+273.7 s · FACTORY-20261123T013011-a56a · SHA256:4e9e976251）</span><span
+class="doc-media-badge">PHYSICAL_SIM_FAILURE_EVIDENCE</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-SYS-03">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="708" poster="../assets/posters/MED-SYS-03.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-r4-capability-v1-pass-20x.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>robot_r4 能力演化 V1 全流程通过实录（20x 加速）（20x · 77.8 s /
+原片 1553.8 s · FACTORY-20261123T015358-4026 ·
+SHA256:3b4a8a2fd7）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../architecture/runtime-baselines.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">冻结运行基线与治理红线</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../subsystems/interaction-and-gateway.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">交互语音入口与模型网关</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#动态能力规划器dynamiccapabilityplanner"
+id="toc-动态能力规划器dynamiccapabilityplanner">动态能力规划器（<code>DynamicCapabilityPlanner</code>）</a></li>
+<li><a href="#多机运行时与舰队总线teamruntime-starfleetbus"
+id="toc-多机运行时与舰队总线teamruntime-starfleetbus">多机运行时与舰队总线（<code>TeamRuntime</code>
+&amp; <code>StarFleetBus</code>）</a></li>
+<li><a href="#严格来源与结果验证器teamverifier"
+id="toc-严格来源与结果验证器teamverifier">严格来源与结果验证器（<code>TeamVerifier</code>）</a></li>
+<li><a
+href="#受约束的离线自我反思与演化reflectionengine-evolutionmanager"
+id="toc-受约束的离线自我反思与演化reflectionengine-evolutionmanager">受约束的离线自我反思与演化（<code>ReflectionEngine</code>
+&amp; <code>EvolutionManager</code>）</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

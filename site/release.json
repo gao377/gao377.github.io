@@ -1,1151 +1,177 @@
 {
-  "implementation_sha256": "28ef1404f8d386dbfa57f59e8e5c701d6b0149d489514093a34ddeddde6298e6",
-  "renderer": "answer-me-with-html@0.4.14",
-  "navigation_sha256": "3b8927f7fbc89c88ad482d2bf776b819680432c417fb3c091106cf496259ac23",
-  "navigation": [
-    {
-      "label": "首页",
-      "href": "index.html"
-    },
-    {
-      "label": "系统架构",
-      "href": "architecture.html"
-    },
-    {
-      "label": "软件映射",
-      "href": "architecture-map.html"
-    },
-    {
-      "label": "运行时图册",
-      "href": "runtime-internals.html"
-    },
-    {
-      "label": "算法架构图",
-      "href": "algorithms.html#panel-A"
-    },
-    {
-      "label": "软件模块",
-      "href": "modules.html"
-    },
-    {
-      "label": "能力接口",
-      "href": "interfaces.html"
-    },
-    {
-      "label": "仿真系统",
-      "href": "simulation.html"
-    },
-    {
-      "label": "运动响应专题",
-      "href": "navigation-response-model.html"
-    },
-    {
-      "label": "场景启动",
-      "href": "scenarios.html"
-    },
-    {
-      "label": "实验结果",
-      "href": "experiments.html"
-    },
-    {
-      "label": "成功录像",
-      "href": "experiment-recordings.html"
-    },
-    {
-      "label": "编写规范",
-      "href": "authoring.html"
-    }
-  ],
+  "version": 2,
+  "renderer": "facri-docs + pandoc + huashu-md-html",
+  "implementation_sha256": "7337f5b6ed1bc0daf89d1726081fd338c55c9d102950bb8f6e811bb39ab70fef",
+  "navigation_sha256": "8db16e93a6574c05a63223b97d120d5151f0071658854242b169fb383c08f4e6",
   "pages": [
     {
-      "file": "algo-amo.html",
-      "source_sha256": "33a0275df74bd3c38d22232a7e377feccf2f6d7ece55ec04e163aafab4ed4b69"
-    },
-    {
-      "file": "algo-approach.html",
-      "source_sha256": "4c5c6e5241ffa1b75544f544cad6265ff4cff534a8ffe8a2d5b4cd7a8baceb98"
-    },
-    {
-      "file": "algo-body-state.html",
-      "source_sha256": "70c8b7127647d47107949fc972c52027a5dc2a96a9a19b7fb727577718a6ea30"
-    },
-    {
-      "file": "algo-cartesian.html",
-      "source_sha256": "dc2e2b8149570a47aad03c7b85149c16262558a8e82f0bb3d58afbd66608bc21"
-    },
-    {
-      "file": "algo-collision.html",
-      "source_sha256": "f35b84383b20d6150b7a9f16b1ae63b2f2e0dc7717858ea3ed839852389bd3cb"
-    },
-    {
-      "file": "algo-execution.html",
-      "source_sha256": "2384b33932f62e835447a41730ea3fad0812663ca5090c7f68b086ec04ce4c08"
-    },
-    {
-      "file": "algo-exploration.html",
-      "source_sha256": "d987927d70317a1eca14294e14d87141d675eaf9ecdc939684327ddb01f19f3c",
-      "implementation_sha256": "41253eb59e9f777fad528573cc74b7db1c55a58f5e3dac2c5e6e7b4ae13f4dc4"
-    },
-    {
-      "file": "algo-fdm.html",
-      "source_sha256": "5ca3b3b49aa159df583ecc17366c13a9af512f840281cacd38b3298262f7aea0"
-    },
-    {
-      "file": "algo-grasp.html",
-      "source_sha256": "3f7e337746dee44a13aaddac7e26c0943080c4e9c6414e704a90cc5992238d47"
-    },
-    {
-      "file": "algo-maps.html",
-      "source_sha256": "ed06e60ca8007d846e3f4960497c444849db16ca6e4788c0aa2bd2e7b46a8647",
-      "implementation_sha256": "c1b646bf06cca55028ff4cf1b8043acb95972b5c26dc4c7ed21e10b65740ffbb"
-    },
-    {
-      "file": "algo-neupan.html",
-      "source_sha256": "61928cbfa7f393ed02fa5013c84e6e619b90f73ecb2894faeb93d674e43851be",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
-    },
-    {
-      "file": "algo-pbvs.html",
-      "source_sha256": "88fa9d20f3ac79a1a8b1daf2edb90e23c046758f4430747165944d0b7c223438"
-    },
-    {
-      "file": "algo-pct.html",
-      "source_sha256": "b68e5eb599f3e476861ba8878403fcda21448f87eb54d82c40e27708cc8f0e2b"
-    },
-    {
-      "file": "algo-perception.html",
-      "source_sha256": "76640a8f87ffe13f95d523a57bf336cc54510e9dc8d61318ea5cc33732c1dbea"
-    },
-    {
-      "file": "algo-sensing.html",
-      "source_sha256": "9cf72c6d756b202f11254a10abc66a1f8c8a7796a3e9c08b2e43771ce55e7032"
-    },
-    {
-      "file": "algo-slam.html",
-      "source_sha256": "5e999fa30cfb2bec7115bd595563c18e96ad94001a6657e959c66889e81e040c",
-      "implementation_sha256": "28ef1404f8d386dbfa57f59e8e5c701d6b0149d489514093a34ddeddde6298e6"
-    },
-    {
-      "file": "algo-support.html",
-      "source_sha256": "27a27dfd4e030e181d5e1d278fe08d3d8630b7da72fbdf44e639efe84ed6d1dd"
-    },
-    {
-      "file": "algo-tactile.html",
-      "source_sha256": "dc9a32af10d432e2da05e5ce775180901cbdbc8d713e58d1adfa0b185bea38aa"
-    },
-    {
-      "file": "algo-task.html",
-      "source_sha256": "49d6d31a4884abf0d288a18bf47e427a8743f04e1c568b916623abf8d9952bbc"
-    },
-    {
-      "file": "algo-trajectory.html",
-      "source_sha256": "6e079b21e13177f63890d333cbf0312dc737c7e1031d50e29db6e762a4ce6dbc"
-    },
-    {
-      "file": "algorithms.html",
-      "source_sha256": "8e201c24a2a13e99ef8003232e15946cf0bfc7d756bc901e269dc901ec5ab29f",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
-    },
-    {
-      "file": "architecture-map.html",
-      "source_sha256": "93992b59a052a76f0e03b6dfb05b39cfebcd386dcf2abcd0b82d53d9dfc6a9b1",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "architecture.html",
-      "source_sha256": "934e049da1251025a38d2437fb80b0321bb9db78d80507246dce357be963fa53",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "authoring.html",
-      "source_sha256": "2a3c41d6f4b71703a4d048654e8b0c81fbd8b94492d6a7697066b59d226a0546"
-    },
-    {
-      "file": "dependencies.html",
-      "source_sha256": "94fe755d994f3be1a3827dc4d0b737b470dc9881006a21e4bffc550ebc59936e",
-      "implementation_sha256": "588002f14f6add35c3fe573a3b6b0f1c507f0119bddee60c7fb2169e4be97de0"
-    },
-    {
-      "file": "development.html",
-      "source_sha256": "2c7b7fa6374e7254ee4f920bb80abda9fbe92e621a172ac89e8b86c919401c41",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
-    },
-    {
-      "file": "experiment-recordings.html",
-      "source_sha256": "22262c66d9b62623a90b53aafd2d938b751cd2dd110dc5cdbb5008c439dc6287",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "experiments.html",
-      "source_sha256": "18aae80eda52d7a57284fe358adcf36364d1835380fbbbb473a7973dc57721aa",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "files-robot-action_executor.html",
-      "source_sha256": "3c6421af31bea4f940f82350d028580c65474ec71981fb98df9468b68c6764b0"
-    },
-    {
-      "file": "files-robot-body_gateway.html",
-      "source_sha256": "e719ff103fa499686b1dcd462a17a29665a0a60b1dbdb303be2640c7119ee72d"
-    },
-    {
-      "file": "files-robot-config_client.html",
-      "source_sha256": "6c0dd194646276ba10a5e8548e8bca6d3c2ec406bec221ded73a7d922408d641"
-    },
-    {
-      "file": "files-robot-evidence_buffer.html",
-      "source_sha256": "c8074c2d0476b56a58e6fcc27b5d7abf9caa74c6f376ed283c3059f4283ef2aa"
-    },
-    {
-      "file": "files-robot-interaction_runtime.html",
-      "source_sha256": "551784defa12dc121f7147a9762ad0aebc827947db6fba7923074030cd9efce4"
-    },
-    {
-      "file": "files-robot-local_task_runtime.html",
-      "source_sha256": "5f8a630a4b50e32a4f597b3772745313f4378730d5cac9075335b7ea617136f5",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
-    },
-    {
-      "file": "files-robot-manipulation_runtime.html",
-      "source_sha256": "6c9deaaeeb361e8ddd6e7b420dee88e3d43894be0b4a0e5ebc05047c649f80ea",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
-    },
-    {
-      "file": "files-robot-motion_coordinator.html",
-      "source_sha256": "9fde3500d007e35e1dcdb17227afd92aee95e19133ca8d2a2e55a66d6eba3791"
-    },
-    {
-      "file": "files-robot-navigation_runtime.html",
-      "source_sha256": "f4ac33e510a19e4ba0e4cb620d90660f90e6fac048faa6a9565b57420eaae4fa"
-    },
-    {
-      "file": "files-robot-perception_runtime.html",
-      "source_sha256": "98898794a34707493ffb851d21feb77302c656755fdec382563cd52d7d8bf475"
-    },
-    {
-      "file": "files-robot-protection_runtime.html",
-      "source_sha256": "92c325b93916ed4fc4df52f58002d47b606456ba3d27b7c7875cef55eed21ee3"
-    },
-    {
-      "file": "files-robot-sensor_adapters.html",
-      "source_sha256": "4bb9014906a1bc7beec09094e1e3737ed9c2b1d5daa805a46f77472170db90fb",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
-    },
-    {
-      "file": "files-robot-spatial_runtime.html",
-      "source_sha256": "bbf8597969f52b5179689cb3e5047500a79ce0cfc7fa226c178f36fe5b3cfa5e",
-      "implementation_sha256": "847dc079c509c92dc349c5a3582bc272624b9c90339dd337d3c2bccdd1402f6d"
-    },
-    {
-      "file": "files-robot-state_estimation.html",
-      "source_sha256": "7ae63f7032fa425fb7c14af0e850e858e074f1dedcfb9defb4624aa30ba18ec4"
-    },
-    {
-      "file": "files-system-candidate_builder.html",
-      "source_sha256": "97c9b54c59325244bbc2ab8ce7ca72f6fc59e55d6a91abef25d7249edabfd7c4"
-    },
-    {
-      "file": "files-system-capability_registry.html",
-      "source_sha256": "634bc4eba2578171656ed84d86190695500f88b45177c853406b06aadcfcdc0d",
-      "implementation_sha256": "0cca08c28d36cadd971e25dfc90f8c42b03e863c15a3b9436301248adfbeb6d1"
-    },
-    {
-      "file": "files-system-config_manager.html",
-      "source_sha256": "9688ecfeced67ad1835b6f7d55b45e4ef7fc848c03091a49f68d42e28f8274c1"
-    },
-    {
-      "file": "files-system-context_store.html",
-      "source_sha256": "e26d9dcc5e2f85beb656d40badd365b7bb2b9eb54c3acb577459d85884125a8d"
-    },
-    {
-      "file": "files-system-evidence_store.html",
-      "source_sha256": "38292fbcb44d8b6104aa656cb2a95c021dd4432dacde71c9b99e4905c9d1af53"
-    },
-    {
-      "file": "files-system-evolution_manager.html",
-      "source_sha256": "e3db83f92c818dea2df4378bf786e1e576269dcc292b64912a2d5107ce7812f9"
-    },
-    {
-      "file": "files-system-knowledge_memory.html",
-      "source_sha256": "7ebde913d0db7019c2a982d405a1f3ada88847df0cd2bb688f96d5ee2434ff9c",
-      "implementation_sha256": "3366ffd4f223f654d418b0e68bb8a5e05a9f376f5b25a04d4110453da6ff6a94"
-    },
-    {
-      "file": "files-system-reflection_engine.html",
-      "source_sha256": "0a332e626c21850a17b503116e854c54016679bd8d00dd358a65160805c27fe8"
-    },
-    {
-      "file": "files-system-team_planner.html",
-      "source_sha256": "1800ccfa3f44db5e2e22c3450771709d680dd5a6da83f915a9b5dbdefcda75a1",
-      "implementation_sha256": "0cca08c28d36cadd971e25dfc90f8c42b03e863c15a3b9436301248adfbeb6d1"
-    },
-    {
-      "file": "files-system-team_runtime.html",
-      "source_sha256": "940b0a44eed145e007b3565e6e265881705438c7fbeec00edabcad421cf69ee4",
-      "implementation_sha256": "71de5c260e787ad4c2251975869249bb8d6d778e7a87404ffcc3f50705d0bfff"
-    },
-    {
-      "file": "files-system-team_verifier.html",
-      "source_sha256": "f87f278065cf2ec26d6b65df7ac501a44665671562b5cf596bed1d75e5daff8f",
-      "implementation_sha256": "1cef59487ab039aec2d48322690378df40180a385febbe68f4fad9200127ae15"
-    },
-    {
-      "file": "getting-started.html",
-      "source_sha256": "2678fa836f80f260613232fab6480fe2d8da4379a3c989b15f6c3ff243ad53a2"
-    },
-    {
-      "file": "images.html",
-      "source_sha256": "f8402a820029f8a317bdaf77585b7cd015bbb178710b0a9d4986779223a8571c"
-    },
-    {
+      "id": "home",
       "file": "index.html",
-      "source_sha256": "b2e00631a64aa5d9700714b756e75e013de577e624406aa70849a586d8a9ed78",
-      "implementation_sha256": "96c874447576c5f2dc6e663e9308ba9f94d659d5f7b132e43df0db8def904cee"
+      "theme": "portal",
+      "source_sha256": "e2dfbe1478fe21926e30ae9b716343bd41925401612e269ec41c06c68cf4c37c"
     },
     {
-      "file": "interface-catalog.html",
-      "source_sha256": "2f2f495082d45074d39a47f92960efc5152436f0eb881f55379caf0cdd0ce026",
-      "implementation_sha256": "0cca08c28d36cadd971e25dfc90f8c42b03e863c15a3b9436301248adfbeb6d1"
+      "id": "guides-quickstart",
+      "file": "guides/quickstart.html",
+      "theme": "interactive",
+      "source_sha256": "e05f3b4b853db05dc214e8b3fde26d5eeed541ee114c7a68817d9801453ed657"
     },
     {
-      "file": "interfaces.html",
-      "source_sha256": "69c13cc33512955612040f526bc52410394a8efe7910b69b82e29a91702cef0f",
-      "implementation_sha256": "0cca08c28d36cadd971e25dfc90f8c42b03e863c15a3b9436301248adfbeb6d1"
+      "id": "guides-cli-and-scenes",
+      "file": "guides/cli-and-scenes.html",
+      "theme": "interactive",
+      "source_sha256": "5eae27e5203f3e617d7dbc449012bc4381f74e279b0fe26b9d82883762017af4"
     },
     {
-      "file": "licenses.html",
-      "source_sha256": "91668ba679ab47c8060cef96d27f5e6c09fb2aef641ff75c509ae94861073111"
+      "id": "guides-platform-ui",
+      "file": "guides/platform-ui.html",
+      "theme": "interactive",
+      "source_sha256": "1f3bc58d221e0c009aeebfd5fc6d883afcfce2b92e690d43b28c3eb22d8c0a8a"
     },
     {
-      "file": "module-robot-action_executor.html",
-      "source_sha256": "f9206ea514cd87a88bdef114df7144c0b7194f6b5aca261adb9ad1ae7fd493bb"
+      "id": "guides-real-peer-sync",
+      "file": "guides/real-peer-sync.html",
+      "theme": "interactive",
+      "source_sha256": "dd20aca52418a58dac8bac397d1ea4e06e4a7e2f0078b6fa53bea455cd101fee"
     },
     {
-      "file": "module-robot-body_gateway.html",
-      "source_sha256": "800d4dd6d0f9cb109e6269d34b9b4d8d949ab06f32a888dd117cf19eb5f6b5b1",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "id": "architecture-overview",
+      "file": "architecture/overview.html",
+      "theme": "interactive",
+      "source_sha256": "4907d40b54a77667f7149bb587e96074d190dfe5520526114b73d796ac7a3042"
     },
     {
-      "file": "module-robot-config_client.html",
-      "source_sha256": "1b5ca3d9ea62ed9b4666e40f7b82918269d80f0f45583dba8da557be7ceb6093"
+      "id": "architecture-component-map",
+      "file": "architecture/component-map.html",
+      "theme": "report",
+      "source_sha256": "cfafa52017f5c92fb7118d022d2d4083af0e5db991fc92b9dd4b1ee0a31faaf7"
     },
     {
-      "file": "module-robot-evidence_buffer.html",
-      "source_sha256": "ede5c67cf8b5e84584e83663f1335cad83d8252966f253440269b1c79d066462"
+      "id": "architecture-interfaces",
+      "file": "architecture/interfaces.html",
+      "theme": "report",
+      "source_sha256": "01a4f10d819a9039e764e3834c2f32769c2be5e9309dc5dc0add4fcb85d7136c"
     },
     {
-      "file": "module-robot-interaction_runtime.html",
-      "source_sha256": "ca5c700d7344c3c5a0909e235f9f5f3cef52cf7cae6fe38e9239b6299e990eb8",
-      "implementation_sha256": "96c874447576c5f2dc6e663e9308ba9f94d659d5f7b132e43df0db8def904cee"
+      "id": "architecture-runtime-baselines",
+      "file": "architecture/runtime-baselines.html",
+      "theme": "report",
+      "source_sha256": "681ae16098e9d7bdac88e7b9798cf6b31388e35953102c3e7908bb8d099dbad7"
     },
     {
-      "file": "module-robot-local_task_runtime.html",
-      "source_sha256": "3f245b1b2f6dd25d14d16a259db4e378b85b5ac31f7237985050c058443070fb",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "id": "subsystems-system-agent-and-rsi",
+      "file": "subsystems/system-agent-and-rsi.html",
+      "theme": "interactive",
+      "source_sha256": "f2b93a425b086f58327117fe955bbb00cc4a4754c6522c0b277ec2b9da2d6e39"
     },
     {
-      "file": "module-robot-manipulation_runtime.html",
-      "source_sha256": "6f9f2920abd02377d6e42559cd91e2525339d925a2ece7b40a0f3bd42f130e5e"
+      "id": "subsystems-interaction-and-gateway",
+      "file": "subsystems/interaction-and-gateway.html",
+      "theme": "interactive",
+      "source_sha256": "f8ffc86de521f99a316bd0f0ebaf10825d7d24bcf3a3c33e59c1af34ce4a7813"
     },
     {
-      "file": "module-robot-motion_coordinator.html",
-      "source_sha256": "d6951b26516ac16e033ef066da210dca36e967c1b88803c0803170e448e4dc5e"
+      "id": "subsystems-facility-hal-equipment",
+      "file": "subsystems/facility-hal-equipment.html",
+      "theme": "interactive",
+      "source_sha256": "a0a82031ef9b505427e7ace6c93d241b75ed9cb4d87c49b6e6b3ebb59eaf379d"
     },
     {
-      "file": "module-robot-navigation_runtime.html",
-      "source_sha256": "9ed82de534508b9f7e0dc72ad9a8c0262af20d6e7108be303046cfd84825d7f0",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
+      "id": "subsystems-robot-multiprocess-cpp",
+      "file": "subsystems/robot-multiprocess-cpp.html",
+      "theme": "interactive",
+      "source_sha256": "30aeaf5e785a91c4112e21f3b9b71c883eb30a9d803279498e3bb88cc0d2df3a"
     },
     {
-      "file": "module-robot-perception_runtime.html",
-      "source_sha256": "3930d7dc70cecbe389ba1a8c70b6b32c522f62e6094eedd113aabea27e449de6",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "id": "subsystems-robot-embodiment-spec",
+      "file": "subsystems/robot-embodiment-spec.html",
+      "theme": "interactive",
+      "source_sha256": "cf979cb618615d6eb0be107664635481fe155facad04103cd92ee2cb4052865f"
     },
     {
-      "file": "module-robot-protection_runtime.html",
-      "source_sha256": "4f461f7a426eedf3ab03a08e5adb9c1601acc0299ded2f79fb02bcb9a3efceab"
+      "id": "subsystems-robot-hal-sal-wire",
+      "file": "subsystems/robot-hal-sal-wire.html",
+      "theme": "interactive",
+      "source_sha256": "37e98fbff22f8a70da5cc3ce2fcb61cd50824facf47b36a020b48c6b2e340978"
     },
     {
-      "file": "module-robot-sensor_adapters.html",
-      "source_sha256": "c7f7e5bafbad04a8b2cc13303c1d8995b1cb13f32a5a447a975e1d1ccbaaa69e",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "id": "subsystems-robot-capabilities",
+      "file": "subsystems/robot-capabilities.html",
+      "theme": "interactive",
+      "source_sha256": "6546c23232e3881dc6381a97340be9f22de9d70df3279bc730956e0ed6cebc36"
     },
     {
-      "file": "module-robot-spatial_runtime.html",
-      "source_sha256": "2c2fd6781492d181dea4b6fb0a596045668ec8f66d8685195e4a0542fc698893",
-      "implementation_sha256": "48d618f13c9f721f06877ceda079736cf1b6c602e870b30ea08537afebc047af"
+      "id": "algorithms-overview",
+      "file": "algorithms/overview.html",
+      "theme": "report",
+      "source_sha256": "a89dfdbfde4fca12795ae1300a29676610b674f7cb63eaf9868a3c8dc6824cdd"
     },
     {
-      "file": "module-robot-state_estimation.html",
-      "source_sha256": "90b620e7226b74eb3c43dba5db964443e420d3c0e1eae97b91f5e7fe1a1c1812"
+      "id": "algorithms-locomotion-and-state",
+      "file": "algorithms/locomotion-and-state.html",
+      "theme": "interactive",
+      "source_sha256": "ffeee9b66d3ec1d747498848fa642b3cbecf437b3d4ec800f1ab05698597d8b5"
     },
     {
-      "file": "module-system-candidate_builder.html",
-      "source_sha256": "a95f9cd366f3596d14179cdb12fdc0f1a7b5f14832a4a3ee22aa118261f3d8be",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "id": "algorithms-spatial-and-navigation",
+      "file": "algorithms/spatial-and-navigation.html",
+      "theme": "interactive",
+      "source_sha256": "7111505d29d13c77817f58cc6fc66f068dc5f11f166f1b15ebc527eef5548310"
     },
     {
-      "file": "module-system-capability_registry.html",
-      "source_sha256": "831ccb1c5a1e4c667c187ddbbc3f37891fbcc9fd7842a792066494bef6550aed",
-      "implementation_sha256": "0cca08c28d36cadd971e25dfc90f8c42b03e863c15a3b9436301248adfbeb6d1"
+      "id": "algorithms-manipulation-and-ik",
+      "file": "algorithms/manipulation-and-ik.html",
+      "theme": "interactive",
+      "source_sha256": "6edaefced68ddfc47bff44256cdd4d0f92f71699b481342545833d3d720bfaf9"
     },
     {
-      "file": "module-system-config_manager.html",
-      "source_sha256": "387ff9075144a6ce98cdd7eec239765b8dad52c656f12eafc1e08324eaf0d1a8"
+      "id": "algorithms-workpiece-perception",
+      "file": "algorithms/workpiece-perception.html",
+      "theme": "interactive",
+      "source_sha256": "299885997717eab754a7f2c627af82b4850e99da36837e076d79eef75a09b371"
     },
     {
-      "file": "module-system-context_store.html",
-      "source_sha256": "db382329a26ac94b2961e72826d1a915e2e3d30130e7bfb5fa5b9036aa9a0282",
-      "implementation_sha256": "71de5c260e787ad4c2251975869249bb8d6d778e7a87404ffcc3f50705d0bfff"
+      "id": "evidence-simulation-engine",
+      "file": "evidence/simulation-engine.html",
+      "theme": "interactive",
+      "source_sha256": "86b4cb442b372495dc7726672091bb26788c8eba87a0ef8a7aa45768ba4133fa"
     },
     {
-      "file": "module-system-evidence_store.html",
-      "source_sha256": "b55d9cfb0b454c155c140f83a1d7e7f2fa83d7d07aa32d086772cb5af76230fc"
+      "id": "evidence-verification-ladder",
+      "file": "evidence/verification-ladder.html",
+      "theme": "report",
+      "source_sha256": "6b9b6d286ccb2c577b605d42ff16c9b245b2e26ccfc91724b313946bedbce1f2"
     },
     {
-      "file": "module-system-evolution_manager.html",
-      "source_sha256": "05e4c251d0004073178e72a74e0bc12b0e0e9cd53989b48304030ea3e7dc1ee9",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "id": "evidence-media-gallery",
+      "file": "evidence/media-gallery.html",
+      "theme": "report",
+      "source_sha256": "915616fb48ddbd8f988b830b6d7946234cb77dc70069cd7e43d1d719ed857106"
     },
     {
-      "file": "module-system-knowledge_memory.html",
-      "source_sha256": "9a012f99167b64272e9042d8edcad5f4581ed46e0242128766247b4165b4566b",
-      "implementation_sha256": "3366ffd4f223f654d418b0e68bb8a5e05a9f376f5b25a04d4110453da6ff6a94"
+      "id": "engineering-development-workflow",
+      "file": "engineering/development-workflow.html",
+      "theme": "interactive",
+      "source_sha256": "53d2fcd0d02eb3322623767a6632018047de4a112d0ef3bf4d1794d711b61df7"
     },
     {
-      "file": "module-system-reflection_engine.html",
-      "source_sha256": "152e74b73780eeb7a2c418b0bcc4a536fa79014e4af384fd05474ec9b7e88174",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
+      "id": "engineering-doc-pipeline",
+      "file": "engineering/doc-pipeline.html",
+      "theme": "article",
+      "source_sha256": "93593ebaadfe4eb8ab4754f81a291e142be0171b5ec2f0277ef4da7d248742a0"
     },
     {
-      "file": "module-system-team_planner.html",
-      "source_sha256": "68141b46acba7f2ec44fcdf38f2e00c0a33110cf193c8d96849b0dc27d13b9ee",
-      "implementation_sha256": "eed18d619dd9add9421599b64c3b4adafd6f5aa1d72c1a6b6ece9af0b611069b"
+      "id": "engineering-dependencies-licenses",
+      "file": "engineering/dependencies-licenses.html",
+      "theme": "report",
+      "source_sha256": "273927d7c0d399b8a43a9f0145eeb9eec6729784fae9765d9c5e2befd0209244"
     },
     {
-      "file": "module-system-team_runtime.html",
-      "source_sha256": "194786bf210636c03f7b219da6a9df371fa33f512d5560502a63778805ac9efe",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "module-system-team_verifier.html",
-      "source_sha256": "ea97d4982f646cfb32ad68de0ddb0d77ea8c7553b1e1b5f016d0b34408ce749f",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "modules.html",
-      "source_sha256": "9874ef56a0dc9c273d6f11ccd1db617e53e643c388afa3e34c71f37c99eb9a7e",
-      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
-    },
-    {
-      "file": "runtime-internals.html",
-      "source_sha256": "d4ec5fbbfe0e905812799d7074e6102fbdf93c1059a38d1d22a1114ee1473611",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "scenarios.html",
-      "source_sha256": "0707fd95f8ea1e9182cd572dff8bf24f5acfe14692169b70632ca504fca47f1c",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "simulation-usage.html",
-      "source_sha256": "7dbbe00d3103d2d26fc013bb83d3857d610aa65c303a930f9f324e3f6257616d",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "simulation.html",
-      "source_sha256": "08fcf0f9dc862a2d39ab8a53080fe6bfd3f01c3fa2c04e85c00d15988bb7aa16",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "simulation-performance.html",
-      "source_sha256": "6a3c15b2a37eab9bc11a47d11a12d6ea2c9e8d6aad1aa234706d33ec6186a7a3",
-      "implementation_sha256": "3dcf9ca6ba56d59d59a01a985816805a262ddf2751e782e630d3acad55170e56"
-    },
-    {
-      "file": "simulation-experiments.html",
-      "source_sha256": "b27b658fbdab5d007b5518e4555aa255436cdb48072e35f1faaf72a129e2a44f",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "simulation-experiment-catalog.html",
-      "source_sha256": "9907e127bcf400102d1db320499240ccbc7c7e596a8c78df418009f61eca7362",
-      "implementation_sha256": "155e1488ea6ea0fa4759d6564b8eeec587f6e89278efcbfcd00e5730c8499d0c"
-    },
-    {
-      "file": "simulation-recordings.html",
-      "source_sha256": "f90c9e0f7a133aaebcd5b483f462bc8ba0d3bfa726e8ff8daae1282c5516b845",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "navigation-response-experiments.html",
-      "source_sha256": "3791dac9dd3077d7e3c14465ea00f0bd4178d1f77887c7aefef550dca293f462",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
-    },
-    {
-      "file": "navigation-response-model.html",
-      "source_sha256": "f9eb7846a3823006510d8f0e3f5c6e8d22e8c7212b02ae20e0476de3b882ac01",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
-    },
-    {
-      "file": "navigation-response-recordings.html",
-      "source_sha256": "47c01cf5774e3d8a17b4f81eb976ddd32cfa41d80847b7e3e3da49c814dbd59c",
-      "implementation_sha256": "a455d3a3cf56722bafec5d792af132a1c9da9c0ba1098acfb234bf97ce1644a6"
-    },
-    {
-      "file": "agent-architecture.html",
-      "source_sha256": "0da8251ae21b038e6d95bef829f39162c7037d2dcd3dad3e60c725f5b355857a",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "agent-contracts.html",
-      "source_sha256": "7eb78b385d44a6ae987b6b80c64a84351adf4ace86886140e697b580e1915493",
-      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
-    },
-    {
-      "file": "agent-global.html",
-      "source_sha256": "a5b294243ffcf64ff455c50ea88099a9d355be1fa219b0982f62cacd5d26b8a1",
-      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
-    },
-    {
-      "file": "agent-local.html",
-      "source_sha256": "34bc710741dd6edd1576396dc33e915fcf8b309d47dd6dea274c37082e4574b3",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "agent-aspire.html",
-      "source_sha256": "16eb03164feab4417a30b9aefd6a84f73ab0f9e68587a923f02edb2ec933d241",
-      "implementation_sha256": "32a0ac226b76669324bb63f2c09b42523b3db6895a721823fc5db14f215288dd"
-    },
-    {
-      "file": "agent-evolution.html",
-      "source_sha256": "911544b91e0e9701bda2995ca1916deedf69de47bdec7e0db28d0888050965b9",
-      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
-    },
-    {
-      "file": "agent-api.html",
-      "source_sha256": "0d0de9354b605b4bac83306bdd6868762ab478ccbcbbf1d2dd2315354203a6a4",
-      "implementation_sha256": "8d625df7f6a1a6d542a1e27226e6ac28632932b6c6aa35589db9268e94d02b6e"
-    },
-    {
-      "file": "collaborative-development.html",
-      "source_sha256": "d3f390376421c2803609b7b7e773b75317552a1eef801a4458a72f44c0ff3147",
-      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
-    },
-    {
-      "file": "interaction-integration.html",
-      "source_sha256": "0a5157311903b5ca23940e845436521d5dd06dbda883e0f58ac788819a898122",
-      "implementation_sha256": "6368a1bf4538d3cb328aba141ca3e1a1eae05b6fa30982914d1628bd413e36a4"
-    },
-    {
-      "file": "module-ownership.html",
-      "source_sha256": "d3c4286b7bde4abc4bb8691db6fc040b63ee4342cc274500e5924a585580ee37",
-      "implementation_sha256": "96c874447576c5f2dc6e663e9308ba9f94d659d5f7b132e43df0db8def904cee"
-    },
-    {
-      "file": "workpiece-perception.html",
-      "source_sha256": "a1810dd13abaf78db4124dd3c272458fa381037d7c3521129512ca42c95cdc6a",
-      "implementation_sha256": "455a6366b269c9c3474fbb5104140e5a912db8054a6b910707c50361c6deaec7"
-    },
-    {
-      "file": "simulation-newton-usage.html",
-      "source_sha256": "d57d7b4141f81c8a367eabd5e57da93a9fbc468623d90580d49ab0a2a8040477",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
-    },
-    {
-      "file": "simulation-newton-recordings.html",
-      "source_sha256": "75c4a00941279a55e45dec7b1f92b26bd9c6ff918ea1ceb513af6350287bd083",
-      "implementation_sha256": "ab872793e6dff895e7191cf013bb216f237fb9eb65a5571588ccd245611b0afb"
+      "id": "engineering-historical-evolution",
+      "file": "engineering/historical-evolution.html",
+      "theme": "report",
+      "source_sha256": "7a48e43214df41fb75c83542119fc43232fa617ea249d3d17ca1d24af0ac040d"
     }
   ],
-  "assets": [
-    {
-      "file": "diagrams/README.md",
-      "sha256": "d9da568aea62b77d896a5e8bfa68776e17f18ec57d5555389b5fbdd9f58bfacd"
-    },
-    {
-      "file": "diagrams/agent-architecture.drawio",
-      "sha256": "ff5a517a685ab0d1842c0e0ce0bea0748d7ee188a17f994511a946c3cc9f67b6"
-    },
-    {
-      "file": "diagrams/agent-architecture.html",
-      "sha256": "0315759fafa2bf9e1d429302aa75754c8cc287740101d65f55af39db25bbc95c"
-    },
-    {
-      "file": "diagrams/agent-architecture.svg",
-      "sha256": "4081d1e54087f664ae52a31ba055e95a68fac0cd2e7958a1ebc8ec4f8f668e58"
-    },
-    {
-      "file": "diagrams/agent-device.html",
-      "sha256": "c726540e969ebcf2ca61b556399a7bd9d8fac8d4306bce28bbbcf1619fd9db58"
-    },
-    {
-      "file": "diagrams/agent-device.svg",
-      "sha256": "e22303b50525f28faf220da0d8232f4e75b765b98aa120f3691486d5b1299c87"
-    },
-    {
-      "file": "diagrams/agent-evolution.html",
-      "sha256": "2aaae36166796bda53b358e9157cef9b2a14a90061b1ab14857fe32c38d8453a"
-    },
-    {
-      "file": "diagrams/agent-evolution.svg",
-      "sha256": "487728f46cb9c9da659df80801692235bcf65d38028026c79fc5c6261245ca68"
-    },
-    {
-      "file": "diagrams/agent-global.html",
-      "sha256": "b6523d2e7042de8d1ea18e7651f3d7442209430e37927e3f3bb9fffd7c603f19"
-    },
-    {
-      "file": "diagrams/agent-global.svg",
-      "sha256": "72ab83f827ec7d823beef16005f67fb14042b5f734f05119910231b7c65fd7c9"
-    },
-    {
-      "file": "diagrams/agent-local.html",
-      "sha256": "ca4574a1d3154da82109a5430f99efa813c2214415cb8ce47f1b643bdb6fb26c"
-    },
-    {
-      "file": "diagrams/agent-local.svg",
-      "sha256": "ccbae7b5bb1189ff50e85fb4c14293691194d776538198c95c07fe2cfd083398"
-    },
-    {
-      "file": "diagrams/agent-sequence.html",
-      "sha256": "b6eaa6de9244b82637e206fbcaa95def1e375ba9dd54a7187751a8dac59df345"
-    },
-    {
-      "file": "diagrams/agent-sequence.svg",
-      "sha256": "aee9f85c76a94f9f4a2e2b6fac9a7b6d73ddb050173da177335ab92d801d211b"
-    },
-    {
-      "file": "diagrams/agent-team.html",
-      "sha256": "9c41ba17e384992e6c850ac7a0a680c2832e2058eeaa936e8c3aab6ed7b688a3"
-    },
-    {
-      "file": "diagrams/agent-team.svg",
-      "sha256": "062dd18058eea7da665fd87a24f4a704a85aa607a0bbe986539dd1c67966b83a"
-    },
-    {
-      "file": "diagrams/algorithm-map.drawio",
-      "sha256": "b5b1309de0a9d2760a9e4d4f78575477eaa3efb0a8c6933c0912ccc85f98bab4"
-    },
-    {
-      "file": "diagrams/algorithm-map.html",
-      "sha256": "64475b1a1241c25d2bd8f3abb42db7feb8159a875e55cb5c368b35a85f060f05"
-    },
-    {
-      "file": "diagrams/algorithm-map.svg",
-      "sha256": "0ceb6182918f09837660817e9753587bd0dce0c95c59682a02b74828490991c8"
-    },
-    {
-      "file": "diagrams/body-adapter.drawio",
-      "sha256": "c3800133fede0d0bf5fe4675543202418ac539feace6a07102f996d59ba85211"
-    },
-    {
-      "file": "diagrams/body-adapter.html",
-      "sha256": "4ac27c3adc4b6f3150c8e3210bab1d996db0802a3034f9180e74830db760adec"
-    },
-    {
-      "file": "diagrams/body-adapter.svg",
-      "sha256": "054ab10f366ba560058b2492616cc660a5c057f744eaed7a82fda969e64f998b"
-    },
-    {
-      "file": "diagrams/manipulation-runtime.drawio",
-      "sha256": "3c5c25ae5359ed01eddec8558138464dffdeb4918372493575cae0f91cbeb91b"
-    },
-    {
-      "file": "diagrams/manipulation-runtime.html",
-      "sha256": "7e97644816a7509594b6bcb1418c2a72884b7eb7f2bec6d2c6d914e7272b727e"
-    },
-    {
-      "file": "diagrams/manipulation-runtime.svg",
-      "sha256": "4d009ffc18b56e75b8c48ce37ab19863e14e9dbc4fd3e410a9aa24b7b359fddd"
-    },
-    {
-      "file": "diagrams/navigation-runtime.drawio",
-      "sha256": "fc6cbfb9ad44186fcd877ab0bc9a6b45fe818fc85cb79f97c8ff53a5b74cd0ad"
-    },
-    {
-      "file": "diagrams/navigation-runtime.html",
-      "sha256": "76a4af486815683b3faccfc059ca813358db9dd9e80c4bd22f15d0165252a7a8"
-    },
-    {
-      "file": "diagrams/navigation-runtime.svg",
-      "sha256": "192848cdeef45e0e444fb49466c0cfbf95836d938303cc5719146e5808c55205"
-    },
-    {
-      "file": "diagrams/perception-runtime.drawio",
-      "sha256": "92606d51770b62303e27b7a73aa0b7d890a9efbe47456164e517524a4cf183b4"
-    },
-    {
-      "file": "diagrams/perception-runtime.html",
-      "sha256": "b4d8478b64558245835c7eef4ffdf32f1447c893726464af9d80248650f2cc26"
-    },
-    {
-      "file": "diagrams/perception-runtime.svg",
-      "sha256": "e42170ddcc73ba91ea6adec2f0b806c6b5d7276111a85d496255500162d59170"
-    },
-    {
-      "file": "diagrams/runtime-sequences.drawio",
-      "sha256": "4420008df48c99fd61540d7a06013160688b686fb7e83819dd2ade45b8bcb7d4"
-    },
-    {
-      "file": "diagrams/runtime-sequences.html",
-      "sha256": "fa58cf84e8f2d3e4cf2e2ff73e70d434468c34a44d70ae3002c588ef2b0b3fd9"
-    },
-    {
-      "file": "diagrams/runtime-sequences.svg",
-      "sha256": "89f94fdf6d4e62d1cce9a1a9e101268876f2ea04d14d5fcdc63cefc9a5eed2c0"
-    },
-    {
-      "file": "diagrams/simulation-rtf-20261012.svg",
-      "sha256": "31cca6ce984e6f18d890964b5a66cbbe66087b22ad89424283b86a69486342ff"
-    },
-    {
-      "file": "diagrams/software-architecture.drawio",
-      "sha256": "c57cd3d77039e4bc58925fd7a8a8422431665f194f240d6ea65377ca2b200383"
-    },
-    {
-      "file": "diagrams/software-architecture.html",
-      "sha256": "42669cbb563574c6f1a59750a1276510527340e93023d964c85def7b917e19aa"
-    },
-    {
-      "file": "diagrams/software-architecture.svg",
-      "sha256": "f66e2b6e04d8c5e2a15791cf47574e63182b809ea8e4203f3ecf5aeb8ba295d3"
-    },
-    {
-      "file": "diagrams/spatial-runtime.drawio",
-      "sha256": "935d69f5924aea54a8655df927b699bc2f2688fac2c26a386e1b522b0f591df2"
-    },
-    {
-      "file": "diagrams/spatial-runtime.html",
-      "sha256": "3dc811c4f953e3800d77608af24bc0e53033fe3f3599e2f4ee8e4679803e68c2"
-    },
-    {
-      "file": "diagrams/spatial-runtime.svg",
-      "sha256": "8ee891bad43bf84f3f958077ed1060a5665aab59338a87e72a4d237ac4decde9"
-    },
-    {
-      "file": "diagrams/system-architecture.drawio",
-      "sha256": "52cda35e12a528b29f7b5b4474540a6fa27b9933af5f206c528001cdc62835ea"
-    },
-    {
-      "file": "diagrams/system-architecture.html",
-      "sha256": "dda381d4edaa08263f4243a97a309e6f457880ae4112da73d434fccc86ac6ad1"
-    },
-    {
-      "file": "diagrams/system-architecture.svg",
-      "sha256": "423d8a46ba7bdb1a62c3759e3ab7c9a0d2d5bfa34ffa30bb9ed8ad3d25b01c3e"
-    },
-    {
-      "file": "media/20261013T054152Z-408a2b81-blender-20x.mp4",
-      "sha256": "83677108d510c24856f30e63e9daab2673096af26a439b49da162fd20336d121"
-    },
-    {
-      "file": "media/20261013T054152Z-408a2b81-irsim-20x.mp4",
-      "sha256": "97b2a72c78b8e3cae392cd4290739d0f523af2b00f76f9689508a3c5da658d80"
-    },
-    {
-      "file": "media/20261013T054152Z-408a2b81-mujoco-20x.mp4",
-      "sha256": "e23e731fbdd50d764607660065dfc738f902b872b3364c6d6742f2b9887115ea"
-    },
-    {
-      "file": "media/20261013T060536Z-62798db9-blender-20x.mp4",
-      "sha256": "40f80a2c63b76af88d21ba70531c32f65531859abc85798451732e7a1bd2c1c5"
-    },
-    {
-      "file": "media/20261013T060536Z-62798db9-irsim-20x.mp4",
-      "sha256": "29d56720a76aa65682dcfd44ddfe5f99babd073db03685f555b4fc1d6222e77a"
-    },
-    {
-      "file": "media/20261013T060536Z-62798db9-mujoco-20x.mp4",
-      "sha256": "8da77af8d5eaafe4587b6a2c871f2f4ad3417a66e8dc8d56c2e543ffa70456af"
-    },
-    {
-      "file": "media/20261013T065706Z-f96b0d14-blender-20x.mp4",
-      "sha256": "db443dd14af2995c4958b6d1da5cd8c956a2307aefca2472555bf1cecc47f313"
-    },
-    {
-      "file": "media/20261013T065706Z-f96b0d14-irsim-20x.mp4",
-      "sha256": "c07c846e39dc4faf95612a9d71600f647d237357f2e3ef492d353e8ea98cd5ce"
-    },
-    {
-      "file": "media/20261013T065706Z-f96b0d14-mujoco-20x.mp4",
-      "sha256": "5c757cf8aabf0a040d08a5ba3fd57295a61c56d58a6c12cbf3f2c69a797cfd6e"
-    },
-    {
-      "file": "media/20261013T065948Z-1dffbb13-blender-20x.mp4",
-      "sha256": "879f6d7ee633d38ceb27ce6663f6ad5aaa44301a66c7897578d68fbc2558d8a2"
-    },
-    {
-      "file": "media/20261013T065948Z-1dffbb13-irsim-20x.mp4",
-      "sha256": "3ad7aecea5a8bab834a917880bb8f724f8d9c3c3d5ab2c2e51790dfab658fb23"
-    },
-    {
-      "file": "media/20261013T065948Z-1dffbb13-mujoco-20x.mp4",
-      "sha256": "20ae2a11a510c52692482a4cb6b3e2710c469eef6fe92545c41d49c11a409a0b"
-    },
-    {
-      "file": "media/20261013T070218Z-8078e5e8-blender-20x.mp4",
-      "sha256": "4eef05c7b920ebc220f5ae4994c8da21b4657c3b8d6d1ff7608ad26ffd4a4438"
-    },
-    {
-      "file": "media/20261013T070218Z-8078e5e8-irsim-20x.mp4",
-      "sha256": "bc1c510cc501cdc0b4a59ed52c5a3b4a7f12b6f7d2cb43fb50924ff1f7d6118c"
-    },
-    {
-      "file": "media/20261013T070218Z-8078e5e8-mujoco-20x.mp4",
-      "sha256": "16df4485f6f2f516e1701c06c5edf599dd17046113f07f1f3682d6780703bb8f"
-    },
-    {
-      "file": "media/20261013T070429Z-2e10c431-blender-20x.mp4",
-      "sha256": "6053925b75374877c6c4c8e9f01372e867b4ad5002f033e355ab00c3851b71ac"
-    },
-    {
-      "file": "media/20261013T070429Z-2e10c431-irsim-20x.mp4",
-      "sha256": "d30912366a4249c2c7c58c8fe8080adef8925c230a4bd9ee629069580d2f9881"
-    },
-    {
-      "file": "media/20261013T070429Z-2e10c431-mujoco-20x.mp4",
-      "sha256": "fb97a4d2d49a2f7b7ee7d68a0a7cd27aeda37bc49bbf002f3a660df5db78f9f9"
-    },
-    {
-      "file": "media/20261013T071552Z-8f9e9203-blender-20x.mp4",
-      "sha256": "76c55f3486925b561ca3104e549d4e3dd8b118829ce1f8352e792b882dfbe91c"
-    },
-    {
-      "file": "media/20261013T071552Z-8f9e9203-irsim-20x.mp4",
-      "sha256": "ca166588fdf875b7aba015620334d3c243f58ec37cd3afd000aa5c44f44c6cba"
-    },
-    {
-      "file": "media/20261013T071552Z-8f9e9203-mujoco-20x.mp4",
-      "sha256": "2172c82756a1c442b1a53cad71a0103c4e4a950de6d8c165ba42ef50435fd58f"
-    },
-    {
-      "file": "media/20261013T071832Z-862626e0-blender-20x.mp4",
-      "sha256": "57aa7150d0a1c873c52067c0e30a38b41520355a73568f97faaa7822cabbfb95"
-    },
-    {
-      "file": "media/20261013T071832Z-862626e0-irsim-20x.mp4",
-      "sha256": "e9f4238ca6df179c541120435ac02d7a6fa104c3fa3feb134cb186a05f84e6e8"
-    },
-    {
-      "file": "media/20261013T071832Z-862626e0-mujoco-20x.mp4",
-      "sha256": "18833e60bc33a31cc9b6e4fe43e6eede9475c3ab4c82c19a994a8e62e5afe5da"
-    },
-    {
-      "file": "media/20261013T072345Z-2024e6fa-blender-20x.mp4",
-      "sha256": "786a8da9c8aa5a434367501e011b48e39ab4c6358dc8c3c9535fa6c4b564af25"
-    },
-    {
-      "file": "media/20261013T072345Z-2024e6fa-irsim-20x.mp4",
-      "sha256": "753a7635cf4566fb051d3cbea0136a313a1652eca402549a8f421123c6e9d890"
-    },
-    {
-      "file": "media/20261013T072345Z-2024e6fa-mujoco-20x.mp4",
-      "sha256": "dda43e88ec8cff7105ed19d2cb259365b8626542b5fbd467e538d343dfe21535"
-    },
-    {
-      "file": "media/20261013T153825Z-8b66f078-blender-20x.mp4",
-      "sha256": "c79e1077408f5cfd11b8bec8f2c0f62b0ab498702106bd042a92f96a5020dd1c"
-    },
-    {
-      "file": "media/20261013T153825Z-8b66f078-irsim-20x.mp4",
-      "sha256": "993972f78257d2bca5d89d3cda912a6ccc689a5631e7fc12637c2dadfd2281e4"
-    },
-    {
-      "file": "media/20261013T153825Z-8b66f078-mujoco-20x.mp4",
-      "sha256": "a163f607734cdf32d351672614babc1181c73368128f8cd2958bfdabf6ac551d"
-    },
-    {
-      "file": "media/20261013T160041Z-72bda478-blender-20x.mp4",
-      "sha256": "412e6be353a2c977cd65872510ef5be09ca71cb3520187eac2e41cab1f55e352"
-    },
-    {
-      "file": "media/20261013T160041Z-72bda478-irsim-20x.mp4",
-      "sha256": "9c3e4f66debd2766f7c8b10354c861dfa3f7c272600951e8216f766f3304af3b"
-    },
-    {
-      "file": "media/20261013T160041Z-72bda478-mujoco-20x.mp4",
-      "sha256": "34a9685bd10df4ee5ab90dca8731e4e5874cf0a09f47d3173589edf181d1df8a"
-    },
-    {
-      "file": "media/20261013T160432Z-ef4d6c34-blender-20x.mp4",
-      "sha256": "fd66111aeeff35a58eeb79262f4ff106484d57289cf4bbaf67f2af007e91f0d2"
-    },
-    {
-      "file": "media/20261013T160432Z-ef4d6c34-irsim-20x.mp4",
-      "sha256": "a91dfd430bb07f45b36792ad87efaccfeb045dd4fb80f10f450880789e61a3f0"
-    },
-    {
-      "file": "media/20261013T160432Z-ef4d6c34-mujoco-20x.mp4",
-      "sha256": "aee6f433595a7c0c7a2d42ddff50d335f04bc84b594a2bcd4f49a1b001ce7449"
-    },
-    {
-      "file": "media/20261013T161744Z-a0622843-blender-20x.mp4",
-      "sha256": "ba399e7a10e53efd2e66332ec0e2d832ef14e0ba8fae407df22bde9c3f485a96"
-    },
-    {
-      "file": "media/20261013T161744Z-a0622843-irsim-20x.mp4",
-      "sha256": "8d6ad67ad000d8a5f1c34f65c4762f6c6efea39909cafec1ff21fc4126f2faa6"
-    },
-    {
-      "file": "media/20261013T161744Z-a0622843-mujoco-20x.mp4",
-      "sha256": "f8c34a857a88e1a37709fa9939d09f89c3d4d9abd37f0e676e52416aa243980d"
-    },
-    {
-      "file": "media/20261013T162213Z-e824af0a-blender-20x.mp4",
-      "sha256": "23859935e456d9963da3e43783ebf35c56b29c8844ba2a5af1002a94d812847d"
-    },
-    {
-      "file": "media/20261013T162213Z-e824af0a-irsim-20x.mp4",
-      "sha256": "4d2ec6f0cdce7c24038b9680e9fd105168be04b2a022611480f6054bd34e9f5c"
-    },
-    {
-      "file": "media/20261013T162213Z-e824af0a-mujoco-20x.mp4",
-      "sha256": "4a1b145f7883742e1e446f4c8c19dff67dac896f4bb56c5c03991d3081b31ce8"
-    },
-    {
-      "file": "media/20261013T162546Z-83951696-blender-20x.mp4",
-      "sha256": "ae7473d3592d877af61a83126ae0a0b9373c4aa947fe41e78345584f86439aa0"
-    },
-    {
-      "file": "media/20261013T162546Z-83951696-irsim-20x.mp4",
-      "sha256": "bf914f8a5530c3495ddd6b5b50bb616bf1ac9d68f9f89e469d68cbdca70a95ad"
-    },
-    {
-      "file": "media/20261013T162546Z-83951696-mujoco-20x.mp4",
-      "sha256": "d9d0d9d806166d47eacb29d8d87c7393732ac47e85afbf510896cdc9a1f35ed8"
-    },
-    {
-      "file": "media/20261013T163025Z-a17b45b6-blender-20x.mp4",
-      "sha256": "d45cc19b1a90c4553f9612e74d0647a2165ca3e643b6b6bab906786d8cd432df"
-    },
-    {
-      "file": "media/20261013T163025Z-a17b45b6-irsim-20x.mp4",
-      "sha256": "c7434f1dba6d1cfc70b1292e56dca9fde5fbd3bbb82dbb8d1abf3aae992da77c"
-    },
-    {
-      "file": "media/20261013T163025Z-a17b45b6-mujoco-20x.mp4",
-      "sha256": "bde1af4df049958574463bb2ce8f3c4e52a23cf1ffae037a8b40ec92ca276cf3"
-    },
-    {
-      "file": "media/20261013T163552Z-f078486a-blender-20x.mp4",
-      "sha256": "6c1772dd76c5ac0350aea0faf1267afe2a12854c87c7e55e2055f861e8c232c3"
-    },
-    {
-      "file": "media/20261013T163552Z-f078486a-irsim-20x.mp4",
-      "sha256": "b199e8305c9e4cee5eff02d11f25fd704c223b5394a60f6cf6036058f55dc2f2"
-    },
-    {
-      "file": "media/20261013T163552Z-f078486a-mujoco-20x.mp4",
-      "sha256": "c56f1973e46d5e0ae4e64840dc92a834a58e28342f7b544fe02ab8d7911efdc5"
-    },
-    {
-      "file": "media/20261013T163916Z-3fae2da2-blender-20x.mp4",
-      "sha256": "f95a379b63aa82a87bed47303d0bf296e6c89e99ec7a0261aba9d5dc70b4984d"
-    },
-    {
-      "file": "media/20261013T163916Z-3fae2da2-irsim-20x.mp4",
-      "sha256": "414fafdd30a80db794b9ad63b34767ec8e2cebd552e3e202654aad300001025b"
-    },
-    {
-      "file": "media/20261013T163916Z-3fae2da2-mujoco-20x.mp4",
-      "sha256": "11f095459f29b62ca4a4b51ccd4792bc58735f5f25d26038c2a88a561dc48436"
-    },
-    {
-      "file": "media/approach-base-isaac-20x.mp4",
-      "sha256": "aa2b17100c7799c65758985b9f4c877f352551b7e51c0a248a33a2636d13b393"
-    },
-    {
-      "file": "media/approach-base-perception-20x.mp4",
-      "sha256": "72fcd7d79c0dcd3bede80d8a9a0184c3cf86f1de66269677cabf9c5d2c13baa3"
-    },
-    {
-      "file": "media/approach-base-sensors-20x.mp4",
-      "sha256": "2de701099e93529af1792ef9f4569d4dc6122e3a2476187d2c271ba0b3c4b33b"
-    },
-    {
-      "file": "media/arm-hand-isaac-20x.mp4",
-      "sha256": "d7f2be52c3dfd282dd1031f51159226530179ce3747db0215e110e14dee2d67e"
-    },
-    {
-      "file": "media/arm-hand-perception-20x.mp4",
-      "sha256": "044e2f0f9c1b5bf96e28c8c08c93a8f60c43cc7a151930cc23f2d2412cd30e04"
-    },
-    {
-      "file": "media/arm-hand-sensors-20x.mp4",
-      "sha256": "7f8a80b769a0ef818ed3cd3dc9104eab119a1dea2ceffc9bd357c3f150db7c88"
-    },
-    {
-      "file": "media/cancel-isaac-20x.mp4",
-      "sha256": "7117090a808443b296d4fb1c82e6cb6f9009e07997118db4ab882803997b0d8f"
-    },
-    {
-      "file": "media/cancel-perception-20x.mp4",
-      "sha256": "cc9ed1f9fa41b1d61de111706082a466dd6d158f2f10f80ef5c6a9b8432768d3"
-    },
-    {
-      "file": "media/cancel-sensors-20x.mp4",
-      "sha256": "06017c9882f73e9a00dbb70fb834db32b3a3fc8976179e4eedcb91a24190bef0"
-    },
-    {
-      "file": "media/carry-drop-replay-1x.mp4",
-      "sha256": "dc924a13a0058b37d3b0e713b5fbaae1da0dd767ab024d574691c02e8d4a5a85"
-    },
-    {
-      "file": "media/carry-drop-replay-20x.mp4",
-      "sha256": "43f479c614055451429b65066b4855285b89829e0b4cfc6650852667234f473a"
-    },
-    {
-      "file": "media/lvdt-revo2-underhand-v3-blender-20x.mp4",
-      "sha256": "af86cc311665637daecbc821f31428d5a088273ac342def2841af212fd102bc6"
-    },
-    {
-      "file": "media/lvdt-revo2-underhand-v3-irsim-20x.mp4",
-      "sha256": "622c8064c7b2e84261933769d896651ef3fcfa8629e95de8aeb8a85169699654"
-    },
-    {
-      "file": "media/lvdt-revo2-underhand-v3-mujoco-20x.mp4",
-      "sha256": "0951f3a747102c7abcb73a13dfad6e98c87f327e0765ccc148f0771fefb3356b"
-    },
-    {
-      "file": "media/lvdt-revo2-underhand-v5-blender-20x.mp4",
-      "sha256": "afb4f535b8c816c35648c1df9ec99f766d899dc30eadc4121738243a491f7364"
-    },
-    {
-      "file": "media/lvdt-revo2-underhand-v5-irsim-20x.mp4",
-      "sha256": "9a78958bfa048863b19569458da335d5d6ebb63f2e70651115eae66a001c3687"
-    },
-    {
-      "file": "media/lvdt-revo2-underhand-v5-mujoco-20x.mp4",
-      "sha256": "57450417c0047530bf52e7a1a0643a990291c1535e63276116db5ef795557b6a"
-    },
-    {
-      "file": "media/manip-left-isaac-20x.mp4",
-      "sha256": "d65dd3499c171f763daee35272866be298ccd95f4f3a8560b7c298cab98dca2e"
-    },
-    {
-      "file": "media/manip-left-perception-20x.mp4",
-      "sha256": "03767867b6a1d802ad6e4c6287da03a09a83e7aa930538a86ccb29953f615652"
-    },
-    {
-      "file": "media/manip-left-sensors-20x.mp4",
-      "sha256": "017d6f52f8629457b3fc5860c9d19728e4a13dd7d651f7de99b7a438c4df9b72"
-    },
-    {
-      "file": "media/manip-right-isaac-20x.mp4",
-      "sha256": "e1fd42adfd18c39be6af1459afe3312641bb809df8e5c31b7aec4fb2ba095e13"
-    },
-    {
-      "file": "media/manip-right-perception-20x.mp4",
-      "sha256": "b057561eca6a4fd46c767620299071016a1ffc0cf54eb926b9dcfc7e7f8ae67e"
-    },
-    {
-      "file": "media/manip-right-sensors-20x.mp4",
-      "sha256": "b624ad13557c6e8d6e9d19e63416ecb716bb6b874be3f43d2e095993c084ac0a"
-    },
-    {
-      "file": "media/native-device-cpu600-20x.mp4",
-      "sha256": "986ae2afd1df59e4e4699adccf3e35ea8d10bb2ef419b36bad9b620100feec55"
-    },
-    {
-      "file": "media/native-platform-cpu-console-20x.mp4",
-      "sha256": "01a601bb97b5fcdf7bcfed180c3d8104c9e729ce6a79ea7d3f42922a7f84bab3"
-    },
-    {
-      "file": "media/native-platform-cpu-physics-20x.mp4",
-      "sha256": "f9d552f7bff9e922f7734569bb537f8e218ab2f7b30251ea4ce46a710179870b"
-    },
-    {
-      "file": "media/native-platform-newton-console-20x.mp4",
-      "sha256": "d2d4d9e4cc0dbfac1bbc8e4bb209b809574551bbe7bcceebd1dd6e20b37c0299"
-    },
-    {
-      "file": "media/native-platform-newton-physics-20x.mp4",
-      "sha256": "af2c0ea6884686d373f8ff419a6e3dc0edca169f674e4f3dcacd6c8ef940f71b"
-    },
-    {
-      "file": "media/navigation-response-evidence.json",
-      "sha256": "abf2405333841cc1a613f843811e4e3772462d2389266a82e583ebd4df3c23af"
-    },
-    {
-      "file": "media/newton-ue-transfer-01-console-20x.mp4",
-      "sha256": "d1a57b27ba08ed9b687fbaec6ff22fc12c41e49835408982caffd94671b1f4a8"
-    },
-    {
-      "file": "media/newton-ue-transfer-01-ue5-20x.mp4",
-      "sha256": "e81a4dfa51026fef6792034dd39832c78a16ef42e21e623644342ad14666f25b"
-    },
-    {
-      "file": "media/newton-ue-transfer-02-console-20x.mp4",
-      "sha256": "f72ffc3a18ec4e296734f09cb81d82d4acda32e7114c36e584bdab8ca504cabd"
-    },
-    {
-      "file": "media/newton-ue-transfer-02-ue5-20x.mp4",
-      "sha256": "a47f630f9786645341eb6749c7fccad78d1a3377852be792b95cfbf42fc91687"
-    },
-    {
-      "file": "media/newton-ue-transfer-03-console-20x.mp4",
-      "sha256": "08709c5ca4b9a8d4d6e69dd7f9479f93631dff890d2b46cb9bc5cd0f12b39800"
-    },
-    {
-      "file": "media/newton-ue-transfer-03-ue5-20x.mp4",
-      "sha256": "ddfbe6710775d406d97d9b473ef075b68b7962dc459bf62670c1c9a66defff4b"
-    },
-    {
-      "file": "media/newton-ue-transfer-04-console-20x.mp4",
-      "sha256": "856d04da17c0e10b3b350d9392d11ede00cd270937f6803064c6fd89afcb3a37"
-    },
-    {
-      "file": "media/newton-ue-transfer-04-ue5-20x.mp4",
-      "sha256": "67c32f383119f50123fc0850c3126dcf2fe37295bdfce074b41418ef7fdde128"
-    },
-    {
-      "file": "media/newton-ue-transfer-timing.png",
-      "sha256": "81e1b63dbdea369552899c7787c874233b9a3f2547a7b4bcfdf56917bd543443"
-    },
-    {
-      "file": "media/pl-forward4m-slam-v2-blender-20x.mp4",
-      "sha256": "07856adad6da1ebe158c9481084e1320da5009057ee34b5d79c4b122b2ef97e4"
-    },
-    {
-      "file": "media/pl-forward4m-slam-v2-irsim-20x.mp4",
-      "sha256": "94e02f0102b0152b4a49e29cb6c37be6f092d55e5cf0c06f9920c90aed4f106a"
-    },
-    {
-      "file": "media/pl-forward4m-slam-v2-mujoco-20x.mp4",
-      "sha256": "fac7ff581c9684eb7a57fdfdd9f42dd15872831985d3eaec119de6f647721830"
-    },
-    {
-      "file": "media/planar-crossing-blender-20x.mp4",
-      "sha256": "50a76d0a57cafad25d160c0e712b33e90d3badee932e7f297a896d22f92bbee2"
-    },
-    {
-      "file": "media/planar-crossing-irsim-20x.mp4",
-      "sha256": "a23fbbcd0ac7f508f3133557f40e05b6c7905b5844460568c1240db385d855bd"
-    },
-    {
-      "file": "media/planar-crossing-mujoco-20x.mp4",
-      "sha256": "87a68057642dc11dbc6df0b294db2aa52d1f6a477c6b99c9d657d4ede300b953"
-    },
-    {
-      "file": "media/warehouse-map-navigation-isaac-20x.mp4",
-      "sha256": "a2c2e53b203a691ae0e09a290a9cadfec12e503f83279d921405e1df19baaa49"
-    },
-    {
-      "file": "media/warehouse-map-navigation-viser-20x.mp4",
-      "sha256": "a2f4e7d64cc45f3ae903039857928a81ed4cda287c27ba5b201ee3e45c2905cf"
-    },
-    {
-      "file": "media/warehouse-navigation-return-isaac-20x.mp4",
-      "sha256": "775a66541f260b023082e8667953b7d92ff04203e82c501a64e2090256d973c1"
-    },
-    {
-      "file": "media/warehouse-navigation-return-viser-20x.mp4",
-      "sha256": "3115c1d6d449ef649e88c79eea122f7635ae4cdc44c5cb3ec5d14d94bef4ffa1"
-    },
-    {
-      "file": "media/warehouse-station-isaac-20x.mp4",
-      "sha256": "2500a8ff8130490c0e539e8a2376516a6b64c0759d5b7069af22079900ffdd51"
-    }
-  ]
+  "redirects_count": 109
 }

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · report theme" />
+  <meta name="description" content="详述 FACRI
+平台经核准的冻结运行基线、算法调试核验工具用法、仿真实时率工程目标与停机主权裁定边界，以及单机局部故障隔离原则。" />
+  <title>运行时基线与冻结治权 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-report.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-report">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html" aria-current="page">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">系统架构与契约</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../architecture/overview.html">系统架构全景与双环控制流</a></li>
+        <li><a href="../architecture/component-map.html">全量组件与代码权责矩阵</a></li>
+        <li><a href="../architecture/interfaces.html">跨层接口与通信契约</a></li>
+        <li><a href="../architecture/runtime-baselines.html" aria-current="page">冻结运行基线与治理红线</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../architecture/overview.html">架构</a></li>
+    <li><a href="../architecture/runtime-baselines.html" aria-current="page">冻结运行基线与治理红线</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">系统架构与契约</div>
+        <h1 class="title">运行时基线与冻结治权</h1>
+        <p class="subtitle">0.0002 s GIL 基线、分场景控制频率、RTF 0.5
+自动停机废除与操作员手动停止主权</p>
+      </header>
+
+      <article class="doc-article">
+<p>在多线程、多物理引擎与分布式网络并存的工业具身平台上，随手修改底层调度间隔或暗自加入运行时停机阈值往往会掩盖真实性能瓶颈，甚至破坏硬件接口与高层规划间的同步时序。因此，平台将关键调度参数与运行主权收口为受基线审计工具监督的冻结规则（见
+<code>docs/development/factory-runtime-baseline.md</code> 与
+<code>docs/development/factory-rd-frozen-features.md</code>）。</p>
+<figure>
+<img src="../assets/diagrams/simulation-rtf-20261012.svg"
+alt="仿真实时率对比与历史调优轨迹" />
+<figcaption aria-hidden="true">仿真实时率对比与历史调优轨迹</figcaption>
+</figure>
+<h2 id="核心冻结运行基线参数">核心冻结运行基线参数</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>基线配置项</th>
+<th>当前授权取值</th>
+<th>否决 / 禁止变更项</th>
+<th>源码与清单约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Python GIL 调度间隔</strong></td>
+<td><code>0.0002 s</code>（<code>200 µs</code>）</td>
+<td>明确否决 <code>50 µs</code> 激进候选方案，禁止私自调低</td>
+<td><code>docs/development/factory-runtime-baseline.md</code></td>
+</tr>
+<tr>
+<td><strong>Smart Factory 清单仿真步长</strong></td>
+<td><code>physics_hz: 500</code>、<code>control_hz: 50</code>、<code>sal_transport: shm_v2</code></td>
+<td>保持统一异步 SAL、快照与配置生成逻辑不变</td>
+<td><code>configs/scenes/manifests/factory.json</code></td>
+</tr>
+<tr>
+<td><strong>C919 清单仿真步长</strong></td>
+<td><code>physics_hz: 200</code>（<code>5_000_000 ns</code>）、<code>control_hz: 50</code></td>
+<td><code>c919_system.py</code> 启动前硬检验步长必须等于
+<code>5_000_000 ns</code></td>
+<td><code>configs/scenes/manifests/c919.json</code>、<code>deployment/c919_system.py</code></td>
+</tr>
+<tr>
+<td><strong>单机 <code>body_rt</code> 控制与保护</strong></td>
+<td><code>200 Hz</code>（<code>5 ms</code>）HAL
+采样/下发；<code>50 Hz</code>（<code>20 ms</code>）局部安全评估</td>
+<td><code>robot_body_rt</code> 设置
+<code>restart_on_crash = false</code> 与
+<code>mlockall = true</code></td>
+<td><code>src/robot_app/processes/body_rt_main.cpp</code></td>
+</tr>
+<tr>
+<td><strong>带外安全心跳与局部超时</strong></td>
+<td><code>250 ms</code>
+遥操作死人开关（<code>teleop_deadman_ns</code>）；<code>1000 ms</code>
+心跳超时切 <code>LOCAL_HOLD</code></td>
+<td>超时仅置本机
+<code>LOCAL_HOLD</code>，<code>fleet_wide_estop_triggered</code> 恒为
+<code>false</code></td>
+<td><code>src/robot_app/algorithms/safety/protection_core.hpp</code></td>
+</tr>
+<tr>
+<td><strong>独立视觉流并发上限</strong></td>
+<td><code>max_active_video_streams: 2</code>，最大 ROI
+<code>640×480</code>，租约 <code>15.0 s</code></td>
+<td>禁止高分辨率全画幅无节制推流占满带宽</td>
+<td><code>configs/scenes/manifests/*.json</code>、<code>roi_gateway_guard.py</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="治权裁定废除-rtf-0.5-自动停机与操作员停止唯一主权">治权裁定：废除
+<code>RTF 0.5</code> 自动停机与操作员停止唯一主权</h2>
+<p>平台历史上曾探讨过以实时率阈值自动中断仿真会话的策略（例如早期关于
+<code>RTF 0.5</code>
+准入/停止的记录），但在最新工程治权裁定下已作明确废止，任何新增代码不得变相恢复：</p>
+<ol type="1">
+<li><strong>废除运行时自动停机门禁</strong>：禁止在运行调用链中新增基于实时率的运行时校验器、停机门限或会话级终态
+<code>STOP</code> 自动切断模块；双场景清单均显式固定
+<code>"no_rtf_auto_stop": true</code> 与
+<code>"independent_operation_failures": true</code>。</li>
+<li><strong>区分研发目标与强制停机规则</strong>：平均
+<code>RTF &gt; 1</code>、最低 <code>RTF &gt; 0.8</code>
+仅作为算法优化与调度性能改进的<strong>研发追求目标</strong>，绝对不能写成触发停机的自动开关。</li>
+<li><strong>操作员手动停止唯一主权</strong>：常规长周期完整仿真不恢复历史
+600 秒或固定步数上限；仿真会话只能由运行方或操作员经
+<code>./facrictl stop</code> 或 <code>./facrictl close</code>
+手动终止。</li>
+<li><strong>单机失败严格局部隔离</strong>：当某台机器人出现运动失稳、抓握脱离或局部保护超时时，故障仅影响本机并在统计账本中按真实计数保留，绝不牵连其余在线机器人执行全队停机。</li>
+</ol>
+<aside class="doc-callout doc-callout--important" role="note">
+  <div class="doc-callout-title">IMPORTANT · 关键约束</div>
+  <p><strong>算法与系统调试前后的强制基线检查</strong>：在实施任何调度、传输、感知或规划代码改动前后，必须执行只读基线检查脚本
+<code>python3 tools/verification/check_factory_runtime_baseline.py</code>
+核对当前代码态是否相对基线摘要产生漂移。若检测到漂移，必须逐项核查实际版本与授权范围，<strong>严禁通过擅自改写
+<code>resources/factory-runtime-baseline.json</code>
+摘要文件来伪造通过结论</strong>；同理，语音输入管线需单独执行基于
+<code>resources/voice-input-baseline.json</code> 的只读校验。</p>
+  
+</aside>
+<h2 id="时钟域分离与发布可信度原则">时钟域分离与发布可信度原则</h2>
+<p>为保障离线分析与真机同步的一致性，系统强制执行双时钟隔离规则：<code>SalSampleWire</code>
+与 <code>SpatialPosePod</code>
+明确分离仿真物理世界时钟（<code>sim_time_ns</code>）与宿主机单调挂钟（<code>host_monotonic_ns</code>）。上游推理与规划组件在消费感知观测或状态快照时，必须同时检验单调递增的会话代际号
+<code>epoch</code> 与采样时间戳差值；当硬件切换、仿真复位或
+<code>body_rt</code> 发生重连时，<code>epoch</code>
+自动递增，一切旧代际轨迹槽位（<code>TrajectorySlotPod</code>）与未完成的任务指令将被
+<code>robot_body_rt</code>
+立即丢弃，从根源上切断跨重启指令误执行风险。</p>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../architecture/interfaces.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">跨层接口与通信契约</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../subsystems/system-agent-and-rsi.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">系统智能体编排与 RSI 演化</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#核心冻结运行基线参数"
+id="toc-核心冻结运行基线参数">核心冻结运行基线参数</a></li>
+<li><a href="#治权裁定废除-rtf-0.5-自动停机与操作员停止唯一主权"
+id="toc-治权裁定废除-rtf-0.5-自动停机与操作员停止唯一主权">治权裁定：废除
+<code>RTF 0.5</code> 自动停机与操作员停止唯一主权</a></li>
+<li><a href="#时钟域分离与发布可信度原则"
+id="toc-时钟域分离与发布可信度原则">时钟域分离与发布可信度原则</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

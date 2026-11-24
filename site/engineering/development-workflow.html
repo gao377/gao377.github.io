@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="汇总日常研发所需的 facrictl
+会话指令、C++20 多进程编译与测试命令、Python/Web
+检查以及冻结基线指纹审计规范。" />
+  <title>开发与验证工作流 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html" aria-current="page">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">研发工程与演进</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../engineering/development-workflow.html" aria-current="page">研发规程与测试验证流程</a></li>
+        <li><a href="../engineering/doc-pipeline.html">受控中文写作与文档构建流水线</a></li>
+        <li><a href="../engineering/dependencies-licenses.html">系统依赖、镜像与第三方许可</a></li>
+        <li><a href="../engineering/historical-evolution.html">历史原型演进与封存索引</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../engineering/development-workflow.html">工程</a></li>
+    <li><a href="../engineering/development-workflow.html" aria-current="page">研发规程与测试验证流程</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">研发工程与演进</div>
+        <h1 class="title">开发与验证工作流</h1>
+        <p class="subtitle">统一入口 facrictl、C++20 4+1 构建、ROS 2
+联调与运行基线核验</p>
+      </header>
+
+      <article class="doc-article">
+<p>研发工作区以 <code>main</code>
+分支作为统一代码基线，新任务应基于主干拉取独立开发分支推进。所有代码修改均须依据
+<code>docs/development/ponytail-full.md</code>
+执行完整调用者追踪，保留标定校验、输入门禁与真实失败证据，并在提交前按修改面跑完最小充分验证集。日常操作命令汇总见
+<a href="../guides/quickstart.html">快速开始</a> 与 <a
+href="../guides/cli-and-scenes.html">CLI 与场景目录</a>。</p>
+<h2
+id="一统一控制台与场景入口facrictl">一、统一控制台与场景入口：<code>facrictl</code></h2>
+<p>仓库根目录入口脚本 <code>facrictl</code>（由
+<code>deployment/system_entry.py</code> 实现）自动隔离宿主机 Docker
+上下文环境变量并发起受控会话：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>常用命令</th>
+<th>实际行为与边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>facrictl start [--mock\|--real] [--wait]</code></td>
+<td>默认 <code>--mock</code> 启动模拟真机同步仿真；加
+<code>--real</code> 后经 FastDDS Domain 126 连接外部真实机器设备</td>
+</tr>
+<tr>
+<td><code>facrictl start --setup c919</code> /
+<code>--scene c919</code></td>
+<td>拉起 <code>C919</code> 机坪多异构本体调度与场景演示入口（对应
+<code>--setup factory\|cell\|c919</code> 分派）</td>
+</tr>
+<tr>
+<td><code>facrictl plan [--mock\|--real]</code> /
+<code>facrictl check [--mock\|--real]</code></td>
+<td>输出启动依赖与参数规划，或执行零积分物理代价的静态预检，不实际启动仿真容器</td>
+</tr>
+<tr>
+<td><code>facrictl status</code> / <code>facrictl review</code></td>
+<td>查看当前工厂运行锁与容器活跃度，或审阅上一轮关闭后的结算摘要</td>
+</tr>
+<tr>
+<td><code>facrictl stop</code> /
+<code>facrictl close [--wait]</code></td>
+<td><code>stop</code> 执行安全停车同时维持容器与 <code>:18640</code>
+控制台在线；<code>close</code>
+执行完整关闭、清理容器并等待锁释放（遵循唯一人工停机主权）</td>
+</tr>
+<tr>
+<td><code>facrictl ui</code></td>
+<td>启动或复用系统内已运行的协作控制台界面（<code>deployment/collaboration_launcher.py</code>）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="二分模块构建与多层次回归命令">二、分模块构建与多层次回归命令</h2>
+<p>根据实际改动位置选择对应编译与检查命令，禁止跳过原生编译测试仅以导入成功充当功能验收：</p>
+<ol type="1">
+<li><strong>C++20 <code>4+1</code> 多进程与 HAL
+插件构建验证（<code>src/robot_app/Makefile</code>）</strong>：</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src/robot_app all</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> <span class="at">-C</span> src/robot_app test</span></code></pre></div>
+<p>其中 <code>all</code> 目标依次构建 <code>libsal_shm.so</code>、5 个
+HAL
+动态插件（<code>libhal_facri.so</code>、<code>libhal_g2.so</code>、<code>libhal_m20.so</code>、<code>libhal_rp1.so</code>、<code>libhal_ugv_can.so</code>）与
+<code>5</code>
+个独立可执行程序（<code>robot_supervisor</code>、<code>robot_body_rt</code>、<code>robot_spatial_perc</code>、<code>robot_motion_plan</code>、<code>robot_task_agent</code>）；<code>test</code>
+目标编译并执行
+<code>test_core_hal_safety_ipc</code>、<code>test_algorithms_and_allocator</code>、<code>test_embodiment_decoupling</code>
+三套原生 C++20 回归程序。</p>
+<ol start="2" type="1">
+<li><strong>Python 单元回归、MuJoCo 4.0.1 与 <code>SIT-F3</code>
+联调</strong>：</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pytest tests/unit <span class="at">-q</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pytest simulation/backend/tests/test_mujoco4_native_contact_fleet.py <span class="at">-q</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pytest tests/integration/test_factory_4robot_multiprocess_closed_loop.py <span class="at">-q</span></span></code></pre></div>
+<ol start="3" type="1">
+<li><strong>ROS 2 契约包构建与安装包校验</strong>：</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/ros/humble/setup.bash</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">colcon</span> build <span class="at">--packages-up-to</span> system_app robot_app</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> tools/deployment/build_runtime.py <span class="at">--help</span></span></code></pre></div>
+<ol start="4" type="1">
+<li><strong>前端界面与能力面板构建检查（<code>apps/collaboration_platform/web/</code>）</strong>：</li>
+</ol>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> <span class="at">--prefix</span> apps/collaboration_platform/web run build</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> <span class="at">--prefix</span> apps/collaboration_platform/web run test:capabilities</span></code></pre></div>
+<ol start="5" type="1">
+<li><strong>感知 PCT
+原生第三方算法增量编译（仅依赖变更时）</strong>：可通过
+<code>tools/deployment/build_pct_sdk.sh</code> 在隔离构建目录编译
+<code>gtsam-4.1.1</code> 与 <code>osqp</code>，再使用
+<code>tools/deployment/package_pct_sdk.py</code> 打包。</li>
+</ol>
+<h2
+id="三基线指纹第三方来源核验与开发红线">三、基线指纹、第三方来源核验与开发红线</h2>
+<ul>
+<li><strong>冻结运行配置核验</strong>：算法调优前后执行
+<code>python3 tools/verification/check_factory_runtime_baseline.py</code>，校验核心参数是否相对
+<code>docs/development/factory-runtime-baseline.md</code>
+发生非预期漂移。<strong>当报出
+<code>RUNTIME_BASELINE_SOURCE_DRIFT</code>（如 <code>AGENTS.md</code>
+随文档治理演进更新后引发摘要差异）时，必须先比对实际代码差异与后续授权记录，严禁私自篡改
+<code>resources/factory-runtime-baseline.json</code> 凑出假
+<code>PASS</code></strong>。</li>
+<li><strong>第三方源码校验</strong>：执行
+<code>python3 scripts/verify_sources.py</code>
+核对平铺第三方目录与补丁文件的 <code>SHA-256</code>
+摘要，不可擅自重写清单散列值消除报错。</li>
+<li><strong>并发与资产约束</strong>：物理仿真严格一次运行一个 case，按照
+<code>resources/server-paths.json</code> 记录独立 <code>case_id</code>
+并尊重既有 owner 锁；模型权重、ROS
+录包、原始视频及本机临时产物均严禁提交入 Git 版本控制。</li>
+</ul>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../evidence/media-gallery.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">外置实证视频库</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../engineering/doc-pipeline.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">受控中文写作与文档构建流水线</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一统一控制台与场景入口facrictl"
+id="toc-一统一控制台与场景入口facrictl">一、统一控制台与场景入口：<code>facrictl</code></a></li>
+<li><a href="#二分模块构建与多层次回归命令"
+id="toc-二分模块构建与多层次回归命令">二、分模块构建与多层次回归命令</a></li>
+<li><a href="#三基线指纹第三方来源核验与开发红线"
+id="toc-三基线指纹第三方来源核验与开发红线">三、基线指纹、第三方来源核验与开发红线</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

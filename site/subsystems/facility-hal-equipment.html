@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="解析 FacilityHAL
+独立设施网关架构、MuJoCo/Modbus PLC/Mockup 三类驱动实现、Bearer
+安全校验、WAL 重启恢复机制以及智能工厂与 C919 机坪全套设施接入清单。" />
+  <title>FacilityHAL 与工装地勤设备接入 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心子系统手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../subsystems/system-agent-and-rsi.html">系统智能体编排与 RSI 演化</a></li>
+        <li><a href="../subsystems/interaction-and-gateway.html">交互语音入口与模型网关</a></li>
+        <li><a href="../subsystems/facility-hal-equipment.html" aria-current="page">工装网关与设备运行时</a></li>
+        <li><a href="../subsystems/robot-multiprocess-cpp.html">端侧 C++20 4+1 多进程运行时</a></li>
+        <li><a href="../subsystems/robot-embodiment-spec.html">声明式构型与单调能力综合</a></li>
+        <li><a href="../subsystems/robot-hal-sal-wire.html">IHalDriver 插件与 SalWire v2</a></li>
+        <li><a href="../subsystems/robot-capabilities.html">机器人能力提供者与接入契约</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+    <li><a href="../subsystems/facility-hal-equipment.html" aria-current="page">工装网关与设备运行时</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心子系统手册</div>
+        <h1 class="title">FacilityHAL 与工装地勤设备接入</h1>
+        <p class="subtitle">IFacilityHalDriver、13
+项注册设备操作、AckJournal WAL 持久化与双场景设备矩阵</p>
+      </header>
+
+      <article class="doc-article">
+<p>在物理产线与机场保障场景中，机器人操作的对象不仅包括被动工件，还包括具备独立运动机构、传感器反馈与工业总线协议的主动环境设备——如智能工厂里的上料机、压装机、检测台、箱式输送线，以及
+C919 机坪上的货舱门、地面电源插座、行李传送带、称重台与登机桥。FACRI
+将这些非机器人固定或移动基础设施统称为「设施（Facility）」，并通过独立模块
+<code>src/facility_hal/</code> 加以抽象隔离。</p>
+<h2
+id="为什么将工装与地勤设备剥离出-salwire">为什么将工装与地勤设备剥离出
+<code>SalWire</code></h2>
+<p>机器人关节高频伺服（<code>200 Hz</code> 定长 48
+轴）与外部设施的离散指令响应存在本质差异：压机加压、登机桥对接或货舱门开合往往持续数秒且依赖工业
+PLC
+离散状态字，不应也不必塞入机器人的毫秒级实时内存槽。因此，系统在物理层面上确立双向边界：</p>
+<ul>
+<li>机器人本体仅经 <code>SalWire</code> v2 与 <code>IHalDriver</code>
+交互；</li>
+<li>外部环境设施一律由 <code>FacilityHAL</code> 驱动网关（默认绑定
+<code>:18642</code>）托管；</li>
+<li>上层 <code>SystemApp</code> 中的 <code>equipment_runtime</code>
+模块通过 HTTP 客户端向 <code>:18642</code> 下发标准化设备操作指令，并在
+<code>TeamRuntime</code> DAG
+中与机器人导航、按键、取放步骤按依赖关系联合编排（例如：机器人到达工位
+<code>B1</code> 按下启动按钮或由系统触发 <code>process</code> -&gt;
+<code>FacilityHAL</code> 回报 <code>ready_to_pick: true</code> -&gt;
+机器人执行纯接触抓取）。</li>
+</ul>
+<h2 id="三大驱动后端与统一-131-操作契约">三大驱动后端与统一
+<code>13+1</code> 操作契约</h2>
+<p><code>src/facility_hal/contracts.py</code> 定义了抽象基类
+<code>IFacilityHalDriver</code>，当前仓库内置三套可热切换驱动后端：</p>
+<ol type="1">
+<li><strong><code>mujoco</code>
+驱动（<code>drivers/mujoco_facility.py</code>）</strong>：直接驱动
+MuJoCo
+物理场景中的活动门板、传送带滑轨、升降平台与触发传感器，在零吸附纯接触仿真中真实产生物理位姿与接触完成信号。</li>
+<li><strong><code>modbus_plc</code>
+驱动（<code>drivers/modbus_plc_facility.py</code>）</strong>：面向真实实验室或现场产线，通过
+Modbus 寄存器读写对接真实 PLC 控制器。</li>
+<li><strong><code>mockup</code>
+驱动（<code>drivers/mockup_facility.py</code>）</strong>：面向无物理仿真器或半实物展陈台架（如
+<code>--site lab</code>），按预设时序模拟机构动作与数字量应答。</li>
+</ol>
+<p>全系统统一注册 <code>13</code> 项业务设备操作（外加通用紧急中止动作
+<code>stop</code>），每项操作在契约层绑定唯一的完成状态判定字段（<code>OPERATION_COMPLETION_FIELDS</code>）：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>操作指令名称</th>
+<th>完成状态字段（<code>completion_field</code>）</th>
+<th>典型应用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feed</code></td>
+<td><code>ready_to_pick</code></td>
+<td>智能工厂上料单元 <code>FEEDER</code>、门禁/提升供料预备</td>
+</tr>
+<tr>
+<td><code>process</code></td>
+<td><code>ready_to_pick</code></td>
+<td>智能工厂压装单元 <code>PRESS_CELL</code>、传送与分拣处理</td>
+</tr>
+<tr>
+<td><code>inspect</code></td>
+<td><code>cycle_completed</code></td>
+<td>智能工厂检测台 <code>INSPECTOR</code>、称重台与分拣复检</td>
+</tr>
+<tr>
+<td><code>present_box</code></td>
+<td><code>box_ready</code></td>
+<td>智能工厂出料输送台 <code>CONVEYOR_BOX</code> 料箱到位就绪</td>
+</tr>
+<tr>
+<td><code>open_door</code> / <code>close_door</code></td>
+<td><code>door_opened</code> / <code>door_closed</code></td>
+<td>C919 前货舱门
+<code>AC06_FWD_CARGO_DOOR</code>、安检门与登机桥门</td>
+</tr>
+<tr>
+<td><code>dock_bridge</code> / <code>retract_bridge</code></td>
+<td><code>bridge_docked</code> / <code>bridge_retracted</code></td>
+<td>登机桥 <code>GS01_JETBRIDGE</code>、传送带
+<code>GS02_BELT_CONVEYOR</code> 靠机与撤离</td>
+</tr>
+<tr>
+<td><code>lift_to_level</code></td>
+<td><code>level_reached</code></td>
+<td>客舱配餐剪叉升降车 <code>GS09_CATERING_LIFT</code>
+举升至舱门高度</td>
+</tr>
+<tr>
+<td><code>convey_transfer</code></td>
+<td><code>transfer_completed</code></td>
+<td>行李分拣线 <code>ZN07_BAGGAGE_SORTER</code> 与传送带连续转运</td>
+</tr>
+<tr>
+<td><code>weigh_verify</code></td>
+<td><code>weight_verified</code></td>
+<td>行李/货物称重台 <code>ZN11_CARGO_SCALE</code> 核重校验</td>
+</tr>
+<tr>
+<td><code>verify_plug_seated</code> /
+<code>verify_plug_removed</code></td>
+<td><code>plug_seated</code> / <code>plug_removed</code></td>
+<td>机首地面电源插座 <code>AC09_GPU_RECEPTACLE</code>
+插头到位与拔除电气确认</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="网关安全边界与-ackjournal-崩溃恢复机制">网关安全边界与
+<code>AckJournal</code> 崩溃恢复机制</h2>
+<p><code>src/facility_hal/gateway/http_server.py</code>
+面向多机系统与本地调试工具提供严格的 HTTP 接口控制：</p>
+<ul>
+<li><strong>强制长令牌与跨域阻断</strong>：服务端拒绝默认弱口令，强制要求调用方提供长度不少于
+<code>32</code> 个字符的 Bearer Token，并在中间件层直接拦截所有跨源
+<code>Origin</code> 请求。</li>
+<li><strong>标准操作端点</strong>：暴露
+<code>GET /state</code>（查询全量设备快照）、<code>POST /commands</code>（提交幂等设备指令）、<code>GET /commands/{request_id}</code>（轮询指令终态）；另提供受明确标签
+<code>SIM_EQUIPMENT_DEBUG_V1</code> 约束的调试接口
+<code>POST /operator-inputs</code> 与
+<code>GET /operator-inputs/{event_id}</code>
+供仿真环境面板人工介入。</li>
+<li><strong>预写日志 <code>AckJournal</code> WAL
+核查</strong>：每条设施指令在送往底层驱动前首先持久化写入
+<code>AckJournal</code> WAL
+日志；若网关进程在动作执行中途崩溃或重启，恢复阶段自动将所有仍停留在未终结态
+<code>PENDING</code> 的旧指令标记为 <code>UNKNOWN</code>
+而绝不伪造成功完成，强制上层调度显式复检设备真实物理状态。</li>
+</ul>
+<h2 id="双场景接入设备拓扑对照">双场景接入设备拓扑对照</h2>
+<ul>
+<li><strong>Smart Factory（<code>16</code>
+台产线设备）</strong>：沿四条并行产线部署
+<code>A1</code>–<code>D1</code>、<code>A2</code>–<code>D2</code>、<code>A3</code>–<code>D3</code>、<code>A4</code>–<code>D4</code>
+共 <code>16</code> 个独立工业单元格，分别由
+<code>FEEDER</code>、<code>PRESS_CELL</code>、<code>INSPECTOR</code> 与
+<code>CONVEYOR_BOX</code> 四类设备构成。</li>
+<li><strong>C919 Ground Turnaround（<code>8</code>
+台地面/飞机保障设施）</strong>：覆盖
+<code>AC09_GPU_RECEPTACLE</code>（机首电源插座）、<code>AC06_FWD_CARGO_DOOR</code>（前货舱门）、<code>GS02_BELT_CONVEYOR</code>（行李传送带）、<code>ZN11_CARGO_SCALE</code>（称重台）、<code>ZN07_BAGGAGE_SORTER</code>（分拣线）、<code>ZN05_GATE_DOOR</code>（安检联锁门）、<code>GS09_CATERING_LIFT</code>（配餐升降平台）及
+<code>GS01_JETBRIDGE</code>（旅客登机桥），无缝串接机场五大业务支线。</li>
+</ul>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../subsystems/interaction-and-gateway.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">交互语音入口与模型网关</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../subsystems/robot-multiprocess-cpp.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">端侧 C++20 4+1 多进程运行时</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#为什么将工装与地勤设备剥离出-salwire"
+id="toc-为什么将工装与地勤设备剥离出-salwire">为什么将工装与地勤设备剥离出
+<code>SalWire</code></a></li>
+<li><a href="#三大驱动后端与统一-131-操作契约"
+id="toc-三大驱动后端与统一-131-操作契约">三大驱动后端与统一
+<code>13+1</code> 操作契约</a></li>
+<li><a href="#网关安全边界与-ackjournal-崩溃恢复机制"
+id="toc-网关安全边界与-ackjournal-崩溃恢复机制">网关安全边界与
+<code>AckJournal</code> 崩溃恢复机制</a></li>
+<li><a href="#双场景接入设备拓扑对照"
+id="toc-双场景接入设备拓扑对照">双场景接入设备拓扑对照</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

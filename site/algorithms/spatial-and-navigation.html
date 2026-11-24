@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="阐述 spatial_runtime
+激光体素定位与腰部运动学外参补偿，以及 HybridAStar、MPPI 和
+ConvergentTerminalServo 导航管线。" />
+  <title>空间定位与终端导航 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html" aria-current="page">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心算法手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../algorithms/overview.html">算法活跃度台账与模块归属</a></li>
+        <li><a href="../algorithms/locomotion-and-state.html">足式步态控制与本体状态估计</a></li>
+        <li><a href="../algorithms/spatial-and-navigation.html" aria-current="page">空间定位、规划与终端视觉伺服</a></li>
+        <li><a href="../algorithms/manipulation-and-ik.html">双臂操作规划与柔顺导纳控制</a></li>
+        <li><a href="../algorithms/workpiece-perception.html">工件视觉定位与五阶段超分检测</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../algorithms/overview.html">算法</a></li>
+    <li><a href="../algorithms/spatial-and-navigation.html" aria-current="page">空间定位、规划与终端视觉伺服</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心算法手册</div>
+        <h1 class="title">空间定位与终端导航</h1>
+        <p class="subtitle">动态腰部外参补偿
+SLAM、全局-局部规划链及零先验收敛终端伺服</p>
+      </header>
+
+      <article class="doc-article">
+<p>FACRI 的自主移动与精确停靠由 <code>spatial_runtime</code> 与
+<code>navigation_runtime</code>
+两套运行域共同驱动，前者解决机器人行走、弯腰时的激光点云畸变与全局重定位问题，后者串联全局无碰撞路径搜索、高频局部轨迹优化以及工位前毫米级收敛停靠。模块图与接口映射参考
+<a href="../architecture/component-map.html">组件地图</a> 与 <a
+href="../subsystems/robot-capabilities.html">机器人本体能力总览</a>。</p>
+<figure>
+<img src="../assets/diagrams/spatial-runtime.svg"
+alt="空间定位模块架构图" />
+<figcaption aria-hidden="true">空间定位模块架构图</figcaption>
+</figure>
+<h2
+id="一空间定位与动态腰部运动学补偿spatial_runtime">一、空间定位与动态腰部运动学补偿（<code>spatial_runtime</code>）</h2>
+<h3 id="c20-体素-icp-定位器与激光接入新鲜度">1.1 C++20 体素 ICP
+定位器与激光接入新鲜度</h3>
+<ul>
+<li><strong>体素 ICP
+本地定位（<code>VoxelIcpLocalizer</code>）</strong>：定义于
+<code>src/robot_app/algorithms/lightning_loc/voxel_icp_localizer.hpp</code>，将实时接入的
+<code>SalLidarWire</code> 点云（单帧上限 <code>6000</code> 点）按
+<code>0.20 m</code> 体素网格降采样并与先验地图匹配，连续输出局部
+<code>tracking_quality</code>（<code>0</code> 至
+<code>100</code>）以及最近障碍安全净距
+<code>min_lidar_clearance_m</code>。</li>
+<li><strong>双路时间同步缓存（<code>FrameStore</code>）</strong>：实现于
+<code>src/robot_app/modules/spatial_runtime/infrastructure/ros/lightning.py</code>，强制激光帧最大允许年龄
+<code>max_age_ns = 500 ms</code>，激光扫描时刻与 IMU / 关节 TF
+插值时间差上限 <code>&lt;= 2 ms</code>；一旦发生时钟回退或
+<code>epoch</code> 跳变立即清空历史帧并重定位。</li>
+<li><strong>局部基准输出（<code>body_frame.py</code>）</strong>：通过
+<code>src/robot_app/modules/spatial_runtime/domain/body_frame.py</code>
+向导航与操作模块统一暴露 <code>localized_base</code> 标准位姿框架。</li>
+</ul>
+<h3 id="弯腰倾斜工况下的激光外参实时补偿">1.2
+弯腰倾斜工况下的激光外参实时补偿</h3>
+<p>由于 3D LiDAR
+安装在受腰部俯仰/横滚/偏航关节驱动的躯干上，作业姿态变化会导致扫描平面大幅偏离地平面。<code>SalLidarIngress</code>（<code>src/robot_app/modules/spatial_runtime/infrastructure/ros/sal_lidar.py</code>）引入
+<code>compensate_waist_for_livox</code> 补偿环节：</p>
+<ol type="1">
+<li>根据同源时间戳的实测腰部关节角，调用
+<code>base_to_parent_from_robot</code>
+正向运动学推算激光雷达相对名义零腰角基准系 <code>lidar_frame</code>
+的实时旋转与平移偏差。</li>
+<li>在进入体素 ICP
+或占据栅格构建前，将倾斜点云投影回名义水平零腰姿坐标系。</li>
+<li>下游固定外参 SLAM
+算法即可无感知复用常规水平点云流，避免弯腰抓取或抬头观察时地图垂直撕裂或定位漂移。</li>
+</ol>
+<h2
+id="二多层联动规划管线hybridastarmppiboxroute-与-responsesampling">二、多层联动规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
+与 <code>ResponseSampling</code></h2>
+<figure>
+<img src="../assets/diagrams/navigation-runtime.svg"
+alt="导航运行时管线" />
+<figcaption aria-hidden="true">导航运行时管线</figcaption>
+</figure>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>规划层次</th>
+<th>核心模块与代码路径</th>
+<th>关键求解参数与搜索机制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全局运动学搜索</td>
+<td><code>HybridAStar</code>（<code>src/robot_app/algorithms/pct_nav/hybrid_astar.hpp</code>）</td>
+<td>扩展步长 <code>0.35 m</code>、最小转弯半径
+<code>1.2 m</code>、节点扩展上限
+<code>15000</code>；针对窄通道与带弯角约束路径生成初始无碰撞轨迹</td>
+</tr>
+<tr>
+<td>多约束局部优化</td>
+<td><code>MppiLocalPlanner</code>（<code>src/robot_app/algorithms/pct_nav/mppi_local_planner.hpp</code>）</td>
+<td>默认并行采样 <code>64</code> 条轨迹（上限 <code>128</code>
+条），滚动预测 <code>15</code> 步 × <code>0.1 s</code>；内置全向
+<code>kHolonomic</code>、差速 <code>kDifferential</code>、阿克曼
+<code>kAckermann</code> 三种底盘模型，默认安全净距
+<code>safety_clearance_m = 0.45 m</code>，支持最大 <code>250k</code>
+栅格 ESDF 查询</td>
+</tr>
+<tr>
+<td>工位框线对接回退</td>
+<td><code>plan_box</code>（<code>src/robot_app/modules/navigation_runtime/infrastructure/geometry/box_route.py</code>）</td>
+<td>在 <code>0.05 m</code> 分辨率占据栅格联合 <code>PctProvider</code>
+规划出站-入站轨迹；首轮（Pass
+0）优先尝试原地单向调头；受阻时依序激活三层靠泊拉出回退（<code>goal_inplace</code>、<code>start_inplace</code>、<code>both_pull</code>）</td>
+</tr>
+<tr>
+<td>走廊速度护栏与前向模拟</td>
+<td><code>SurfaceConstraintSpec</code> 与
+<code>ResponseSampling</code>（<code>src/robot_app/modules/navigation_runtime/infrastructure/planners/response_sampling.py</code>）</td>
+<td>C++ 端提供 <code>guard_corridor_twist</code> 保护窄道不超限；Python
+端对航向候选 <code>heading_candidates</code> 与平移候选
+<code>translation_candidates</code> 结合速度斜率制动边界做前向
+rollout（保持步长 <code>hold_step = 0.02 s</code>、持续
+<code>0.5 s</code> 保持后校核尾部净空）</td>
+</tr>
+<tr>
+<td>粗精接力平动调整</td>
+<td><code>PlanarAdjustment</code>（<code>src/robot_app/algorithms/pct_nav/planar_adjustment.hpp</code>）</td>
+<td><code>0.10 m/s</code> 低速平调，必要时沿当前朝向先倒退
+<code>0.20 m</code> 脱困，收敛窗口 <code>5 cm / 10°</code> 且附带
+<code>0.10 s</code> 稳定等待</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="三零先验终端收敛伺服convergentterminalservo">三、零先验终端收敛伺服：<code>ConvergentTerminalServo</code></h2>
+<p>工位操作前的最后 <code>0.3 m</code>
+精停极易受地面摩擦不均、鞋底弹性形变与步态稳态漂移影响，产生系统性跟踪偏置。<code>src/robot_app/modules/navigation_runtime/domain/control/convergent_terminal_servo.py</code>
+中的 <code>ConvergentTerminalServo</code>
+采用同心圆三态切换机制与零先验在线学习解决终段抖动问题：</p>
+<ol type="1">
+<li><strong>三状态同心收敛机（<code>IDLE_IN_BAND</code> /
+<code>APPROACH</code> / <code>SETTLE</code>）</strong>：
+<ul>
+<li>当位置偏差落入核心停靠区
+<code>R_core = min(0.015, 0.30 * r_accept, r_entry_cap)</code>（m）以内且偏航收敛后进入
+<code>IDLE_IN_BAND</code>（输出零速），避免微幅量化噪声引起反复微步踩踏。</li>
+<li>仅当外溢超出公开验收阈值 <code>r_accept</code> 时重入
+<code>APPROACH</code> 或 <code>SETTLE</code> 平滑归位。</li>
+</ul></li>
+<li><strong>零先验阻尼割线偏置估计（<code>b_xy</code>）</strong>：初始化偏置严格为零（不假设任何硬件固定漂移），在近距
+<code>SETTLE</code>
+过程中根据实发参考速度与实际机体系位移增量做阻尼割线更新，并将估计偏置总量硬性限幅在
+<code>min(0.12, 2.5 * r_accept)</code>
+内，既能消除长周期步态稳态侧滑，又防止噪声环境下估算积分发散。</li>
+</ol>
+<h2
+id="四三维激光回环定位与导航避障录像">四、三维激光回环定位与导航避障录像</h2>
+<p>下面视频展示 <code>FACRI</code> 在启用动态腰部外参补偿、体素 ICP
+定位与 <code>spatial_runtime</code> / <code>navigation_runtime</code>
+实时避障路线更新条件下的回环定位过程（<code>PHYSICAL_SIM</code>
+证据级别，原速呈现）。</p>
+<p><strong>MED-SPATIAL-01 · 3D LiDAR SLAM
+回环定位与局部通道避障</strong>（<code>1600×1000</code>、<code>30 fps</code>、<code>15.0 s</code>、<code>1x</code>
+原速、<code>PHYSICAL_SIM</code>）：</p>
+<figure class="doc-video" data-media-id="MED-SPATIAL-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-SPATIAL-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-lidar-loop-slam.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>三维激光雷达去畸变与回环建图定位（1x · 15.0 s ·
+SHA256:ab20e0387b）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../algorithms/locomotion-and-state.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">足式步态控制与本体状态估计</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../algorithms/manipulation-and-ik.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">双臂操作规划与柔顺导纳控制</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一空间定位与动态腰部运动学补偿spatial_runtime"
+id="toc-一空间定位与动态腰部运动学补偿spatial_runtime">一、空间定位与动态腰部运动学补偿（<code>spatial_runtime</code>）</a>
+<ul>
+<li><a href="#c20-体素-icp-定位器与激光接入新鲜度"
+id="toc-c20-体素-icp-定位器与激光接入新鲜度">1.1 C++20 体素 ICP
+定位器与激光接入新鲜度</a></li>
+<li><a href="#弯腰倾斜工况下的激光外参实时补偿"
+id="toc-弯腰倾斜工况下的激光外参实时补偿">1.2
+弯腰倾斜工况下的激光外参实时补偿</a></li>
+</ul></li>
+<li><a
+href="#二多层联动规划管线hybridastarmppiboxroute-与-responsesampling"
+id="toc-二多层联动规划管线hybridastarmppiboxroute-与-responsesampling">二、多层联动规划管线：<code>HybridAStar</code>、<code>MPPI</code>、<code>BoxRoute</code>
+与 <code>ResponseSampling</code></a></li>
+<li><a href="#三零先验终端收敛伺服convergentterminalservo"
+id="toc-三零先验终端收敛伺服convergentterminalservo">三、零先验终端收敛伺服：<code>ConvergentTerminalServo</code></a></li>
+<li><a href="#四三维激光回环定位与导航避障录像"
+id="toc-四三维激光回环定位与导航避障录像">四、三维激光回环定位与导航避障录像</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

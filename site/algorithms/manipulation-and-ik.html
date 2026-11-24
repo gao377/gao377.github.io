@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="详述 UpperBodyPlanner 17-DOF DLS
+IK、立方 Hermite 种子插值、DeviceCollisionQuery 扫掠碰撞检测与
+WrenchObserver/TouchdownGuard 纯接触控制。" />
+  <title>双臂规划与柔顺操作 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html" aria-current="page">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心算法手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../algorithms/overview.html">算法活跃度台账与模块归属</a></li>
+        <li><a href="../algorithms/locomotion-and-state.html">足式步态控制与本体状态估计</a></li>
+        <li><a href="../algorithms/spatial-and-navigation.html">空间定位、规划与终端视觉伺服</a></li>
+        <li><a href="../algorithms/manipulation-and-ik.html" aria-current="page">双臂操作规划与柔顺导纳控制</a></li>
+        <li><a href="../algorithms/workpiece-perception.html">工件视觉定位与五阶段超分检测</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../algorithms/overview.html">算法</a></li>
+    <li><a href="../algorithms/manipulation-and-ik.html" aria-current="page">双臂操作规划与柔顺导纳控制</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心算法手册</div>
+        <h1 class="title">双臂规划与柔顺操作</h1>
+        <p class="subtitle">49 候选阻尼最小二乘 IK、连续 Minkowski
+扫掠碰撞与纯接触导纳</p>
+      </header>
+
+      <article class="doc-article">
+<p>上身操作模块运行在零 <code>&lt;weld&gt;</code>
+辅助的纯物理接触基准上，需要同时协调双 7 自由度机械臂与 3 自由度腰部共
+<code>17</code>
+个上身自由度，在狭小工装与设备按钮前方完成轨迹生成、连续碰撞核验及力控触底放置。运行边界与全局冻结参数见
+<a
+href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>，仿真接触机制见
+<a href="../evidence/simulation-engine.html">MuJoCo 4.0.1
+仿真引擎</a>。</p>
+<figure>
+<img src="../assets/diagrams/manipulation-runtime.svg"
+alt="上身操作运行时架构图" />
+<figcaption aria-hidden="true">上身操作运行时架构图</figcaption>
+</figure>
+<h2 id="一17-自由度上身规划与-49-候选阻尼最小二乘-ik">一、17
+自由度上身规划与 49 候选阻尼最小二乘 IK</h2>
+<p><code>UpperBodyPlanner</code> 与
+<code>DlsIkSolver</code>（<code>src/robot_app/algorithms/planning_core/upper_body_planner.hpp</code>、<code>upper_body_planner.cpp</code>
+与 <code>dls_ik_solver.hpp</code>）负责双臂及腰部统一逆运动学求解：</p>
+<ol type="1">
+<li><strong>关节分工与腰部刚度加权</strong>：规划向量维度
+<code>kUpperBodyDofs = 17</code>（左右双臂各 <code>7</code>
+轴，加上腰部偏航 <code>yaw ±40°</code>、俯仰
+<code>pitch [-10°, +30°]</code>、横滚 <code>roll ±25°</code>
+三个硬约束关节）。<code>DlsIkSolver</code> 采用阻尼参数
+<code>ik_damping = 0.015</code>、单点最大迭代 <code>48</code>
+次与分段末端误差上限
+<code>max_segment_pos_err_m = 0.020 m</code>；腰部三轴权重差异显著设置（<code>yaw = 1.0</code>、<code>pitch = 10.0</code>、<code>roll = 100.0</code>），优先由双臂与腰部偏航消化大角度工作空间需求，严密抑制容易危及双足平衡的躯干侧倾。</li>
+<li><strong>49
+候选分级邻域搜索（<code>plan_cartesian_49</code>）</strong>：当标准中心点（<code>(0, 0)</code>）无法避障或触达运动学奇异区时，规划器在笛卡尔横向平面沿
+<code>±30 mm</code> 网格展开尝试，依「中心 <code>(0, 0)</code> →
+单臂小幅偏置 → 双臂组合 <code>7×7 = 49</code>
+组」顺序快速检索可行无奇异通道，并在固定时间格（<code>20 ms</code>
+步长最小加加速度插值，最多 <code>kMaxTcpSegments = 100</code>
+段）上生成共线同步的时间序列。</li>
+<li><strong>持物双臂中点约束与轻量按钮回退</strong>：搬运工况调用
+<code>compute_held_dual_tcp_targets</code>
+保持双夹爪相对工件中点刚性几何及最小连线旋转，配合每阶段触发的
+<code>2 cm / 3°</code> 单次漂移纠偏与
+<code>kHoldingLeaseMaxDriftM = 0.050</code>
+持物租赁超时护栏；按钮点按完成返回时，<code>ManipulationDomain</code>（<code>src/robot_app/modules/manipulation_runtime/domain.cpp</code>）支持
+<code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code>
+四类工作模式，并在按钮撤回启用
+<code>REVERSE_PREFIX_REPLAY</code>（<code>mode = 2</code>）直接逆序回放已验证安全路径而无需重新规划。</li>
+</ol>
+<h2
+id="二种子插值与连续扫掠碰撞核验">二、种子插值与连续扫掠碰撞核验</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>模块</th>
+<th>实现文件</th>
+<th>核心技术细节</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>速度连续种子插值（<code>seed.py</code>）</td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/seed.py</code></td>
+<td>引入分段三次埃尔米特插值（<code>CubicHermiteSpline</code>），严格保留
+TOTG
+时间最优轨迹节点处的一阶速度连续性，取代容易在节点处引起电机力矩尖峰的常规线性插值</td>
+</tr>
+<tr>
+<td>扫掠体积碰撞核验（<code>DeviceCollisionQuery</code>）</td>
+<td><code>src/robot_app/modules/manipulation_runtime/infrastructure/native_bindings/device_collision.py</code></td>
+<td>基于连杆凸包与胶囊几何构建相邻离散构型间的 Minkowski
+凸包扫掠体，依据 Bernstein
+导数速度上界自动计算最大采样区间并执行自适应中点二分细分，防止高速轨迹「穿墙越过」窄小障碍边沿</td>
+</tr>
+<tr>
+<td>原生输入合约（<code>native_full_inputs.py</code>）</td>
+<td><code>src/robot_app/modules/manipulation_runtime/domain/trajectory/native_full_inputs.py</code></td>
+<td>校验双臂关节位置限幅、支持面边界与场景障碍几何版本一致性，缺项直接显式阻断执行</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="三力矩观测touchdownguard-与纯接触任务柔顺控制">三、力矩观测、<code>TouchdownGuard</code>
+与纯接触任务柔顺控制</h2>
+<p>在无桌面真值或 <code>&lt;weld&gt;</code>
+外挂吸附的前提下，操作安全依赖于
+<code>src/robot_app/modules/manipulation_runtime/domain/control/wrench_observer.py</code>（<code>WrenchObserver</code>）与
+<code>admittance.py</code>（<code>TaskAdmittanceSession</code> /
+<code>TouchdownGuard</code>）共同提供的末端物理力感知：</p>
+<ol type="1">
+<li><strong>纯臂关节雅可比滤波观测（<code>WrenchObserver</code>）</strong>：构造<strong>显式排除腰部关节</strong>的纯
+7 自由度臂 Pinocchio 雅可比矩阵，使用解耦 3×7
+线速度正则阻尼（<code>lambda = 0.08</code>）与剩余角速度正则阻尼（<code>lambda = 0.35</code>）反演末端接触六维力/力矩；滤除小于
+<code>deadband = 0.12 Nm</code> 的关节微震并应用平滑系数
+<code>ema_alpha = 0.22</code>；针对 <code>SIM</code>
+无质量上肢配置显式置零重力项。</li>
+<li><strong>四套分阶段导纳控制剖面（<code>TaskAdmittanceSession</code>）</strong>：
+<ul>
+<li><code>FREE_GRAZE_COMPLIANCE_PROFILE</code>：空手逼近及预备区防擦碰。</li>
+<li><code>PICK_SEAT_COMPLIANCE_PROFILE</code>：夹爪合拢贴紧工件端面。</li>
+<li><code>HELD_TRANSPORT_COMPLIANCE_PROFILE</code>：携物移动期间吸收双臂与腰部轻微内力拉扯。</li>
+<li><code>PLACE_TOUCHDOWN_PROFILE</code>：工装放置落地阶段顺应桌面倾角误差。</li>
+</ul></li>
+<li><strong>垂直触底判稳守卫（<code>TouchdownGuard</code>）</strong>：下降安置过程中激活小步距虚拟微探（下探
+<code>0.008 m</code>，速率
+<code>0.015 m/s</code>），实时监测竖直向上接触反力；仅当连续满足
+<code>fz &gt;= 0.90 N</code> 且平稳驻留 <code>0.08 s</code>
+后才判定可靠着台并下发双爪释放指令，防止空中过早松爪导致工件跌落倾翻。</li>
+</ol>
+<h2 id="四上身规划狭窄空间-ik-与纯接触实证录像">四、上身规划、狭窄空间
+IK 与纯接触实证录像</h2>
+<p>下面三段 <code>PHYSICAL_SIM</code>
+实证录像展示了完整上身作业周期、受限通道内的 49
+候选阻尼最小二乘求解以及无外挂刚性焊接的纯物理接触导纳全过程（具体统计指标参见
+<a href="../evidence/verification-ladder.html">验证阶梯</a>）。</p>
+<p><strong>MED-MANIP-01 ·
+完整上身作业流水线与阶段切换</strong>（<code>1280×800</code>、<code>30 fps</code>、<code>17.0 s</code>、<code>1x</code>
+原速、<code>PHYSICAL_SIM</code>）：</p>
+<figure class="doc-video" data-media-id="MED-MANIP-01">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-manip-pipeline-cycle.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>双臂物理接触抓取、按键与退手作业周期（1x · 17.0 s ·
+SHA256:86896da199）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<p><strong>MED-MANIP-02 · 受限狭小空间 49 候选阻尼最小二乘 IK
+求解</strong>（<code>1280×800</code>、<code>30 fps</code>、<code>17.0 s</code>、<code>1x</code>
+原速、<code>PHYSICAL_SIM</code>）：</p>
+<figure class="doc-video" data-media-id="MED-MANIP-02">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-02.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-manip-confined-dls-ik.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>受限机柜深腔腰臂 17 轴无碰撞 DLS 逆解（1x · 17.0 s ·
+SHA256:faf46c78a9）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<p><strong>MED-MANIP-03 · MuJoCo 4.0.1
+双层垫片纯接触抓放与柔顺导纳</strong>（<code>1280×800</code>、<code>30 fps</code>、<code>17.17 s</code>、<code>1x</code>
+原速、<code>PHYSICAL_SIM</code>）：</p>
+<figure class="doc-video" data-media-id="MED-MANIP-03">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-03.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-mujoco4-pad-admittance.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>MuJoCo 4.0.1 双层柔顺指垫接触与导纳放置（1x · 17.2 s ·
+SHA256:cf6ed30400）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../algorithms/spatial-and-navigation.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">空间定位、规划与终端视觉伺服</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../algorithms/workpiece-perception.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">工件视觉定位与五阶段超分检测</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一17-自由度上身规划与-49-候选阻尼最小二乘-ik"
+id="toc-一17-自由度上身规划与-49-候选阻尼最小二乘-ik">一、17
+自由度上身规划与 49 候选阻尼最小二乘 IK</a></li>
+<li><a href="#二种子插值与连续扫掠碰撞核验"
+id="toc-二种子插值与连续扫掠碰撞核验">二、种子插值与连续扫掠碰撞核验</a></li>
+<li><a href="#三力矩观测touchdownguard-与纯接触任务柔顺控制"
+id="toc-三力矩观测touchdownguard-与纯接触任务柔顺控制">三、力矩观测、<code>TouchdownGuard</code>
+与纯接触任务柔顺控制</a></li>
+<li><a href="#四上身规划狭窄空间-ik-与纯接触实证录像"
+id="toc-四上身规划狭窄空间-ik-与纯接触实证录像">四、上身规划、狭窄空间
+IK 与纯接触实证录像</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

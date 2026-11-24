@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="深入剖析 src/robot_app/ 的 C++20 4+1
+多进程结构、CPU/内存资源比例分配算法、进程内多频线程划分、1
+秒本地保持与零分配无锁共享内存信道。" />
+  <title>单机 C++20 4+1 多进程实时架构 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心子系统手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../subsystems/system-agent-and-rsi.html">系统智能体编排与 RSI 演化</a></li>
+        <li><a href="../subsystems/interaction-and-gateway.html">交互语音入口与模型网关</a></li>
+        <li><a href="../subsystems/facility-hal-equipment.html">工装网关与设备运行时</a></li>
+        <li><a href="../subsystems/robot-multiprocess-cpp.html" aria-current="page">端侧 C++20 4+1 多进程运行时</a></li>
+        <li><a href="../subsystems/robot-embodiment-spec.html">声明式构型与单调能力综合</a></li>
+        <li><a href="../subsystems/robot-hal-sal-wire.html">IHalDriver 插件与 SalWire v2</a></li>
+        <li><a href="../subsystems/robot-capabilities.html">机器人能力提供者与接入契约</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+    <li><a href="../subsystems/robot-multiprocess-cpp.html" aria-current="page">端侧 C++20 4+1 多进程运行时</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心子系统手册</div>
+        <h1 class="title">单机 C++20 4+1 多进程实时架构</h1>
+        <p class="subtitle">robot_supervisor、四个隔离工作进程、硬件拓扑绑核算法与无锁
+SHM IPC 机制</p>
+      </header>
+
+      <article class="doc-article">
+<p>单台机器人的稳定控制要求在极端负载下依然保持严格的时间确定性：点云
+ICP
+匹配或视觉推理即便发生数倍耗时抖动，也绝对不能阻塞双足平衡或底盘避障刹车回路。为此，FACRI
+在 <code>src/robot_app/</code>
+下舍弃传统单进程多线程大杂烩模式，采用原生的 <code>C++20</code>
+<strong><code>4+1</code>
+多进程隔离架构</strong>，将每台机器人的运行时拆分为 <code>1</code>
+个监护主进程与 <code>4</code> 个职责和优先级严格区分的子进程。</p>
+<figure>
+<img src="../assets/diagrams/agent-device.svg"
+alt="单机设备层多进程架构示意" />
+<figcaption aria-hidden="true">单机设备层多进程架构示意</figcaption>
+</figure>
+<h2 id="进程分工优先级与核心资源配额"><code>4+1</code>
+进程分工、优先级与核心资源配额</h2>
+<p>结合 <code>configs/runtime/process_resource_weights.yaml</code> 与
+<code>src/robot_app/supervisor/resource_allocator.cpp</code>，五个原生二进制可执行文件的契约定义如下：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>进程名称</th>
+<th>优先级类别</th>
+<th>CPU 占比 / 内存占比</th>
+<th>亲和性与实时调度策略</th>
+<th>故障恢复与内部核心线程（默认运行频率）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>robot_supervisor</code></td>
+<td><code>+1</code> 守护监护进程</td>
+<td>轻量化常驻管理</td>
+<td>运行共享内存分配与 <code>25 ms</code> 健康轮询</td>
+<td>运行 <code>TopologyProbe</code> 与
+<code>ProportionalResourceAllocator</code>，管理代际 <code>epoch</code>
+与子进程生命周期</td>
+</tr>
+<tr>
+<td><code>robot_body_rt</code></td>
+<td><code>P0_CRITICAL</code></td>
+<td><code>0.35</code> / <code>0.20</code></td>
+<td><code>big_isolated_no_smt</code>、<code>SCHED_FIFO [70, 90]</code>、<code>mlockall=true</code></td>
+<td><strong><code>restart_on_crash = false</code></strong>；内含
+<code>sensor_adapters</code>、<code>state_estimation</code>、<code>action_executor</code>、<code>body_gateway</code>（<code>200 Hz</code>
+/ <code>5 ms</code>）与
+<code>protection_runtime</code>（<code>50 Hz</code> /
+<code>20 ms</code>）</td>
+</tr>
+<tr>
+<td><code>robot_spatial_perc</code></td>
+<td><code>P1_HIGH</code></td>
+<td><code>0.25</code> / <code>0.35</code></td>
+<td><code>big_core</code>、<code>nice = -5</code></td>
+<td>允许 <code>80 ms</code> 退避自动拉起；运行
+<code>spatial_runtime</code>（Voxel ICP）与
+<code>perception_runtime</code>（<code>10 Hz</code>）</td>
+</tr>
+<tr>
+<td><code>robot_motion_plan</code></td>
+<td><code>P2_MEDIUM</code></td>
+<td><code>0.30</code> / <code>0.30</code></td>
+<td><code>big_or_shared</code>、常规调度</td>
+<td>允许 <code>80 ms</code> 退避自动拉起；运行
+<code>motion_coordinator</code>（<code>50 Hz</code>）、<code>navigation_runtime</code>（<code>20 Hz</code>）与
+<code>manipulation_runtime</code>（主动 <code>20 Hz</code> / 被动
+<code>2 Hz</code>）</td>
+</tr>
+<tr>
+<td><code>robot_task_agent</code></td>
+<td><code>P3_BACKGROUND</code></td>
+<td><code>0.10</code> / <code>0.15</code></td>
+<td><code>little_efficiency_core</code>、<code>nice = 5</code></td>
+<td>允许 <code>80 ms</code> 退避自动拉起；运行
+<code>config_client</code>、<code>local_task_runtime</code> 与
+<code>evidence_buffer</code>（<code>10 Hz</code>）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<aside class="doc-callout doc-callout--warning" role="note">
+  <div class="doc-callout-title">WARNING · 风险边界</div>
+  <p><strong><code>robot_body_rt</code>
+严禁静默重启</strong>：硬件与控制界面的 <code>P0_CRITICAL</code>
+进程一旦崩溃（如内存越界或驱动断言失败），系统绝不尝试后台无声拉起恢复运动控制，而是立即切断下发并允许物理刹车或安全停机接管，防止未知状态下的盲目重连导致机器人在站立或负重中倾覆。</p>
+  
+</aside>
+<h2
+id="硬件拓扑探测与自适应资源分配器">硬件拓扑探测与自适应资源分配器</h2>
+<p>不同部署硬件平台（从机载
+<code>aarch64_rk3588</code>、<code>aarch64_jetson_orin</code>
+到仿真宿主机高核数 <code>x86_64</code> 多机并发环境）CPU
+大小核架构与中断分布迥异。<code>robot_supervisor</code>
+在启动阶段执行两阶段核组绑定与配额计算：</p>
+<ol type="1">
+<li><strong>硬件拓扑探测（<code>TopologyProbe</code>）</strong>：扫描
+<code>/sys/devices/system/cpu/</code> 与
+<code>/proc/interrupts</code>，识别大核与能效小核簇、超线程 SMT
+物理核心对映射以及高硬件中断（High-IRQ）核心，生成排除高中断污染的可用
+CPU 掩码。</li>
+<li><strong>比例核组划分（<code>ProportionalResourceAllocator</code>）</strong>：针对
+<code>P0_CRITICAL</code> 优先独占高主频物理大核并强制剔除同核 SMT
+兄弟线程，消除缓存与流水线竞争；在多机同宿部署或异构机型场景下，函数
+<code>allocate_for_embodiment</code>
+还会依据本体构型动态重算权重——例如面对纯速度底盘控制（<code>LocomotionArchetype::kChassisTwist</code>）且无机械臂操作机构（<code>ManipulatorArchetype::kNone</code>）的牵引车或摆渡车，自动压缩
+<code>body_rt</code> 冗余核份额并回拨算力给系统与感知规划线程。</li>
+</ol>
+<figure>
+<img src="../assets/diagrams/runtime-sequences.svg"
+alt="单机内部多线程及 SHM 协作流" />
+<figcaption aria-hidden="true">单机内部多线程及 SHM 协作流</figcaption>
+</figure>
+<h2
+id="进程内锁自由总线与跨进程无锁共享内存">进程内锁自由总线与跨进程无锁共享内存</h2>
+<p>为实现真正的零动态堆分配（Zero-Allocation）高频执行，数据交换严格区分为进程内与进程间两级共享模型：</p>
+<ul>
+<li><strong>进程内
+<code>BodyRtBus</code>（<code>ipc_channels.hpp</code>）</strong>：<code>robot_body_rt</code>
+内部五个线程通过顺序锁封装
+<code>SeqLock&lt;hal::HalSample&gt;</code>、<code>SeqLock&lt;ActionExecOutPod&gt;</code>
+与 <code>SeqLock&lt;SafetyStatusPod&gt;</code>
+交换最新状态，配合原子开关
+<code>has_valid_sample</code>、<code>last_hal_sample_ns</code> 与
+<code>active_epoch</code>，确保高优控制线程零锁等待。</li>
+<li><strong>跨进程映射区（<code>/dev/shm/embodied_ipc/&lt;run_id&gt;/&lt;robot_id&gt;/</code>）</strong>：
+<ul>
+<li><code>ShmSeqSlot&lt;PodT&gt;</code>
+负责「最新状态覆盖读」场景（单写多读或单写单读），涵盖
+<code>embodiment_spec.shm</code>、<code>body_state.shm</code>、<code>safety_status.shm</code>、<code>spatial_pose.shm</code>、<code>perception_obs.shm</code>、<code>motion_cmd.shm</code>、<code>traj_slot.shm</code>、<code>proc_health.shm</code>
+与 <code>health_&lt;proc&gt;.shm</code>；读取端在 <code>16</code>
+次自旋重试内获取原子快照，不阻塞写入端实时节拍。</li>
+<li><code>ShmRingQueue&lt;PodT, N&gt;</code>（带魔数
+<code>0x454D4950</code> <code>"EMIP"</code>
+与头尾原子指针）负责「无丢弃事件流」，涵盖容量 <code>64</code> 的
+<code>task_cmd_ring.shm</code>（<code>TaskCommandMsg</code>）与
+<code>task_receipt_ring.shm</code>（<code>TaskReceiptMsg</code>），以及按写入进程严格分区的
+<code>evidence_ring_&lt;proc&gt;.shm</code>（容量 <code>256</code>，承载
+<code>EvidenceMsg</code>），保证日志事件高吞吐不乱序。</li>
+</ul></li>
+</ul>
+<h2 id="监控心跳局部保护与-local_hold-状态机">监控心跳、局部保护与
+<code>LOCAL_HOLD</code> 状态机</h2>
+<p>守护进程每 <code>25 ms</code> 检查一次各子进程在
+<code>ChildHeartbeatPod</code> 中更新的心跳时间戳与状态码；当
+<code>P1</code>、<code>P2</code> 或 <code>P3</code> 意外退出时，监管器经
+<code>80 ms</code>
+退避后重新拉起子进程并推进或校验会话代际状态。同时，<code>robot_body_rt</code>
+内的 <code>protection_runtime</code> 线程独立监听 <code>18749</code> UDP
+端口（<code>SafetyFrame</code>），在 <code>250 ms</code>
+内未收悉活跃遥操作帧即终止接管输出，若持续 <code>1000 ms</code>
+失联安全脉搏心跳（或规划进程 <code>motion_plan</code> 心跳失效），状态机
+<code>ProtectionCore</code> 自动转入 <code>LOCAL_HOLD</code>
+安全悬停并通知 HAL 进入安全停机保持，且严格保证
+<code>fleet_wide_estop_triggered == false</code>（单机问题仅由本机承担隔离）。</p>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../subsystems/facility-hal-equipment.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">工装网关与设备运行时</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../subsystems/robot-embodiment-spec.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">声明式构型与单调能力综合</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#进程分工优先级与核心资源配额"
+id="toc-进程分工优先级与核心资源配额"><code>4+1</code>
+进程分工、优先级与核心资源配额</a></li>
+<li><a href="#硬件拓扑探测与自适应资源分配器"
+id="toc-硬件拓扑探测与自适应资源分配器">硬件拓扑探测与自适应资源分配器</a></li>
+<li><a href="#进程内锁自由总线与跨进程无锁共享内存"
+id="toc-进程内锁自由总线与跨进程无锁共享内存">进程内锁自由总线与跨进程无锁共享内存</a></li>
+<li><a href="#监控心跳局部保护与-local_hold-状态机"
+id="toc-监控心跳局部保护与-local_hold-状态机">监控心跳、局部保护与
+<code>LOCAL_HOLD</code> 状态机</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

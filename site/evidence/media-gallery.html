@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · report theme" />
+  <meta name="description" content="汇集 FACRI 全部 12
+条公开多媒体实证视频，说明外部 Release
+分发机制、证据分级、加速倍率判读与完整性校验标准。" />
+  <title>实证媒体陈列室 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-report.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-report">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html" aria-current="page">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">仿真与实证档案</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../evidence/simulation-engine.html">MuJoCo 4.0.1 纯接触物理仿真系统</a></li>
+        <li><a href="../evidence/verification-ladder.html">五级证据阶梯与实证报告</a></li>
+        <li><a href="../evidence/media-gallery.html" aria-current="page">外置实证视频库</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../evidence/verification-ladder.html">实证</a></li>
+    <li><a href="../evidence/media-gallery.html" aria-current="page">外置实证视频库</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">仿真与实证档案</div>
+        <h1 class="title">实证媒体陈列室</h1>
+        <p class="subtitle">12 项核心仿真与交互录像台账、SHA-256
+校验规范及多倍率时间判读准则</p>
+      </header>
+
+      <article class="doc-article">
+<p>本页汇总新版工程手册所收录的 <strong>12
+条核心多媒体实证记录</strong>。为避免大体积二进制资产污染 Git
+提交历史，仓库于文档重构期间已将历史遗留的 <code>108</code> 段早期 2026
+年 10 月三窗口录制从版本库剥离，转而采用外部 <code>media-v2.1</code>
+Release 托管全部现役媒体资产，并在
+<code>docs/manifests/media-manifest.json</code>
+中固化分辨率、帧率、原片时长、加速倍率、证据分类及逐文件
+<code>SHA-256</code> 校验摘要。</p>
+<h2
+id="一媒体托管证据分级与时间倍率判读说明">一、媒体托管、证据分级与时间倍率判读说明</h2>
+<ol type="1">
+<li><strong>五类证据等级边界</strong>：
+<ul>
+<li><code>PHYSICAL_SIM</code>：运行在真实接触物理（MuJoCo 4.0.1 /
+实时多进程）下的仿真通过实证，代表 <code>SIM</code>
+级成功证据，不自动等价于真机资格。</li>
+<li><code>PHYSICAL_SIM_FAILURE_EVIDENCE</code>：完整保留的物理仿真失败反例（如
+<code>MED-RSI-01</code>），严禁修改、裁切或伪装为通过样本。</li>
+<li><code>SCENE_AND_KINEMATIC_T3</code>：零物理运动学与跨异构 HAL/SAL
+调度回路演示（如 <code>C919</code>
+机坪多机协作场景），不含碰撞摩擦动力学。</li>
+<li><code>SYSTEM_INTERACTION_AND_GROUNDING</code>：隔离模型网关与开放词汇视觉接地实测，检验端到端像素定界与语义绑定。</li>
+<li><code>SYSTEM_ORCHESTRATION_UI</code>：前端 <code>ReactFlow</code>
+技能 DAG 编排与调度视图录制，验证控制台结构化下发能力。</li>
+</ul></li>
+<li><strong>加速视频读表守则</strong>：<code>MED-SYS-02</code>（<code>4x</code>）以及
+<code>MED-RSI-01</code>、<code>MED-SYS-03</code>（<code>20x</code>）采用墙钟快进编码以利快速浏览，核对微秒级接触、稳态延迟或各节点起止时间时，必须对照画面标注的源时间（<code>sim_s</code>）或关联运行
+JSON 账本，不能把快进播放秒数误当成实时率（<code>RTF</code>）。</li>
+</ol>
+<h2 id="二全量-12-项媒体资产索引表">二、全量 12 项媒体资产索引表</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table style="width:100%;">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr>
+<th>编号</th>
+<th>资产文件名</th>
+<th>分辨率与帧率</th>
+<th>成片 / 原片时长（倍率）</th>
+<th>证据分级</th>
+<th>关联 <code>case_id</code> / SHA-256 前 12 位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MED-SYS-01</code></td>
+<td><code>facri-4robot-factory-live.mp4</code></td>
+<td><code>1152×720 @ 30 fps</code></td>
+<td><code>12.03 s</code> / <code>12.03 s</code>（<code>1x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>623b3ba3f6e2</code></td>
+</tr>
+<tr>
+<td><code>MED-SYS-02</code></td>
+<td><code>c919-apron-turnaround-webgl.mp4</code></td>
+<td><code>1868×978 @ 30 fps</code></td>
+<td><code>21.53 s</code> / <code>85.88 s</code>（<code>4x</code>）</td>
+<td><code>SCENE_AND_KINEMATIC_T3</code></td>
+<td><code>ee66c8895d8a</code></td>
+</tr>
+<tr>
+<td><code>MED-SYS-03</code></td>
+<td><code>facri-r4-capability-v1-pass-20x.mp4</code></td>
+<td><code>1280×708 @ 24 fps</code></td>
+<td><code>77.79 s</code> /
+<code>1553.75 s</code>（<code>20x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>FACTORY-20261123T015358-4026</code> ·
+<code>3b4a8a2fd7d4</code></td>
+</tr>
+<tr>
+<td><code>MED-RSI-01</code></td>
+<td><code>facri-r4-rsi-v0-fail-evidence-20x.mp4</code></td>
+<td><code>1280×708 @ 24 fps</code></td>
+<td><code>13.79 s</code> /
+<code>273.67 s</code>（<code>20x</code>）</td>
+<td><code>PHYSICAL_SIM_FAILURE_EVIDENCE</code></td>
+<td><code>FACTORY-20261123T013011-a56a</code> ·
+<code>4e9e97625189</code></td>
+</tr>
+<tr>
+<td><code>MED-MANIP-01</code></td>
+<td><code>facri-manip-pipeline-cycle.mp4</code></td>
+<td><code>1280×800 @ 30 fps</code></td>
+<td><code>17.0 s</code> / <code>17.0 s</code>（<code>1x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>86896da19966</code></td>
+</tr>
+<tr>
+<td><code>MED-MANIP-02</code></td>
+<td><code>facri-manip-confined-dls-ik.mp4</code></td>
+<td><code>1280×800 @ 30 fps</code></td>
+<td><code>17.0 s</code> / <code>17.0 s</code>（<code>1x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>faf46c78a939</code></td>
+</tr>
+<tr>
+<td><code>MED-MANIP-03</code></td>
+<td><code>facri-mujoco4-pad-admittance.mp4</code></td>
+<td><code>1280×800 @ 30 fps</code></td>
+<td><code>17.17 s</code> / <code>17.17 s</code>（<code>1x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>cf6ed30400d9</code></td>
+</tr>
+<tr>
+<td><code>MED-LOCO-01</code></td>
+<td><code>facri-rl-locomotion-trail.mp4</code></td>
+<td><code>1152×720 @ 30 fps</code></td>
+<td><code>15.0 s</code> / <code>15.0 s</code>（<code>1x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>83aec6e1f48f</code></td>
+</tr>
+<tr>
+<td><code>MED-LOCO-02</code></td>
+<td><code>facri-chest-carry-conveyor.mp4</code></td>
+<td><code>1600×1000 @ 30 fps</code></td>
+<td><code>15.03 s</code> / <code>15.07 s</code>（<code>1x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>0970597f262d</code></td>
+</tr>
+<tr>
+<td><code>MED-SPATIAL-01</code></td>
+<td><code>facri-lidar-loop-slam.mp4</code></td>
+<td><code>1600×1000 @ 30 fps</code></td>
+<td><code>15.0 s</code> / <code>15.0 s</code>（<code>1x</code>）</td>
+<td><code>PHYSICAL_SIM</code></td>
+<td><code>ab20e0387bbb</code></td>
+</tr>
+<tr>
+<td><code>MED-PERC-01</code></td>
+<td><code>facri-locate-anything-grounding.mp4</code></td>
+<td><code>1600×1000 @ 30 fps</code></td>
+<td><code>16.0 s</code> / <code>16.0 s</code>（<code>1x</code>）</td>
+<td><code>SYSTEM_INTERACTION_AND_GROUNDING</code></td>
+<td><code>471e5bb3870f</code></td>
+</tr>
+<tr>
+<td><code>MED-INT-01</code></td>
+<td><code>facri-skill-reactflow-dag.mp4</code></td>
+<td><code>1600×1000 @ 30 fps</code></td>
+<td><code>15.03 s</code> / <code>15.03 s</code>（<code>1x</code>）</td>
+<td><code>SYSTEM_ORCHESTRATION_UI</code></td>
+<td><code>5ca8dbaccdcc</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="三全量多媒体播放器矩阵">三、全量多媒体播放器矩阵</h2>
+<p>下方由构建器按 <code>docs/manifests/media-manifest.json</code>
+顺序统一展开所有 12 段视频卡片与关联信息。</p>
+<div class="media-gallery-grid">
+<figure class="doc-video" data-media-id="MED-SYS-01">
+<video controls playsinline loading="lazy" preload="none" width="1152" height="720" poster="../assets/posters/MED-SYS-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-4robot-factory-live.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>Smart Factory 场景 4 台 FACRI 物理仿真运行实景（1x · 12.0 s ·
+SHA256:623b3ba3f6）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-SYS-02">
+<video controls playsinline loading="lazy" preload="none" width="1868" height="978" poster="../assets/posters/MED-SYS-02.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/c919-apron-turnaround-webgl.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>C919 机坪 9 机异构保障三维视口（4x 加速）（4x · 21.5 s / 原片 85.9
+s · SHA256:ee66c8895d）</span><span
+class="doc-media-badge">SCENE_AND_KINEMATIC_T3</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-SYS-03">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="708" poster="../assets/posters/MED-SYS-03.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-r4-capability-v1-pass-20x.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>robot_r4 能力演化 V1 全流程通过实录（20x 加速）（20x · 77.8 s /
+原片 1553.8 s · FACTORY-20261123T015358-4026 ·
+SHA256:3b4a8a2fd7）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-RSI-01">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="708" poster="../assets/posters/MED-RSI-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-r4-rsi-v0-fail-evidence-20x.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>robot_r4 初始 V0 策略失败实证（20x 加速）（20x · 13.8 s / 原片
+273.7 s · FACTORY-20261123T013011-a56a · SHA256:4e9e976251）</span><span
+class="doc-media-badge">PHYSICAL_SIM_FAILURE_EVIDENCE</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-MANIP-01">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-manip-pipeline-cycle.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>双臂物理接触抓取、按键与退手作业周期（1x · 17.0 s ·
+SHA256:86896da199）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-MANIP-02">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-02.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-manip-confined-dls-ik.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>受限机柜深腔腰臂 17 轴无碰撞 DLS 逆解（1x · 17.0 s ·
+SHA256:faf46c78a9）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-MANIP-03">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-03.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-mujoco4-pad-admittance.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>MuJoCo 4.0.1 双层柔顺指垫接触与导纳放置（1x · 17.2 s ·
+SHA256:cf6ed30400）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-LOCO-01">
+<video controls playsinline loading="lazy" preload="none" width="1152" height="720" poster="../assets/posters/MED-LOCO-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-rl-locomotion-trail.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>融合上肢姿态的全身强化学习行走测试（1x · 15.0 s ·
+SHA256:83aec6e1f4）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-LOCO-02">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-LOCO-02.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-chest-carry-conveyor.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>双臂胸前对称携物与传送带工位衔接（1x · 15.0 s ·
+SHA256:0970597f26）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-SPATIAL-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-SPATIAL-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-lidar-loop-slam.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>三维激光雷达去畸变与回环建图定位（1x · 15.0 s ·
+SHA256:ab20e0387b）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-PERC-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-PERC-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-locate-anything-grounding.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>LocateAnything 单步并行几何解码定位演示（1x · 16.0 s ·
+SHA256:471e5bb387）</span><span
+class="doc-media-badge">SYSTEM_INTERACTION_AND_GROUNDING</span>
+</figcaption>
+</figure>
+<figure class="doc-video" data-media-id="MED-INT-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-INT-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-skill-reactflow-dag.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>多机技能有向无环图编排与执行状态界面（1x · 15.0 s ·
+SHA256:5ca8dbaccd）</span><span
+class="doc-media-badge">SYSTEM_ORCHESTRATION_UI</span>
+</figcaption>
+</figure>
+</div>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../evidence/verification-ladder.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">五级证据阶梯与实证报告</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../engineering/development-workflow.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">研发规程与测试验证流程</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一媒体托管证据分级与时间倍率判读说明"
+id="toc-一媒体托管证据分级与时间倍率判读说明">一、媒体托管、证据分级与时间倍率判读说明</a></li>
+<li><a href="#二全量-12-项媒体资产索引表"
+id="toc-二全量-12-项媒体资产索引表">二、全量 12
+项媒体资产索引表</a></li>
+<li><a href="#三全量多媒体播放器矩阵"
+id="toc-三全量多媒体播放器矩阵">三、全量多媒体播放器矩阵</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

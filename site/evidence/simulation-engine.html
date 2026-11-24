@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="解析 FACRI 基于 MuJoCo 4.0.1 的零
+weld 纯接触物理工厂、GIL 0.0002 s 基线、单机时钟隔离及 C919 T3
+异构调度运行机制。" />
+  <title>MuJoCo 4.0.1 仿真引擎 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html" aria-current="page">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">仿真与实证档案</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../evidence/simulation-engine.html" aria-current="page">MuJoCo 4.0.1 纯接触物理仿真系统</a></li>
+        <li><a href="../evidence/verification-ladder.html">五级证据阶梯与实证报告</a></li>
+        <li><a href="../evidence/media-gallery.html">外置实证视频库</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../evidence/verification-ladder.html">实证</a></li>
+    <li><a href="../evidence/simulation-engine.html" aria-current="page">MuJoCo 4.0.1 纯接触物理仿真系统</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">仿真与实证档案</div>
+        <h1 class="title">MuJoCo 4.0.1 仿真引擎</h1>
+        <p class="subtitle">纯物理接触双层垫片、GIL 0.0002 s
+运行基线、无自动停机治理与 C919 T3 运动学调度</p>
+      </header>
+
+      <article class="doc-article">
+<p>物理仿真体系分为两条边界清晰的路径：第一条是面向双足步态与纯接触双臂抓取的
+<strong>MuJoCo 4.0.1 动力学工厂</strong>；第二条是面向 9
+台异构设备大场景配合的 <strong>C919 <code>T3</code>
+零物理运动学执行器</strong>。两套环境遵循 <code>AGENTS.md</code> 与 <a
+href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>
+中严格的时钟隔离与只读显示分离规范。</p>
+<h2 id="一mujoco-4.0.1-零-weld-纯物理接触工厂">一、MuJoCo 4.0.1 零
+<code>&lt;weld&gt;</code> 纯物理接触工厂</h2>
+<p>仓库彻底废弃以等式约束（<code>&lt;weld&gt;</code>）硬性吸住工件的作弊做法，转而在
+<code>simulation/backend/src/embodied_sim/modules/mujoco_world/native_contact_pads.py</code>
+与 <code>native_contact_attachment.py</code> 中建立全物理接触模型：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>仿真层级</th>
+<th>关键实现与源码</th>
+<th>参数规格与约束行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>求解器积分配置</td>
+<td>MuJoCo <code>4.0.1</code> CPU（<code>float64</code>）</td>
+<td>外环物理步长
+<code>dt = 0.005 s</code>（<code>200 Hz</code>），每步划分
+<code>substeps = 8</code>（内步
+<code>0.625 ms</code>），固定采用显式欧拉 <code>mjINT_EULER</code>
+与牛顿求解器 <code>mjSOL_NEWTON</code></td>
+</tr>
+<tr>
+<td>双层夹爪弹性垫片</td>
+<td><code>native_contact_pads.py</code></td>
+<td>每个指端装配 <code>35 × 1.8 × 26 mm</code> 前层柔性垫片
+<code>study_pad_front</code> 与 <code>35 × 0.5 × 26 mm</code> 限位背衬
+<code>study_pad_stop</code>，压入时由法向压缩反力与高摩擦建立真实夹持力矩</td>
+</tr>
+<tr>
+<td>显式 6 维摩擦配对</td>
+<td><code>simulation/backend/tests/test_mujoco4_native_contact_fleet.py</code></td>
+<td>单台机器人建立 <code>32</code> 对显式 <code>condim = 6</code>（法向
++ 双切向 + 三轴滚扭摩擦）接触
+<code>&lt;pair&gt;</code>，四机工位场景合计注册 <code>448</code>
+对受控接触；仅在源工位传送带回放
+<code>B01Handoff.return_to_support()</code> 且间隙
+<code>&lt;= 1 mm</code> 时启用微隙确认，缺失内部互斥即以
+<code>NATIVE_CONTACT_PROCESS_MACHINE_EXCLUDE_MISSING</code>
+失败拦截</td>
+</tr>
+<tr>
+<td>力控抓取与物理按键</td>
+<td><code>JawForceLoop</code>、<code>support_regions</code>、<code>ButtonPress</code></td>
+<td><code>JawForceLoop</code> 维持 <code>1.5 N</code>
+目标法向垫片压力并在 <code>3.5..18.0 N</code>
+间执行自适应切向剪力限幅；放置阶段通过 <code>support_regions</code>
+验证共面支撑；按键作业执行 <code>1.5 mm</code> 机械行程与
+<code>0.3 mm</code> 触发阈值真物理碰撞</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>MED-MANIP-03 · MuJoCo 4.0.1
+纯接触双层垫片夹持与柔顺放置实证</strong>（<code>1280×800</code>、<code>30 fps</code>、<code>17.17 s</code>、<code>1x</code>
+原速、<code>PHYSICAL_SIM</code>）：</p>
+<figure class="doc-video" data-media-id="MED-MANIP-03">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="800" poster="../assets/posters/MED-MANIP-03.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-mujoco4-pad-admittance.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>MuJoCo 4.0.1 双层柔顺指垫接触与导纳放置（1x · 17.2 s ·
+SHA256:cf6ed30400）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<h2 id="二gil-0.0002-s-基线仿真锁隔离与停止治理">二、GIL 0.0002 s
+基线、仿真锁隔离与停止治理</h2>
+<p>为避免控制线程饥饿并消除虚假成功指标，当前物理工厂强制遵守四项硬性执行约定：</p>
+<ol type="1">
+<li><strong>Python GIL 切换周期冻结</strong>：维持已获授权的
+<code>0.0002 s</code> GIL 检查间隔，不采用 <code>50 µs</code>
+候选修改；所有已授权仿真、控制、异步 SAL、快照日志与配置生成逻辑均通过
+<code>tools/verification/check_factory_runtime_baseline.py</code> 与
+<code>docs/development/factory-runtime-baseline.md</code>
+核对基准指纹。</li>
+<li><strong>独占物理运行锁与单次调度</strong>：物理仿真严格执行「一次一例」串行调度，按
+<code>resources/server-paths.json</code> 登记独立
+<code>case_id</code>，保留原物理 owner
+锁、实际运行计数及真实失败记录，不恢复旧版 <code>600 s</code>
+或步数上限，也不自动重跑历史案例篡改计数。</li>
+<li><strong>操作员手动停机主权（无自动停机门限）</strong>：2026-11-04
+提及的 <code>RTF 0.5</code>
+准入或停机描述仅作历史档案留存。根据运行治理裁定：<strong>严禁新增运行时校验门限、审查停机模块或会话级自动
+<code>STOP</code></strong>；单台机器人失败只影响本机；物理仿真只能由运行方通过
+<code>facrictl stop</code> 或 <code>facrictl close</code> 手动终止。平均
+<code>RTF &gt; 1</code> 与最低 <code>RTF &gt; 0.8</code>
+为研发性能目标，绝不转换为强制杀进程门槛。</li>
+<li><strong><code>:18640</code> Three.js
+只读呈现分离</strong>：前端展示服务（见 <a
+href="../guides/platform-ui.html">Web
+控制台指南</a>）严格运行为只读归档或只读实时快照消费端，禁止伪造
+<code>LIVE</code> 状态；新精修展示模型不自动赋予对应的 MuJoCo
+物理碰撞资格，且严禁在有仿真运行时热改其他线程服务。</li>
+</ol>
+<h2 id="三c919-机坪-t3-零物理运动学引擎与异构-sal">三、C919 机坪
+<code>T3</code> 零物理运动学引擎与异构 SAL</h2>
+<p>针对飞机机坪多设备大型场景调度，仓库在
+<code>simulation/backend/src/embodied_sim/modules/c919_world/kinematic_runner.py</code>
+与 <code>heterogeneous_sal.py</code> 中实现 <code>T3</code>
+级零物理运动学世界：</p>
+<ul>
+<li><strong>9 台异构智能体与精确运动学约束</strong>：同步驱动
+<code>FACRI</code>
+双足机器人（<code>R1</code>、<code>R2</code>）、<code>RP1</code>
+机身（客舱工作面 <code>z = 3.47 m</code> 与地面实验室标定面
+<code>z = 0.35 m</code>）、<code>G2</code>
+四轮转向底盘、<code>M20</code> 轮腿机器狗，以及
+<code>ugv_tractor</code>、<code>ugv_forklift</code>、<code>ugv_belt</code>、<code>ugv_shuttle</code>
+四台工业无人车辆。所有 UGV 严格执行 <code>vy == 0.0</code>
+原地转弯—直线行驶—再转向的非完整约束。</li>
+<li><strong>设施与空间互斥</strong>：串联 <code>8</code> 台 FacilityHAL
+工装设备与 <code>StarFleetBus</code> 空间互斥锁，配合
+<code>DynamicCapabilityPlanner</code>
+的三种任务分解模式验证机坪跨区域调度逻辑。</li>
+<li><strong>边界声明</strong>：<code>C919 T3</code> 属于
+<code>SCENE_AND_KINEMATIC_T3</code>
+场景运动学与调度回路级证据，不包含接触碰撞或刚体动力学反力，因此不可直接外推为物理抓取或真机飞行保障验收结论。</li>
+</ul>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../algorithms/workpiece-perception.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">工件视觉定位与五阶段超分检测</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../evidence/verification-ladder.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">五级证据阶梯与实证报告</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一mujoco-4.0.1-零-weld-纯物理接触工厂"
+id="toc-一mujoco-4.0.1-零-weld-纯物理接触工厂">一、MuJoCo 4.0.1 零
+<code>&lt;weld&gt;</code> 纯物理接触工厂</a></li>
+<li><a href="#二gil-0.0002-s-基线仿真锁隔离与停止治理"
+id="toc-二gil-0.0002-s-基线仿真锁隔离与停止治理">二、GIL 0.0002 s
+基线、仿真锁隔离与停止治理</a></li>
+<li><a href="#三c919-机坪-t3-零物理运动学引擎与异构-sal"
+id="toc-三c919-机坪-t3-零物理运动学引擎与异构-sal">三、C919 机坪
+<code>T3</code> 零物理运动学引擎与异构 SAL</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>
