@@ -1,0 +1,9 @@
+# Never commit video binaries into Git history; host videos via GitHub Release media-v2.1
+*.mp4
+*.webm
+*.mov
+*.mkv
+site/media/
+__pycache__/
+*.pyc
+.DS_Store

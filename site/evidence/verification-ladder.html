@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · report theme" />
+  <meta name="description" content="建立 L0-L4 五级工程验证体系，汇总
+510/510 纯接触报告、SIT-F3 四机端到端测试及诚实呈现的 R4 V0 失败与 V1
+通过对照录像。" />
+  <title>五级验证阶梯与实证样本 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-report.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-report">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html" aria-current="page">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">仿真与实证档案</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../evidence/simulation-engine.html">MuJoCo 4.0.1 纯接触物理仿真系统</a></li>
+        <li><a href="../evidence/verification-ladder.html" aria-current="page">五级证据阶梯与实证报告</a></li>
+        <li><a href="../evidence/media-gallery.html">外置实证视频库</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../evidence/verification-ladder.html">实证</a></li>
+    <li><a href="../evidence/verification-ladder.html" aria-current="page">五级证据阶梯与实证报告</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">仿真与实证档案</div>
+        <h1 class="title">五级验证阶梯与实证样本</h1>
+        <p class="subtitle">从静态检查、纯接触 510/510 基准、SIT-F3
+四机联调到诚实记录 R4 V0 FAIL 至 V1 PASS</p>
+      </header>
+
+      <article class="doc-article">
+<p>本项目拒绝将单元测试通过、零物理动画演示或历史机型的局部成功混合包装为「全系统验收通过」。所有技术声称必须标注其在五级验证阶梯中的确切位置、样本编号、输入源边界及不可越界推广的范围。系统层
+RSI 演化逻辑见 <a
+href="../subsystems/system-agent-and-rsi.html">SystemAgent
+与受控演化</a>。</p>
+<h2
+id="一五级验证阶梯l0-l4与反外推原则">一、五级验证阶梯（<code>L0</code> –
+<code>L4</code>）与反外推原则</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>层级</th>
+<th>名称与验证工具</th>
+<th>覆盖范围与典型指标</th>
+<th>明确排除（不可外推结论）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>L0</code></td>
+<td>静态契约、架构与文档检查（<code>check_docs.py</code>、<code>check_architecture.py</code>、<code>verify_sources.py</code>）</td>
+<td>校验 28 篇文档格式、模块所有权依赖方向及第三方资产 SHA-256 指纹</td>
+<td>不运行任何 Python/C++ 业务逻辑、ROS 通讯或物理求解</td>
+</tr>
+<tr>
+<td><code>L1</code></td>
+<td>离线原语与纯接触网格单元回归（<code>make test</code>、<code>pytest tests/unit</code>、<code>test_mujoco4_native_contact_fleet.py</code>）</td>
+<td>C++20 分配器/IPC/解耦 3 套二进制测试；MuJoCo 4.0.1
+接触对与排除规则测试</td>
+<td>使用注入数据源或静态 XML 测试集，不证明连续多工位生产时序可行</td>
+</tr>
+<tr>
+<td><code>L2</code></td>
+<td>C919 <code>T3</code> 离线 DAG 与 9
+机零物理运动学验证（<code>SCENE_AND_KINEMATIC_T3</code>）</td>
+<td>验证 5 阶段离线调度 DAG、9 台异构本体运动学约束（UGV
+<code>vy == 0.0</code>）、8 台 HAL 设备锁</td>
+<td>零物理运动学仿真，不含重力跌落、柔性接触摩擦或真实力矩极限</td>
+</tr>
+<tr>
+<td><code>L3</code></td>
+<td>多进程封闭回路与 MuJoCo 4.0.1
+物理工厂联调（<code>SIT-F3</code>、<code>510/510</code> CAD
+基准、<code>R4</code> 整厂回放）</td>
+<td>在 200 Hz/0.625 ms 纯接触物理与真实 C++20 4+1
+多进程通讯下完成全过程</td>
+<td>仍属
+<code>SIM</code>（仿真传感器与仿真步态）范畴，不可直接等价为真机硬件放行</td>
+</tr>
+<tr>
+<td><code>L4</code></td>
+<td>实机联调与真机端到端验收（<code>facrictl start --real</code>、FastDDS
+Domain 126）</td>
+<td>真实相机、ZED 2i、实体传感器与实机执行器在受控安全边界内运行</td>
+<td>需要每台本体独立标定与安全员现场监管；任何其它机种通过均不可跨机继承</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="二权威量化基准510-510-纯接触操演与-sit-f3-四机联调">二、权威量化基准：<code>510 / 510</code>
+纯接触操演与 <code>SIT-F3</code> 四机联调</h2>
+<h3 id="cad-实体碰撞与-mujoco-4.0.1-纯接触操作验证510-510">2.1 CAD
+实体碰撞与 MuJoCo 4.0.1 纯接触操作验证（<code>510 / 510</code>）</h3>
+<p>依据
+<code>docs/verification/2026-11-20-mujoco4-cad-real-collision-manipulation.md</code>
+权威记录，纯接触操作栈在取消全部 <code>&lt;weld&gt;</code>
+辅助锁定后取得
+<code>510 / 510</code>（<code>100.0%</code>）全通过成绩：</p>
+<ol type="1">
+<li><strong>离线扫描体积与 CAD 网格碰撞审计</strong>：对
+<code>589,400</code> 次 COAL 几何碰撞样本与 <code>151,538</code>
+帧运动学正解构型进行全量复核，非预期几何穿插数为
+<strong><code>0</code></strong>。</li>
+<li><strong>MuJoCo 4.0.1 第 2–4 阶段连续物理执行</strong>：合并
+<code>70 / 70</code> 调试样本与 <code>440 / 440</code> 验证样本，覆盖
+<code>204 / 204</code> 次按键按压、<code>153 / 153</code>
+次双臂取料（pick）及 <code>153 / 153</code>
+次柔性触底安置（place）。累计执行 <code>859,974</code> 个控制物理
+tick（<code>6,879,792</code> 个 <code>0.625 ms</code>
+物理子步），指端最大实测速率
+<code>0.15716 m/s &lt;= 0.20 m/s</code>（零超速违规），连续
+<code>1.25 s</code> 无外力支撑自由悬停滑移跌落
+<code>&lt;= 0.0020 mm</code>。</li>
+</ol>
+<h3 id="四机多进程-c20-工厂封闭回路集成测试sit-f3">2.2 四机多进程 C++20
+工厂封闭回路集成测试（<code>SIT-F3</code>）</h3>
+<p><code>tests/integration/test_factory_4robot_multiprocess_closed_loop.py</code>
+拉起 <code>robot_r1</code> 至 <code>robot_r4</code> 四套真实
+<code>4+1</code> 进程栈验证跨机工厂作业秩序：</p>
+<ul>
+<li>连续跑通 <strong><code>16</code></strong>
+个工位完整作业循环、<strong><code>12</code></strong> 次
+<code>coordination.auto_task</code> 自动接管覆盖及
+<strong><code>6</code></strong> 对
+<code>coordination_dispatch_reserved</code> /
+<code>coordination_synchronized</code> 同步日志事件。</li>
+<li>在 <code>robot_r3</code>
+首轮任务中主动注入故障隔离校验（<code>trigger_r3_deadman_brake_check</code>），验证单机急停隔离不拖垮其余三台产线进程。</li>
+<li>全程审计 <code>StarFleetBusState.get_agent_contracts()</code>
+自注册契约与每台机器人 <code>3</code> 次
+<code>manipulation.pick</code>、<code>3</code> 次
+<code>manipulation.place</code> 的 <code>holding_context_ref</code>
+持物守恒性；<code>SIGTERM</code> 退场全部返回 <code>rc == 0</code>
+且零孤儿残留进程。</li>
+</ul>
+<h2
+id="三诚实保留故障证据r4-能力-v0-fail-与-v1-pass-对照">三、诚实保留故障证据：R4
+能力 <code>V0 FAIL</code> 与 <code>V1 PASS</code> 对照</h2>
+<p>依照工程真实性准则，失败案例绝不删除或补跑伪造。下列两组关联录像来自同系列
+R4 工厂连续物理仿真测试，记录受控演化前后同一故障的真实消退过程（均以
+<code>20x</code> 墙钟加速编码，核对细节请以 <code>sim_s</code>
+源时间戳为准）：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>对照编号</th>
+<th>案例归档 <code>case_id</code></th>
+<th>证据级别与结论</th>
+<th>成片 / 原片时长（加速比）</th>
+<th>工程判读说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MED-RSI-01</code></td>
+<td><code>FACTORY-20261123T013011-a56a</code></td>
+<td><code>PHYSICAL_SIM_FAILURE_EVIDENCE</code>（<strong><code>V0 FAIL</code>
+失败反例</strong>）</td>
+<td><code>13.79 s</code> /
+<code>273.67 s</code>（<code>20x</code>）</td>
+<td>完整暴露 <code>V0</code>
+基线在真实连续工况下暴露出的执行失败现场，作为 RSI
+根因归因与回归验证的原始负样本永久归档</td>
+</tr>
+<tr>
+<td><code>MED-SYS-03</code></td>
+<td><code>FACTORY-20261123T015358-4026</code></td>
+<td><code>PHYSICAL_SIM</code>（<strong><code>V1 PASS</code>
+修正通过</strong>）</td>
+<td><code>77.79 s</code> /
+<code>1553.75 s</code>（<code>20x</code>）</td>
+<td>针对 <code>V0</code> 失败原因完成迭代修复后重新运行 <code>R4</code>
+整厂生产全周期，验证该失败模式消除且连续作业恢复正常</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>MED-RSI-01 · R4 能力演化前 <code>V0 FAIL</code>
+原始失败实证（<code>case_id</code>:
+<code>FACTORY-20261123T013011-a56a</code>，<code>20x</code>）</strong>：</p>
+<figure class="doc-video" data-media-id="MED-RSI-01">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="708" poster="../assets/posters/MED-RSI-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-r4-rsi-v0-fail-evidence-20x.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>robot_r4 初始 V0 策略失败实证（20x 加速）（20x · 13.8 s / 原片
+273.7 s · FACTORY-20261123T013011-a56a · SHA256:4e9e976251）</span><span
+class="doc-media-badge">PHYSICAL_SIM_FAILURE_EVIDENCE</span>
+</figcaption>
+</figure>
+<p><strong>MED-SYS-03 · R4 能力修复后 <code>V1 PASS</code>
+完整通过实证（<code>case_id</code>:
+<code>FACTORY-20261123T015358-4026</code>，<code>20x</code>）</strong>：</p>
+<figure class="doc-video" data-media-id="MED-SYS-03">
+<video controls playsinline loading="lazy" preload="none" width="1280" height="708" poster="../assets/posters/MED-SYS-03.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-r4-capability-v1-pass-20x.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>robot_r4 能力演化 V1 全流程通过实录（20x 加速）（20x · 77.8 s /
+原片 1553.8 s · FACTORY-20261123T015358-4026 ·
+SHA256:3b4a8a2fd7）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../evidence/simulation-engine.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">MuJoCo 4.0.1 纯接触物理仿真系统</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../evidence/media-gallery.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">外置实证视频库</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一五级验证阶梯l0-l4与反外推原则"
+id="toc-一五级验证阶梯l0-l4与反外推原则">一、五级验证阶梯（<code>L0</code>
+– <code>L4</code>）与反外推原则</a></li>
+<li><a href="#二权威量化基准510-510-纯接触操演与-sit-f3-四机联调"
+id="toc-二权威量化基准510-510-纯接触操演与-sit-f3-四机联调">二、权威量化基准：<code>510 / 510</code>
+纯接触操演与 <code>SIT-F3</code> 四机联调</a>
+<ul>
+<li><a href="#cad-实体碰撞与-mujoco-4.0.1-纯接触操作验证510-510"
+id="toc-cad-实体碰撞与-mujoco-4.0.1-纯接触操作验证510-510">2.1 CAD
+实体碰撞与 MuJoCo 4.0.1
+纯接触操作验证（<code>510 / 510</code>）</a></li>
+<li><a href="#四机多进程-c20-工厂封闭回路集成测试sit-f3"
+id="toc-四机多进程-c20-工厂封闭回路集成测试sit-f3">2.2 四机多进程 C++20
+工厂封闭回路集成测试（<code>SIT-F3</code>）</a></li>
+</ul></li>
+<li><a href="#三诚实保留故障证据r4-能力-v0-fail-与-v1-pass-对照"
+id="toc-三诚实保留故障证据r4-能力-v0-fail-与-v1-pass-对照">三、诚实保留故障证据：R4
+能力 <code>V0 FAIL</code> 与 <code>V1 PASS</code> 对照</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

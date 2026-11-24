@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="介绍多机协作平台 Web
+应用的页面拓扑、LIVE/REPLAY/设计预览三态隔离原则、Three.js r180 iframe
+架构以及感知与离线 RSI 交互面板。" />
+  <title>多机协作平台与 WebGL 视图 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html" aria-current="page">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">入门与运维指南</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../guides/quickstart.html">快速入门与环境构建</a></li>
+        <li><a href="../guides/cli-and-scenes.html">统一指令与双场景运行</a></li>
+        <li><a href="../guides/platform-ui.html" aria-current="page">平台控制台与 4K 视口</a></li>
+        <li><a href="../guides/real-peer-sync.html">真机同步与边缘部署</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../guides/quickstart.html">入门</a></li>
+    <li><a href="../guides/platform-ui.html" aria-current="page">平台控制台与 4K 视口</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">入门与运维指南</div>
+        <h1 class="title">多机协作平台与 WebGL 视图</h1>
+        <p class="subtitle">17 个可视化工作台、C01 交互抽屉、Three.js
+r180 双场景只读渲染与 RSI 实验面板</p>
+      </header>
+
+      <article class="doc-article">
+<p>FACRI 多机协作平台前端位于
+<code>apps/collaboration_platform/README.md</code> 所述工作区，以
+React、Vite 与 <code>Three.js</code>
+构建只读可观测性与人机交互界面。界面自身<strong>绝不创建第二套机器人任务运行器或物理仿真器</strong>，所有任务下发均显式代理至主系统
+HTTP 网关或受约束 ROS 服务。</p>
+<figure class="doc-video" data-media-id="MED-SYS-02">
+<video controls playsinline loading="lazy" preload="none" width="1868" height="978" poster="../assets/posters/MED-SYS-02.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/c919-apron-turnaround-webgl.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>C919 机坪 9 机异构保障三维视口（4x 加速）（4x · 21.5 s / 原片 85.9
+s · SHA256:ee66c8895d）</span><span
+class="doc-media-badge">SCENE_AND_KINEMATIC_T3</span>
+</figcaption>
+</figure>
+<h2
+id="平台页面拓扑总览p01p17-p01b-c01">平台页面拓扑总览（<code>P01</code>–<code>P17</code>
++ <code>P01B</code> + <code>C01</code>）</h2>
+<p>系统页面分布于主平台端口（默认 <code>8110</code> 或统一入口
+<code>18640</code>）与交互控制台端口（<code>8088</code>），共享统一颜色与排版令牌
+<code>apps/ui_theme/tokens.css</code>：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>页面编号</th>
+<th>Hash / 路径</th>
+<th>所属端口</th>
+<th>核心职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>P01</code> 全局态势</td>
+<td><code>/#global</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>承载 3D 场景全景或运行场景视图、在线机器人标牌与全局任务进度</td>
+</tr>
+<tr>
+<td><code>P01B</code> 规划聚焦</td>
+<td><code>/?view=planning#global</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>展示工作流 DAG 依赖边、各节点责任归属与候选规划对比详情</td>
+</tr>
+<tr>
+<td><code>P02</code> 本体状态</td>
+<td><code>/#body</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>URDF 运动学渲染、实时关节角/力矩曲线、IMU 与单机原始诊断数据</td>
+</tr>
+<tr>
+<td><code>P03</code> 操作感知</td>
+<td><code>/#perception</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>融合 <code>RealPerception</code> 与
+<code>InteractivePerception</code>，实时比对观测源与帧
+<code>epoch</code></td>
+</tr>
+<tr>
+<td><code>P04</code> 任务中心</td>
+<td><code>/#missions</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>任务列表、DAG 节点状态机、执行回执与步骤级审计事件时间线</td>
+</tr>
+<tr>
+<td><code>P05</code> 技能库</td>
+<td><code>/#skills</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>区分显示产品能力说明与后端实时就绪技能契约，支持参数检查与草稿编辑</td>
+</tr>
+<tr>
+<td><code>P06</code> 知识与空间</td>
+<td><code>/#knowledge</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>空间拓扑节点、语义标注图谱、静态知识包与多维记忆库检索</td>
+</tr>
+<tr>
+<td><code>P07</code> 协作与改进</td>
+<td><code>/#collaboration</code></td>
+<td><code>8110</code> / <code>18640</code></td>
+<td>多机资源占用态势与
+<code>RsiLab</code>（<code>PlanningLab</code>）离线反思进化工作区</td>
+</tr>
+<tr>
+<td><code>C01</code> 人机交互栏</td>
+<td>全局页底部抽屉</td>
+<td><code>8110</code> / <code>18640</code></td>
+<td><code>CollaborationBar</code>
+组件：提供文字对话、语音快捷下发、公开核查摘要与回执跟踪</td>
+</tr>
+<tr>
+<td><code>P08</code> 观众页</td>
+<td><code>/client</code></td>
+<td><code>8088</code></td>
+<td>纯净大屏讲解与对话态呈现，不包含任何后台管理或参数修改入口</td>
+</tr>
+<tr>
+<td><code>P09</code>–<code>P17</code> 交互控制台</td>
+<td><code>/#overview</code>..<code>/#eval</code></td>
+<td><code>8088</code></td>
+<td>覆盖实时流 <code>/#live</code>、进程管理
+<code>/#run</code>、分组配置 <code>/#config</code>、提示词
+<code>/#prompt</code>、工具声明 <code>/#skill</code>、日志诊断
+<code>/#log</code>、导览控制 <code>/#tour</code> 与评测
+<code>/#eval</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="三态严格隔离livereplay-与-demo1">三态严格隔离：<code>LIVE</code>、<code>REPLAY</code>
+与 <code>?demo=1</code></h2>
+<p>为杜绝前端混淆实验结果与静态演示，平台强制执行以下数据绑定约束：</p>
+<ul>
+<li><strong>设计预览模式（<code>?demo=1</code>）</strong>：访问
+<code>http://127.0.0.1:8110/?demo=1</code>（或将 <code>?demo=1</code>
+置于 <code>#global</code> 等 Hash
+之前）进入设计预览态，此时页面允许展示预设示意插图（如
+<code>DEMO-01 · 工件转运设计情景</code>），刷新即清除临时草稿；去掉该参数后若后端失连，界面严格显示缺失或待连接状态，绝不静默切换回演示样例。</li>
+<li><strong>实时观测与受控写入（<code>LIVE</code>）</strong>：运行参数中
+<code>--system-url http://127.0.0.1:8090</code> 与
+<code>--system-domain &lt;id&gt;</code> 严格互斥，用以指定唯一
+<code>SystemApp</code>
+来源；<code>--interaction-url http://127.0.0.1:8088</code>
+连接语音交互服务。只有同时配置 <code>--enable-control</code>、存在有效
+<code>LIVE</code> 观察源与明确受控实体时，<code>C01</code> 栏才允许经
+<code>/api/say</code> 或任务入口发送指令，代理固定
+<code>auto_start=false</code>（见
+<code>apps/collaboration_platform/src/embodied_hybrid/modules/presentation/operator_routes.py</code>）。</li>
+<li><strong>只读历史回放（<code>REPLAY</code>）</strong>：通过
+<code>hybridctl serve --data &lt;dir&gt; --models &lt;json&gt; --scenes &lt;json&gt;</code>
+装载已归档批次时，所有写操作门禁锁定关闭；若连接观察器期间触发批次收尾封存，新请求返回
+<code>503 OBSERVER_FINALIZING</code>。</li>
+</ul>
+<figure class="doc-video" data-media-id="MED-INT-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-INT-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-skill-reactflow-dag.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>多机技能有向无环图编排与执行状态界面（1x · 15.0 s ·
+SHA256:5ca8dbaccd）</span><span
+class="doc-media-badge">SYSTEM_ORCHESTRATION_UI</span>
+</figcaption>
+</figure>
+<h2
+id="three.js-r180-同源-iframe-隔离渲染与安全边界"><code>Three.js</code>
+<code>r180</code> 同源 <code>iframe</code> 隔离渲染与安全边界</h2>
+<p>平台外壳（<code>apps/collaboration_platform/web/</code>）采用
+<code>Three.js</code> <code>r186</code>，而高精度工厂及 C919
+机坪全景分别由独立的同源 <code>iframe</code>
+引擎（<code>apps/collaboration_platform/src/embodied_hybrid/modules/presentation/factory_scene.py</code>
+与
+<code>apps/collaboration_platform/src/embodied_hybrid/modules/presentation/c919_scene.py</code>）承载，完整保留用户优化校验后的
+<code>Three.js</code> <code>r180</code> 管线：</p>
+<ul>
+<li><strong>零 shader 混用与无降质渲染</strong>：保留原始网格三角形、16
+位贴图重建、AgX 色调映射、PCF 阴影（<code>1024</code> 分辨率）、DPR 上限
+<code>1.25</code>、双解码 Worker 线程与 <code>compileAsync</code>
+管线；<code>compileAsync</code>
+是否实现真正的并行编译取决于宿主浏览器扩展支持情况，界面不据此虚报并行已开启。</li>
+<li><strong>常驻实例保活机制</strong>：<code>factory-scene</code>
+<code>iframe</code> 依据资源身份常驻隐藏保留而不随路由切换销毁，在
+<code>P01</code> 全局页、<code>P01B</code> 规划聚焦、<code>P03</code>
+实时跟拍与 <code>P04</code>
+任务中心间切换时无需重复加载纹理或重编着色器，同时前台采用
+<code>requestAnimationFrame</code>、后台切换为单计时器持续绘帧，防止画布缩为
+<code>1×1</code>。</li>
+<li><strong>只读与 <code>preview_only</code> 强制标记</strong>：跨域/跨
+frame <code>postMessage</code> 严格校验 <code>origin</code> 与
+<code>source</code>
+且仅允许视角控制（旋转、平移、俯视、室内、屋顶开关），<strong>无任何机器人控制或任务写入接口</strong>；静态资源网关仅发布已登记目录与已审查
+viewer
+文件，拒绝路径穿越与越界软链；新引入的高精度工厂或场景模型一律强制标注为
+<code>preview_only</code>，绝不伪装成已与物理碰撞几何坐标校准。</li>
+<li><strong>独立 GPU 启动器</strong>：配备 NVIDIA PRIME
+双显卡的本机可运行
+<code>bash apps/collaboration_platform/launch_factory_gpu.sh http://127.0.0.1:8125/#global</code>
+拉起专用独立 Chrome
+配置（关闭后台计时器节流与遮挡降频），但该脚本同样不启动物理仿真、训练或机器人任务。</li>
+</ul>
+<h2 id="感知对比与受约束离线-rsi-交互">感知对比与受约束离线 RSI
+交互</h2>
+<p>在 <code>P03</code> 操作感知面板与 <code>P07</code>
+协作进化面板中，界面严格依据后端真实状态反馈执行能力：</p>
+<ul>
+<li><strong>操作感知（<code>Perception.tsx</code>）</strong>：同时渲染实时传感器观测（<code>RealPerception</code>）与交互式点选裁剪感知（<code>InteractivePerception</code>），明确标注相机分辨率上限（<code>RoiGatewayGuard</code>
+默认限流为最多 <code>2</code> 路并发流与 <code>640×480</code> 最大 ROI
+区域）、时间戳差值与 <code>epoch</code>
+编号；当某路视觉后端或真机传感器未激活时如实呈报「不可用」，严禁以仿真显示真值位姿替代算法输出。</li>
+<li><strong>规划对比与离线演化实验室（<code>RsiLab.tsx</code> /
+<code>PlanningLab.tsx</code>）</strong>：经 <code>/api/rsi/*</code>
+代理通道展示多版本策略在受约束场景批次中的分析记录、候选规则补丁、对照验证与版本回滚接口（参见
+<code>apps/collaboration_platform/src/embodied_hybrid/modules/presentation/rsi_routes.py</code>），辅助工程师审阅
+<code>V0</code> 到 <code>V1</code> 演进证据而不改动在线实时参数。</li>
+</ul>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../guides/cli-and-scenes.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">统一指令与双场景运行</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../guides/real-peer-sync.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">真机同步与边缘部署</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#平台页面拓扑总览p01p17-p01b-c01"
+id="toc-平台页面拓扑总览p01p17-p01b-c01">平台页面拓扑总览（<code>P01</code>–<code>P17</code>
++ <code>P01B</code> + <code>C01</code>）</a></li>
+<li><a href="#三态严格隔离livereplay-与-demo1"
+id="toc-三态严格隔离livereplay-与-demo1">三态严格隔离：<code>LIVE</code>、<code>REPLAY</code>
+与 <code>?demo=1</code></a></li>
+<li><a href="#three.js-r180-同源-iframe-隔离渲染与安全边界"
+id="toc-three.js-r180-同源-iframe-隔离渲染与安全边界"><code>Three.js</code>
+<code>r180</code> 同源 <code>iframe</code> 隔离渲染与安全边界</a></li>
+<li><a href="#感知对比与受约束离线-rsi-交互"
+id="toc-感知对比与受约束离线-rsi-交互">感知对比与受约束离线 RSI
+交互</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

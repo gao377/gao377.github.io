@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="说明 robot_r1
+真机同步联调模式的运行范围、四阶段对称锁步契约、facrictl --real
+启停命令以及基于 prepare_real_peer_release.py
+的不可变伴生清单制备流程。" />
+  <title>真机同步联调指南 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html" aria-current="page">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">入门与运维指南</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../guides/quickstart.html">快速入门与环境构建</a></li>
+        <li><a href="../guides/cli-and-scenes.html">统一指令与双场景运行</a></li>
+        <li><a href="../guides/platform-ui.html">平台控制台与 4K 视口</a></li>
+        <li><a href="../guides/real-peer-sync.html" aria-current="page">真机同步与边缘部署</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../guides/quickstart.html">入门</a></li>
+    <li><a href="../guides/real-peer-sync.html" aria-current="page">真机同步与边缘部署</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">入门与运维指南</div>
+        <h1 class="title">真机同步联调指南</h1>
+        <p class="subtitle">FastDDS Domain 126
+网桥配置、四阶段对称锁步与伴生发布清单生成</p>
+      </header>
+
+      <article class="doc-article">
+<p>真机同步联调（Real-Peer Sync）允许在 <code>Smart Factory</code>
+四机产线仿真中，仅将一号机 <code>robot_r1</code>
+切换对接到局域网内的外部实物真机，同时保留 <code>robot_r2</code> 至
+<code>robot_r4</code>
+在容器内并发独立运行，用于在完整多机生产上下文中验证物理真机动作执行与上层任务编排的一致性。</p>
+<h2 id="模式边界与四阶段对称锁步">模式边界与四阶段对称锁步</h2>
+<p>依据 <code>REAL_PEER_SYNC_README.md</code> 与
+<code>configs/skills/workpiece-processing/contract.yaml</code>
+的契约规定，联调通信边界锁定如下：</p>
+<ul>
+<li><strong>同步作用范围</strong>：仅 <code>robot_r1</code>
+启用外部真机同步（受产线规划配置文件中
+<code>operation_sync_robot_ids</code>
+控制），二号至四号机器人保持容器内独立执行，单机故障不扩散停机。</li>
+<li><strong>网桥与 DDS 域</strong>：宿主机自动拉起
+<code>peer-link</code> 网桥进程，采用 <code>rmw_fastrtps_cpp</code>
+传输层与默认 FastDDS <code>Domain 126</code>
+对接对端真机，协议版本标定为
+<code>v0-whole-robot-authority</code>，配置模板为
+<code>facri.operation.sync.v1</code>。</li>
+<li><strong>四阶段对称锁步（<code>0 -&gt; 1 -&gt; 2 -&gt; 3</code>）</strong>：每个工件转运操作周期均遵循严格的阶段状态确认：<code>0</code>（就绪等待抓取）-&gt;
+<code>1</code>（抓取完成等待持物移位）-&gt;
+<code>2</code>（到位等待放置）-&gt;
+<code>3</code>（放置完成等待空手返回）。技能契约中将
+<code>manipulation.pick</code> 映射至阶段 <code>0</code>，将
+<code>manipulation.place</code> 映射至阶段 <code>2</code>。</li>
+<li><strong>核心 DDS 话题集合</strong>：指令与回执使用
+<code>/facri/auto_cmd</code> 与
+<code>/facri/auto_cmd_rep</code>；上肢状态与仿真观察反馈使用
+<code>/facri/upper_body/state</code> 与
+<code>/facri/sim_observer/state</code>（观测字段映射为
+<code>grasp.attached</code>、<code>auto.auto_cmd</code>、<code>grasp.placed</code>、<code>auto.reason</code>、<code>reset_count</code>、<code>session</code>
+与 <code>auto.stage</code>）。</li>
+</ul>
+<h2 id="联调前准备与统一命令控制">联调前准备与统一命令控制</h2>
+<p>启动联调会话前，必须依次核验三项运行条件：第一，确认宿主机统一端口
+<code>18640</code>
+不存在正在运行的其余工厂仿真（严格遵守「物理仿真一次一个」）；第二，确认宿主机网卡与外部真机控制主机保持路由连通（默认示例地址为
+<code>192.168.123.76</code>，可通过 <code>ping</code>
+验证延迟与丢包）；第三，确认当前工作区的真机发布绑定目录中已生成
+<code>role-release-real-peer.json</code> 清单文件。</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 启动【真机联调模式】（宿主机 Domain 126 直连外部实物真机）</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> start <span class="at">--real</span> <span class="at">--wait</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 启动【Mock 仿真模式】（仅连接容器内受控 Mock，不访问外网真机，默认行为）</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> start <span class="at">--mock</span> <span class="at">--wait</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 核查运行状态、安全停车及彻底销毁容器与锁</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> status</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> stop</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> close <span class="at">--wait</span></span></code></pre></div>
+<aside class="doc-callout doc-callout--warning" role="note">
+  <div class="doc-callout-title">WARNING · 风险边界</div>
+  <p>启动阶段若将 <code>--real</code> 与
+<code>--setup c919</code> 混用，<code>deployment/system_entry.py</code>
+会直接报错 <code>FACTORY_PEER_MODE_REQUIRES_FACTORY_SETUP</code>
+并拒绝启动；同一次命令中同时指定 <code>--mock</code> 与
+<code>--real</code> 将报错 <code>FACTORY_PEER_MODE_CONFLICT</code>。</p>
+  
+</aside>
+<p>就绪后通过浏览器打开
+<code>http://127.0.0.1:18640/#global</code>（或运行
+<code>./facrictl ui</code>），即可像日常仿真模式一样在 <code>C01</code>
+交互栏或 <code>P04</code> 任务中心向产线派发工件加工任务。</p>
+<h2 id="伴生发布清单生成与隔离校验">伴生发布清单生成与隔离校验</h2>
+<p>当需要更换对端真机 IP 地址、变更 FastDDS Domain
+ID、调整超时上限或切换基线发行版本时，严禁直接手改原有只读发布包
+JSON，而应使用 <code>deployment/prepare_real_peer_release.py</code>
+生成不可变的 Mock 与 Real-Peer 双伴生清单：</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./deployment/prepare_real_peer_release.py</span> <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--base-release</span> <span class="op">&lt;</span>BASE_RELEASE_DIR<span class="op">&gt;</span>/role-release.json <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--output-dir</span> <span class="op">&lt;</span>OUTPUT_RELEASE_DIR<span class="op">&gt;</span> <span class="dt">\</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--subnet</span> 172.29.141.0/24 <span class="dt">\</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--peer-address</span> <span class="op">&lt;</span>REAL_PEER_IP<span class="op">&gt;</span> <span class="dt">\</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--domain-id</span> 126 <span class="dt">\</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--link-root</span> <span class="st">&quot;</span><span class="va">$PWD</span><span class="st">&quot;</span></span></code></pre></div>
+<p>该脚本自动读取原始只读基线配置并冻结其上游模型与环境文件引用，随后分别产出两套设置与校验摘要：Mock
+清单固定使用 <code>peer_origin: "MOCK"</code> 与
+<code>/validation/&lt;robot_id&gt;/facri/*</code>
+隔离话题，脚本并强制校验
+<code>MOCK_RELEASE_MUST_NOT_EXPOSE_EXTERNAL_PEERS</code>；Real-Peer
+清单写入
+<code>peer_origin: "REAL"</code>、<code>peer_address</code>、<code>domain_id</code>
+与绝对化 <code>system_memory_dir</code> 路径，计算 SHA-256
+摘要，并原子更新工作区发布软链接供 <code>system_entry.py</code>
+自动解析。</p>
+<h2 id="常见故障排查矩阵">常见故障排查矩阵</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>错误特征与报错码</th>
+<th>根因定位</th>
+<th>标准处置措施</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FACTORY_REAL_PEER_RELEASE_MISSING</code></td>
+<td>工作区尚未制备并链接真机伴生发布清单</td>
+<td>重新执行 <code>prepare_real_peer_release.py</code> 并指定
+<code>--link-root "$PWD"</code></td>
+</tr>
+<tr>
+<td><code>FACTORY_REAL_PEER_ADDRESS_REQUIRED</code></td>
+<td>真机清单条目中 <code>peer_address</code> 字段为空</td>
+<td>检查生成参数中的 <code>--peer-address</code> 并重生成伴生清单</td>
+</tr>
+<tr>
+<td><code>FACTORY_PEER_MODE_MISMATCH</code></td>
+<td>清单绑定条目的 <code>peer_origin</code> 与启动模式标志不匹配</td>
+<td>核对 <code>--mock</code> / <code>--real</code> 与实际链接清单的
+<code>peer_origin</code> 字段</td>
+</tr>
+<tr>
+<td><code>FACTORY_ALREADY_RUNNING</code> 或 <code>:18640</code>
+占用</td>
+<td>前序仿真会话容器或共享内存物理锁尚未释放</td>
+<td>执行 <code>./facrictl close --wait</code> 等待清理完成后再重试</td>
+</tr>
+<tr>
+<td>网桥连而不通或阶段停滞</td>
+<td><code>peer-link</code> 与真机 Domain
+ID、子网掩码或防火墙策略不一致</td>
+<td>检查会话运行目录下的 <code>auto-task-link-status.json</code> 及
+<code>docker logs facri-&lt;case&gt;-peer-link</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../guides/platform-ui.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">平台控制台与 4K 视口</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../architecture/overview.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">系统架构全景与双环控制流</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#模式边界与四阶段对称锁步"
+id="toc-模式边界与四阶段对称锁步">模式边界与四阶段对称锁步</a></li>
+<li><a href="#联调前准备与统一命令控制"
+id="toc-联调前准备与统一命令控制">联调前准备与统一命令控制</a></li>
+<li><a href="#伴生发布清单生成与隔离校验"
+id="toc-伴生发布清单生成与隔离校验">伴生发布清单生成与隔离校验</a></li>
+<li><a href="#常见故障排查矩阵"
+id="toc-常见故障排查矩阵">常见故障排查矩阵</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="解析单机具身规格定义
+EmbodimentSpecPod、9 类覆盖双足与轮式及机场车辆的 YAML
+本体描述、三层能力收敛机制以及表面坐标系和走廊约束模型。" />
+  <title>声明式具身规格与 9 类异构机型适配 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心子系统手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../subsystems/system-agent-and-rsi.html">系统智能体编排与 RSI 演化</a></li>
+        <li><a href="../subsystems/interaction-and-gateway.html">交互语音入口与模型网关</a></li>
+        <li><a href="../subsystems/facility-hal-equipment.html">工装网关与设备运行时</a></li>
+        <li><a href="../subsystems/robot-multiprocess-cpp.html">端侧 C++20 4+1 多进程运行时</a></li>
+        <li><a href="../subsystems/robot-embodiment-spec.html" aria-current="page">声明式构型与单调能力综合</a></li>
+        <li><a href="../subsystems/robot-hal-sal-wire.html">IHalDriver 插件与 SalWire v2</a></li>
+        <li><a href="../subsystems/robot-capabilities.html">机器人能力提供者与接入契约</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+    <li><a href="../subsystems/robot-embodiment-spec.html" aria-current="page">声明式构型与单调能力综合</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心子系统手册</div>
+        <h1 class="title">声明式具身规格与 9 类异构机型适配</h1>
+        <p class="subtitle">EmbodimentSpecPod、description.yaml、L1 ∧
+HAL ∧ L2 单调能力收敛与表面边界约束</p>
+      </header>
+
+      <article class="doc-article">
+<p>传统多机器人框架往往将关节索引、末端夹爪类型或底盘运动学公式散落硬编码于控制节点中，每新增一型硬件就不得不复制一份分支逻辑。FACRI
+以
+<code>src/embodied_core/include/embodied_core/embodiment_spec.hpp</code>
+中定义的 <code>EmbodimentSpecPod</code>
+作为全单机的唯一结构化规格真源，配合
+<code>configs/robots/*/description.yaml</code> 声明式描述文件，实现了
+<code>9</code> 类跨形态异构机器人在同一套 <code>4+1</code>
+二进制下的零源码改写复用。</p>
+<h2 id="embodimentspecpod-二进制契约结构"><code>EmbodimentSpecPod</code>
+二进制契约结构</h2>
+<p><code>EmbodimentSpecPod</code> 在编译期强制通过
+<code>std::is_trivially_copyable_v</code> 断言，由
+<code>robot_supervisor</code> 在启动期解析后写入共享内存槽位
+<code>embodiment_spec.shm</code>，尾部携带 IEEE CRC32 校验码（魔数
+<code>0x454D4553</code> <code>"EMES"</code>，版本号
+<code>1</code>），供所有子进程只读映射使用：</p>
+<ul>
+<li><strong>四维构型枚举</strong>：通过
+<code>LocomotionArchetype</code>（<code>kNone</code>、<code>kBipedPolicy</code>、<code>kWheelLegHybrid</code>、<code>kSwerve4WS</code>、<code>kChassisTwist</code>）、<code>KinematicsModelKind</code>（<code>kHolonomic</code>、<code>kDifferential</code>、<code>kAckermann</code>）、<code>ManipulatorArchetype</code>（<code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code>）与
+<code>EffectorArchetype</code>（<code>kNone</code>、<code>kParallelJaw2Dof</code>、<code>kDexhand12Dof</code>、<code>kMechanism1Dof</code>）精确刻画任意本体形态。</li>
+<li><strong>九组动态关节切片（<code>JointGroupSlice</code>）</strong>：显式映射
+<code>legs</code>、<code>steering</code>、<code>wheels</code>、<code>torso</code>、<code>head</code>、<code>left_arm</code>、<code>right_arm</code>、<code>left_tool</code>、<code>right_tool</code>
+九大关节组在全局 <code>48</code>
+轴数组中的实际索引下标、默认控制模式（<code>1=PositionPd</code>、<code>2=VelocityPd</code>）与
+PD 增益（每组上限 <code>kMaxGroupDofs = 16</code>，联合受控组上限
+<code>kMaxControlledGroupDofs = 32</code>）。</li>
+<li><strong>物理几何与可操作能力位掩码</strong>：封装
+<code>ChassisGeometrySpec</code>（轴距、轮距、最小转弯半径、安全包络半径与限速）、<code>ArrivalSpecPod</code>（常规到点与靠泊停稳容差）、额定负载、作业高度范围
+<code>[reach_z_min_m, reach_z_max_m]</code> 以及两套关键位掩码：
+<ul>
+<li><code>AffordanceBit</code>：标识抓持箱体/把手（<code>kPinchBoxOrHandle</code>）、灵巧手包络（<code>kDexhandLightEnvelop</code>）、圆柱插头（<code>kCylindricalPowerPlug</code>）、双臂推车把手（<code>kBimanualCartHandle</code>）、欧标叉孔（<code>kEuroForkPocket</code>）、牵引销钩（<code>kTowHitchPin</code>）及按钮/舱门锁扣（<code>kLatchButtonOrDoor</code>）。</li>
+<li><code>HalCapBit</code>：标识 IMU、3D 雷达、RGB
+相机、左右腕六维力（<code>kWristFtLeft</code>/<code>Right</code>）、灵巧手触觉（<code>kDexhandTactile</code>）、执行机构（<code>kMechanism</code>）、传送带（<code>kConveyorBelt</code>）与原生速度底盘（<code>kNativeTwistChassis</code>）。</li>
+</ul></li>
+</ul>
+<h2 id="全仓-9-类机器人构型一览">全仓 <code>9</code>
+类机器人构型一览</h2>
+<p>经对仓库 <code>configs/robots/*/description.yaml</code>
+逐一读取核对，平台当前完整建档的 <code>9</code> 型构型参数如下：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>配置名称（<code>model_id</code>）</th>
+<th>驱动关节数</th>
+<th>关节分组分布</th>
+<th>移动与操作构型</th>
+<th>典型场景职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>facri</code>（<code>facri_native_31</code>）</td>
+<td><code>31</code></td>
+<td><code>legs=12</code>、<code>torso=3</code>、<code>arms=14</code>、<code>tools=2</code></td>
+<td><code>kBipedPolicy</code> + <code>kDualArmTorsoIk</code></td>
+<td>主工厂四机产线与 C919 机坪轮挡/插头操作</td>
+</tr>
+<tr>
+<td><code>rp1</code>（<code>roboparty_rp1_cabin_attendant</code>）</td>
+<td><code>40</code></td>
+<td><code>legs=12</code>、<code>torso=2</code>、<code>arms=14</code>、<code>left/right_hand=12</code></td>
+<td><code>kBipedPolicy</code> + <code>kDualArmTorsoIk</code> +
+<code>kDexhand12Dof</code></td>
+<td>C919 客舱迎宾、手提行李协助与客舱服务</td>
+</tr>
+<tr>
+<td><code>g2</code>（<code>agibot_g2_crs_omnipicker</code>）</td>
+<td><code>32</code></td>
+<td><code>steering=4</code>、<code>wheels=4</code>、<code>torso=5</code>、<code>arms=14</code>、<code>head=3</code>、<code>tools=2</code></td>
+<td><code>kSwerve4WS</code>（<code>kHolonomic</code>）+
+<code>kDualArmTorsoIk</code></td>
+<td>机坪高稳态推车转运与舱外精细操作</td>
+</tr>
+<tr>
+<td><code>m20</code>（<code>deeprobotics_m20</code>）</td>
+<td><code>16</code></td>
+<td><code>legs=12</code>、<code>wheels=4</code></td>
+<td><code>kWheelLegHybrid</code> +
+<code>ManipulatorArchetype::kNone</code></td>
+<td>机坪周边自主巡视、FOD 外来物检测与推出警戒</td>
+</tr>
+<tr>
+<td><code>c919_ugv_tractor</code></td>
+<td><code>5</code></td>
+<td><code>wheels=4</code>、<code>hitch=1</code></td>
+<td><code>kChassisTwist</code>（<code>kAckermann</code>）+
+<code>kTowHitchPin</code></td>
+<td>行李拖车与机务拖把牵引作业（<code>AU_02</code>）</td>
+</tr>
+<tr>
+<td><code>c919_ugv_forklift</code></td>
+<td><code>5</code></td>
+<td><code>wheels=4</code>、<code>forks=1</code></td>
+<td><code>kChassisTwist</code>（<code>kDifferential</code>）+
+<code>kPrismaticLift1D</code></td>
+<td>重型托盘与航材箱叉举转运（<code>AU_03</code>，支持叉孔对接）</td>
+</tr>
+<tr>
+<td><code>c919_ugv_belt</code></td>
+<td><code>5</code></td>
+<td><code>wheels=4</code>、<code>boom=1</code></td>
+<td><code>kChassisTwist</code>（<code>kDifferential</code>）+
+<code>kScalarActuator1D</code> + 传送带</td>
+<td>升降大臂与货舱行李连续传输（<code>GS_02</code>）</td>
+</tr>
+<tr>
+<td><code>c919_ugv_shuttle</code></td>
+<td><code>5</code></td>
+<td><code>wheels=4</code>、<code>doors=1</code></td>
+<td><code>kChassisTwist</code>（<code>kAckermann</code>）+
+<code>kScalarActuator1D</code></td>
+<td>机坪摆渡转运与滑门开闭控制（<code>AU_01</code>）</td>
+</tr>
+<tr>
+<td><code>g1</code>（<code>g1_29_revo2</code>）</td>
+<td><code>41</code></td>
+<td><code>body=29</code>（<code>locomotion=15</code>、<code>arms=14</code>）+
+<code>hands=12</code></td>
+<td>历史双足 + 双手构型参考档案</td>
+<td><strong>仅作历史参考</strong>：旧 <code>G1</code>
+资格与标定绝对不跨代继承给新 <code>FACRI</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="三层能力单调收敛l1-hal-l2与校验链">三层能力单调收敛（<code>L1 ∧ HAL ∧ L2</code>）与校验链</h2>
+<p>单机实际生效能力由
+<code>src/robot_app/algorithms/common/capability_synthesizer.cpp</code>
+与 <code>ConfigClientDomain</code> 按单调交集规则严格收敛生成：</p>
+<ol type="1">
+<li><strong>静态声明层（<code>L1</code>）</strong>：由
+<code>ConfigLoader</code> 解析对应 <code>description.yaml</code>
+的关节数、运动学链、夹爪形态与默认策略限位；<code>robot_task_agent</code>
+内部调用 <code>ConfigClientDomain::validate()</code> 复核实际加载 URDF
+与策略文件的 SHA-256 摘要是否与清单一致，不匹配即拒绝激活。</li>
+<li><strong>硬件实测层（<code>HAL</code>）</strong>：<code>robot_body_rt</code>
+向所加载驱动调用 <code>IHalDriver::query_hardware_caps()</code>
+获取物理实测能力位掩码（如腕部六维力传感器是否真正在线、自由度计数是否足额）；凡
+<code>L1</code> 声明而 <code>HAL</code> 实测缺失的能力位自动清零。</li>
+<li><strong>场景策略收窄层（<code>L2</code>）</strong>：由场景清单注入三项显式单向收窄标志：<code>policy_allow_wrist_ft_admittance</code>、<code>policy_allow_fiducial_align</code>
+与 <code>policy_allow_perception</code>（及保留禁用掩码
+<code>disabled_cap_bits</code>）。<code>L2</code> 仅可关闭特定功能（如在
+<code>factory.json</code> 中暂时关闭
+<code>wrist_ft_admittance_enabled</code>），<strong>绝对禁止凭空开启
+<code>L1</code> 或 <code>HAL</code> 不支持的物理能力</strong>。</li>
+</ol>
+<h2
+id="作业表面几何与窄走廊约束surfaceconstraintspec">作业表面几何与窄走廊约束（<code>SurfaceConstraintSpec</code>）</h2>
+<p>在 C919 等双高度复合场景中，同一个控制器既需要在开阔机坪
+<code>map_apron</code>（<code>160 m × 120 m</code>，<code>nominal_z_m = 0.0</code>）机动，又需要将客舱机器人限定在
+<code>z = 3.47 m</code>、走廊半宽仅 <code>0.25 m</code> 的客舱通道
+<code>map_cabin</code> 内移动。<code>EmbodimentSpecPod</code> 内嵌的
+<code>SurfaceConstraintSpec</code> 将作业表面 ID、二维边界
+<code>[xmin, xmax, ymin, ymax]</code>、高程容差
+<code>[nominal_z_m ± z_tolerance_m]</code> 以及最多 <code>8</code> 段
+<code>CorridorSegmentPod</code>（<code>x_min_m</code>、<code>x_max_m</code>、<code>y_half_width_m</code>）直接打包送入单机导航与规划进程，在局部路径采样前先期封堵越界或跌落风险。</p>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../subsystems/robot-multiprocess-cpp.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">端侧 C++20 4+1 多进程运行时</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../subsystems/robot-hal-sal-wire.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">IHalDriver 插件与 SalWire v2</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#embodimentspecpod-二进制契约结构"
+id="toc-embodimentspecpod-二进制契约结构"><code>EmbodimentSpecPod</code>
+二进制契约结构</a></li>
+<li><a href="#全仓-9-类机器人构型一览"
+id="toc-全仓-9-类机器人构型一览">全仓 <code>9</code>
+类机器人构型一览</a></li>
+<li><a href="#三层能力单调收敛l1-hal-l2与校验链"
+id="toc-三层能力单调收敛l1-hal-l2与校验链">三层能力单调收敛（<code>L1 ∧ HAL ∧ L2</code>）与校验链</a></li>
+<li><a href="#作业表面几何与窄走廊约束surfaceconstraintspec"
+id="toc-作业表面几何与窄走廊约束surfaceconstraintspec">作业表面几何与窄走廊约束（<code>SurfaceConstraintSpec</code>）</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

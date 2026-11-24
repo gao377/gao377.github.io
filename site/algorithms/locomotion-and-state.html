@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="详述 FACRI
+下肢神经网络步态推理、C++20 历史编码、SIM
+双向斜率调节及躯干静止判稳算法。" />
+  <title>下肢策略与状态估计 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html" aria-current="page">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心算法手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../algorithms/overview.html">算法活跃度台账与模块归属</a></li>
+        <li><a href="../algorithms/locomotion-and-state.html" aria-current="page">足式步态控制与本体状态估计</a></li>
+        <li><a href="../algorithms/spatial-and-navigation.html">空间定位、规划与终端视觉伺服</a></li>
+        <li><a href="../algorithms/manipulation-and-ik.html">双臂操作规划与柔顺导纳控制</a></li>
+        <li><a href="../algorithms/workpiece-perception.html">工件视觉定位与五阶段超分检测</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../algorithms/overview.html">算法</a></li>
+    <li><a href="../algorithms/locomotion-and-state.html" aria-current="page">足式步态控制与本体状态估计</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心算法手册</div>
+        <h1 class="title">下肢策略与状态估计</h1>
+        <p class="subtitle">FacriMjlabPolicy
+推理链、斜率限幅、防倾覆抑制与 IMU 判稳门禁</p>
+      </header>
+
+      <article class="doc-article">
+<p>下肢运动控制由硬件抽象层策略后端、C++20
+在线推理内核以及状态估计判稳模块共同组成，面向双足稳定行走、原点站立保稳与载荷搬运下的动态重心补偿。本页聚焦核心控制链与已验证实验样本；完整多进程部署结构见
+<a href="../subsystems/robot-multiprocess-cpp.html">C++20 多进程
+<code>robot_app</code></a>。</p>
+<h2
+id="一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner">一、下肢强化学习策略推理：<code>FacriMjlabPolicy</code>
+与 <code>PolicyRunner</code></h2>
+<p>FACRI 在 Python 后端与 C++20
+实时控制进程中提供同一语义的策略执行路径：</p>
+<ol type="1">
+<li><strong>Python SIM
+专用策略封装（<code>src/robot_app/backends/facri/mjlab_policy.py</code>）</strong>：<code>FacriMjlabPolicy</code>
+将 <code>47</code> 维单帧观测映射为 <code>12</code>
+维腿部关节绝对位置指令，仿真步长
+<code>simulation_dt = 0.005 s</code>、抽样倍率
+<code>control_decimation = 4</code>（控制周期
+<code>period_ns = 20_000_000</code>，即
+<code>50 Hz</code>），标准步态相位周期为 <code>0.8 s</code>。</li>
+<li><strong>模型身份与硬件隔离</strong>：加载阶段强制对
+<code>policy.onnx</code> 与 YAML 配置执行 SHA-256
+哈希核验；且<strong>严格限制 <code>origin == 'SIM'</code></strong>，若在
+<code>REAL</code> 实机上调用会直接抛出
+<code>FACRI_MJLAB_REAL_NOT_QUALIFIED</code> 拒绝运行。</li>
+<li><strong>输出尺度映射与门控</strong>：通过
+<code>action_scale = 0.25 * effort_limits / kp</code>
+计算增量并叠加名义关节角
+<code>q_abs = nominal + action_scale * action</code>；支持
+<code>legacy_xy_v1</code> 与 <code>command_norm_v1</code>
+两种静止门控模式，并在 <code>urdf_limits</code>
+启用时将指令截断在物理关节限位内。</li>
+<li><strong>C++20
+常驻推理内核（<code>src/robot_app/algorithms/policy_infer/policy_runner.hpp</code>）</strong>：<code>PolicyRunner</code>
+与 <code>ObservationEncoder</code> 运行在实时进程
+<code>robot_body_rt</code> 内，维护
+<code>kPolicyJointCount = 29</code>（<code>kLegDofs = 12</code> 与
+<code>kUpperDofs = 17</code>）与 <code>kHistoryLength = 10</code> ×
+<code>kFrameObsDim = 100</code> = <code>kTotalObsDim = 1000</code>
+维历史矩阵，并校验上肢参考数据时效
+<code>kUpperRefMaxAgeNs = 100 ms</code>。优先通过 <code>dlopen</code>
+调用 <code>onnxruntime</code>，若无加速库则回落到内置
+<code>OnnxProtobufMlp</code> 或固定确定性核，并配合
+<code>SimPositionExcursionGuard</code>（连续超差 <code>100 ms</code>
+触发保护）防止关节失控漂移。</li>
+</ol>
+<pre><code>[IMU / 29 关节角速反馈 + 100 ms 上肢参考]
+          │
+          ▼  (ObservationEncoder: 10 x 100 = 1000 维 / 或 FacriMjlabPolicy: 47 维)
+[PolicyRunner (ONNX Runtime / Built-in MLP) @ 50 Hz]
+          │  action_scale = 0.25 * effort_limits / kp
+          ▼
+[q_abs 目标 + 双向速度斜率限幅 + 倾角抑制器] ──► [SAL / HAL 写入 29 关节]</code></pre>
+<h2
+id="二速度准入双向斜率控制与防倾覆抑制">二、速度准入、双向斜率控制与防倾覆抑制</h2>
+<p>在
+<code>src/robot_app/backends/facri/app_body.py</code>、<code>bound_control.py</code>
+与 <code>control_cycle.py</code> 中，<code>FacriBodyBackend</code>
+对上层导航或操作下发的速度指令 <code>(vx, vy, vyaw)</code>
+执行三级动力学防护，避免高惯量步态瞬间切换诱发跌倒：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>机制模块</th>
+<th>源码位置</th>
+<th>关键参数与阈值</th>
+<th>工程物理含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>速度指令上限准入</td>
+<td><code>command_admission</code></td>
+<td>最大容许 <code>(0.85, 0.20, 0.40)</code> m/s、m/s、rad/s；默认
+<code>(0.2, 0.1, 0.3)</code></td>
+<td>约束横移与偏航幅度，防止单周期步幅超出支撑多边形</td>
+</tr>
+<tr>
+<td>SIM 双向斜率限幅器（<code>_slew_sim_velocity</code>）</td>
+<td><code>src/robot_app/backends/facri/bound_control.py</code></td>
+<td><code>SIM_ACCEL_LINEAR_STEP_MPS = 0.022</code>、<code>SIM_DECEL_LINEAR_STEP_MPS = 0.06</code>、<code>SIM_DECEL_GATE_SNAP_MPS = 0.055</code>、<code>SIM_ACCEL_YAW_STEP_RPS = 0.04</code>、<code>SIM_DECEL_YAW_STEP_RPS = 0.08</code></td>
+<td>加速慢（每周期 <code>0.022 m/s</code>）、减速快（每周期
+<code>0.06 m/s</code>），并在接近停止阈值 <code>0.055 m/s</code>
+时果断归零锁定，抑制踝俯仰停止振荡</td>
+</tr>
+<tr>
+<td>倾角连续衰减器（Stumble-Tilt Governor）</td>
+<td><code>src/robot_app/backends/facri/bound_control.py</code></td>
+<td><code>SIM_TILT_GOVERNOR_START_RAD = 0.14 rad</code> 至
+<code>SIM_TILT_GOVERNOR_ZERO_RAD = 0.24 rad</code></td>
+<td>躯干俯仰或横滚超过 <code>0.14 rad</code>
+时连续线性缩放期望线速度，达到 <code>0.24 rad</code>
+时指令线速度归零以优先保稳</td>
+</tr>
+<tr>
+<td>实测限幅与四周期温和回退</td>
+<td><code>check_measured_limits</code></td>
+<td><code>SIM_VELOCITY_RECOIL_TICKS = 4</code>，比例系数
+<code>2.5</code></td>
+<td>仿真下肢由强化学习策略轴承担跟随故跳过下肢静态位置报警；当发生速度越界或短暂失稳时执行
+4 个周期温和反冲制动</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>需要指出，配置文件
+<code>src/robot_app/backends/facri/control_config.py</code>
+同时关联了经审阅的原生站立测试档 <code>N02</code> 与
+<code>N03_DIAGNOSTIC_SIM_ONLY</code>（验证覆盖 <code>4</code> 组 ×
+<code>6000</code>
+步），该组仅用于下肢站立诊断对照，不代表完整应用任务资格。</p>
+<h2
+id="三多模态状态估计与躯干静止判稳">三、多模态状态估计与躯干静止判稳</h2>
+<p>状态估计模块在
+<code>src/robot_app/modules/state_estimation/domain.cpp</code> 与
+<code>src/robot_app/modules/state_estimation/domain/stability.py</code>
+中统一聚合高频传感器观测，向操作与导航层提供唯一权威坐标系：</p>
+<ol type="1">
+<li><strong>IMU 去偏斜与 17 自由度上身
+FK</strong>：<code>StateEstimationDomain</code> 使用时间戳对 IMU
+角速度与加速度缓存执行插值匹配，结合 17
+自由度上身运动学正解（FK）计算整机质心（CoM）偏移与躯干姿态角。</li>
+<li><strong>静止判稳窗口门禁（<code>BodyStabilityMonitor</code>）</strong>：双臂开始操作或交接前必须确认本体停稳。判稳条件在滑窗
+<code>window_s = 1.0 s</code> 内连续检查三项约束：最近采样延迟不超过
+<code>MAX_AGE_NS = 40 ms</code>、相邻采样时间间隔不超过
+<code>max_gap_ns = 80 ms</code>、躯干倾斜总角不超过
+<code>10°</code>，且当前下发期望速度必须处于零速带（<code>&lt;= 1e-5</code>）并保证
+<code>epoch</code> 与 <code>stamp_ns</code> 严格单调递增。</li>
+</ol>
+<h2
+id="四仿真步态与胸前搬运实证录像">四、仿真步态与胸前搬运实证录像</h2>
+<p>下面两段 <code>PHYSICAL_SIM</code> 录像来自
+<code>docs/manifests/media-manifest.json</code>，分别记录强化学习步态在无载跟踪中的稳定性，以及双臂持物贴胸搬运场景下的重心补偿表现。两段均采用
+<code>1x</code> 真实物理速率渲染与公开录制。</p>
+<p><strong>MED-LOCO-01 ·
+强化学习步态跟踪实证</strong>（<code>1152×720</code>、<code>30 fps</code>、<code>15.0 s</code>、<code>1x</code>
+原速、<code>PHYSICAL_SIM</code>）：</p>
+<figure class="doc-video" data-media-id="MED-LOCO-01">
+<video controls playsinline loading="lazy" preload="none" width="1152" height="720" poster="../assets/posters/MED-LOCO-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-rl-locomotion-trail.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>融合上肢姿态的全身强化学习行走测试（1x · 15.0 s ·
+SHA256:83aec6e1f4）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<p><strong>MED-LOCO-02 ·
+胸前搬运与传送带站位重心补偿</strong>（<code>1600×1000</code>、<code>30 fps</code>、<code>15.03 s</code>、<code>1x</code>
+原速、<code>PHYSICAL_SIM</code>）：</p>
+<figure class="doc-video" data-media-id="MED-LOCO-02">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-LOCO-02.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-chest-carry-conveyor.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>双臂胸前对称携物与传送带工位衔接（1x · 15.0 s ·
+SHA256:0970597f26）</span><span
+class="doc-media-badge">PHYSICAL_SIM</span>
+</figcaption>
+</figure>
+<aside class="doc-callout doc-callout--important" role="note">
+  <div class="doc-callout-title">IMPORTANT · 关键约束</div>
+  <p>严禁跨本体转移下肢资格。<code>src/robot_app/backends/unitree_g1/</code>
+路径下的历史 <code>G1 AMO</code>
+观测或步态权重仅作跨机型对比参考，不赋予 <code>FACRI</code> 任何 SIM 或
+REAL 运行资格。</p>
+  
+</aside>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../algorithms/overview.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">算法活跃度台账与模块归属</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../algorithms/spatial-and-navigation.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">空间定位、规划与终端视觉伺服</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner"
+id="toc-一下肢强化学习策略推理facrimjlabpolicy-与-policyrunner">一、下肢强化学习策略推理：<code>FacriMjlabPolicy</code>
+与 <code>PolicyRunner</code></a></li>
+<li><a href="#二速度准入双向斜率控制与防倾覆抑制"
+id="toc-二速度准入双向斜率控制与防倾覆抑制">二、速度准入、双向斜率控制与防倾覆抑制</a></li>
+<li><a href="#三多模态状态估计与躯干静止判稳"
+id="toc-三多模态状态估计与躯干静止判稳">三、多模态状态估计与躯干静止判稳</a></li>
+<li><a href="#四仿真步态与胸前搬运实证录像"
+id="toc-四仿真步态与胸前搬运实证录像">四、仿真步态与胸前搬运实证录像</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

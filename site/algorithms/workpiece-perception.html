@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="解析 perception_runtime
+实时开放词汇定位、ZED 2i 深度同步、FoundationPose CAD
+位姿配准及分支待合入超分检测边界。" />
+  <title>工件视觉感知 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html" aria-current="page">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心算法手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../algorithms/overview.html">算法活跃度台账与模块归属</a></li>
+        <li><a href="../algorithms/locomotion-and-state.html">足式步态控制与本体状态估计</a></li>
+        <li><a href="../algorithms/spatial-and-navigation.html">空间定位、规划与终端视觉伺服</a></li>
+        <li><a href="../algorithms/manipulation-and-ik.html">双臂操作规划与柔顺导纳控制</a></li>
+        <li><a href="../algorithms/workpiece-perception.html" aria-current="page">工件视觉定位与五阶段超分检测</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../algorithms/overview.html">算法</a></li>
+    <li><a href="../algorithms/workpiece-perception.html" aria-current="page">工件视觉定位与五阶段超分检测</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心算法手册</div>
+        <h1 class="title">工件视觉感知</h1>
+        <p class="subtitle">LocateAnything-3B 开放词汇接地、ZED 2i
+相机恢复、FoundationPose 与待合并超分方案</p>
+      </header>
+
+      <article class="doc-article">
+<p>视觉感知模块严格恪守「感知仅在 <code>perception_runtime</code>
+与隔离网关实现、操作层只消费同帧绑定并经过时间戳校验的观测对象、交互层只作用于受鉴权像素句柄」的设计红线。接口定义与前端页面展示逻辑分别见
+<a href="../subsystems/interaction-and-gateway.html">交互网关与终端</a>
+与 <a href="../guides/platform-ui.html">Web 控制台指南</a>。</p>
+<figure>
+<img src="../assets/diagrams/perception-runtime.svg"
+alt="感知运行时数据流与隔离结构" />
+<figcaption aria-hidden="true">感知运行时数据流与隔离结构</figcaption>
+</figure>
+<h2
+id="一开放词汇视觉接地网关locateanything-3b-与-lensdetector">一、开放词汇视觉接地网关：<code>LocateAnything-3B</code>
+与 <code>LensDetector</code></h2>
+<p>面对非预设纹理目标或自然语言指代任务，系统将大模型推理隔离于独立模型网关进程
+<code>apps/model_gateway/model_gateway_vision/</code>
+中，杜绝大权重抢占实时控制内存：</p>
+<ol type="1">
+<li><strong>网关契约与安全校验（<code>locateanything_gateway.py</code>）</strong>：<code>LocateAnythingGateway</code>（位于
+<code>src/robot_app/modules/perception_runtime/infrastructure/models/locateanything_gateway.py</code>）仅限连接回环
+HTTP 端点并校验环境变量承载的 Bearer 令牌；输入图像通过
+<code>O_NOFOLLOW</code> 防符号链接注入写入隔离缓存目录，以带 SHA-256
+校验的 <code>ArtifactRef</code> 传递；默认使用模型
+<code>nvidia/LocateAnything-3B</code>（固定修订
+<code>c32291ca5e996f5a7a485845b4f57a233936bba0</code>），限制
+<code>max_output_tokens = 768</code>，返回 <code>0..1000</code>
+归一化像素边界框 <code>box</code> 与指代点 <code>point</code>。</li>
+<li><strong>多候选框与掩码映射（<code>LensDetector</code>）</strong>：在
+<code>src/robot_app/modules/perception_runtime/infrastructure/models/lens_gateway.py</code>
+与 <code>lens.py</code> 中，<code>LensDetector</code> 对接
+<code>xiaomi</code> Lens 模型（固定修订
+<code>68f57cdde1a19f751e78b18af04efa8ca8bd7fce</code>），经
+<code>source_candidates</code>
+函数将裁剪区域归一化预测准确重映射至源像素坐标系。</li>
+<li><strong>Web
+端受限资源拉取与防污染</strong>：控制台面板（<code>apps/collaboration_platform/web/src/panels/Perception.tsx</code>
+与
+<code>apps/collaboration_platform/web/src/components/RealPerception.tsx</code>）通过
+<code>readDisplayResource</code> 按逐块长度与客户端 <code>SHA-256</code>
+校验拉取源帧与分割遮罩；前端显式区分
+<code>LIVE</code>、<code>HISTORY</code> 与
+<code>STALE</code>，并严禁把展示层渲染结果反推为物理仿真成功依据。</li>
+</ol>
+<h2 id="二立体-rgb-d-自动识别与-6-dof-cad-位姿配准">二、立体 RGB-D
+自动识别与 6-DoF CAD 位姿配准</h2>
+<p>面向已知几何 CAD 模型的工业 LVDT
+工件与标准工装，系统提供基于立体视觉的高精度位姿配准管线：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>环节</th>
+<th>核心技术与代码组件</th>
+<th>实时限制与关键规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>立体相机取流与韧性恢复</td>
+<td><code>ZedRgbd</code> 与 <code>zed_cli</code>（对应
+<code>tests/unit/test_zed_rgbd.py</code>）</td>
+<td>同步输出 <code>rgb8</code> / <code>bgra</code>、<code>32FC1</code>
+米制深度与真实 <code>CameraInfo</code> 内参；强制单调
+<code>stamp_ns</code>，遇到瞬时重复帧自动短时等待，流中断时执行两级进程内重绑定恢复</td>
+</tr>
+<tr>
+<td>目标检测与 6D 位姿跟踪</td>
+<td><code>workpiece_pipeline</code>（<code>YOLOv8-seg</code> +
+<code>FoundationPose</code>）</td>
+<td>首帧注册执行 <code>5</code> 次精炼迭代，持续跟踪每次仅需
+<code>2</code> 次迭代；内部严格区分 YOLOv8-seg 的 BGR 输入与
+FoundationPose 的 RGB 输入格式，并要求观测延迟不超过
+<code>max_age_s = 0.2 s</code>（RGB-D 双流配对容差
+<code>20 ms</code>）</td>
+</tr>
+<tr>
+<td>多线程与 C++ 标签加速</td>
+<td><code>PerceptionDomain</code>、<code>AprilTagTracker</code>、<code>RoiGatewayClient</code></td>
+<td><code>src/robot_app/algorithms/perception/apriltag_tracker.hpp</code>
+在独立 <code>robot_spatial_perc</code>
+进程内提供亚毫秒级基准标签跟踪；<code>PerceptionRuntime</code>
+确保模型延迟初始化在视觉工作线程收到首帧内参后完成，绝不阻塞控制主循环</td>
+</tr>
+<tr>
+<td>单一实例与时间严格性</td>
+<td><code>RegisteredObjectRos</code> 与
+<code>LatestObjectObservation</code></td>
+<td>仅当检测到唯一匹配目标实例时才发布位姿；多目标模糊或零命中立即上报异常状态而不静默猜选；首次注册耗时如实计入端到端观测年龄，不篡改时间戳</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2
+id="三待合入特性五阶段超分与螺母缺陷检测">三、待合入特性：五阶段超分与螺母缺陷检测</h2>
+<p>工程规划与部分前端展示接口已预留「五阶段工件超分与细微螺母缺陷检测」通道，用于解决远距抓拍时微米级工件耳孔与锁紧螺母在低像素
+ROI 下辨识率不足的问题：</p>
+<ul>
+<li><strong>分支实现状态说明</strong>：完整五阶段算法脚本
+<code>pft_workpiece_sr</code>（基于 CVPR 2025 PFT-SR 4
+倍超分辨率、LAB-CLAHE 与双边滤波光学预处理及纯算子与 VLM 双线核对）以及
+<code>workpiece_defect</code> 规则已开发完成，当前保存在相邻特性分支
+<code>feat/workpiece-detection-debug-20261124</code>（提交
+<code>d3cddf263</code>）中，<strong>尚未并入当前
+<code>c919_ground_scene_modeling</code> 主线代码树</strong>。</li>
+<li><strong>主线现状</strong>：在未合入该分支前，当前工作区仅运行上述
+<code>LocateAnything-3B</code>、<code>LensDetector</code>、<code>AprilTagTracker</code>
+与 <code>YOLOv8-seg + FoundationPose</code>
+位姿管线，不对外声称已开启在线 4x 超分或全自动螺母缺陷放行门槛。</li>
+</ul>
+<h2 id="四开放词汇视觉接地实证录像">四、开放词汇视觉接地实证录像</h2>
+<p>下面录像记录通过 <code>LocateAnything-3B</code>
+隔离网关接收自然语言工件描述并返回精准图像空间接地坐标的全过程（<code>SYSTEM_INTERACTION_AND_GROUNDING</code>
+证据分类，<code>1x</code> 真实耗时）。</p>
+<p><strong>MED-PERC-01 · <code>LocateAnything-3B</code>
+工件视觉开放词汇接地</strong>（<code>1600×1000</code>、<code>30 fps</code>、<code>16.0 s</code>、<code>1x</code>
+原速、<code>SYSTEM_INTERACTION_AND_GROUNDING</code>）：</p>
+<figure class="doc-video" data-media-id="MED-PERC-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-PERC-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-locate-anything-grounding.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>LocateAnything 单步并行几何解码定位演示（1x · 16.0 s ·
+SHA256:471e5bb387）</span><span
+class="doc-media-badge">SYSTEM_INTERACTION_AND_GROUNDING</span>
+</figcaption>
+</figure>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../algorithms/manipulation-and-ik.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">双臂操作规划与柔顺导纳控制</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../evidence/simulation-engine.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">MuJoCo 4.0.1 纯接触物理仿真系统</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一开放词汇视觉接地网关locateanything-3b-与-lensdetector"
+id="toc-一开放词汇视觉接地网关locateanything-3b-与-lensdetector">一、开放词汇视觉接地网关：<code>LocateAnything-3B</code>
+与 <code>LensDetector</code></a></li>
+<li><a href="#二立体-rgb-d-自动识别与-6-dof-cad-位姿配准"
+id="toc-二立体-rgb-d-自动识别与-6-dof-cad-位姿配准">二、立体 RGB-D
+自动识别与 6-DoF CAD 位姿配准</a></li>
+<li><a href="#三待合入特性五阶段超分与螺母缺陷检测"
+id="toc-三待合入特性五阶段超分与螺母缺陷检测">三、待合入特性：五阶段超分与螺母缺陷检测</a></li>
+<li><a href="#四开放词汇视觉接地实证录像"
+id="toc-四开放词汇视觉接地实证录像">四、开放词汇视觉接地实证录像</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

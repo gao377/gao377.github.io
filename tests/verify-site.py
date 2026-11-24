@@ -1,66 +1,120 @@
-"""Check generated page inventory and local links before Pages deployment."""
+"""Validate hierarchical public handbook, redirect stubs, zero binary media, and modern web invariants."""
+from __future__ import annotations
+
 from html.parser import HTMLParser
-from pathlib import Path
-import hashlib
 import json
+from pathlib import Path
 import re
-from urllib.parse import urlparse, unquote
+from urllib.parse import unquote, urlparse
 
-root = Path(__file__).resolve().parents[1]/'site'
-release = json.loads((root/'release.json').read_text())
-expected = {row['file'] for row in release['pages']}
-assert expected == {p.name for p in root.glob('*.html')}
-assert 'index.html' in expected
+SITE_ROOT = Path(__file__).resolve().parents[1] / "site"
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
-class Links(HTMLParser):
-    def __init__(self, parent):
+FORBIDDEN_RE = re.compile(
+    r"/home/lenovo|/home/gnc|/mnt/robot-data|(?:^|[\s`'\"(])\.local/"
+    r"|docs/handoff|docs/archive|docs/superpowers|artifacts/research"
+    r"|\.am-toolbar|\bam-source\b"
+    r"|\b(?:sk-[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|dckr_pat_[A-Za-z0-9_-]{20,})\b"
+)
+
+
+class SiteHtmlAuditor(HTMLParser):
+    def __init__(self) -> None:
         super().__init__()
-        self.parent = parent
-        self.anchors = []
-        self.anchor = None
+        self.refs: list[str] = []
+        self.has_color_scheme_meta = False
+        self.has_site_nav = False
+        self.has_until_found = False
+        self.videos: list[dict[str, str | None]] = []
 
-    def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
-        if tag == 'a':
-            self.anchor = ['', attrs.get('href', '')]
-        attribute = {'a': 'href', 'iframe': 'src', 'img': 'src', 'script': 'src',
-                     'video': 'src', 'source': 'src'}.get(tag)
-        if not attribute or attribute not in attrs:
-            return
-        link = urlparse(attrs[attribute])
-        if not link.scheme and link.path:
-            target = (self.parent/unquote(link.path)).resolve()
-            assert target.is_relative_to(root.resolve()) and target.is_file(), attrs[attribute]
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        amap = dict(attrs)
+        for key in ("href", "src", "poster", "data"):
+            val = amap.get(key)
+            if val:
+                self.refs.append(val)
+        if tag == "meta" and amap.get("name") == "color-scheme" and amap.get("content") == "light dark":
+            self.has_color_scheme_meta = True
+        if tag == "nav" and amap.get("aria-label") == "主导航":
+            self.has_site_nav = True
+        if amap.get("hidden") == "until-found":
+            self.has_until_found = True
+        if tag == "video":
+            self.videos.append(amap)
 
-    def handle_data(self, data):
-        if self.anchor is not None:
-            self.anchor[0] += data
 
-    def handle_endtag(self, tag):
-        if tag == 'a' and self.anchor is not None:
-            self.anchors.append(tuple(self.anchor))
-            self.anchor = None
+def main() -> None:
+    assert (SITE_ROOT / ".nojekyll").is_file(), "Missing site/.nojekyll"
+    release_path = SITE_ROOT / "release.json"
+    manifest_path = SITE_ROOT / "media-manifest.json"
+    assert release_path.is_file(), "Missing site/release.json"
+    assert manifest_path.is_file(), "Missing site/media-manifest.json"
 
-assets = release.get('assets', [])
-for row in assets:
-    path = root/row['file']
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == row['sha256'], row['file']
+    # 1. Zero video binaries anywhere in the git repository / site tree
+    for ext in ("*.mp4", "*.webm", "*.mov", "*.mkv"):
+        binaries = list(REPO_ROOT.rglob(ext))
+        assert not binaries, f"Forbidden binary video files found: {binaries[:5]}"
 
-for name in sorted(expected | {row['file'] for row in assets}):
-    path = root/name
-    if path.suffix in ('.mp4', '.png'):
-        # Binary recordings/plots are covered by the asset SHA256 check above.
-        assert path.stat().st_size < 100 * 1024 * 1024, name
-        continue
-    content = path.read_text()
-    assert '/home/gnc' not in content
-    assert 'artifacts/research' not in content
-    assert 'docs/superpowers' not in content
-    assert not re.search(r'(?i:sk-[a-z0-9]{20,}|gh[pousr]_[a-z0-9]{30,}|dckr_pat_[a-z0-9_-]{20,})', content)
-    if path.suffix == '.html':
-        parser = Links(path.parent)
-        parser.feed(content)
-        if name in expected:
-            navigation = [(item['label'], item['href']) for item in release['navigation']]
-            assert navigation and parser.anchors[:len(navigation)] == navigation, name
-print(f'Verified {len(expected)} public documentation pages and {len(assets)} assets.')
+    # 2. Verify release manifest & media manifest
+    release = json.loads(release_path.read_text(encoding="utf-8"))
+    pages = release.get("pages", [])
+    expected_pages = {row["file"] for row in pages}
+    assert len(expected_pages) == 28, f"Expected 28 pages, got {len(expected_pages)}"
+    assert "index.html" in expected_pages, "index.html missing from release.json"
+    redirects_count = int(release.get("redirects_count", 0))
+    assert redirects_count == 109, f"Expected 109 redirects, got {redirects_count}"
+
+    media = json.loads(manifest_path.read_text(encoding="utf-8"))
+    clips = media.get("clips", [])
+    assert len(clips) == 12, f"Expected 12 curated clips in media-manifest.json, got {len(clips)}"
+    for clip in clips:
+        url = clip.get("url", "")
+        assert url.startswith("https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/"), url
+        poster_rel = clip.get("poster", "")
+        assert poster_rel and (SITE_ROOT / "assets" / poster_rel).is_file(), f"Missing poster for {clip.get('id')}: {poster_rel}"
+
+    # 3. Verify all generated HTML files & internal links
+    all_html = sorted(SITE_ROOT.rglob("*.html"))
+    assert len(all_html) == len(expected_pages) + redirects_count, (
+        f"HTML count mismatch: on disk={len(all_html)}, expected={len(expected_pages)}+{redirects_count}"
+    )
+
+    site_resolved = SITE_ROOT.resolve()
+    for html_file in all_html:
+        rel = html_file.relative_to(SITE_ROOT).as_posix()
+        text = html_file.read_text(encoding="utf-8")
+        assert not FORBIDDEN_RE.search(text), f"Forbidden private or slop content in {rel}"
+
+        auditor = SiteHtmlAuditor()
+        auditor.feed(text)
+
+        for ref in auditor.refs:
+            parsed = urlparse(ref)
+            if parsed.scheme or not parsed.path or ref.startswith("#"):
+                continue
+            target = (html_file.parent / unquote(parsed.path)).resolve()
+            assert target.is_relative_to(site_resolved) and target.is_file(), f"Broken link in {rel}: {ref}"
+
+        if rel in expected_pages:
+            assert auditor.has_color_scheme_meta, f"Missing <meta name='color-scheme'> in {rel}"
+            assert auditor.has_site_nav, f"Missing semantic <nav aria-label='主导航'> in {rel}"
+            if rel == "index.html":
+                assert auditor.has_until_found, "Portal index.html must use hidden='until-found' for accessible switcher"
+                assert auditor.videos, "Portal index.html missing showcase <video> elements"
+                assert auditor.videos[0].get("loading") is None, "Above-the-fold portal hero video must NOT have loading='lazy'"
+                assert auditor.videos[0].get("width") and auditor.videos[0].get("height"), "Hero video must specify width & height"
+                for offscreen in auditor.videos[1:]:
+                    assert offscreen.get("loading") == "lazy", "Secondary portal switcher video should use loading='lazy'"
+            else:
+                for vid in auditor.videos:
+                    assert vid.get("loading") == "lazy", f"Below-fold video in {rel} should use loading='lazy'"
+                    assert vid.get("width") and vid.get("height"), f"Video in {rel} must specify explicit width & height"
+
+    print(
+        f"Verified {len(expected_pages)} handbook pages, {redirects_count} redirect stubs, "
+        f"{len(clips)} external media refs, and 0 repo video binaries."
+    )
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · report theme" />
+  <meta name="description" content="梳理 FACRI 从 2026 年 10 月 G1
+AMO、NeuPAN、Pink、ViSP、Isaac/Newton 原型向 11 月 C++20 4+1 多进程与
+MuJoCo 4.0.1 纯接触架构的完整演进。" />
+  <title>历史演进与已退役原型 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-report.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-report">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html" aria-current="page">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">研发工程与演进</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../engineering/development-workflow.html">研发规程与测试验证流程</a></li>
+        <li><a href="../engineering/doc-pipeline.html">受控中文写作与文档构建流水线</a></li>
+        <li><a href="../engineering/dependencies-licenses.html">系统依赖、镜像与第三方许可</a></li>
+        <li><a href="../engineering/historical-evolution.html" aria-current="page">历史原型演进与封存索引</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../engineering/development-workflow.html">工程</a></li>
+    <li><a href="../engineering/historical-evolution.html" aria-current="page">历史原型演进与封存索引</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">研发工程与演进</div>
+        <h1 class="title">历史演进与已退役原型</h1>
+        <p class="subtitle">客观留存 2026 年 10
+月单机原型脉络、技术替代关系及严格不可跨机继承界线</p>
+      </header>
+
+      <article class="doc-article">
+<p>本系统架构经历了从「2026 年 10 月单台 <code>Unitree G1</code>
+原型拼接联调」向「2026 年 11 月 <code>FACRI</code> 纯物理接触工厂与
+<code>C919</code>
+异构机群平台」的彻底重构。保留历史原型记录的唯一目的在于交代工程取舍与失败教训，<strong>任何历史组件、仿真通过记录或性能数字均严禁直接继承至当前
+<code>FACRI</code> 生产口径</strong>。</p>
+<h2 id="一两代架构演进对照表">一、两代架构演进对照表</h2>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>技术领域</th>
+<th>2026 年 10 月已退役原型路线</th>
+<th>2026 年 11 月现役替换方案</th>
+<th>退役原因与边界约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>下肢控制与站立</td>
+<td><a href="https://github.com/OpenTeleVision/AMO">OpenTeleVision
+AMO</a>（23-DOF 语义：15 腿腰 + 8 肩肘，12→15
+躯干适配器，<code>1043+2325</code> 观测，50 Hz TorchScript CUDA）及早期
+<code>G1 native-stand</code> 测试</td>
+<td><code>FacriMjlabPolicy</code>（47→12，仅 SIM）与 C++20
+<code>PolicyRunner</code>（10×100 历史）+ 双向斜率限幅器 / 防倾覆器</td>
+<td><strong><code>G1 AMO</code> 的任何资格均不转移给新
+<code>FACRI</code> 本体</strong>；原 AMO 耦合 G1
+关节语义且存在跨步停驻响应滞后</td>
+</tr>
+<tr>
+<td>局部导航规划</td>
+<td><code>NeuPAN</code> MPC（4 s 时域 20×0.2 s、解析圆柱体、0.35 m 空手
+/ 0.65 m 携物包络、10 cm 改 5 cm 硬边界实验）</td>
+<td><code>HybridAStar</code> +
+<code>MppiLocalPlanner</code>（支持全向/差速/阿克曼）+
+<code>ResponseSampling</code> +
+<code>ConvergentTerminalServo</code></td>
+<td>原 NeuPAN
+差速模型缺少对下肢斜率延迟的前向刻画，携物高包络下出现手掌相对漂移超 3.3
+cm 问题</td>
+</tr>
+<tr>
+<td>上身规划与灵巧手</td>
+<td><code>Pink</code> /
+<code>Clarabel QP</code>、<code>MoveIt</code>、<code>Tesseract</code>、<code>CasADi</code>
+探索链 + <code>REVO2</code> 三指触觉抓方块</td>
+<td>C++20 <code>UpperBodyPlanner</code> + <code>DlsIkSolver</code>（17
+轴、49
+候选搜索）、<code>DeviceCollisionQuery</code>、<code>WrenchObserver</code>
+与双层垫片纯接触手爪</td>
+<td>双足与双臂高阶耦合下 QP 容易局部无解；新栈以明确 <code>DLS</code>
+取代 <code>Pink/Clarabel</code> 且全量消除 <code>&lt;weld&gt;</code>
+辅助</td>
+</tr>
+<tr>
+<td>视觉伺服与目标跟踪</td>
+<td><code>ViSP PBVS</code> 早期接口 + <code>SAMURAI</code> 框跟踪</td>
+<td><code>YOLOv8-seg + FoundationPose</code>、<code>AprilTagTracker</code>、<code>LocateAnything-3B</code>
+与 <code>LensDetector</code></td>
+<td>消除单一目标掩码漂移与无时钟绑定缺陷，严格强制相机内参、RGB-D
+时间戳与单一实例校验</td>
+</tr>
+<tr>
+<td>物理仿真与显示</td>
+<td><code>MuJoCo 3.2.3</code>（250 Hz）+ <code>IR-SIM</code>（10 Hz）+
+<code>Blender</code>
+三窗同步录屏；<code>Isaac Sim 6.1 + Lab 3 preview</code>；<code>Newton + UE5</code>
+/ <code>MJWarp</code>（如 <code>SIM-PLATFORM-NEWTON10-600</code> RTF
+<code>0.623145</code>）</td>
+<td>无头或耦合 <code>MuJoCo 4.0.1</code>（200 Hz/<code>0.625 ms</code>
+子步纯接触）+ <code>C919 T3</code> 零物理运动学 + <code>:18640</code>
+Three.js 只读 WebGL 控制台</td>
+<td>旧三窗录屏锁步同步 <code>RTF</code> 普遍低于 <code>0.5</code>（如
+<code>SIM-PERF-PLANAR-01</code> <code>0.406</code>、横穿
+<code>0.533</code>），且 Newton 路径未取得手部操作资格</td>
+</tr>
+<tr>
+<td>系统演化与多媒体</td>
+<td>早期 <code>task-rsi</code> 原型演示分支与本地 <code>108</code>
+段三窗口 <code>20x</code> MP4（关联
+<code>simulation-rtf-20261012.svg</code>）</td>
+<td><code>SystemAgent</code> + <code>ASPIRE v1.0</code> 启发式真实
+<code>RSI</code> 循环（保留 <code>V0 FAIL</code> 对照
+<code>MED-RSI-01</code>），以及 Release <code>media-v2.1</code> 12
+条精选录像</td>
+<td>已将占库冗余的 <code>108</code> 份历史录制从 Git 清退；文档工具亦由
+<code>answer-me-with-html 0.4.14</code> 升级为仓库原生双轨生成器</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="二2026-10-关键实证数字的历史归档边界">二、2026-10
+关键实证数字的历史归档边界</h2>
+<p>下表摘要保存早期 <code>Unitree G1</code>
+验证文档中的客观实测记录，专用于防止误将其作为当前系统指标引述：</p>
+<ol type="1">
+<li><strong>三窗口实时率诊断样本（<code>SIM-PERF-PLANAR-01</code>，2026-10-12）</strong>：<code>100 s</code>
+仿真耗费 <code>246.456 s</code> 墙钟时间，实测
+<code>RTF = 0.406</code>（等待控制返回占
+<code>65.48%</code>），2026-10-13 空手单障碍横穿整段
+<code>RTF = 0.533</code>（<code>25/26</code> 窗口大于
+<code>0.5</code>）。上述数字反映的是早期
+<code>Python AMO + IR-SIM + Blender + 软件编码录屏</code>
+锁步架构瓶颈，<strong>不代表现役 C++20 <code>4+1</code> 多进程与 MuJoCo
+4.0.1 性能</strong>。</li>
+<li><strong>早期 <code>REVO2</code>
+方块四能力记录（<code>SIM-MANIP-01</code>、<code>SIM-MANIP-L/R</code>、<code>SIM-APPROACH-BASE</code>）</strong>：<code>G1 + REVO2</code>
+在工位前实现过 <code>72.20 mm</code> 至 <code>83.75 mm</code> 离台高度与
+<code>7.04–10.22 mm</code> 放置水平误差，但同期携物双障碍实验（如
+<code>20261013T071552Z-8f9e9203</code>）暴露出相对手掌漂移
+<code>3.58 cm</code> 与间隙停机问题；而且该组 <code>REVO2</code>
+抓取与后续 <code>Newton</code> 基准均未延续至现役 <code>FACRI</code>
+双层弹性垫片夹爪。</li>
+<li><strong>2026-11-04 <code>RTF 0.5</code>
+门限退役说明</strong>：早期针对慢速仿真设立的 <code>RTF 0.5</code>
+准入与自动停止条款已在后续运行裁定中正式作废——当前生产环境禁止增加运行时自动停机检查模块，仿真终止权完全归属人工操作员。</li>
+</ol>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../engineering/dependencies-licenses.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">系统依赖、镜像与第三方许可</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#一两代架构演进对照表"
+id="toc-一两代架构演进对照表">一、两代架构演进对照表</a></li>
+<li><a href="#二2026-10-关键实证数字的历史归档边界"
+id="toc-二2026-10-关键实证数字的历史归档边界">二、2026-10
+关键实证数字的历史归档边界</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>

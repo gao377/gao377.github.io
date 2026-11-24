@@ -1,0 +1,729 @@
+/* ==========================================================================
+   FACRI Portal Theme — Direction A: Pentagram Industrial Information Architecture
+   Light: Ivory Warm Paper (#FAFAF7) + Graphite Ink (#16181D) + Aerospace Terracotta (#B04A1A) + Forest (#2C5E3F)
+   Dark:  Warm Charcoal (#16171A) + Soft Cream (#E9E7E1) + Amber Terracotta (#DE7A48) + Forest (#52A675)
+   Strict Anti-AI-Slop: NO #0D1117, NO purple gradients, NO emoji icons, NO border-left rounded callouts
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+
+  --font-display: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  --font-sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+
+  --paper-light: #FAFAF7;
+  --paper-dark: #16171A;
+  --paper-soft-light: #F2EFE7;
+  --paper-soft-dark: #1F2126;
+  --paper-card-light: #FFFFFF;
+  --paper-card-dark: #1B1D22;
+
+  --ink-light: #16181D;
+  --ink-dark: #E9E7E1;
+  --ink-soft-light: #434853;
+  --ink-soft-dark: #C2BFB5;
+  --ink-mute-light: #6B707B;
+  --ink-mute-dark: #8E929B;
+
+  --accent-light: #B04A1A;
+  --accent-dark: #DE7A48;
+  --accent-hover-light: #8A3711;
+  --accent-hover-dark: #F1976B;
+
+  --badge-light: #2C5E3F;
+  --badge-dark: #52A675;
+  --badge-bg-light: #ECF4EF;
+  --badge-bg-dark: #1B2C22;
+
+  --rule-light: #D8D3C8;
+  --rule-dark: #2F333D;
+  --rule-strong-light: #B7B0A2;
+  --rule-strong-dark: #484E5C;
+
+  --code-bg-light: #EFECE3;
+  --code-bg-dark: #22252C;
+
+  --paper: var(--paper-light);
+  --paper-soft: var(--paper-soft-light);
+  --paper-card: var(--paper-card-light);
+  --ink: var(--ink-light);
+  --ink-soft: var(--ink-soft-light);
+  --ink-mute: var(--ink-mute-light);
+  --accent: var(--accent-light);
+  --accent-hover: var(--accent-hover-light);
+  --badge: var(--badge-light);
+  --badge-bg: var(--badge-bg-light);
+  --rule: var(--rule-light);
+  --rule-strong: var(--rule-strong-light);
+  --code-bg: var(--code-bg-light);
+
+  --portal-max: 1240px;
+  --portal-gutter: clamp(1.25rem, 3.5vw, 3rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: var(--paper-dark);
+    --paper-soft: var(--paper-soft-dark);
+    --paper-card: var(--paper-card-dark);
+    --ink: var(--ink-dark);
+    --ink-soft: var(--ink-soft-dark);
+    --ink-mute: var(--ink-mute-dark);
+    --accent: var(--accent-dark);
+    --accent-hover: var(--accent-hover-dark);
+    --badge: var(--badge-dark);
+    --badge-bg: var(--badge-bg-dark);
+    --rule: var(--rule-dark);
+    --rule-strong: var(--rule-strong-dark);
+    --code-bg: var(--code-bg-dark);
+  }
+}
+
+@supports (color: light-dark(white, black)) {
+  :root {
+    --paper: light-dark(var(--paper-light), var(--paper-dark));
+    --paper-soft: light-dark(var(--paper-soft-light), var(--paper-soft-dark));
+    --paper-card: light-dark(var(--paper-card-light), var(--paper-card-dark));
+    --ink: light-dark(var(--ink-light), var(--ink-dark));
+    --ink-soft: light-dark(var(--ink-soft-light), var(--ink-soft-dark));
+    --ink-mute: light-dark(var(--ink-mute-light), var(--ink-mute-dark));
+    --accent: light-dark(var(--accent-light), var(--accent-dark));
+    --accent-hover: light-dark(var(--accent-hover-light), var(--accent-hover-dark));
+    --badge: light-dark(var(--badge-light), var(--badge-dark));
+    --badge-bg: light-dark(var(--badge-bg-light), var(--badge-bg-dark));
+    --rule: light-dark(var(--rule-light), var(--rule-dark));
+    --rule-strong: light-dark(var(--rule-strong-light), var(--rule-strong-dark));
+    --code-bg: light-dark(var(--code-bg-light), var(--code-bg-dark));
+  }
+}
+
+body.page-portal {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.72;
+  text-wrap: pretty;
+}
+
+.portal-main {
+  max-width: var(--portal-max);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem) var(--portal-gutter) 5rem;
+}
+
+/* ---------- Shared Portal Section Cadence ---------- */
+
+.portal-block {
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--rule);
+}
+
+.portal-block:first-child {
+  border-top: none;
+  padding-top: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+.portal-block-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.5rem;
+}
+
+.portal-block h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.8vw, 2.05rem);
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  margin: 0 0 0.8rem;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.portal-block > p {
+  max-width: 72ch;
+  color: var(--ink-soft);
+  margin: 0 0 1.4rem;
+}
+
+/* ---------- Block 1: Hero (7/5 Asymmetric Split + 4-Col Spec Strip) ---------- */
+
+.portal-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .portal-hero-grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+
+.portal-version-plaque {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  border: 1px solid var(--rule-strong);
+  padding: 0.25rem 0.65rem;
+  margin-bottom: 1.1rem;
+  background: var(--paper-soft);
+}
+
+.portal-hero-copy h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.05rem, 3.8vw, 3.05rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.portal-hero-lead {
+  font-size: 1.08rem;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  margin: 0 0 1.35rem;
+  max-width: 62ch;
+}
+
+.portal-hero-proposition {
+  padding: 0.9rem 1.1rem;
+  border-inline-start: 3px solid var(--accent);
+  background: var(--paper-soft);
+  margin: 0 0 1.35rem;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.portal-cli-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--code-bg);
+  border: 1px solid var(--rule-strong);
+  padding: 0.65rem 0.9rem;
+  margin: 0 0 1.35rem;
+  overflow-x: auto;
+}
+
+.portal-cli-bar code {
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.copy-cli-btn {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-card);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.copy-cli-btn:hover,
+.copy-cli-btn:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.portal-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.portal-btn-primary,
+.portal-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.94rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.portal-btn-primary {
+  background: var(--accent);
+  color: #FAFAF7;
+}
+
+.portal-btn-primary:hover,
+.portal-btn-primary:focus-visible {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.portal-btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule-strong);
+}
+
+.portal-btn-secondary:hover,
+.portal-btn-secondary:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Right Hero Viewport */
+
+.portal-hero-viewport {
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-card);
+  padding: 0.85rem;
+}
+
+.viewport-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.viewport-tab {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.viewport-tab[aria-expanded="true"],
+.viewport-tab.is-active {
+  background: var(--paper-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.viewport-panel video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  background: #16171A;
+  object-fit: cover;
+}
+
+.viewport-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.evidence-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.16rem 0.5rem;
+  border: 1px solid var(--badge);
+  color: var(--badge);
+  background: var(--badge-bg);
+}
+
+.evidence-badge--warn {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+
+/* 120% Detail Signature: Bottom 4-Col Architectural Spec Strip */
+
+.portal-spec-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin-top: clamp(1.75rem, 3.5vw, 2.5rem);
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule-strong);
+  background: var(--paper-soft);
+}
+
+.portal-spec-cell {
+  padding: 1rem 1.15rem;
+  border-inline-end: 1px solid var(--rule);
+}
+
+.portal-spec-cell:last-child {
+  border-inline-end: none;
+}
+
+.portal-spec-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-mute);
+}
+
+.portal-spec-value {
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0.25rem 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.portal-spec-note {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- Block 2: Contrasts Table ---------- */
+
+.portal-block--contrasts .table-wrapper {
+  margin-top: 1.25rem;
+}
+
+.portal-block--contrasts table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.portal-block--contrasts thead {
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule-strong);
+  background: var(--paper-soft);
+}
+
+.portal-block--contrasts th,
+.portal-block--contrasts td {
+  padding: 0.9rem 1rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+}
+
+.portal-block--contrasts tbody tr:last-child td {
+  border-bottom: 2px solid var(--ink);
+}
+
+/* ---------- Block 3 & 7: Subgrid Card Arrays (Pillars & Atlas) ---------- */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 980px) {
+  .card-grid--3x2 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card-grid .card {
+  container-type: inline-size;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0.75rem;
+  padding: 1.25rem 1.3rem;
+  border: 1px solid var(--rule);
+  background: var(--paper-card);
+  position: relative;
+  transition: border-color 140ms ease, background-color 140ms ease;
+}
+
+@supports (grid-template-rows: subgrid) {
+  .card-grid--subgrid {
+    grid-auto-rows: auto;
+  }
+}
+
+.card .card-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.card h3 {
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-weight: 700;
+  line-height: 1.32;
+  margin: 0;
+  color: var(--ink);
+}
+
+.card h3 a.card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card h3 a.card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.card:has(a.card-link) a:not(.card-link),
+.card:has(a.card-link) button {
+  position: relative;
+  z-index: 1;
+}
+
+.card:has(a.card-link:hover) {
+  border-color: var(--accent);
+  background: var(--paper-soft);
+}
+
+.card a.card-link:focus-visible {
+  outline: none;
+}
+
+.card:has(a.card-link:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.card p {
+  margin: 0;
+  font-size: 0.93rem;
+  color: var(--ink-soft);
+}
+
+.card footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--ink-mute);
+}
+
+.mono-chip {
+  display: inline-block;
+  padding: 0.12rem 0.45rem;
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+}
+
+/* ---------- Block 4: Static SVG Blueprint ---------- */
+
+.blueprint-frame {
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-card);
+  padding: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.blueprint-frame img,
+.blueprint-frame svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Block 5: Dual Flagship Scenes (hidden="until-found") ---------- */
+
+.scene-switcher-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.1rem 0;
+}
+
+.scene-switch-btn {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-card);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.scene-switch-btn[aria-expanded="true"] {
+  border-color: var(--accent);
+  background: var(--paper-soft);
+  color: var(--accent);
+}
+
+.scene-panel-inner {
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-card);
+  padding: 1.35rem;
+}
+
+.scene-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.scene-metric strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+
+.scene-metric span {
+  font-size: 0.84rem;
+  color: var(--ink-mute);
+}
+
+/* ---------- Block 6: L0-L4 Evidence Ladder & Redlines ---------- */
+
+.evidence-ladder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0;
+  border: 1px solid var(--rule-strong);
+  margin: 1.4rem 0;
+}
+
+.ladder-step {
+  padding: 1rem 1.1rem;
+  border-inline-end: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-card);
+}
+
+.ladder-step:last-child {
+  border-inline-end: none;
+}
+
+.ladder-level {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+
+.ladder-step h3 {
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  margin: 0 0 0.45rem;
+}
+
+.ladder-step p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}
+
+.redline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.redline-item {
+  padding: 0.95rem 1.1rem;
+  border-top: 2px solid var(--accent);
+  background: var(--paper-soft);
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.redline-item strong {
+  display: block;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+}
+
+/* ---------- Block 7: Role Reading Routes ---------- */
+
+.role-routes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.role-route {
+  border-top: 2px solid var(--ink);
+  background: var(--paper-soft);
+  padding: 1rem 1.1rem;
+}
+
+.role-route h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  margin: 0 0 0.55rem;
+}
+
+.role-route ol {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.role-route li {
+  margin: 0.3rem 0;
+}
+
+.blueprint-frame figure {
+  margin: 0;
+}
+
+.blueprint-frame figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--ink-mute);
+  text-align: center;
+}
+
+.portal-block--evidence .ladder-step .mono-chip,
+.role-route p {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.role-route a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}

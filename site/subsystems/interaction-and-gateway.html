@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="generator" content="facri-docs · interactive theme" />
+  <meta name="description" content="详述人机语音与文本交互入口、HTTP-to-ROS
+有界排空桥接、ModelGateway 模型推理配额控制、ROI
+带宽守护与工件视觉感知管线。" />
+  <title>交互网关、语音运行时与模型推理网关 · FACRI 文档</title>
+  <link rel="stylesheet" href="../assets/site-shell.css" />
+  <link rel="stylesheet" href="../assets/theme-interactive.css" />
+  <script src="../assets/site-shell.js" defer></script>
+</head>
+<body class="page-doc theme-interactive">
+  <a class="skip-link" href="#main-content">跳至正文内容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="site-logo" href="../index.html"><span>FACRI</span><span class="site-logo-tag">FACRI v2.0.8 · C++20 4+1 · Dual-Scene</span></a>
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="主导航">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">导航菜单</button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          <li><a href="../index.html">首页</a></li>
+          <li><a href="../guides/quickstart.html">入门</a></li>
+          <li><a href="../architecture/overview.html">架构</a></li>
+          <li><a href="../subsystems/system-agent-and-rsi.html" aria-current="page">子系统</a></li>
+          <li><a href="../algorithms/overview.html">算法</a></li>
+          <li><a href="../evidence/verification-ladder.html">实证</a></li>
+          <li><a href="../engineering/development-workflow.html">工程</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle-btn" type="button" data-theme-toggle aria-label="切换配色模式">主题: 自动</button>
+    </div>
+  </div>
+</header>
+
+  <div class="doc-shell">
+    <aside class="doc-sidebar" aria-label="栏目目录">
+<div class="doc-sidebar-group">核心子系统手册</div>
+      <ul class="doc-sidebar-list">
+        <li><a href="../subsystems/system-agent-and-rsi.html">系统智能体编排与 RSI 演化</a></li>
+        <li><a href="../subsystems/interaction-and-gateway.html" aria-current="page">交互语音入口与模型网关</a></li>
+        <li><a href="../subsystems/facility-hal-equipment.html">工装网关与设备运行时</a></li>
+        <li><a href="../subsystems/robot-multiprocess-cpp.html">端侧 C++20 4+1 多进程运行时</a></li>
+        <li><a href="../subsystems/robot-embodiment-spec.html">声明式构型与单调能力综合</a></li>
+        <li><a href="../subsystems/robot-hal-sal-wire.html">IHalDriver 插件与 SalWire v2</a></li>
+        <li><a href="../subsystems/robot-capabilities.html">机器人能力提供者与接入契约</a></li>
+      </ul>
+    </aside>
+
+    <main id="main-content" class="doc-content-column">
+<nav class="breadcrumb" aria-label="面包屑导航">
+  <ol>
+    <li><a href="../index.html">首页</a></li>
+    <li><a href="../subsystems/system-agent-and-rsi.html">子系统</a></li>
+    <li><a href="../subsystems/interaction-and-gateway.html" aria-current="page">交互语音入口与模型网关</a></li>
+  </ol>
+</nav>
+
+      <header class="doc-title-block">
+        <div class="eyebrow">核心子系统手册</div>
+        <h1 class="title">交互网关、语音运行时与模型推理网关</h1>
+        <p class="subtitle">InteractionGateway
+有界异步队列、ModelGateway 并发守门与 RoiGatewayGuard 视觉限流</p>
+      </header>
+
+      <article class="doc-article">
+<p>为了让自然语言、语音流与多模态视觉识别稳定融入高实时性的具身系统，FACRI
+在应用层与系统节点之间构筑了三层隔离防护网：<code>InteractionGateway</code>
+防止高并发 HTTP 请求冲垮 ROS 2 事件循环；<code>InteractionRuntime</code>
+专注语音与导览对话状态管理；<code>ModelGateway</code>
+则对昂贵的大语言、视觉与语音推理实施硬性并发上限与路径校验。</p>
+<figure>
+<img src="../assets/diagrams/agent-local.svg"
+alt="语音与单机交互局部视图" />
+<figcaption aria-hidden="true">语音与单机交互局部视图</figcaption>
+</figure>
+<h2
+id="interactiongateway有界排队与跨域防护8090"><code>InteractionGateway</code>：有界排队与跨域防护（<code>:8090</code>）</h2>
+<p><code>src/system_app/interaction_gateway/server.py</code>
+默认绑定回环地址 <code>127.0.0.1:8090</code>，是平台 Web
+前端与外部脚本访问 <code>SystemApp</code> 的核心 HTTP
+代理，其关键稳态机制如下：</p>
+<ul>
+<li><strong>有界异步桥接队列</strong>：所有涉及 ROS 服务或动作的 HTTP
+请求均投递至容量严格限制为 <code>Queue(maxsize=32)</code>
+的内部队列，而非直接阻塞 Web 线程池；<code>SystemApp</code> 节点主循环以
+<code>20 ms</code> 周期执行 <code>drain()</code>，每次心跳最多消费
+<code>8</code> 条请求且设置 <code>8 s</code> <code>Future</code>
+超时阈值，从而在面对突发流量或异常高负载时快速拒绝过载而非拖垮调度时钟。</li>
+<li><strong>安全边界收口</strong>：网关直接拒绝携带跨源
+<code>Origin</code> 请求头的浏览器请求；路由覆盖
+<code>/requests</code>、<code>/configuration</code>、<code>/agent/{status,reset,plans*}</code>、<code>/missions*</code>、<code>/control</code>、<code>/planning-context</code>、<code>/plans*</code>、<code>/catalog</code>、<code>/context</code>、<code>/workpiece-progress</code>、<code>/memory/*</code>、<code>/library/*</code>、<code>/operator/{ui-state,broadcast-mode}</code>、<code>/display/perception/*</code>
+及 <code>/rsi/*</code>。</li>
+</ul>
+<h2
+id="interactionruntime语音交互与导览引擎8088"><code>InteractionRuntime</code>：语音交互与导览引擎（<code>:8088</code>）</h2>
+<p>位于 <code>src/system_app/modules/interaction_runtime/</code>
+的交互运行时负责全部多轮人机对话体验：</p>
+<ul>
+<li><strong>语音管线与流式推送</strong>：托管 VAD 语音端点检测、ASR
+语音识别、意图解析与 TTS
+语音合成调用，配合短时对话记忆消除代词指代歧义；并通过
+<code>LiveHub</code> SSE
+长连接通道（<code>/api/live/stream</code>）向前端控制台 <code>P08</code>
+观众页及 <code>P09</code>–<code>P17</code>
+运维页面实时推送轮次状态与快照。</li>
+<li><strong>导览与播报控制</strong>：内置 <code>TourEngine</code>
+管理讲解点位与检查点回溯（<code>/api/tour/view</code>、<code>/api/tour/operation</code>），并依据
+<code>/operator/ui-state</code> 播报模式控制简明或详细语音输出；另提供
+<code>/api/audio/{transcribe,speak}</code>、<code>/api/say</code>、<code>/api/task/cancel</code>
+与 <code>/api/health</code> 等核心接口。</li>
+</ul>
+<h2
+id="modelgateway本地模型配额与鉴权守门18080"><code>ModelGateway</code>：本地模型配额与鉴权守门（<code>:18080</code>）</h2>
+<p><code>apps/model_gateway/README.md</code>
+所在模块统一收口底层大模型推理与多模态感知后端（包括
+<code>model_gateway_service</code> 与基于
+<code>nvidia/LocateAnything-3B</code> / <code>xiaomi-lens-0</code> 的
+<code>model_gateway_vision</code>），严格防止多机并发推理抢占 GPU
+显存与计算核：</p>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>资源治理维度</th>
+<th>冻结限流与安全策略</th>
+<th>实现机制说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>调用方鉴权</strong></td>
+<td>分角色 Bearer Token 认证</td>
+<td>不同调用来源持有独立令牌及专属配额上限，未授权请求直接拒绝</td>
+</tr>
+<tr>
+<td><strong>按工作负载并发限制</strong></td>
+<td>主文本规划最多 <code>2</code> 并发；RSI 反思最多 <code>1</code>
+并发；ASR/TTS/Embedding 各最多 <code>1</code> 并发</td>
+<td>通过信号量硬性锁定重负载进程并发数，保证交互文本响应不被离线任务饿死</td>
+</tr>
+<tr>
+<td><strong>全局队列容限</strong></td>
+<td>全局等待队列上限 <code>32</code>，单调用方排队上限
+<code>8</code></td>
+<td>队满立即返回饱和拒绝，支持
+<code>/gateway/v1/requests/{request_id}/cancel</code> 显式取消</td>
+</tr>
+<tr>
+<td><strong>安全工件引用</strong></td>
+<td>仅允许 <code>media://&lt;root_name&gt;/&lt;rel_path&gt;</code>
+逻辑引用与五字段 <code>ArtifactRef</code></td>
+<td>开启 <code>O_NOFOLLOW</code> 禁止软链逃逸，并在推理读入前强制复核
+SHA-256 摘要一致性</td>
+</tr>
+<tr>
+<td><strong>Worker 健康调和</strong></td>
+<td>暴露 <code>/health/{live,ready}</code> 与
+<code>/gateway/v1/workers/{model_ref}/reconcile</code></td>
+<td>独立检测 <code>vLLM</code>、音频与视觉 Worker
+存活并按策略拉起/隔离</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="roigatewayguard-与工件视觉感知管线"><code>RoiGatewayGuard</code>
+与工件视觉感知管线</h2>
+<figure>
+<img src="../assets/diagrams/perception-runtime.svg"
+alt="工件感知与定位运行架构" />
+<figcaption aria-hidden="true">工件感知与定位运行架构</figcaption>
+</figure>
+<p>在多机并行运行场景下，如果四台甚至九台机器人同时持续回传高分辨率原始
+RGB-D 视频流，极易耗尽宿主机与总线带宽。系统在
+<code>src/system_app/fleet_bus/roi_gateway_guard.py</code>
+与单机感知端联合部署了严格的 ROI 与流控守护：</p>
+<ul>
+<li><strong>流数量与像素上限守护</strong>：<code>RoiGatewayGuard</code>
+默认锁定全局最多同时存在 <code>2</code>
+路活跃视频流（<code>DEFAULT_MAX_ACTIVE_STREAMS = 2</code>），单帧裁剪兴趣区域像素总量限制在
+<code>640 × 480</code>（<code>DEFAULT_MAX_ROI_PIXELS = 307200</code>）以内，流租约默认
+TTL 为 <code>15.0 s</code>（<code>DEFAULT_LEASE_TTL_S</code>）；单机侧
+<code>RoiGatewayClient</code>（<code>roi_gateway_client.hpp</code>）同样限制单包字节上限
+<code>kMaxRoiPayloadBytes = 512000 B</code>。</li>
+<li><strong>工件 6D 位姿感知流水线</strong>：依据
+<code>docs/WORKPIECE_PERCEPTION.md</code> 规范，工件识别遵循
+<code>RGB-D + CameraInfo -&gt; YOLOv8-seg 分割 -&gt; FoundationPose 注册/跟踪 -&gt; T_camera_object -&gt; 同时刻 TF 变换 -&gt; ObjectObservation(operation_frame)</code>
+流程。首帧执行 <code>5</code> 次迭代注册、后续帧执行 <code>2</code>
+次迭代跟踪，并且严格要求当前仅存在唯一匹配工件实例；若出现零匹配、多实例冲突、帧序倒退或
+<code>epoch</code> 跳变，立即丢弃结果并重置跟踪器。</li>
+</ul>
+<figure class="doc-video" data-media-id="MED-PERC-01">
+<video controls playsinline loading="lazy" preload="none" width="1600" height="1000" poster="../assets/posters/MED-PERC-01.webp">
+<source src="https://github.com/gao377/gao377.github.io/releases/download/media-v2.1/facri-locate-anything-grounding.mp4" type="video/mp4" />
+</video>
+<figcaption>
+<span>LocateAnything 单步并行几何解码定位演示（1x · 16.0 s ·
+SHA256:471e5bb387）</span><span
+class="doc-media-badge">SYSTEM_INTERACTION_AND_GROUNDING</span>
+</figcaption>
+</figure>
+      </article>
+
+<nav class="doc-pager" aria-label="上下章导航">
+<a class="doc-pager-link doc-pager-link--prev" href="../subsystems/system-agent-and-rsi.html"><span class="doc-pager-dir">上一章</span><span class="doc-pager-title">系统智能体编排与 RSI 演化</span></a>
+<a class="doc-pager-link doc-pager-link--next" href="../subsystems/facility-hal-equipment.html"><span class="doc-pager-dir">下一章</span><span class="doc-pager-title">工装网关与设备运行时</span></a>
+</nav>
+    </main>
+
+    <aside class="doc-toc-rail" aria-label="页内导航">
+      <nav id="TOC" role="doc-toc" aria-label="本页目录">
+<ul>
+<li><a href="#interactiongateway有界排队与跨域防护8090"
+id="toc-interactiongateway有界排队与跨域防护8090"><code>InteractionGateway</code>：有界排队与跨域防护（<code>:8090</code>）</a></li>
+<li><a href="#interactionruntime语音交互与导览引擎8088"
+id="toc-interactionruntime语音交互与导览引擎8088"><code>InteractionRuntime</code>：语音交互与导览引擎（<code>:8088</code>）</a></li>
+<li><a href="#modelgateway本地模型配额与鉴权守门18080"
+id="toc-modelgateway本地模型配额与鉴权守门18080"><code>ModelGateway</code>：本地模型配额与鉴权守门（<code>:18080</code>）</a></li>
+<li><a href="#roigatewayguard-与工件视觉感知管线"
+id="toc-roigatewayguard-与工件视觉感知管线"><code>RoiGatewayGuard</code>
+与工件视觉感知管线</a></li>
+</ul>
+      </nav>
+    </aside>
+  </div>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <span>FACRI 具身智能系统文档 · 基于真实源码与离线/物理分层证据构建</span>
+    <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
+  </div>
+</footer>
+</body>
+</html>
