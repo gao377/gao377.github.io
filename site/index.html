@@ -44,9 +44,9 @@
   <div class="portal-version-plaque">FACRI v2.0.8 · PHYSICAL CONTACT BASELINE</div>
   <h1 id="facri-具身智能多机协作平台技术手册">FACRI
 具身智能多机协作平台技术手册</h1>
-  <p class="portal-hero-lead">从大模型语义规划与受约束离线自我演化，到声明式具身规格驱动的
+  <p class="portal-hero-lead">FACRI 将语义规划、受约束离线演化、声明式多机型规格与
 <code>C++20</code>
-多进程硬实时控制与纯接触物理仿真，构建可跨双足人形、复合移动双臂、四足轮腿与特种地勤车队复用的统一具身系统底座。</p>
+硬实时控制整合为统一底座，支撑异构机器人在纯接触仿真与真机环境中协作运行。</p>
   <div class="portal-cli-bar">
   <code>./facrictl --setup factory start --mode daily --full-process --wait</code>
   <button type="button" class="copy-cli-btn">复制命令</button>
@@ -95,22 +95,22 @@ class="doc-media-badge">SCENE_AND_KINEMATIC_T3</span>
 <div class="portal-spec-strip" role="list">
 <div class="portal-spec-cell" role="listitem">
   <div class="portal-spec-label">实时进程隔离</div>
-  <div class="portal-spec-value"><code>4+1</code> 多进程架构与独立核组绑核</div>
-  <div class="portal-spec-note"><code>src/robot_app/supervisor/</code>、<code>src/robot_app/processes/</code></div>
+  <div class="portal-spec-value">4+1 多进程与物理大核绑定</div>
+  <div class="portal-spec-note"><code>src/robot_app/</code></div>
 </div>
 <div class="portal-spec-cell" role="listitem">
   <div class="portal-spec-label">声明式构型扩展</div>
-  <div class="portal-spec-value"><code>9</code> 类异构机器人零源码新增复用</div>
-  <div class="portal-spec-note"><code>configs/robots/*/description.yaml</code>、<code>embodiment_spec.hpp</code></div>
+  <div class="portal-spec-value">9 类异构本体零源码分支复用</div>
+  <div class="portal-spec-note"><code>configs/robots/</code></div>
 </div>
 <div class="portal-spec-cell" role="listitem">
   <div class="portal-spec-label">物理接触可信度</div>
-  <div class="portal-spec-value"><code>510/510</code> 零吸附纯接触整机通过证据</div>
-  <div class="portal-spec-note"><code>configs/scenes/manifests/factory.json</code>、<code>docs/development/</code></div>
+  <div class="portal-spec-value">510/510 零吸附纯接触通过证据</div>
+  <div class="portal-spec-note"><code>configs/scenes/manifests/factory.json</code></div>
 </div>
 <div class="portal-spec-cell" role="listitem">
   <div class="portal-spec-label">宿主机调度基线</div>
-  <div class="portal-spec-value"><code>0.0002 s</code> Python GIL 间隔冻结基线</div>
+  <div class="portal-spec-value">0.0002 s Python GIL 冻结基线</div>
   <div class="portal-spec-note"><code>docs/development/factory-runtime-baseline.md</code></div>
 </div>
 </div>
@@ -118,36 +118,24 @@ class="doc-media-badge">SCENE_AND_KINEMATIC_T3</span>
 <section class="portal-block portal-block--contrasts">
 <h2
 id="范式对比打破工业具身系统的三重割裂">范式对比：打破工业具身系统的三重割裂</h2>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="./assets/diagrams/portal-paradigm-contrast.svg"
+alt="FACRI 三重架构范式对比图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FACRI 三重架构范式对比图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
 <div tabindex="0" role="region" aria-label="范式对比表" class="table-wrapper">
 <table>
 <thead><tr><th>核心维度</th><th>传统限制与 FACRI 工程解法</th></tr></thead>
-<tbody><tr><th>大模型自主性与物理实时控制</th><td><p>传统端到端大模型推理存在数百毫秒至数秒级波动，直接接入电机控制回路会在串口或总线抖动时引发跌倒与碰撞；而完全剥离大模型规划则使系统退化为固定脚本状态机，无法应对工位阻塞或跨机转运异常。FACRI
-采用分层解耦设计：上层
-<code>SystemApp</code>（Python）运行于语义与任务依赖层，单次故障与重试严格受限于编排队列与
-<code>0.0002 s</code> GIL 调度基线；单机底层运行于 <code>C++20</code>
-<code>4+1</code> 硬实时进程拓扑，关键身体回路
-<code>robot_body_rt</code>（<code>P0_CRITICAL</code>）以
-<code>200 Hz</code>（<code>5 ms</code>）周期独立运转于高频实时核，并设置
-<code>250 ms</code> <code>SafetyFrame</code> 死人开关与 <code>1 s</code>
-心跳超时自动切入
-<code>LOCAL_HOLD</code>，实现语义自主性与毫秒级安全的严格边界隔离。</p></td></tr><tr><th>多机型扩展与代码库耦合</th><td><p>常规机器人软件栈往往为单一构型编写大量分支逻辑，新增双臂移动平台、四足轮腿或专用特种车辆时需重复拷贝控制节点并改动接口字段。FACRI
-引入声明式具身规格结构
-<code>EmbodimentSpecPod</code>（<code>embodiment_spec.hpp</code>）与固定字节长协议
-<code>SalWire</code> v2（<code>sal_wire.hpp</code>）：每种机型通过
-<code>description.yaml</code>
-描述关节分组、运动学形态、末端执行器、抓握能力位掩码（<code>AffordanceBit</code>）与硬件能力位掩码（<code>HalCapBit</code>），由配置装载器与
-<code>CapabilitySynthesizer</code> 按 <code>L1 ∧ HAL ∧ L2</code>
-单调收敛规则合成最终有效能力；跨进程与跨硬件数据面统一固化为固定长度结构体，支持双足人形、4WS
-复合臂、轮腿机器狗及 C919
-牵引车/叉车/传送带车/摆渡车在零核心引擎分支篡改下统一接入。</p></td></tr><tr><th>仿真效率与真实移行可信度</th><td><p>纯渲染驱动或吸附作弊式仿真虽能跑出高帧率动画，却会掩盖抓握力学失稳、逆解过伸、接口时钟错位与多机通道死锁；反之，以固定实时率门禁强行中断长周期多机物理仿真则会截断真实长尾故障证据。FACRI
-坚持纯接触物理仿真与多层级真机同步契约：<code>510/510</code>
-全流程纯接触参考运行取代历史抓取作弊逻辑；主工厂与 C919 场景通过
-<code>SalWire</code> v2 共享内存槽位、严格跨时钟域 <code>epoch</code>
-与时间戳新鲜度校验暴露真实时延问题；工程治理上明确废除
-<code>RTF 0.5</code>
-自动停机门禁，赋予运行方操作员手动停车唯一主权，同时通过 <code>L0</code>
-至 <code>L4</code>
-分层证据阶梯防止跨代资格冒用与视觉装饰伪造物理通过。</p></td></tr></tbody>
+<tbody><tr><th>大模型自主性与物理实时控制</th><td><p>大模型推理存在百毫秒至秒级抖动，直连电机总线易引发碰撞或跌倒；固定脚本又无法应对工位异常。FACRI
+将系统编排与端侧 <code>C++20</code> 4+1
+实时进程隔离：规划异常局限在队列内，控制回路以 200 Hz
+独占物理大核，并在心跳超时 1 秒时切入单机局部保持。</p></td></tr><tr><th>多机型扩展与代码库耦合</th><td><p>传统控制节点常硬编码关节索引与末端类型，新增机型须复制分支。FACRI
+以声明式具身规格为唯一数据源，按静态构型、驱动实测与场景策略三层单调收敛能力，由定长零拷贝共享内存协议统一接入跨形态机型。</p></td></tr><tr><th>仿真效率与真实移行可信度</th><td><p>动画或吸附仿真会掩盖滑移与时序错位，固定实时率停机又会截断长尾故障证据。FACRI
+采用纯刚体接触仿真（510/510
+全流程通过记录），隔离仿真时钟与宿主挂钟，废除 RTF 0.5
+自动停机并将停止主权交给操作员，以 L0 至 L4 证据防止跨代冒用。</p></td></tr></tbody>
 </table>
 </div>
 </section>
@@ -156,90 +144,46 @@ id="范式对比打破工业具身系统的三重割裂">范式对比：打破�
 <div class="card-grid card-grid--3x2 card-grid--subgrid">
 <article class="card">
   <div class="card-kicker">PILLAR 01</div>
-  <h3><a class="card-link" href="./subsystems/system-agent-and-rsi.html">第一支柱：分层多智能体与受约束离线
-RSI</a></h3>
-  <p><code>SystemApp</code> 整合任务编排器
-<code>DynamicCapabilityPlanner</code>、强类型 DAG 运行时
-<code>TeamRuntime</code>、严格来源与持股守恒验证器
-<code>TeamVerifier</code>，以及面向离线进化实验的
-<code>ReflectionEngine</code> 与
-<code>EvolutionManager</code>。规划器结合场景知识包、SQLite/FTS5
-分域记忆与设备实时状态输出澄清请求、宏技能序列或并行子图；反思与候选演化完全在离线验证沙箱内运行，禁止直接绕过门禁修改在线运行态参数。</p>
+  <h3><a class="card-link" href="./subsystems/system-agent-and-rsi.html">第一支柱：分层多智能体与受约束离线演化</a></h3>
+  <p>系统层集成动态规划、任务图运行、结果核验与离线反思演化，结合记忆与设施状态生成带互斥窗口的任务图；规则演进严格限定在离线沙箱内。</p>
   <footer><span class="mono-chip">深入阅读
 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">PILLAR 02</div>
-  <h3><a class="card-link" href="./subsystems/robot-embodiment-spec.html">第二支柱：声明式具身规格驱动与多机型零源码新增扩展</a></h3>
-  <p>所有机器人能力边界受控于单一权威数据源
-<code>EmbodimentSpecPod</code>。从
-<code>configs/robots/*/description.yaml</code>
-读取的静态自由度与机构定义（L1）首先与物理/仿真驱动实测的
-<code>HalHardwareCaps</code>（HAL）求交集，再由场景清单中的单机策略位（L2）进一步单调收窄。无论运行四台
-<code>FACRI</code> 双足人形还是九台异构 C919
-地勤装备，上层调度均依据同一能力契约分派任务。</p>
+  <h3><a class="card-link" href="./subsystems/robot-embodiment-spec.html">第二支柱：声明式具身规格驱动多机型复用</a></h3>
+  <p>单台能力由静态本体、硬件实测与场景策略三层交集单调收敛生成，下游只可收窄；4
+台人形与 9 台异构装备均按同一契约分派任务。</p>
   <footer><span class="mono-chip">深入阅读
 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">PILLAR 03</div>
-  <h3><a class="card-link" href="./subsystems/robot-multiprocess-cpp.html">第三支柱：C++20 4+1
-实时进程隔离与强约束硬件调优</a></h3>
-  <p>单机控制器拆分为 <code>robot_supervisor</code>
-守护进程与四个职责正交的 <code>C++20</code>
-子进程：<code>robot_body_rt</code>（<code>P0_CRITICAL</code>，200 Hz
-核心控制与 50 Hz
-局部保护）、<code>robot_spatial_perc</code>（<code>P1_HIGH</code>，10 Hz
-定位与视觉感知）、<code>robot_motion_plan</code>（<code>P2_MEDIUM</code>，50
-Hz 运动协调与 20 Hz
-规划）、<code>robot_task_agent</code>（<code>P3_BACKGROUND</code>，10 Hz
-本地任务状态机与证据缓冲）。进程间依靠无锁 <code>ShmSeqSlot</code> 与
-SPSC <code>ShmRingQueue</code> 通信，启动期由 <code>TopologyProbe</code>
-与 <code>ProportionalResourceAllocator</code>
-按机器硬件拓扑自动划分隔离大核、避让高中断核并排除 SMT 兄弟超线程。</p>
+  <h3><a class="card-link" href="./subsystems/robot-multiprocess-cpp.html">第三支柱：实时多进程隔离与自适应核组调优</a></h3>
+  <p>端侧采用 1 个守护进程加 4 个 <code>C++20</code>
+工作进程，隔离伺服保护、定位、规划与日志缓冲；启动期探测硬件拓扑，为控制进程独占物理大核。</p>
   <footer><span class="mono-chip">深入阅读
 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">PILLAR 04</div>
-  <h3><a class="card-link" href="./subsystems/robot-hal-sal-wire.html">第四支柱：双边解耦接口——SalWire
-v2、HAL 与 FacilityHAL</a></h3>
-  <p>机器人侧通过统一抽象接口 <code>IHalDriver</code> 动态加载
-<code>libsal_shm.so</code>（<code>SIM_SAL</code>）或五类真机硬件插件（<code>REAL_HAL</code>），在
-<code>SalWire</code> v2 定长零拷贝内存布局（8192 B
-<code>state_cmd.shm</code> 与 128 KiB
-<code>lidar.shm</code>）之上运行带外 <code>32 B</code>
-<code>SafetyFrame</code> UDP
-安全脉冲，实现与仿真器及真实关节控制器的严格隔离；同时，环境工装与地勤设施（压机、检测台、机门、登机桥、行李分拣等）通过独立的
-<code>FacilityHAL</code>（<a
-href="./subsystems/facility-hal-equipment.html">工装与地勤设备接入</a>）接入网关并执行
-WAL 操作确认。</p>
+  <h3><a class="card-link" href="./subsystems/robot-hal-sal-wire.html">第四支柱：双边硬件抽象与独立工装网关</a></h3>
+  <p>本体侧通过统一插件加载仿真或五类真机驱动，以零拷贝内存与带外脉搏隔离后端；工装与地勤设施接入独立网关
+<a href="./subsystems/facility-hal-equipment.html">FacilityHAL</a>。</p>
   <footer><span class="mono-chip">深入阅读 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">PILLAR 05</div>
   <h3><a class="card-link" href="./algorithms/overview.html">第五支柱：纯接触物理可信的操作与导航算法栈</a></h3>
-  <p>单机内部算法栈以 <code>C++20</code>
-原生实现为核心：底盘规划包含融合可逆运动学的
-<code>HybridAStar</code>、<code>MPPI</code> 局部避障规划器与冻结合拢控制
-<code>PlanarAdjustment</code>；定位模块 <code>VoxelIcpLocalizer</code>
-直接消费 6000 点 <code>SalLidarWire</code> 点云；上肢协调规划
-<code>UpperBodyPlanner</code> 基于加权 17
-自由度阻尼最小二乘（DLS）逆解与 49 候选微扰网格，配合
-<code>PolicyRunner</code>
-双足策略推理及单边/双边力位柔顺控制，支撑零吸附抓取、插拔与推拉推车动作（细节亦可参见
-<a
-href="./subsystems/robot-capabilities.html">单机能力模块总览</a>）。</p>
+  <p>端侧算法涵盖混合导航、局部避障、腰部补偿激光定位、17
+轴逆解与柔顺力控，经由<a
+href="./subsystems/robot-capabilities.html">单机能力模块总览</a>统一暴露。</p>
   <footer><span class="mono-chip">深入阅读 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">PILLAR 06</div>
   <h3><a class="card-link" href="./evidence/verification-ladder.html">第六支柱：分层证据门禁与运维治权</a></h3>
-  <p>平台将工程验证划分为从 <code>L0</code> 到 <code>L4</code>
-的逐级证据链条，并以明确冻结清单锁定核心参数（包括 <code>0.0002 s</code>
-GIL 基线、废除 <code>RTF 0.5</code>
-自动停机门禁以及操作员手动停止唯一主权）。所有研发与部署改动均须保留真实失败计数与归档证据，详细策略基线亦可参阅
-<a
+  <p>平台建立五级证据阶梯，以冻结清单锁定调度间隔、物理步长与单机隔离边界，全部实验保留原始失败与真实计数，细则见<a
 href="./architecture/runtime-baselines.html">运行时基线与冻结治权</a>。</p>
   <footer><span class="mono-chip">深入阅读 -&amp;gt;</span></footer>
 </article>
@@ -247,61 +191,39 @@ href="./architecture/runtime-baselines.html">运行时基线与冻结治权</a>�
 </section>
 <section class="portal-block portal-block--blueprint">
 <h2 id="平台四平面总体架构">平台四平面总体架构</h2>
-<p>FACRI
-平台遵循自顶向下的「四平面正交分层」架构：交互表现平面（<code>apps/collaboration_platform/</code>
-与 <code>apps/model_gateway/</code>）提供 WebGL 场景只读渲染、17+
-个任务/感知/演化面板与模型推理配额门控；系统编排与 RSI
-平面（<code>src/system_app/</code>）经 <code>StarFleetBus</code>、ROS 2
-契约、交互网关与受约束演化反馈流程统筹多机协作；单机多进程与算法平面（<code>src/robot_app/</code>
-与 <code>src/embodied_core/</code>）在 <code>4+1</code>
-<code>C++20</code>
-隔离框架下运行感知、规划、状态估计与局部保护；硬件与仿真执行平面（<code>HAL</code>/<code>SalWire v2</code>/<code>FacilityHAL</code>）则将抽象指令落脚至
-<code>MuJoCo</code> 物理世界或实机总线与工业外设。</p>
+<p>平台划分为四个正交平面：交互表现提供只读 WebGL
+与配额门禁；系统编排统筹任务图、互斥总线与离线演化；端侧实时运行感知、规划与保护；执行平面接入物理引擎或真机总线与外设。</p>
 <div class="blueprint-frame">
-<figure>
-<img src="./assets/diagrams/portal-architecture-manifesto.svg"
-alt="FACRI 平台总体架构图" />
-<figcaption aria-hidden="true">FACRI 平台总体架构图</figcaption>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="./assets/diagrams/portal-architecture-manifesto.svg"
+alt="FACRI 平台总体架构图" loading="lazy" decoding="async" />
+  </div>
+  <figcaption><span>FACRI 平台总体架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 </div>
 </section>
 <section class="portal-block portal-block--scenes">
 <h2 id="双场景沙盘">双场景沙盘</h2>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="./assets/diagrams/portal-dual-scenes-map.svg"
+alt="双旗舰场景空间与设备拓扑图" loading="lazy" decoding="async" />
+  </div>
+  <figcaption><span>双旗舰场景空间与设备拓扑图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
 <div class="scene-switcher" data-until-found-group>
   <div class="scene-switcher-bar" role="tablist" aria-label="双场景沙盘">
     <button type="button" class="scene-switch-btn is-active" aria-expanded="true" aria-controls="scene-panel-1">Smart Factory</button><button type="button" class="scene-switch-btn" aria-expanded="false" aria-controls="scene-panel-2">C919 Ground Turnaround</button>
   </div>
   <div id="scene-panel-1" class="scene-panel-inner" data-switch-panel>
-<p>智能机电工厂场景（<code>configs/scenes/manifests/factory.json</code>）部署
-<code>4</code> 台 <code>FACRI</code>
-双足人形机器人（<code>robot_r1</code> 至 <code>robot_r4</code>），服务由
-<code>16</code>
-个工位（<code>A1..D4</code>，涵盖上料机、压装单元、检测台、箱式输送线）与
-<code>4</code>
-座充电停机桩（<code>CH1..CH4</code>）构成的产线矩阵。系统通过
-<code>StarFleetBus</code>（<code>:18641</code>）仲裁
-<code>factory.ch_corridor</code> 与 <code>factory.workcell_aisle</code>
-共享通道互斥，并结合
-<code>FacilityHAL</code>（<code>:18642</code>）完成全流程工件转运。在
-<code>real-peer-sync</code> 联调模式下，仅 <code>robot_r1</code> 通过
-FastDDS <code>Domain 126</code>
-对接外部真机，其余三台保持容器内并发独立运行。</p>
+<p>四条产线部署 4 台 FACRI 双足人形，服务 16 座工位（A1 至 D4）与 4
+座充电桩；总线仲裁通道互斥，工装网关驱动设备周期；真机联调仅 1
+号机对接外部真机，其余三台容器内独立并发。</p>
 </div><div id="scene-panel-2" class="scene-panel-inner" data-switch-panel hidden="until-found">
-<p>大飞机地面保障过站场景（<code>configs/scenes/manifests/c919.json</code>）统一协调
-<code>9</code>
-台跨构型异构机器人在双高度工作面（<code>160 m × 120 m</code> 机坪主平面
-<code>map_apron</code> 与 <code>z = 3.47 m</code> 客舱通道
-<code>map_cabin</code>）联合作业，覆盖
-<code>FACRI</code>（<code>R1</code>、<code>R2</code>）、<code>RP1</code>
-客舱服务人形、<code>G2</code> 复合双臂、<code>M20</code>
-轮腿机器狗及四型专用地面车（<code>AU_02</code>
-牵引车、<code>AU_03</code> 叉车、<code>GS_02</code>
-行李传送带车、<code>AU_01</code> 摆渡车）。场景对接 <code>8</code>
-台地勤设备（航空地面电源插座、前货舱门、传送带、称重台、行李分拣、安检门、餐车升降平台与登机桥），串联
-<code>5</code> 条业务线与 <code>G1_STAND_SAFE</code> 至
-<code>G4_TURNAROUND_CLOSED</code> 四道强制运行门禁，并通过
-<code>--site {sim,lab}</code> 在端口 <code>18640</code>
-统一切换全仿或半实物展陈场地。</p>
+<p>统筹 9 台跨构型异构机器人，在机坪主平面（160 m × 120 m）与客舱通道（z
+= 3.47 m）双高度工作面作业，串联 8 台机场设施、5
+条业务线与四道门禁，支持全仿与展陈场地切换。</p>
 </div>
 </div>
 <p>更多场景编排参数与启停命令对照，请参阅 <a
@@ -311,52 +233,45 @@ href="./guides/cli-and-scenes.html">CLI 与双场景运行指南</a>。</p>
 <h2 id="分层证据阶梯与治理红线">分层证据阶梯与治理红线</h2>
 <div class="evidence-ladder">
 <div class="ladder-step">
-  <div class="ladder-level"><code>L0</code></div>
-  <h3>静态配置基线与零步校验</h3>
-  <p>运行基线无漂移、YAML/JSON 协议完整性、MuJoCo 零步编译通过</p>
-  <div class="mono-chip"><code>tools/verification/check_factory_runtime_baseline.py</code>、<code>facrictl check</code></div>
+  <div class="ladder-level">L0</div>
+  <h3>静态基线与零步校验</h3>
+  <p>基线无漂移、清单完整、MuJoCo 零步编译通过</p>
+  <div class="mono-chip"><code>check_factory_runtime_baseline.py</code>、<code>facrictl check</code></div>
 </div>
 <div class="ladder-step">
-  <div class="ladder-level"><code>L1</code></div>
-  <h3><code>C++20</code> 原生单元测试</h3>
-  <p><code>embodied_core</code> 与 <code>robot_app</code> 核心算法、协议
-CRC 与 SHM 边界断言通过</p>
-  <div class="mono-chip"><code>ctest</code>、<code>src/robot_app/</code> 原生测试集</div>
+  <div class="ladder-level">L1</div>
+  <h3>原生单元测试</h3>
+  <p>核心算法、校验和与共享内存边界断言通过</p>
+  <div class="mono-chip"><code>ctest</code>、<code>src/robot_app/</code></div>
 </div>
 <div class="ladder-step">
-  <div class="ladder-level"><code>L2</code></div>
-  <h3>有界动力学与单工位独立病例</h3>
-  <p>独立物理工位作业、运动控制误差与零吸附接触约束按真实计数登记</p>
+  <div class="ladder-level">L2</div>
+  <h3>有界动力学与单工位病例</h3>
+  <p>单工位作业、到位误差与纯接触按真实计数登记</p>
   <div class="mono-chip"><code>configs/skills/workpiece-processing/contract.yaml</code></div>
 </div>
 <div class="ladder-step">
-  <div class="ladder-level"><code>L3</code></div>
-  <h3>多机并发完整场景与 UI 呈现</h3>
-  <p>多机器人长周期并发完成生产/保障流水线且前端 WebGL
-持续渲染不阻塞</p>
-  <div class="mono-chip"><code>apps/collaboration_platform/</code> 与离线验证流程</div>
+  <div class="ladder-level">L3</div>
+  <h3>多机并发场景与前端呈现</h3>
+  <p>多机长周期并发完成产线任务且只读视口不阻塞</p>
+  <div class="mono-chip"><code>apps/collaboration_platform/</code></div>
 </div>
 <div class="ladder-step">
-  <div class="ladder-level"><code>L4</code></div>
-  <h3>物理真机同步与对等发布门禁</h3>
-  <p>Real-Peer <code>Domain 126</code>
-锁步联调与真机硬件实测验收，独立授权签发</p>
+  <div class="ladder-level">L4</div>
+  <h3>物理真机同步与对等验收</h3>
+  <p>1 号机对等锁步联调与硬件验收，按独立授权签发</p>
   <div class="mono-chip"><code>deployment/prepare_real_peer_release.py</code></div>
 </div>
 </div>
 <div class="redline-grid">
-<div class="redline-item"><strong>治理红线 · 第一</strong>历史旧版
-<code>G1</code>
-平台或前代实验脚本签发的运行资格与标定参数严禁跨代继承至新
-<code>FACRI</code> 或异构机型</div>
-<div class="redline-item"><strong>治理红线 · 第二</strong>高精度 <code>Three.js</code>
-<code>r180</code> 场景资产强制标记为
-<code>preview_only</code>，新精修渲染外观模型绝对不自动赋予物理碰撞或路径规划资格</div>
+<div class="redline-item"><strong>治理红线 · 第一</strong>历史旧版 G1
+平台或前代脚本的运行资格与标定参数严禁跨代继承至新 FACRI
+或异构机型</div>
+<div class="redline-item"><strong>治理红线 · 第二</strong>高精度 Three.js 场景资产强制标记为
+<code>preview_only</code>，精修外观模型绝不自动赋予物理碰撞或规划资格</div>
 <div class="redline-item"><strong>治理红线 · 第三</strong>必须完整保留
-<code>R4</code> 从
-<code>V0</code>（<code>RECEIVER_CONDITION_UNHANDLED</code>）失败样本演进至
-<code>V1</code>
-通过复核的真实对照证据及全部历史实验计数，严禁通过改写基线摘要文件凑取假阳性通过结果</div>
+R4 从 V0（<code>RECEIVER_CONDITION_UNHANDLED</code>）失败样本演进至 V1
+通过的真实对照证据及历史计数，严禁改写基线摘要凑取假阳性通过结果</div>
 </div>
 </section>
 <section class="portal-block portal-block--atlas">
@@ -364,7 +279,7 @@ CRC 与 SHM 边界断言通过</p>
 <div class="role-routes">
 <div class="role-route">
   <h3>新手快速上手与联调</h3>
-  <p>阅读 <a
+  <p><a
 href="./guides/quickstart.html">快速上手指南</a> -&gt; <a
 href="./guides/cli-and-scenes.html">CLI 与双场景运行指南</a> -&gt; <a
 href="./guides/platform-ui.html">多机协作平台与 WebGL 视图</a> -&gt; <a
@@ -372,7 +287,7 @@ href="./guides/real-peer-sync.html">真机同步联调指南</a>。</p>
 </div>
 <div class="role-route">
   <h3>系统架构与协议契约</h3>
-  <p>阅读 <a
+  <p><a
 href="./architecture/overview.html">平台架构总览</a> -&gt; <a
 href="./architecture/component-map.html">代码目录与进程拓扑地图</a>
 -&gt; <a href="./architecture/interfaces.html">跨层接口与通信契约</a>
@@ -381,75 +296,62 @@ href="./architecture/runtime-baselines.html">运行时基线与冻结治权</a>�
 </div>
 <div class="role-route">
   <h3>核心模块与算法研发</h3>
-  <p>先经 <a
+  <p>先读<a
 href="./subsystems/robot-multiprocess-cpp.html">单机 C++20 4+1
-多进程架构</a> 与 <a
-href="./subsystems/robot-embodiment-spec.html">声明式具身规格体系</a>
-掌握底层边界，再按需深入 <a
-href="./subsystems/system-agent-and-rsi.html">系统智能体与受约束
-RSI</a>、<a href="./subsystems/robot-hal-sal-wire.html">Hal 与 SalWire
-v2 协议</a> 及 <a
-href="./algorithms/overview.html">算法栈总览</a>。</p>
+多进程架构</a>与<a
+href="./subsystems/robot-embodiment-spec.html">声明式具身规格体系</a>，再深入<a
+href="./subsystems/system-agent-and-rsi.html">系统智能体与受约束离线
+RSI</a>、<a href="./subsystems/robot-hal-sal-wire.html">HAL 硬件抽象层与
+SalWire v2 协议</a>及<a
+href="./algorithms/overview.html">算法矩阵与活跃度总览</a>。</p>
 </div>
 <div class="role-route">
   <h3>验证复核与工程交付</h3>
-  <p>循 <a
-href="./evidence/verification-ladder.html">分层证据阶梯与验证准则</a> 与
-<a
-href="./engineering/development-workflow.html">研发工作流与禁忌清单</a>
-核验每次提交的静态基线、单元测试与仿真/真机准出条件。</p>
+  <p>循<a
+href="./evidence/verification-ladder.html">五级验证阶梯与实证样本</a>与<a
+href="./engineering/development-workflow.html">开发与验证工作流</a>核验基线、单测与准出条件。</p>
 </div>
 </div>
 <div class="card-grid card-grid--3x2 card-grid--subgrid">
 <article class="card">
   <div class="card-kicker">DOMAIN 01</div>
   <h3><a class="card-link" href="./guides/quickstart.html">使用指南与场景实战</a></h3>
-  <p>涵盖 <code>facrictl</code>
-统一入口、容器与本地会话启停、<code>Smart Factory</code> /
-<code>C919 Ground Turnaround</code> 双场景命令行控制、<code>17</code>
-个前端核心页面以及 <code>Domain 126</code> 真机锁步联调操作。</p>
+  <p>涵盖统一入口启停、双场景命令行控制、17+
+个前端核心页面以及真机锁步联调。</p>
   <footer><span class="mono-chip">进入指南 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">DOMAIN 02</div>
   <h3><a class="card-link" href="./architecture/overview.html">系统架构与协议规范</a></h3>
-  <p>全景解析四平面正交架构、<code>12</code> 个系统智能体模块与
-<code>C++20</code> 进程映射关系、<code>84</code> 份 ROS 2 IDL
-契约、<code>StarFleetBus</code> 与 <code>SafetyFrame</code>
-线格式及冻结运维基线。</p>
+  <p>解析四平面架构、源码与进程映射、ROS 2 与 HTTP
+网关契约、共享内存线格式与冻结基线。</p>
   <footer><span class="mono-chip">进入架构 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">DOMAIN 03</div>
   <h3><a class="card-link" href="./subsystems/system-agent-and-rsi.html">核心子系统深度解析</a></h3>
-  <p>逐一剖析
-<code>SystemApp</code>、<code>InteractionGateway</code>、<code>ModelGateway</code>、<code>FacilityHAL</code>、<code>RobotSupervisor</code>、<code>EmbodimentSpecPod</code>、<code>IHalDriver</code>
-与单机四大核心运行时。</p>
+  <p>剖析系统编排、语音与模型网关、工装设施网关、端侧守护进程、具身规格与
+HAL 插件。</p>
   <footer><span class="mono-chip">进入子系统
 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">DOMAIN 04</div>
   <h3><a class="card-link" href="./algorithms/overview.html">具身算法与控制内核</a></h3>
-  <p>深入 <code>C++20</code> 原生算法实现，包括
-<code>HybridAStar</code>、<code>MPPI</code>、<code>PlanarAdjustment</code>、<code>VoxelIcpLocalizer</code>、17
-轴加权 DLS 上肢逆解、<code>PolicyRunner</code>
-与单双臂力位柔顺控制。</p>
+  <p>深入混合路径规划、体素定位、17 轴逆解、双足策略与纯接触柔顺控制。</p>
   <footer><span class="mono-chip">进入算法 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">DOMAIN 05</div>
   <h3><a class="card-link" href="./evidence/verification-ladder.html">分层证据与验收档案</a></h3>
-  <p>完整记录 <code>L0</code> 至 <code>L4</code>
-证据标准、<code>510/510</code> 零吸附纯接触实验对照、<code>R4</code>
-失败排查演化序列与高帧率实时率历史调优数据。</p>
+  <p>记录 L0 至 L4 证据标准、510/510 纯接触基准、R4
+失败演化序列与实证视频库。</p>
   <footer><span class="mono-chip">进入验证 -&amp;gt;</span></footer>
 </article>
 <article class="card">
   <div class="card-kicker">DOMAIN 06</div>
   <h3><a class="card-link" href="./engineering/development-workflow.html">研发治权与排错红线</a></h3>
-  <p>汇集仓库研发规则、模块所有权分工、<code>factory-rd-pitfalls</code>
-高频踩坑记录、离线标准校验脚本与冻结特性清单。</p>
+  <p>汇集研发规程、模块所有权分工、高频踩坑记录、文档构建流水线与历史原型索引。</p>
   <footer><span class="mono-chip">进入工程治理
 -&amp;gt;</span></footer>
 </article>
@@ -463,5 +365,22 @@ href="./engineering/development-workflow.html">研发工作流与禁忌清单</a
     <span><a href="./architecture/overview.html">系统架构</a> · <a href="./evidence/verification-ladder.html">五级验证</a> · <a href="./engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

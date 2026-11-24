@@ -64,21 +64,21 @@
       </header>
 
       <article class="doc-article">
-<p>本页汇总新版工程手册所收录的 <strong>12
-条核心多媒体实证记录</strong>。为避免大体积二进制资产污染 Git
-提交历史，仓库于文档重构期间已将历史遗留的 <code>108</code> 段早期 2026
-年 10 月三窗口录制从版本库剥离，转而采用外部 <code>media-v2.1</code>
-Release 托管全部现役媒体资产，并在
-<code>docs/manifests/media-manifest.json</code>
-中固化分辨率、帧率、原片时长、加速倍率、证据分类及逐文件
-<code>SHA-256</code> 校验摘要。</p>
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p>实证媒体陈列室作为公开工程手册的可视化索引出口，上游消费
+<code>docs/manifests/media-manifest.json</code> 固化的外部
+<code>media-v2.1</code> Release 元数据与 <code>SHA-256</code>
+校验摘要，下游由静态构建器按统一模板展开成带证据级别标牌的惰性加载视频矩阵。为避免大体积二进制文件污染版本历史，仓库已剥离早期
+<code>108</code> 段 <code>2026</code> 年 <code>10</code>
+月三窗口旧录制，仅保留当前 <code>12</code>
+条可溯源的现役核心实证录像。</p>
 <h2
 id="一媒体托管证据分级与时间倍率判读说明">一、媒体托管、证据分级与时间倍率判读说明</h2>
 <ol type="1">
 <li><strong>五类证据等级边界</strong>：
 <ul>
-<li><code>PHYSICAL_SIM</code>：运行在真实接触物理（MuJoCo 4.0.1 /
-实时多进程）下的仿真通过实证，代表 <code>SIM</code>
+<li><code>PHYSICAL_SIM</code>：运行在真实接触物理（MuJoCo
+<code>4.0.1</code> / 实时多进程）下的仿真通过实证，代表 <code>SIM</code>
 级成功证据，不自动等价于真机资格。</li>
 <li><code>PHYSICAL_SIM_FAILURE_EVIDENCE</code>：完整保留的物理仿真失败反例（如
 <code>MED-RSI-01</code>），严禁修改、裁切或伪装为通过样本。</li>
@@ -220,7 +220,7 @@ JSON 账本，不能把快进播放秒数误当成实时率（<code>RTF</code>�
 </div>
 <h2 id="三全量多媒体播放器矩阵">三、全量多媒体播放器矩阵</h2>
 <p>下方由构建器按 <code>docs/manifests/media-manifest.json</code>
-顺序统一展开所有 12 段视频卡片与关联信息。</p>
+顺序统一展开所有 <code>12</code> 段视频卡片与关联信息。</p>
 <div class="media-gallery-grid">
 <figure class="doc-video" data-media-id="MED-SYS-01">
 <video controls playsinline loading="lazy" preload="none" width="1152" height="720" poster="../assets/posters/MED-SYS-01.webp">
@@ -355,6 +355,8 @@ class="doc-media-badge">SYSTEM_ORCHESTRATION_UI</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#一媒体托管证据分级与时间倍率判读说明"
 id="toc-一媒体托管证据分级与时间倍率判读说明">一、媒体托管、证据分级与时间倍率判读说明</a></li>
 <li><a href="#二全量-12-项媒体资产索引表"
@@ -373,5 +375,22 @@ id="toc-三全量多媒体播放器矩阵">三、全量多媒体播放器矩阵<
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

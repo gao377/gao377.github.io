@@ -63,12 +63,14 @@
       </header>
 
       <article class="doc-article">
-<p>FACRI 平台并非单一庞大的 Python
-脚本或固定构型的机器人控制器，而是一套跨越语义推理、分布式任务编排、硬实时运动控制与纯接触物理仿真的分层系统。整套代码库按职责边界清晰划分为四个正交平面，使上层人工智能决策波动无法穿透至毫秒级物理执行层。</p>
-<figure>
-<img src="../assets/diagrams/system-architecture.svg"
-alt="FACRI 系统级四平面拓扑图" />
-<figcaption aria-hidden="true">FACRI 系统级四平面拓扑图</figcaption>
+<p>FACRI
+并非单一脚本或绑定某一构型的专用控制器，而是一套跨越语义推理、分布式多机编排、硬实时运动控制与纯接触物理仿真的分层系统。整套平台按时间尺度与故障域划分为四个正交平面，使上层大模型推理的毫秒至秒级波动永远无法穿透到底层物理执行回路。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/arch-system-four-planes.svg"
+alt="FACRI 四平面正交系统架构图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>FACRI 四平面正交系统架构图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="四平面正交分层架构">四平面正交分层架构</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
@@ -82,115 +84,84 @@ alt="FACRI 系统级四平面拓扑图" />
 <thead>
 <tr>
 <th>架构平面</th>
-<th>核心代码目录与进程</th>
+<th>核心代码域</th>
 <th>调度节拍与隔离边界</th>
 <th>主要职责边界</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>表现与交互平面</strong></td>
+<td><strong>交互与表现平面</strong></td>
 <td><code>apps/collaboration_platform/</code>、<code>apps/model_gateway/</code></td>
-<td>浏览器前端 <code>Three.js</code> 帧率驱动；网关 <code>:18080</code>
-异步配额队列</td>
-<td>只读 3D 渲染、17+ 个操作/诊断视图、模型调用并发上限与鉴权守门</td>
+<td>浏览器渲染帧率驱动；推理网关异步限流队列</td>
+<td>只读三维视口、多视图控制台、语音/视觉模型配额与路径安全门禁</td>
 </tr>
 <tr>
-<td><strong>系统编排与 RSI 平面</strong></td>
-<td><code>src/system_app/</code>（ROS 2
-节点、<code>StarFleetBus</code>、交互网关）</td>
-<td>Python 运行时，强约束 <code>0.0002 s</code> GIL 调度基线</td>
-<td>语义澄清、DAG 任务编译、跨机互锁调度、工装联动与离线进化验证</td>
+<td><strong>系统编排与演化平面</strong></td>
+<td><code>src/system_app/</code>（系统节点、车队总线、交互网关）</td>
+<td>Python 运行时，受 <code>0.0002 s</code> GIL 调度基线约束</td>
+<td>语义澄清、任务图编译、共享通道互斥、工装联动与离线沙箱演化</td>
 </tr>
 <tr>
 <td><strong>单机多进程与算法平面</strong></td>
 <td><code>src/robot_app/</code>、<code>src/embodied_core/</code>（<code>4+1</code>
 进程）</td>
-<td><code>C++20</code> 进程独立绑核：<code>200 Hz</code> 控制 /
-<code>50 Hz</code> 安全 / <code>10–20 Hz</code> 规划与感知</td>
-<td><code>EmbodimentSpec</code> 能力合成、SLAM
-定位、双足步态/MPC/上肢逆解、单机局部保护</td>
+<td><code>C++20</code> 独立绑核：200 Hz 控制 / 50 Hz 安全 / 10–20 Hz
+规划感知</td>
+<td>构型能力综合、三维定位、全身导航与操作规划、单机局部保护</td>
 </tr>
 <tr>
 <td><strong>硬件与仿真执行平面</strong></td>
 <td><code>src/robot_app/backends/</code>、<code>src/facility_hal/</code></td>
-<td>零拷贝共享内存 <code>SalWire</code> v2、<code>32 B</code> UDP
-安全脉冲、HTTP WAL</td>
-<td><code>SIM_SAL</code> 物理桥接、五型真机 <code>REAL_HAL</code>
-插件、工业工装与机场设备网关</td>
+<td>定长零拷贝共享内存、带外 UDP 安全脉搏、WAL 日志</td>
+<td>物理仿真桥接、五型真机驱动插件、工业工装与机场设施网关</td>
 </tr>
 </tbody>
 </table>
 </div>
-<figure>
-<img src="../assets/diagrams/software-architecture.svg"
-alt="软件组件交互与部署分层图" />
-<figcaption aria-hidden="true">软件组件交互与部署分层图</figcaption>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/arch-software-stack.svg"
+alt="FACRI 统一软件栈与跨层部署拓扑图" loading="lazy" decoding="async" />
+  </div>
+  <figcaption><span>FACRI
+统一软件栈与跨层部署拓扑图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="五大核心系统不变量">五大核心系统不变量</h2>
-<p>为确保系统在 <code>Smart Factory</code> 四机连续产线与
-<code>C919 Ground Turnaround</code>
-九机异构保障两种截然不同的场景中稳定运行，所有子系统在代码评审与运行时均严格维护以下五项架构不变量：</p>
+<p>为保障平台在四机连续工业产线与九机异构机场保障两类迥异场景中稳定运转，所有子系统在设计与评审中均严格维持以下五项架构不变量：</p>
 <h3 id="跨时钟域隔离与严格新鲜度验证">1.
 跨时钟域隔离与严格新鲜度验证</h3>
-<p>物理仿真器产生的是可变步长或降速后的
-<code>sim_time_ns</code>，而宿主机硬件保护与交互进程依赖单调递增的
-<code>host_monotonic_ns</code>。系统在
-<code>src/embodied_core/include/embodied_core/sal_wire.hpp</code> 与
-<code>src/embodied_core/include/embodied_core/shm_ipc.hpp</code>
-中显式并列携带两个时间域与单调会话代际号
-<code>epoch</code>，严禁将推理完成时间回填为传感器源捕获时间；一旦发生跨时钟混用、帧序倒退或
-<code>epoch</code>
-跳变，下游感知跟踪与控制执行器立即重置状态并拒绝过期数据。</p>
-<h3 id="固定线协议消除跨层语义耦合">2. 固定线协议消除跨层语义耦合</h3>
-<p>无论是 <code>31</code> 自由度双足人形、<code>32</code>
-自由度四轮转向复合臂，还是 <code>5</code>
-自由度机场牵引车，所有机器人经由同一份定长 <code>SalWire</code> v2
-协议穿越进程与硬件边界：<code>SalSampleWire</code> 固定
-<code>1472 B</code>、<code>SalCommandWire</code> 固定
-<code>2052 B</code>、<code>SalLidarWire</code> 固定
-<code>96068 B</code>（支持
-<code>kMaxDofs = 48</code>、<code>kMaxLidarPoints = 6000</code>），且末尾强制校验
-CRC32
-IEEE。底盘、上肢、特殊机构与夹爪指令全数使用通用槽位索引与标志位传递，绝对禁止将具体场景逻辑（如工位号或货舱门命名）硬编码进物理执行通道。</p>
+<p>物理仿真产生随负载变化或倍速缩放的仿真时间，而宿主机安全保护与硬件驱动依赖单调递增的物理挂钟。跨层协议在所有高频状态槽位内并列携带双时钟与单调递增的会话代际号，严禁将推理完成时刻回填为传感源时间；一旦发现代际跳变或帧序倒退，下游跟踪与执行器立即丢弃过期数据（具体槽位契约见<a
+href="../architecture/interfaces.html">跨层接口与通信契约</a>）。</p>
+<h3 id="定长零拷贝协议消除跨层语义耦合">2.
+定长零拷贝协议消除跨层语义耦合</h3>
+<p>无论对接双足人形、全向复合双臂、轮腿机器狗还是机场特种车辆，所有本体均经由同一套版本化定长共享内存与安全帧格式穿越进程与硬件边界，并以编译期静态断言与循环冗余校验确保结构完整。底盘速度、关节参考、夹爪动作与腕力反馈全数抽象为通用索引与标志位，绝不允许在实时物理通道内硬编码工位号或机坪业务命名。</p>
 <h3 id="能力边界三层单调收敛">3. 能力边界三层单调收敛</h3>
-<p>单台机器人的实际可调度能力由 <code>L1 ∧ HAL ∧ L2</code>
-交集规则严格决定：静态构型档案
-<code>configs/robots/*/description.yaml</code>
-声明物理本体结构（L1），运行时由
-<code>IHalDriver::query_hardware_caps()</code>
-实测硬件外设传感器到位情况（HAL），最后叠加场景清单配置的策略开关（L2）。下游只能收窄而绝不允许越权扩展上游未声明的自由度或力控权限。</p>
+<p>单台机器人的实际可调度能力由静态本体描述、驱动实测硬件能力与场景策略开关三层交集单调决定（详述于<a
+href="../subsystems/robot-embodiment-spec.html">声明式具身规格体系</a>）。场景配置只能收窄关闭特定辅助特性，绝不允许越权开启本体或物理硬件尚未具备的自由度与力控权限。</p>
 <h3 id="纯接触物理可信与手动停止主权">4.
 纯接触物理可信与手动停止主权</h3>
-<p>产线抓取与插拔全面基于 <code>MuJoCo</code>
-纯刚体接触、手腕六维力导纳控制与防滑检验，彻底废除隐藏式吸附脚本。同时遵循工程治理裁定：废除早期
-<code>RTF 0.5</code>
-自动停机门禁，物理仿真连续运行过程仅可由操作员显式手动触发停机，单台机器人触发
-<code>LOCAL_HOLD</code> 时严格限定于本机范围，不引发全编队误急停（详见
-<a
+<p>产线抓取与放置全面采用纯刚体摩擦接触与力位柔顺控制，彻底废除隐藏吸附脚本。同时遵循工程治理裁定：废除基于实时率的自动停机门禁，物理仿真仅可由运行方操作员显式手动停止，且单机保护超时严格局限于本机局部保持而绝不牵连全编队急停（详见<a
 href="../architecture/runtime-baselines.html">运行时基线与冻结治权</a>）。</p>
-<h3 id="透明失败留痕与受约束进化边界">5.
-透明失败留痕与受约束进化边界</h3>
-<p>系统在任务执行流中强制核验观测来源（<code>SIM_SAL</code>、<code>REAL_HAL</code>
-等）与执行来源一致，所有步骤进展与异常通过无锁
-<code>evidence_ring*.shm</code> 及 <code>EvidenceStore</code>
-持久化记录，工装设备网关通过 <code>AckJournal</code>
-预写日志防重启丢失；自我进化组件 <code>ReflectionEngine</code> 与
-<code>EvolutionManager</code>
-仅在离线实验沙箱内分析真实失败包并验证候选补丁，绝不绕过验证门禁热改在线运行态规则。</p>
-<figure>
-<img src="../assets/diagrams/runtime-sequences.svg"
-alt="运行时跨域调用时序图" />
-<figcaption aria-hidden="true">运行时跨域调用时序图</figcaption>
+<h3 id="透明失败留痕与受约束演化边界">5.
+透明失败留痕与受约束演化边界</h3>
+<p>任务核验严格要求执行来源与感知观测来源同域匹配，所有异常与状态进展均经由无锁环形缓冲与预写日志如实归档。自我反思与演化组件只能在离线沙箱中复盘真实失败样本并经对照测试验证候选补丁，绝不绕过门禁热改在线控制参数（机制详见<a
+href="../subsystems/system-agent-and-rsi.html">系统智能体与受约束离线演化</a>）。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/arch-runtime-sequences.svg"
+alt="FACRI 跨层控制与感知运行时序图" loading="lazy" decoding="async" />
+  </div>
+  <figcaption><span>FACRI
+跨层控制与感知运行时序图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="延伸阅读">延伸阅读</h2>
 <ul>
-<li>查看仓库目录结构、进程二进制文件与模块对应清单：参阅 <a
+<li>查看源码目录结构、二进制可执行文件与模块清单：参阅<a
 href="../architecture/component-map.html">代码目录与进程拓扑地图</a>。</li>
-<li>检索 84 份 ROS 2 接口文件、HTTP 网关路由、共享内存文件名与 UDP
-线包格式：参阅 <a
+<li>检索 ROS 2 接口清点、网关路由、共享内存与安全帧布局：参阅<a
 href="../architecture/interfaces.html">跨层接口与通信契约</a>。</li>
-<li>核对 GIL 基线、频率参数及冻结治权条款：参阅 <a
+<li>核对调度基线、时钟域隔离与治权红线：参阅<a
 href="../architecture/runtime-baselines.html">运行时基线与冻结治权</a>。</li>
 </ul>
       </article>
@@ -212,17 +183,17 @@ id="toc-五大核心系统不变量">五大核心系统不变量</a>
 <li><a href="#跨时钟域隔离与严格新鲜度验证"
 id="toc-跨时钟域隔离与严格新鲜度验证">1.
 跨时钟域隔离与严格新鲜度验证</a></li>
-<li><a href="#固定线协议消除跨层语义耦合"
-id="toc-固定线协议消除跨层语义耦合">2.
-固定线协议消除跨层语义耦合</a></li>
+<li><a href="#定长零拷贝协议消除跨层语义耦合"
+id="toc-定长零拷贝协议消除跨层语义耦合">2.
+定长零拷贝协议消除跨层语义耦合</a></li>
 <li><a href="#能力边界三层单调收敛" id="toc-能力边界三层单调收敛">3.
 能力边界三层单调收敛</a></li>
 <li><a href="#纯接触物理可信与手动停止主权"
 id="toc-纯接触物理可信与手动停止主权">4.
 纯接触物理可信与手动停止主权</a></li>
-<li><a href="#透明失败留痕与受约束进化边界"
-id="toc-透明失败留痕与受约束进化边界">5.
-透明失败留痕与受约束进化边界</a></li>
+<li><a href="#透明失败留痕与受约束演化边界"
+id="toc-透明失败留痕与受约束演化边界">5.
+透明失败留痕与受约束演化边界</a></li>
 </ul></li>
 <li><a href="#延伸阅读" id="toc-延伸阅读">延伸阅读</a></li>
 </ul>
@@ -236,5 +207,22 @@ id="toc-透明失败留痕与受约束进化边界">5.
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

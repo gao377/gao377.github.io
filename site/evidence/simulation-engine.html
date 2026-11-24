@@ -64,12 +64,24 @@ weld 纯接触物理工厂、GIL 0.0002 s 基线、单机时钟隔离及 C919 T3
       </header>
 
       <article class="doc-article">
-<p>物理仿真体系分为两条边界清晰的路径：第一条是面向双足步态与纯接触双臂抓取的
-<strong>MuJoCo 4.0.1 动力学工厂</strong>；第二条是面向 9
-台异构设备大场景配合的 <strong>C919 <code>T3</code>
-零物理运动学执行器</strong>。两套环境遵循 <code>AGENTS.md</code> 与 <a
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
+<p>物理仿真引擎层位于 <code>SalWire</code> v2 共享内存线协议与
+<code>FacilityHAL</code> 驱动后端之下，为上层 <code>4+1</code>
+多进程控制器与 <code>SystemApp</code>
+提供可替换的物理测试基座。该层严格区分为两条独立路径：面向双足步态与纯接触双臂抓取的
+<strong>MuJoCo 4.0.1 动力学工厂</strong>，以及面向 <code>9</code>
+台异构装备大场景调度的 <strong>C919 <code>T3</code>
+零物理运动学执行器</strong>；两条路径均遵循 <a
 href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>
-中严格的时钟隔离与只读显示分离规范。</p>
+中的时钟隔离、人工停机主权与只读显示分离红线。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/evidence-mujoco-contact-stack.svg"
+alt="MuJoCo 4.0.1 双层垫片纯物理接触仿真技术栈" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>MuJoCo 4.0.1
+双层垫片纯物理接触仿真技术栈</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
 <h2 id="一mujoco-4.0.1-零-weld-纯物理接触工厂">一、MuJoCo 4.0.1 零
 <code>&lt;weld&gt;</code> 纯物理接触工厂</h2>
 <p>仓库彻底废弃以等式约束（<code>&lt;weld&gt;</code>）硬性吸住工件的作弊做法，转而在
@@ -207,6 +219,8 @@ href="../guides/platform-ui.html">Web
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#一mujoco-4.0.1-零-weld-纯物理接触工厂"
 id="toc-一mujoco-4.0.1-零-weld-纯物理接触工厂">一、MuJoCo 4.0.1 零
 <code>&lt;weld&gt;</code> 纯物理接触工厂</a></li>
@@ -227,5 +241,22 @@ id="toc-三c919-机坪-t3-零物理运动学引擎与异构-sal">三、C919 机�
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

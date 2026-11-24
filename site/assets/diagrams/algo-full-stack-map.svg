@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 710" width="1200" height="710" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">单机全算法流水线总图: 感知定位 · 导航规划 · 双臂柔顺 · 双足策略 · 反射安全</title>
+  <desc id="diagram-desc">完整串联单机 P1 空间感知、P2 移动导航与 17 轴上身操作规划、P0 双足步态推理与主动避碰环五条算法流水线。</desc>
+  <defs>
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="710" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="710" fill="url(#dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="708.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="88.0" width="1128.0" height="126.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="108.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">P1 · SPATIAL &amp; PERCEPTION (10 Hz)</text>
+  <rect x="36.0" y="224.0" width="1128.0" height="126.0" rx="3.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.35"/>
+  <text x="50.0" y="244.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#8A5A19" letter-spacing="0.06em">P2 · NAVIGATION RUNTIME (20 Hz)</text>
+  <rect x="36.0" y="360.0" width="1128.0" height="134.0" rx="3.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.35"/>
+  <text x="50.0" y="380.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">P2/P0 · MANIPULATION &amp; COMPLIANT IK</text>
+  <rect x="36.0" y="504.0" width="1128.0" height="144.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="50.0" y="524.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">P0 · LOCOMOTION &amp; PROTECTION (200/50 Hz)</text>
+  <rect x="52.0" y="120.0" width="352.0" height="82.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="140.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">SalLidarIngress + 腰部 FK</text>
+  <text x="64.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">6000 点 · &lt;=2 ms TF · &lt;=500 ms</text>
+  <text x="64.0" y="171.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">compensate_waist_for_livox 水平还原</text>
+  <rect x="424.0" y="120.0" width="352.0" height="82.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="436.0" y="140.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">VoxelIcpLocalizer</text>
+  <text x="436.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">0.20 m 体素 ICP · tracking 0..100</text>
+  <text x="436.0" y="171.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">输出 SpatialPosePod &amp; 最近净距</text>
+  <rect x="796.0" y="120.0" width="352.0" height="82.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="808.0" y="140.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">ZedRgbd + AprilTag + Pose</text>
+  <text x="808.0" y="156.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">YOLOv8-seg + FoundationPose (5+2)</text>
+  <text x="808.0" y="171.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">LocateAnything-3B (:18080) · &lt;=512 KB ROI</text>
+  <rect x="52.0" y="256.0" width="352.0" height="82.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="276.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">HybridAStar 全局搜索</text>
+  <text x="64.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">0.35 m 步长 · 1.2 m 转弯半径</text>
+  <text x="64.0" y="307.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">15000 节点上限 · 允许倒车</text>
+  <rect x="424.0" y="256.0" width="352.0" height="82.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="436.0" y="276.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">MppiLocalPlanner + BoxRoute</text>
+  <text x="436.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">64/128 采样 · 15x0.1 s · 0.45 m ESDF</text>
+  <text x="436.0" y="307.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">统一适配 全向 / 差速 / 阿克曼底盘</text>
+  <rect x="796.0" y="256.0" width="352.0" height="82.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="808.0" y="276.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">PlanarAdj + ConvergentServo</text>
+  <text x="808.0" y="292.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">0.10 m/s 调节 · 0.20 m 后退</text>
+  <text x="808.0" y="307.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">3 态同心收敛 + 零先验割线偏置 b_xy</text>
+  <rect x="52.0" y="392.0" width="352.0" height="90.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="412.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">UpperBodyPlanner (17 DOF)</text>
+  <text x="64.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">yaw:1 / pitch:10 / roll:100 权重</text>
+  <text x="64.0" y="443.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">49 候选 ±30 mm · &lt;=20 mm · 100 段@20ms</text>
+  <rect x="424.0" y="392.0" width="352.0" height="90.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="436.0" y="412.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">CubicHermite + Minkowski</text>
+  <text x="436.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">TOTG 一阶速度连续 · Bernstein 细分</text>
+  <text x="436.0" y="443.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">2 cm / 3° 漂移补偿 · 胸前/空手姿态</text>
+  <rect x="796.0" y="392.0" width="352.0" height="90.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="808.0" y="412.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">WrenchObserver + Touchdown</text>
+  <text x="808.0" y="428.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">7-DOF 纯臂雅可比 · 0.12 Nm 死区</text>
+  <text x="808.0" y="443.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">4 套导纳剖面 · fz&gt;=0.90 N 驻留 0.08 s</text>
+  <rect x="52.0" y="536.0" width="352.0" height="100.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="556.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">FacriMjlabPolicy / PolicyRunner</text>
+  <text x="64.0" y="572.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">SIM 47-&gt;12 (50 Hz) | C++ 10x100=1000</text>
+  <text x="64.0" y="587.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">ONNX/MLP + 双向斜率限幅 + 0.14–0.24 衰减</text>
+  <rect x="424.0" y="536.0" width="352.0" height="100.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="436.0" y="556.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">StateEst &amp; BodyStabilityMonitor</text>
+  <text x="436.0" y="572.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">40 ms 最大年龄 · 10° 倾角门禁</text>
+  <text x="436.0" y="587.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">SimPositionExcursionGuard (100 ms 超限)</text>
+  <rect x="796.0" y="536.0" width="352.0" height="100.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="808.0" y="556.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">LidarReflexRing &amp; SafetyFrame</text>
+  <text x="808.0" y="572.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">1.20 m 减速 / 0.45 m 硬停</text>
+  <text x="808.0" y="587.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">25° 接近锥前向收窄至 0.08 m (0.15 m/s)</text>
+  <path d="M 404.0 161.0 L 424.0 161.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
+  <path d="M 776.0 161.0 L 796.0 161.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
+  <path d="M 404.0 297.0 L 424.0 297.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 776.0 297.0 L 796.0 297.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 404.0 437.0 L 424.0 437.0" fill="none" stroke="#B04A1A" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-terracotta)"/>
+  <path d="M 776.0 437.0 L 796.0 437.0" fill="none" stroke="#B04A1A" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-terracotta)"/>
+  <path d="M 404.0 586.0 L 424.0 586.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 776.0 586.0 L 796.0 586.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 350.0 214.0 L 350.0 224.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
+  <path d="M 750.0 214.0 L 750.0 224.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-slate)"/>
+  <path d="M 920.0 350.0 L 920.0 360.0" fill="none" stroke="#8A5A19" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-ochre)"/>
+  <path d="M 550.0 494.0 L 550.0 504.0" fill="none" stroke="#B04A1A" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-terracotta)"/>
+  <path d="M 920.0 494.0 L 920.0 504.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <line x1="36.0" y1="664.0" x2="1164.0" y2="664.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="686.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <rect x="82.0" y="675.0" width="14.0" height="12.0" rx="2.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.20"/>
+  <text x="104.0" y="685.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P1 空间定位与视觉</text>
+  <rect x="212.2" y="675.0" width="14.0" height="12.0" rx="2.0" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.20"/>
+  <text x="234.2" y="685.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P2 移动导航与精停</text>
+  <rect x="344.5" y="675.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="366.5" y="685.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">17 轴操作 IK 与纯接触导纳</text>
+  <rect x="513.5" y="675.0" width="14.0" height="12.0" rx="2.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.20"/>
+  <text x="535.5" y="685.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">P0 步态推理与主动安全环</text>
+  <text x="1164.0" y="685.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">注: pft_workpiece_sr 仍在特性分支，主线不虚报启用</text>
+  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">ALGORITHM FULL-STACK MAP · src/robot_app/{modules,algorithms}/</text>
+  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">单机全算法流水线总图: 感知定位 · 导航规划 · 双臂柔顺 · 双足策略 · 反射安全</text>
+  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">VoxelICP · MPPI · 49-Cand DLS IK · WrenchObserver · PolicyRunner · LidarReflexRing</text>
+  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

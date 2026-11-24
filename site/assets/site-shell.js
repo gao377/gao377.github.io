@@ -236,4 +236,69 @@
       });
     });
   });
+
+  // 8. Native Diagram Lightbox Modal (<dialog closedby="any"> + fallback)
+  var lightbox = document.getElementById('diagram-lightbox');
+  var lightboxImg = document.getElementById('diagram-lightbox-img');
+  var lightboxTitle = document.getElementById('diagram-lightbox-title');
+  var zoomToggle = lightbox && lightbox.querySelector('[data-diagram-zoom-toggle]');
+
+  if (lightbox && lightboxImg && typeof lightbox.showModal === 'function') {
+    document.querySelectorAll('[data-diagram-zoom]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var fig = btn.closest('figure');
+        var img = fig && fig.querySelector('img');
+        if (!img) return;
+        var capSpan = fig.querySelector('figcaption span');
+        var title = (capSpan && capSpan.textContent.trim()) || img.getAttribute('alt') || '架构矢量图预览';
+        lightboxImg.src = img.currentSrc || img.getAttribute('src') || '';
+        lightboxImg.alt = img.getAttribute('alt') || title;
+        if (lightboxTitle) lightboxTitle.textContent = title;
+        lightbox.removeAttribute('data-zoom');
+        if (zoomToggle) {
+          zoomToggle.setAttribute('aria-pressed', 'false');
+          zoomToggle.textContent = '1:1 原始尺寸';
+        }
+        lightbox.showModal();
+      });
+    });
+
+    if (zoomToggle) {
+      zoomToggle.addEventListener('click', function () {
+        var isActual = lightbox.getAttribute('data-zoom') === 'actual';
+        if (isActual) {
+          lightbox.removeAttribute('data-zoom');
+          zoomToggle.setAttribute('aria-pressed', 'false');
+          zoomToggle.textContent = '1:1 原始尺寸';
+        } else {
+          lightbox.setAttribute('data-zoom', 'actual');
+          zoomToggle.setAttribute('aria-pressed', 'true');
+          zoomToggle.textContent = '适配窗口';
+        }
+      });
+    }
+
+    lightbox.addEventListener('close', function () {
+      lightbox.returnValue = '';
+      lightbox.removeAttribute('data-zoom');
+      lightboxImg.removeAttribute('src');
+    });
+
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      var isOutsideDialog = function (e, dlg) {
+        var r = dlg.getBoundingClientRect();
+        return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      };
+      var pressedOutside = false;
+      lightbox.addEventListener('pointerdown', function (e) {
+        pressedOutside = isOutsideDialog(e, lightbox);
+      });
+      lightbox.addEventListener('pointerup', function (e) {
+        if (pressedOutside && isOutsideDialog(e, lightbox)) {
+          lightbox.close();
+        }
+        pressedOutside = false;
+      });
+    }
+  }
 })();

@@ -66,76 +66,62 @@
       </header>
 
       <article class="doc-article">
-<p>真机同步联调（Real-Peer Sync）允许在 <code>Smart Factory</code>
-四机产线仿真中，仅将一号机 <code>robot_r1</code>
-切换对接到局域网内的外部实物真机，同时保留 <code>robot_r2</code> 至
-<code>robot_r4</code>
-在容器内并发独立运行，用于在完整多机生产上下文中验证物理真机动作执行与上层任务编排的一致性。</p>
-<h2 id="模式边界与四阶段对称锁步">模式边界与四阶段对称锁步</h2>
+<p>真机同步联调（Real-Peer Sync）允许在 Smart Factory
+四机产线仿真中，仅将 1 号机 <code>robot_r1</code>
+切换对接至局域网内的外部实物真机，其余三台机器人继续在容器内并发独立运行，用于在完整多机生产上下文中核验物理真机执行与上层任务编排的一致性。</p>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/guide-real-peer-lockstep.svg"
+alt="robot_r1 真机四阶段对称锁步与 Domain 126 同步图" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>robot_r1 真机四阶段对称锁步与 Domain 126
+同步图</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
+</figure>
+<h2 id="同步范围与四阶段对称锁步">同步范围与四阶段对称锁步</h2>
 <p>依据 <code>REAL_PEER_SYNC_README.md</code> 与
 <code>configs/skills/workpiece-processing/contract.yaml</code>
-的契约规定，联调通信边界锁定如下：</p>
-<ul>
-<li><strong>同步作用范围</strong>：仅 <code>robot_r1</code>
-启用外部真机同步（受产线规划配置文件中
-<code>operation_sync_robot_ids</code>
-控制），二号至四号机器人保持容器内独立执行，单机故障不扩散停机。</li>
-<li><strong>网桥与 DDS 域</strong>：宿主机自动拉起
-<code>peer-link</code> 网桥进程，采用 <code>rmw_fastrtps_cpp</code>
-传输层与默认 FastDDS <code>Domain 126</code>
-对接对端真机，协议版本标定为
-<code>v0-whole-robot-authority</code>，配置模板为
-<code>facri.operation.sync.v1</code>。</li>
-<li><strong>四阶段对称锁步（<code>0 -&gt; 1 -&gt; 2 -&gt; 3</code>）</strong>：每个工件转运操作周期均遵循严格的阶段状态确认：<code>0</code>（就绪等待抓取）-&gt;
-<code>1</code>（抓取完成等待持物移位）-&gt;
-<code>2</code>（到位等待放置）-&gt;
-<code>3</code>（放置完成等待空手返回）。技能契约中将
-<code>manipulation.pick</code> 映射至阶段 <code>0</code>，将
-<code>manipulation.place</code> 映射至阶段 <code>2</code>。</li>
-<li><strong>核心 DDS 话题集合</strong>：指令与回执使用
-<code>/facri/auto_cmd</code> 与
-<code>/facri/auto_cmd_rep</code>；上肢状态与仿真观察反馈使用
-<code>/facri/upper_body/state</code> 与
-<code>/facri/sim_observer/state</code>（观测字段映射为
-<code>grasp.attached</code>、<code>auto.auto_cmd</code>、<code>grasp.placed</code>、<code>auto.reason</code>、<code>reset_count</code>、<code>session</code>
-与 <code>auto.stage</code>）。</li>
-</ul>
-<h2 id="联调前准备与统一命令控制">联调前准备与统一命令控制</h2>
-<p>启动联调会话前，必须依次核验三项运行条件：第一，确认宿主机统一端口
-<code>18640</code>
-不存在正在运行的其余工厂仿真（严格遵守「物理仿真一次一个」）；第二，确认宿主机网卡与外部真机控制主机保持路由连通（默认示例地址为
-<code>192.168.123.76</code>，可通过 <code>ping</code>
-验证延迟与丢包）；第三，确认当前工作区的真机发布绑定目录中已生成
-<code>role-release-real-peer.json</code> 清单文件。</p>
+契约规定，联调通信边界锁定为以下两项原则：</p>
+<ol type="1">
+<li><strong>单机对接、余机隔离</strong>：仅 1 号机启用外部真机同步，2
+号至 4
+号机器人保持容器内独立执行；即使某台机器人在操作过程中出现失稳或超时，单机异常也不会扩散引发全队停机。</li>
+<li><strong>四阶段对称锁步（0 -&gt; 1 -&gt; 2 -&gt;
+3）</strong>：宿主机自动拉起对等网桥，默认通过 FastDDS Domain 126
+与外部真机交互。每个工件转运周期严格经过四段确认推进：阶段 0
+就绪等待抓取 -&gt; 阶段 1 抓取完成等待持物移位 -&gt; 阶段 2 到位等待放置
+-&gt; 阶段 3
+放置完成等待空手返回，双方完成且归零后才允许推进下一步。</li>
+</ol>
+<h2 id="联调前准备与启停命令">联调前准备与启停命令</h2>
+<p>启动前须核验三项条件：主机 18640
+端口空闲无其余仿真会话；宿主机与对端真机控制主机网络路由连通；工作区已绑定真机伴生发布清单。随后在仓库根目录执行：</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 启动【真机联调模式】（宿主机 Domain 126 直连外部实物真机）</span></span>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 启动真机联调模式（宿主机 Domain 126 直连外部实物真机）</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> start <span class="at">--real</span> <span class="at">--wait</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 启动【Mock 仿真模式】（仅连接容器内受控 Mock，不访问外网真机，默认行为）</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 启动 Mock 仿真模式（仅连接容器内受控 Mock，默认行为）</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> start <span class="at">--mock</span> <span class="at">--wait</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 核查运行状态、安全停车及彻底销毁容器与锁</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 状态查询、安全停车与完整关闭释放锁</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> status</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> stop</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">./facrictl</span> close <span class="at">--wait</span></span></code></pre></div>
 <aside class="doc-callout doc-callout--warning" role="note">
   <div class="doc-callout-title">WARNING · 风险边界</div>
-  <p>启动阶段若将 <code>--real</code> 与
-<code>--setup c919</code> 混用，<code>deployment/system_entry.py</code>
-会直接报错 <code>FACTORY_PEER_MODE_REQUIRES_FACTORY_SETUP</code>
-并拒绝启动；同一次命令中同时指定 <code>--mock</code> 与
+  <p>若将 <code>--real</code> 与 <code>--setup c919</code>
+混用，入口脚本会直接报错
+<code>FACTORY_PEER_MODE_REQUIRES_FACTORY_SETUP</code>
+并拒绝启动；同一次命令中同时传递 <code>--mock</code> 与
 <code>--real</code> 将报错 <code>FACTORY_PEER_MODE_CONFLICT</code>。</p>
   
 </aside>
-<p>就绪后通过浏览器打开
-<code>http://127.0.0.1:18640/#global</code>（或运行
-<code>./facrictl ui</code>），即可像日常仿真模式一样在 <code>C01</code>
-交互栏或 <code>P04</code> 任务中心向产线派发工件加工任务。</p>
-<h2 id="伴生发布清单生成与隔离校验">伴生发布清单生成与隔离校验</h2>
-<p>当需要更换对端真机 IP 地址、变更 FastDDS Domain
-ID、调整超时上限或切换基线发行版本时，严禁直接手改原有只读发布包
-JSON，而应使用 <code>deployment/prepare_real_peer_release.py</code>
-生成不可变的 Mock 与 Real-Peer 双伴生清单：</p>
+<p>就绪后打开 <code>http://127.0.0.1:18640/#global</code> 或执行
+<code>./facrictl ui</code>，即可像日常仿真模式一样在交互栏或任务中心派发工件加工任务。</p>
+<h2 id="制备不可变伴生发布清单">制备不可变伴生发布清单</h2>
+<p>当需要更换对端真机 IP 地址、调整 Domain ID
+或切换基线发布版本时，严禁直接手改原有只读发布 JSON，应使用
+<code>deployment/prepare_real_peer_release.py</code> 生成不可变的 Mock
+与 Real-Peer 双伴生清单：</p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./deployment/prepare_real_peer_release.py</span> <span class="dt">\</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--base-release</span> <span class="op">&lt;</span>BASE_RELEASE_DIR<span class="op">&gt;</span>/role-release.json <span class="dt">\</span></span>
@@ -144,17 +130,35 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--peer-address</span> <span class="op">&lt;</span>REAL_PEER_IP<span class="op">&gt;</span> <span class="dt">\</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--domain-id</span> 126 <span class="dt">\</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--link-root</span> <span class="st">&quot;</span><span class="va">$PWD</span><span class="st">&quot;</span></span></code></pre></div>
-<p>该脚本自动读取原始只读基线配置并冻结其上游模型与环境文件引用，随后分别产出两套设置与校验摘要：Mock
-清单固定使用 <code>peer_origin: "MOCK"</code> 与
-<code>/validation/&lt;robot_id&gt;/facri/*</code>
-隔离话题，脚本并强制校验
+<p>脚本读取只读基线并冻结上游环境引用后，分别生成彼此隔离的两套清单并原子更新工作区发布软链接，确保
+Mock 模式绝不意外暴露外部真机地址。</p>
+<details class="tech-details">
+<summary>
+展开 DDS 话题映射、清单校验规则与故障排查矩阵
+</summary>
+<h3 id="协议版本dds-话题与伴生清单校验规则">1. 协议版本、DDS
+话题与伴生清单校验规则</h3>
+<ul>
+<li><strong>协议参数与话题集</strong>：网桥采用
+<code>rmw_fastrtps_cpp</code> 传输层，协议版本为
+v0-whole-robot-authority（配置模板
+<code>facri.operation.sync.v1</code>，同步范围受产线配置中
+<code>operation_sync_robot_ids</code> 控制）；契约将抓取动作映射至阶段
+0，将放置动作映射至阶段 2。指令与回执话题为 <code>/facri/auto_cmd</code>
+与 <code>/facri/auto_cmd_rep</code>，上肢状态与仿真观察反馈话题为
+<code>/facri/upper_body/state</code> 与
+<code>/facri/sim_observer/state</code>（携带
+<code>grasp.attached / auto.auto_cmd / grasp.placed / auto.reason / reset_count / session / auto.stage</code>
+七项观测字段）。</li>
+<li><strong>不可变清单隔离断言</strong>：Mock 清单固定写入对等来源 MOCK
+与 <code>/validation/&lt;robot_id&gt;/facri/*</code>
+隔离话题，脚本强制校验
 <code>MOCK_RELEASE_MUST_NOT_EXPOSE_EXTERNAL_PEERS</code>；Real-Peer
-清单写入
-<code>peer_origin: "REAL"</code>、<code>peer_address</code>、<code>domain_id</code>
-与绝对化 <code>system_memory_dir</code> 路径，计算 SHA-256
-摘要，并原子更新工作区发布软链接供 <code>system_entry.py</code>
-自动解析。</p>
-<h2 id="常见故障排查矩阵">常见故障排查矩阵</h2>
+清单写入对等来源 REAL、对端地址、域编号与绝对化记忆目录并计算 SHA-256
+摘要，写入 <code>role-release-real-peer.json</code> 供
+<code>deployment/system_entry.py</code> 自动解析。</li>
+</ul>
+<h3 id="常见故障排查矩阵">2. 常见故障排查矩阵</h3>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
 <table>
 <colgroup>
@@ -173,36 +177,34 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="
 <tr>
 <td><code>FACTORY_REAL_PEER_RELEASE_MISSING</code></td>
 <td>工作区尚未制备并链接真机伴生发布清单</td>
-<td>重新执行 <code>prepare_real_peer_release.py</code> 并指定
-<code>--link-root "$PWD"</code></td>
+<td>重新运行 <code>deployment/prepare_real_peer_release.py</code> 并指定
+<code>--link-root</code></td>
 </tr>
 <tr>
 <td><code>FACTORY_REAL_PEER_ADDRESS_REQUIRED</code></td>
-<td>真机清单条目中 <code>peer_address</code> 字段为空</td>
-<td>检查生成参数中的 <code>--peer-address</code> 并重生成伴生清单</td>
+<td>真机清单条目中对端地址字段为空</td>
+<td>检查生成参数中的对端 IP 并重生成伴生清单</td>
 </tr>
 <tr>
 <td><code>FACTORY_PEER_MODE_MISMATCH</code></td>
-<td>清单绑定条目的 <code>peer_origin</code> 与启动模式标志不匹配</td>
-<td>核对 <code>--mock</code> / <code>--real</code> 与实际链接清单的
-<code>peer_origin</code> 字段</td>
+<td>绑定清单的对等来源与启动标志不匹配</td>
+<td>核对启动模式标志与当前生效清单的来源取值</td>
 </tr>
 <tr>
-<td><code>FACTORY_ALREADY_RUNNING</code> 或 <code>:18640</code>
-占用</td>
+<td><code>FACTORY_ALREADY_RUNNING</code> 或 18640 占用</td>
 <td>前序仿真会话容器或共享内存物理锁尚未释放</td>
 <td>执行 <code>./facrictl close --wait</code> 等待清理完成后再重试</td>
 </tr>
 <tr>
 <td>网桥连而不通或阶段停滞</td>
-<td><code>peer-link</code> 与真机 Domain
-ID、子网掩码或防火墙策略不一致</td>
-<td>检查会话运行目录下的 <code>auto-task-link-status.json</code> 及
-<code>docker logs facri-&lt;case&gt;-peer-link</code></td>
+<td>网桥进程与真机 Domain ID、子网掩码或防火墙不一致</td>
+<td>检查会话运行目录下的 <code>auto-task-link-status.json</code>
+与网桥容器日志</td>
 </tr>
 </tbody>
 </table>
 </div>
+</details>
       </article>
 
 <nav class="doc-pager" aria-label="上下章导航">
@@ -214,14 +216,19 @@ ID、子网掩码或防火墙策略不一致</td>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
-<li><a href="#模式边界与四阶段对称锁步"
-id="toc-模式边界与四阶段对称锁步">模式边界与四阶段对称锁步</a></li>
-<li><a href="#联调前准备与统一命令控制"
-id="toc-联调前准备与统一命令控制">联调前准备与统一命令控制</a></li>
-<li><a href="#伴生发布清单生成与隔离校验"
-id="toc-伴生发布清单生成与隔离校验">伴生发布清单生成与隔离校验</a></li>
-<li><a href="#常见故障排查矩阵"
-id="toc-常见故障排查矩阵">常见故障排查矩阵</a></li>
+<li><a href="#同步范围与四阶段对称锁步"
+id="toc-同步范围与四阶段对称锁步">同步范围与四阶段对称锁步</a></li>
+<li><a href="#联调前准备与启停命令"
+id="toc-联调前准备与启停命令">联调前准备与启停命令</a></li>
+<li><a href="#制备不可变伴生发布清单"
+id="toc-制备不可变伴生发布清单">制备不可变伴生发布清单</a>
+<ul>
+<li><a href="#协议版本dds-话题与伴生清单校验规则"
+id="toc-协议版本dds-话题与伴生清单校验规则">1. 协议版本、DDS
+话题与伴生清单校验规则</a></li>
+<li><a href="#常见故障排查矩阵" id="toc-常见故障排查矩阵">2.
+常见故障排查矩阵</a></li>
+</ul></li>
 </ul>
       </nav>
     </aside>
@@ -233,5 +240,22 @@ id="toc-常见故障排查矩阵">常见故障排查矩阵</a></li>
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>

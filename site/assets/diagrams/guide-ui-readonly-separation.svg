@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="1200" height="680" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">WebGL :18640 / :8088 显示与底层控制单向只读隔离架构</title>
+  <desc id="diagram-desc">阐明平台 Web 前端 P01–P17、Three.js r180 同源 iframe、LIVE/REPLAY/?demo=1 三态隔离及对物理控制零直连的安全边界。</desc>
+  <defs>
+    <pattern id="dot-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.9" fill="#E6E1D6"/>
+    </pattern>
+    <marker id="arrow-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#16181D"/>
+    </marker>
+    <marker id="arrow-terracotta" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#B04A1A"/>
+    </marker>
+    <marker id="arrow-forest" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#2C5E3F"/>
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#1E4D8C"/>
+    </marker>
+    <marker id="arrow-ochre" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8A5A19"/>
+    </marker>
+    <marker id="arrow-mute" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5 z" fill="#8C877C"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="680" fill="#FAFAF7"/>
+  <rect x="0" y="0" width="1200" height="680" fill="url(#dot-grid)"/>
+  <rect x="0.75" y="0.75" width="1198.5" height="678.5" fill="none" stroke="#D8D3C8" stroke-width="1.5"/>
+  <rect x="36.0" y="90.0" width="368.0" height="534.0" rx="3.0" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.35"/>
+  <text x="50.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#1E4D8C" letter-spacing="0.06em">PRESENTATION · apps/collaboration_platform</text>
+  <text x="50.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">浏览器双端口只读观测层</text>
+  <rect x="432.0" y="90.0" width="336.0" height="534.0" rx="3.0" fill="#F3F0E8" stroke="#D8D3C8" stroke-width="1.35"/>
+  <text x="446.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#B04A1A" letter-spacing="0.06em">MODE ISOLATION &amp; BANDWIDTH GUARD</text>
+  <text x="446.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">三态严格隔离与带宽门禁</text>
+  <rect x="796.0" y="90.0" width="368.0" height="534.0" rx="3.0" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.35"/>
+  <text x="810.0" y="109.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="700" fill="#2C5E3F" letter-spacing="0.06em">AUTHORITATIVE SYSTEM &amp; PHYSICS</text>
+  <text x="810.0" y="126.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="13.5" font-weight="700" fill="#16181D">受控网关与底层物理边界</text>
+  <rect x="52.0" y="138.0" width="336.0" height="134.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="158.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">主平台外壳（:8110 / :18640 · Three.js r186）</text>
+  <text x="64.0" y="174.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">P01 全局态势 · P01B 规划 DAG · P02 本体状态</text>
+  <text x="64.0" y="189.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">P03 操作感知 · P04 任务中心 · P05 技能库</text>
+  <text x="64.0" y="205.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">P06 知识空间 · P07 RsiLab 离线演化实验</text>
+  <text x="64.0" y="220.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">C01 CollaborationBar（唯一条件写入入口）</text>
+  <rect x="52.0" y="286.0" width="336.0" height="156.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25"/>
+  <text x="64.0" y="306.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">同源隔离 iframe（Three.js r180 管线）</text>
+  <text x="64.0" y="322.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">factory_scene.py / c919_scene.py 常驻保活</text>
+  <text x="64.0" y="337.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">AgX 色调 · PCF 1024 · DPR &lt;= 1.25 · 双解码 Worker</text>
+  <text x="64.0" y="353.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">postMessage 仅允许相机视角控制</text>
+  <text x="64.0" y="368.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">强制标记 preview_only: 无机器人控制接口</text>
+  <rect x="52.0" y="456.0" width="336.0" height="148.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="64.0" y="476.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">交互控制台（:8088 · InteractionRuntime）</text>
+  <text x="64.0" y="492.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">P08 /client 纯净观众讲解视图（零后台入口）</text>
+  <text x="64.0" y="507.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">P09–P17 运维页: live / run / config / prompt / log</text>
+  <text x="64.0" y="523.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">SSE LiveHub (/api/live/stream) 只读推流</text>
+  <text x="64.0" y="538.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">Ctrl+C 关闭前端不中断后台机器人进程</text>
+  <rect x="448.0" y="138.0" width="304.0" height="108.0" rx="2.5" fill="#EEF6F1" stroke="#2C5E3F" stroke-width="1.25"/>
+  <text x="460.0" y="158.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">LIVE 实时模式（--system-url / domain 互斥）</text>
+  <text x="460.0" y="174.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">--system-url :8090 XOR --system-domain &lt;id&gt;</text>
+  <text x="460.0" y="189.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">仅当 --enable-control + 有效源才开放 C01</text>
+  <text x="460.0" y="205.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#2C5E3F">代理固定 auto_start=false 防止误起仿真</text>
+  <rect x="448.0" y="260.0" width="304.0" height="96.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="460.0" y="280.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">REPLAY 只读归档（hybridctl serve --data）</text>
+  <text x="460.0" y="296.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">全部写入与下发门禁强制锁定关闭</text>
+  <text x="460.0" y="311.5" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">批次封存期间请求返回 503 OBSERVER_FINALIZING</text>
+  <rect x="448.0" y="370.0" width="304.0" height="96.0" rx="2.5" fill="#FAF4E8" stroke="#8A5A19" stroke-width="1.25"/>
+  <text x="460.0" y="390.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">?demo=1 设计预览（非真实证据）</text>
+  <text x="460.0" y="406.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">仅显示预设静态样例，刷新即清零草稿</text>
+  <text x="460.0" y="421.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#8A5A19">断连后绝不静默回退至演示假数据</text>
+  <rect x="448.0" y="480.0" width="304.0" height="124.0" rx="2.5" fill="#EFF4FA" stroke="#1E4D8C" stroke-width="1.25"/>
+  <text x="460.0" y="500.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">RoiGatewayGuard &amp; 显示安全校验</text>
+  <text x="460.0" y="516.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">全局最多 2 路视频流 · 640x480 · 15 s TTL</text>
+  <text x="460.0" y="531.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">readDisplayResource 逐块长度与 SHA-256</text>
+  <text x="460.0" y="547.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">严格区分 LIVE / HISTORY / STALE</text>
+  <rect x="812.0" y="138.0" width="336.0" height="114.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="824.0" y="158.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">SystemApp HTTP 代理 (:8090 / :8088)</text>
+  <text x="824.0" y="174.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.2" font-weight="500" fill="#434853">InteractionGateway Queue(32) · 20 ms drain</text>
+  <text x="824.0" y="189.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">拒绝跨源 Origin · /api/say 语义解析</text>
+  <text x="824.0" y="205.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">TeamRuntime 唯一拥有任务编排权限</text>
+  <rect x="812.0" y="270.0" width="336.0" height="118.0" rx="2.5" fill="#FFFFFF" stroke="#D8D3C8" stroke-width="1.25"/>
+  <text x="824.0" y="290.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">单机 C++20 4+1 与 PlanningCore</text>
+  <text x="824.0" y="306.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">依据 SpatialPosePod &amp; 传感器观测规划</text>
+  <text x="824.0" y="321.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">严禁读取仿真显示真值或 r180 网格坐标</text>
+  <rect x="812.0" y="406.0" width="336.0" height="198.0" rx="2.5" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.25" stroke-dasharray="4 3"/>
+  <text x="824.0" y="426.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="12.5" font-weight="700" fill="#16181D">物理碰撞与显示资产不可越界红线</text>
+  <text x="824.0" y="442.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="600" fill="#B04A1A">1. 高精度 Three.js 模型不自动赋予碰撞资格</text>
+  <text x="824.0" y="457.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">2. 前端不得创建第二套任务或物理运行器</text>
+  <text x="824.0" y="473.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">3. 禁止热改其他线程活动感知或模型服务</text>
+  <text x="824.0" y="488.5" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.8" font-weight="400" fill="#434853">4. 不以视觉呈现成功伪造 L3/L4 物理验收</text>
+  <path d="M 812.0 178.0 L 752.0 178.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 448.0 178.0 L 388.0 178.0" fill="none" stroke="#2C5E3F" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arrow-forest)"/>
+  <path d="M 812.0 520.0 L 752.0 520.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arrow-slate)"/>
+  <path d="M 448.0 520.0 L 388.0 520.0" fill="none" stroke="#1E4D8C" stroke-width="1.60" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5 4" marker-end="url(#arrow-slate)"/>
+  <rect x="719.4" y="169.0" width="125.3" height="17.0" rx="2.0" fill="#FAFAF7" stroke="#2C5E3F" stroke-width="0.80" fill-opacity="0.95"/>
+  <text x="782.0" y="181.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#2C5E3F" text-anchor="middle">LIVE 代理 (受控 C01)</text>
+  <rect x="737.6" y="511.0" width="88.8" height="17.0" rx="2.0" fill="#FAFAF7" stroke="#1E4D8C" stroke-width="0.80" fill-opacity="0.95"/>
+  <text x="782.0" y="523.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="9.8" font-weight="600" fill="#1E4D8C" text-anchor="middle">只读状态 / ROI</text>
+  <line x1="36.0" y1="634.0" x2="1164.0" y2="634.0" stroke="#D8D3C8" stroke-width="1.00"/>
+  <text x="36.0" y="656.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#16181D">图例</text>
+  <line x1="82.0" y1="651.0" x2="100.0" y2="651.0" stroke="#2C5E3F" stroke-width="2.00"/>
+  <text x="104.0" y="655.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">受控状态/条件指令代理</text>
+  <line x1="236.0" y1="651.0" x2="254.0" y2="651.0" stroke="#1E4D8C" stroke-width="1.80" stroke-dasharray="4 3"/>
+  <text x="258.0" y="655.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">单向只读遥测与 ROI 图像</text>
+  <rect x="398.6" y="645.0" width="14.0" height="12.0" rx="2.0" fill="#FDF3EE" stroke="#B04A1A" stroke-width="1.20"/>
+  <text x="420.6" y="655.0" font-family="&quot;Inter&quot;, &quot;PingFang SC&quot;, &quot;Noto Sans SC&quot;, sans-serif" font-size="10.5" font-weight="500" fill="#434853">preview_only 物理隔离红线</text>
+  <text x="1164.0" y="655.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.0" font-weight="500" fill="#6B707B" text-anchor="end">浏览器验证复用系统已打开的窗口，不额外加载重型 Viewer</text>
+  <text x="36.0" y="31.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="700" fill="#B04A1A" letter-spacing="0.08em">UI ISOLATION · READ-ONLY VIEWPORT &amp; THREE-STATE GUARD</text>
+  <text x="36.0" y="58.0" font-family="&quot;Noto Serif SC&quot;, &quot;Source Han Serif SC&quot;, Georgia, serif" font-size="20.0" font-weight="700" fill="#16181D">WebGL :18640 / :8088 显示与底层控制单向只读隔离架构</text>
+  <text x="1164.0" y="56.0" font-family="&quot;JetBrains Mono&quot;, monospace" font-size="10.5" font-weight="600" fill="#6B707B" text-anchor="end">Three.js r186 Shell + r180 iframe · preview_only</text>
+  <line x1="36.0" y1="72.0" x2="1164.0" y2="72.0" stroke="#D8D3C8" stroke-width="1.20"/>
+</svg>

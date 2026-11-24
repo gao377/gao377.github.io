@@ -66,25 +66,32 @@ WrenchObserver/TouchdownGuard 纯接触控制。" />
       </header>
 
       <article class="doc-article">
+<h2 id="定位与上下游边界">定位与上下游边界</h2>
 <p>上身操作模块运行在零 <code>&lt;weld&gt;</code>
-辅助的纯物理接触基准上，需要同时协调双 7 自由度机械臂与 3 自由度腰部共
-<code>17</code>
-个上身自由度，在狭小工装与设备按钮前方完成轨迹生成、连续碰撞核验及力控触底放置。运行边界与全局冻结参数见
+辅助的纯物理接触基准上，横跨
+<code>manipulation_runtime</code>（<code>P2</code>）与
+<code>action_executor</code>（<code>P0</code>）：上游消费
+<code>BodyStabilityMonitor</code> 确认的停稳状态、目标 TCP
+位姿以及持物上下文，完成 <code>17</code>
+轴联合逆解与连续扫掠碰撞检验后，下游向 <code>traj_slot.shm</code>
+写出同步轨迹并由纯臂力矩观测器与触底守卫完成物理接触抓放。全局冻结参数见
 <a
 href="../architecture/runtime-baselines.html">运行基线与冻结配置</a>，仿真接触机制见
 <a href="../evidence/simulation-engine.html">MuJoCo 4.0.1
 仿真引擎</a>。</p>
-<figure>
-<img src="../assets/diagrams/manipulation-runtime.svg"
-alt="上身操作运行时架构图" />
-<figcaption aria-hidden="true">上身操作运行时架构图</figcaption>
+<figure class="diagram-figure">
+  <div class="diagram-canvas">
+    <img src="../assets/diagrams/algo-full-stack-map.svg"
+alt="双臂规划、逆解与纯接触柔顺控制在全栈算法中的位置" loading="eager" decoding="async" />
+  </div>
+  <figcaption><span>双臂规划、逆解与纯接触柔顺控制在全栈算法中的位置</span><button type="button" class="diagram-zoom-btn" data-diagram-zoom>查看大图</button></figcaption>
 </figure>
 <h2 id="一17-自由度上身规划与-49-候选阻尼最小二乘-ik">一、17
 自由度上身规划与 49 候选阻尼最小二乘 IK</h2>
 <p><code>UpperBodyPlanner</code> 与
 <code>DlsIkSolver</code>（<code>src/robot_app/algorithms/planning_core/upper_body_planner.hpp</code>、<code>upper_body_planner.cpp</code>
 与 <code>dls_ik_solver.hpp</code>）负责双臂及腰部统一逆运动学求解：</p>
-<ol type="1">
+<ul>
 <li><strong>关节分工与腰部刚度加权</strong>：规划向量维度
 <code>kUpperBodyDofs = 17</code>（左右双臂各 <code>7</code>
 轴，加上腰部偏航 <code>yaw ±40°</code>、俯仰
@@ -92,11 +99,11 @@ alt="上身操作运行时架构图" />
 三个硬约束关节）。<code>DlsIkSolver</code> 采用阻尼参数
 <code>ik_damping = 0.015</code>、单点最大迭代 <code>48</code>
 次与分段末端误差上限
-<code>max_segment_pos_err_m = 0.020 m</code>；腰部三轴权重差异显著设置（<code>yaw = 1.0</code>、<code>pitch = 10.0</code>、<code>roll = 100.0</code>），优先由双臂与腰部偏航消化大角度工作空间需求，严密抑制容易危及双足平衡的躯干侧倾。</li>
+<code>max_segment_pos_err_m = 0.020 m</code>；腰部三轴权重差异显著设置（<code>yaw = 1.0</code>、<code>pitch = 10.0</code>、<code>roll = 100.0</code>），优先由双臂与腰部偏航消化大角度工作空间需求，抑制危及双足平衡的躯干侧倾。</li>
 <li><strong>49
 候选分级邻域搜索（<code>plan_cartesian_49</code>）</strong>：当标准中心点（<code>(0, 0)</code>）无法避障或触达运动学奇异区时，规划器在笛卡尔横向平面沿
-<code>±30 mm</code> 网格展开尝试，依「中心 <code>(0, 0)</code> →
-单臂小幅偏置 → 双臂组合 <code>7×7 = 49</code>
+<code>±30 mm</code> 网格展开尝试，依「中心 <code>(0, 0)</code> -&gt;
+单臂小幅偏置 -&gt; 双臂组合 <code>7×7 = 49</code>
 组」顺序快速检索可行无奇异通道，并在固定时间格（<code>20 ms</code>
 步长最小加加速度插值，最多 <code>kMaxTcpSegments = 100</code>
 段）上生成共线同步的时间序列。</li>
@@ -109,7 +116,7 @@ alt="上身操作运行时架构图" />
 <code>kNone</code>、<code>kScalarActuator1D</code>、<code>kPrismaticLift1D</code>、<code>kDualArmTorsoIk</code>
 四类工作模式，并在按钮撤回启用
 <code>REVERSE_PREFIX_REPLAY</code>（<code>mode = 2</code>）直接逆序回放已验证安全路径而无需重新规划。</li>
-</ol>
+</ul>
 <h2
 id="二种子插值与连续扫掠碰撞核验">二、种子插值与连续扫掠碰撞核验</h2>
 <div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
@@ -157,30 +164,67 @@ id="三力矩观测touchdownguard-与纯接触任务柔顺控制">三、力矩�
 <code>src/robot_app/modules/manipulation_runtime/domain/control/wrench_observer.py</code>（<code>WrenchObserver</code>）与
 <code>admittance.py</code>（<code>TaskAdmittanceSession</code> /
 <code>TouchdownGuard</code>）共同提供的末端物理力感知：</p>
-<ol type="1">
+<ul>
 <li><strong>纯臂关节雅可比滤波观测（<code>WrenchObserver</code>）</strong>：构造<strong>显式排除腰部关节</strong>的纯
-7 自由度臂 Pinocchio 雅可比矩阵，使用解耦 3×7
+<code>7</code> 自由度臂 Pinocchio 雅可比矩阵，使用解耦 <code>3×7</code>
 线速度正则阻尼（<code>lambda = 0.08</code>）与剩余角速度正则阻尼（<code>lambda = 0.35</code>）反演末端接触六维力/力矩；滤除小于
 <code>deadband = 0.12 Nm</code> 的关节微震并应用平滑系数
 <code>ema_alpha = 0.22</code>；针对 <code>SIM</code>
 无质量上肢配置显式置零重力项。</li>
-<li><strong>四套分阶段导纳控制剖面（<code>TaskAdmittanceSession</code>）</strong>：
-<ul>
-<li><code>FREE_GRAZE_COMPLIANCE_PROFILE</code>：空手逼近及预备区防擦碰。</li>
-<li><code>PICK_SEAT_COMPLIANCE_PROFILE</code>：夹爪合拢贴紧工件端面。</li>
-<li><code>HELD_TRANSPORT_COMPLIANCE_PROFILE</code>：携物移动期间吸收双臂与腰部轻微内力拉扯。</li>
-<li><code>PLACE_TOUCHDOWN_PROFILE</code>：工装放置落地阶段顺应桌面倾角误差。</li>
-</ul></li>
 <li><strong>垂直触底判稳守卫（<code>TouchdownGuard</code>）</strong>：下降安置过程中激活小步距虚拟微探（下探
 <code>0.008 m</code>，速率
 <code>0.015 m/s</code>），实时监测竖直向上接触反力；仅当连续满足
 <code>fz &gt;= 0.90 N</code> 且平稳驻留 <code>0.08 s</code>
 后才判定可靠着台并下发双爪释放指令，防止空中过早松爪导致工件跌落倾翻。</li>
-</ol>
+</ul>
+<details class="tech-details">
+<summary>
+查看 TaskAdmittanceSession 四套分阶段导纳控制剖面清单
+</summary>
+<div tabindex="0" role="region" aria-label="数据表" class="table-wrapper">
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>柔顺剖面标识</th>
+<th>适用作业阶段</th>
+<th>物理控制职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FREE_GRAZE_COMPLIANCE_PROFILE</code></td>
+<td>空手逼近与预备区动作</td>
+<td>降低逼近过程轻微擦碰引起的瞬态接触峰值</td>
+</tr>
+<tr>
+<td><code>PICK_SEAT_COMPLIANCE_PROFILE</code></td>
+<td>夹爪合拢贴紧工件端面</td>
+<td>吸收两侧指垫闭合对中偏差，确保双指均匀贴合</td>
+</tr>
+<tr>
+<td><code>HELD_TRANSPORT_COMPLIANCE_PROFILE</code></td>
+<td>携物移动行进阶段</td>
+<td>吸收双臂与腰部耦合运动产生的轻微内力拉扯</td>
+</tr>
+<tr>
+<td><code>PLACE_TOUCHDOWN_PROFILE</code></td>
+<td>工装放置落地阶段</td>
+<td>顺应支撑表面轻微倾角误差，配合 <code>TouchdownGuard</code>
+判稳松爪</td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
 <h2 id="四上身规划狭窄空间-ik-与纯接触实证录像">四、上身规划、狭窄空间
 IK 与纯接触实证录像</h2>
 <p>下面三段 <code>PHYSICAL_SIM</code>
-实证录像展示了完整上身作业周期、受限通道内的 49
+实证录像展示了完整上身作业周期、受限通道内的 <code>49</code>
 候选阻尼最小二乘求解以及无外挂刚性焊接的纯物理接触导纳全过程（具体统计指标参见
 <a href="../evidence/verification-ladder.html">验证阶梯</a>）。</p>
 <p><strong>MED-MANIP-01 ·
@@ -233,6 +277,8 @@ class="doc-media-badge">PHYSICAL_SIM</span>
     <aside class="doc-toc-rail" aria-label="页内导航">
       <nav id="TOC" role="doc-toc" aria-label="本页目录">
 <ul>
+<li><a href="#定位与上下游边界"
+id="toc-定位与上下游边界">定位与上下游边界</a></li>
 <li><a href="#一17-自由度上身规划与-49-候选阻尼最小二乘-ik"
 id="toc-一17-自由度上身规划与-49-候选阻尼最小二乘-ik">一、17
 自由度上身规划与 49 候选阻尼最小二乘 IK</a></li>
@@ -255,5 +301,22 @@ IK 与纯接触实证录像</a></li>
     <span><a href="../architecture/overview.html">系统架构</a> · <a href="../evidence/verification-ladder.html">五级验证</a> · <a href="../engineering/doc-pipeline.html">文档规范</a></span>
   </div>
 </footer>
+
+  <dialog id="diagram-lightbox" class="diagram-lightbox" closedby="any" aria-labelledby="diagram-lightbox-title">
+    <div class="diagram-lightbox-frame">
+      <header class="diagram-lightbox-bar">
+        <h1 id="diagram-lightbox-title" class="diagram-lightbox-title">架构矢量图预览</h1>
+        <div class="diagram-lightbox-actions">
+          <button type="button" class="diagram-lightbox-zoom" data-diagram-zoom-toggle aria-pressed="false">1:1 原始尺寸</button>
+          <form method="dialog">
+            <button type="submit" class="diagram-lightbox-close" autofocus aria-label="关闭大图">关闭</button>
+          </form>
+        </div>
+      </header>
+      <div class="diagram-lightbox-stage">
+        <img id="diagram-lightbox-img" alt="" />
+      </div>
+    </div>
+  </dialog>
 </body>
 </html>
